@@ -4,8 +4,12 @@ import './App.css';
 import { RandomNumberGenerator } from "./services/RandomNumberGenerator";
 import { useService } from "./dependency-injection/useService";
 
-function App() {
-  const rnd = useService<RandomNumberGenerator>(RandomNumberGenerator);
+type AppProps = {
+  rnd?: RandomNumberGenerator
+};
+
+function App(props: AppProps = {}) {
+  const rnd = props.rnd ?? useService<RandomNumberGenerator>(RandomNumberGenerator);
 
   return (
     <div className="App">
