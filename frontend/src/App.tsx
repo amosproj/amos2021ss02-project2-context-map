@@ -1,11 +1,11 @@
-import React, { useContext } from "react";
+import React from "react";
 import logo from './logo.svg';
 import './App.css';
 import { RandomNumberGenerator } from "./services/RandomNumberGenerator";
-import { DependencyInjectionContext } from './dependency-injection/DependencyInjectionContext';
+import { useService } from "./dependency-injection/useService";
 
 function App() {
-  const rnd = useContext(DependencyInjectionContext).get<RandomNumberGenerator>(RandomNumberGenerator);
+  const rnd = useService<RandomNumberGenerator>(RandomNumberGenerator);
 
   return (
     <div className="App">
