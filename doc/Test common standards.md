@@ -3,7 +3,8 @@
 ## TL;DR
 * Implement all criteria in the user-story issue with a test
     * Except marked as manual test in the issue
-    * Add an `E2E` postfix to the test
+    * Put e2e tests in the `cypress/integration` folder
+    * Put unit tests in the `cypress/unit` folder
 * A testable unit is a piece of software (one/multiple types or functions) that serve a single purpose
 * In general all source code must be tested
     * No general instructions for code paths that need to be tested
@@ -27,7 +28,7 @@
 This document describes the reason and the way tests in the [AMOS Project2 Context Map](https://github.com/amosproj/amos-ss2021-project2-context-map) repository are structured and built. It is a starting point to get into writing tests for the repository's productive code, as well as a coordinated way of agreeing on a shared standard that is to be applied to all tests written.
 
 ## Test types: Unit tests, integration tests and acceptance tests
-Although all tests use the same test runner and frameworks, we separate two types of tests. Unit tests and integration tests are technical tests that are internal to the repository and are there to support the developers to write maintainable code with a high level of quality as well as helping to refactor and adapt code to new situations without breaking existing functionality. Integration tests also make sure that single units do integrate well into the whole structure of product developed. Acceptance tests (also called end-to-end tests) and the test criteria on the other hand are defined when the user-stories are recorded for development. All acceptance criteria listed in a user-story **MUST** be implemented with an automatic test, except the criterion is marked in the user story's issue as manual test. Integration tests **MUST** be marked with the `E2E` postfix.
+Although all tests use the same test runner and frameworks, we separate two types of tests. Unit tests and integration tests are technical tests that are internal to the repository and are there to support the developers to write maintainable code with a high level of quality as well as helping to refactor and adapt code to new situations without breaking existing functionality. Integration tests also make sure that single units do integrate well into the whole structure of product developed. Acceptance tests (also called end-to-end tests) and the test criteria on the other hand are defined when the user-stories are recorded for development. All acceptance criteria listed in a user-story **MUST** be implemented with an automatic test, except the criterion is marked in the user story's issue as manual test. Integration tests **MUST** be put in the `cypress/integration` folder.
 
 ## Testable unit
 A testable unit is a single type or function or a group of types or functions that serve a well defined single purpose. Combinations of units (integration) make up the while code base and are the implementation of the product. In the context of a test, the concrete testable unit is also called subject.
@@ -63,7 +64,7 @@ All tests **MUST** follow a certain pattern described below. It is tolerated to 
 * **Global teardown**  
   Disposes of artifacts that were created in the global setup step
 
-```
+```ts
 describe('User', () => {
   beforeEach(() => {
     // Global setup for all tests of the unit or user story
@@ -117,14 +118,14 @@ describe('User', () => {
 });
 ```
 
-All tests **MUST** follow a common naming convention. Unit and integration tests are separated by the subject that is tested. The subject for unit tests is the unit, the subject for integration tests is the group of units that are to be integrated. This separation is done by placing the test code in dedicated files. For unit and integration tests, all test code **MUST** be located in a file thats name is the name of the unit that is postfixed with `.tests`. For acceptance tests, the file name is the user-story that is tested, postfixed with `.tests.e2e`. For file names the pascal-case naming convention is mandatory. 
+All tests **MUST** follow a common naming convention. Unit and integration tests are separated by the subject that is tested. The subject for unit tests is the unit, the subject for integration tests is the group of units that are to be integrated. This separation is done by placing the test code in dedicated files. For unit and integration tests, all test code **MUST** be located in a file thats name is the name of the unit and put in the `cypress/unit` folder. For acceptance tests, the file name is the user-story that is tested, and must be located in the `cypress/integration` folder. For file names the pascal-case naming convention is mandatory. 
 
 Example:  
-Unit test code that tests the behavior of a unit named `User` is placed in a file named `User.tests.ts`.  
-Acceptance test code for the user-story called `User can change own password` needs to be located in a file called `UserCanChangeOwnPassword.tests.e2e.ts`.
+Unit test code that tests the behavior of a unit named `User` is placed in a file named `cypress/unit/User.ts`.  
+Acceptance test code for the user-story called `User can change own password` needs to be located in a file called `cypress/integration/UserCanChangeOwnPassword.ts`.
 
 The test methods that contain the test code follow the convention:  
-```
+```ts
 describe('[Unit or user story]', () => {
   describe('when [Function or acceptance criterion]', () => {
     it('with [Action or Parameters] should [DesiredResult]', () => {
@@ -139,7 +140,7 @@ describe('[Unit or user story]', () => {
 
 Example:
 The unit-test function that tests that a users password is not changed, if the wrong current password is specified is implemented with the code 
-```
+```ts
 describe('User', () => {
   describe('when calling TryChangeName', () => {
     it('with wrong password should return false', () => {
@@ -150,10 +151,20 @@ describe('User', () => {
 
 The `[Function or acceptance criterion]` component is `calling TryChangeName` as this is the method name of the `User` unit, the `[Action or Parameters]` component is `wrong password` as a description that a wrong argument is specified, the `[DesiredResult]` component is `return false`, because the test condition is that the call to the subjects function return a value of false to indicate failure.
 
+## Running Tests
+To support development, cypress offers a visual test runner. This can be started with
+`npm run cy:open:e2e` for integration tests and `npm run cy:open:unit` for unit tests.
+The specific tests must be selected by hand by the developer.
+
+All available tests can be executed in a single run in the terminal via the commands
+`npm run cy:run:e2e` and `npm run cy:run:unit`.
+
+Keep in mind that the integration tests require a running development server (`npm run start`)
+
 ## Productive code design
 Productive code **MUST** be designed in a way to be test-able. This section lists some best practices that enable this. Please be aware that this list is not complete and use all practices from Domain-driven design (DDD) and software architecture to ensure test-ability.  
 
-Subdivide the code into small units with a well defined behavior that match domain entities, when possible. Do not built large functions and types that do everything that a user-story needs in a single unit, but factor out everything that does not naturally fit into the unit.  
+Subdivide the code into small units with a well defined behavior that match domain entities, when possible. Do not build large functions and types that do everything that a user-story needs in a single unit, but factor out everything that does not naturally fit into the unit.  
 
 Use dependency injection with the help of the [inversify](https://inversify.io/) inversion-of-control (IOC) container that is used in the project. Do not create the dependencies of your unit yourself.
 

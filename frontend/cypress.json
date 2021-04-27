@@ -1,0 +1,5 @@
+{
+  "video": false,
+  "experimentalFetchPolyfill": true,
+  "componentFolder": "cypress/unit"
+}
