@@ -1,16 +1,16 @@
-import { Container, interfaces } from "inversify";
-import { configureServices } from "../configureServices";
+import { Container, interfaces } from 'inversify';
+import { configureServices } from '../configureServices';
 
-export class ContainerBuilder{
-    private readonly options : interfaces.ContainerOptions;
+export default class ContainerBuilder {
+  private readonly options: interfaces.ContainerOptions;
 
-    constructor(options: interfaces.ContainerOptions = {}) {
-        this.options = options ?? {};
-    }
+  constructor(options: interfaces.ContainerOptions = {}) {
+    this.options = options ?? {};
+  }
 
-    public buildContainer() : Container {
-        const container = new Container(this.options);
-        configureServices(container);
-        return container;
-    }
+  public buildContainer(): Container {
+    const container = new Container(this.options);
+    configureServices(container);
+    return container;
+  }
 }

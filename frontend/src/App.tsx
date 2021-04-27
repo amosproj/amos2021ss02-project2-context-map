@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { RandomNumberGenerator } from "./services/RandomNumberGenerator";
-import { useService } from "./dependency-injection/useService";
+import { RandomNumberGenerator } from './services/RandomNumberGenerator';
+import { useService } from './dependency-injection/useService';
 
 type AppProps = {
-  rnd?: RandomNumberGenerator
+  rnd?: RandomNumberGenerator;
 };
 
 function App(props: AppProps = {}) {
@@ -15,9 +15,7 @@ function App(props: AppProps = {}) {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Hello World {rnd.next(2, 3).toPrecision(3)}
-        </p>
+        <p>Hello World {rnd.next(2, 3).toPrecision(3)}</p>
       </header>
     </div>
   );
