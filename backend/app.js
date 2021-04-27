@@ -14,7 +14,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
-queryCypher('MATCH network = (dc:DataCenter {name:"DC1",location:"Iceland, Rekjavik"}) -[:CONTAINS]->(:Router) -[:ROUTES]->(:Interface) RETURN network');
+// example query from neo4j/sandbox that looks for specific DataCenters
+query = 'MATCH network = (dc:DataCenter {name:"DC1",location:"Iceland, Rekjavik"}) -[:CONTAINS]->(:Router) -[:ROUTES]->(:Interface) RETURN network'
+queryCypher(query);
 
 app.listen(3000);
 console.log('Server Started on Port 3000');
@@ -37,6 +39,7 @@ function queryCypher(query) {
                     // console.log(record);
                     dispArr.push({
                         // specify content that gets displayed in view/index.ejs
+                        // right now the locations of the DataCenters are displayed
                         location: record._fields[0].start.properties.location
                     });
                 });
