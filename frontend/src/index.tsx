@@ -3,11 +3,11 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { DependencyInjectionContext, DIContainerImpl } from './dependency-injection/DependencyInjectionContext';
+import { DependencyInjectionContext, createContainer } from './dependency-injection/DependencyInjectionContext';
 
 ReactDOM.render(
   <React.StrictMode>
-    <DependencyInjectionContext.Provider value={DIContainerImpl}>
+    <DependencyInjectionContext.Provider value={createContainer()}>
       <App />
     </DependencyInjectionContext.Provider> 
   </React.StrictMode>,

@@ -5,7 +5,7 @@ import { RandomNumberGenerator } from "./services/RandomNumberGenerator";
 import { DependencyInjectionContext } from './dependency-injection/DependencyInjectionContext';
 
 function App() {
-  const rnd = useContext(DependencyInjectionContext).getService<RandomNumberGenerator>();
+  const rnd = useContext(DependencyInjectionContext).get<RandomNumberGenerator>(RandomNumberGenerator);
 
   return (
     <div className="App">

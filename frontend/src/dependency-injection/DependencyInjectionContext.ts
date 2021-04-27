@@ -1,18 +1,25 @@
-import React, { useContext } from "react";
-import { RandomNumberGeneratorImpl } from "../services/RandomNumberGenerator";
+import React from "react";
+import { Container } from "inversify";
+import { ContainerBuilder } from "./ContainerBuilder";
 
-// This is just a fake implementation until we select and integrate a true DI container.
-export class DIContainer {
-    public getService<T>() : T {
-        return <T><unknown>(new RandomNumberGeneratorImpl());
+var globalContainer: Container | null = null;
+
+export function createContainer() {
+    if(globalContainer === null) {
+        const containerBuilder = new ContainerBuilder();
+
+        // We do not need to synchronize, as JS is single threaded
+        globalContainer = containerBuilder.buildContainer();
     }
+
+    return globalContainer;
 }
 
-export const DIContainerImpl = new DIContainer();
-
-function createContext() : React.Context<DIContainer>
+function createContext() : React.Context<Container>
 {
-    return React.createContext(DIContainerImpl);
+    const container = createContainer();
+
+    return React.createContext(container);
 }
 
 /**
