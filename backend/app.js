@@ -44,7 +44,7 @@ function queryCypher(query) {
                     });
                 });
                 res.render('index', {
-                    identities: dispArr
+                    toRender: dispArr
                 })
             })
             .catch(function (err) {
