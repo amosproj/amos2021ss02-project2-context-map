@@ -15,5 +15,7 @@ function createContext() : React.Context<DIContainer>
     return React.createContext(DIContainerImpl);
 }
 
+/**
+ * The react context that can be used to retrieve the dependency injection container.
+ */
 export const DependencyInjectionContext = createContext();
-
