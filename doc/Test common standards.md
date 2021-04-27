@@ -2,7 +2,7 @@
 
 ## TL;DR
 * Implement all criteria in the user-story issue with a test
-    * Except marked as manual test in the issue **TODO**
+    * Except marked as manual test in the issue
     * Add an `E2E` postfix to the test
 * A testable unit is a piece of software (one/multiple types or functions) that serve a single purpose
 * In general all source code must be tested
@@ -27,7 +27,7 @@
 This document describes the reason and the way tests in the [AMOS Project2 Context Map](https://github.com/amosproj/amos-ss2021-project2-context-map) repository are structured and built. It is a starting point to get into writing tests for the repository's productive code, as well as a coordinated way of agreeing on a shared standard that is to be applied to all tests written.
 
 ## Test types: Unit tests, integration tests and acceptance tests
-Although all tests use the same test runner and frameworks, we separate two types of tests. Unit tests and integration tests are technical tests that are internal to the repository and are there to support the developers to write maintainable code with a high level of quality as well as helping to refactor and adapt code to new situations without breaking existing functionality. Integration tests also make sure that single units do integrate well into the whole structure of product developed. Acceptance tests (also called end-to-end tests) and the test criteria on the other hand are defined when the user-stories are recorded for development. **START TODO** All acceptance criteria listed in a user-story **MUST** be implemented with an automatic test, except the criterion is marked in the user story's issue as manual test. **END TODO** Integration tests **MUST** be marked with the `E2E` postfix.
+Although all tests use the same test runner and frameworks, we separate two types of tests. Unit tests and integration tests are technical tests that are internal to the repository and are there to support the developers to write maintainable code with a high level of quality as well as helping to refactor and adapt code to new situations without breaking existing functionality. Integration tests also make sure that single units do integrate well into the whole structure of product developed. Acceptance tests (also called end-to-end tests) and the test criteria on the other hand are defined when the user-stories are recorded for development. All acceptance criteria listed in a user-story **MUST** be implemented with an automatic test, except the criterion is marked in the user story's issue as manual test. Integration tests **MUST** be marked with the `E2E` postfix.
 
 ## Testable unit
 A testable unit is a single type or function or a group of types or functions that serve a well defined single purpose. Combinations of units (integration) make up the while code base and are the implementation of the product. In the context of a test, the concrete testable unit is also called subject.
@@ -40,9 +40,9 @@ When the code clearly contains a single hot code path, this code path should be 
 
 ## Test code standards
 ### The test runner
-The test runner is responsible for running tests. We use the **TODO** test runner for all code in the repository, for all types of tests.  
+The test runner is responsible for running tests. We use the [cypress](https://www.cypress.io/) test runner for all code in the repository, for all types of tests.  
 
-**TODO**: Add some short description of how to execute the tests and give a link for further information and instructions.
+**TODO**: Add some short description of how to execute the tests and give a link for further information and instructions. See [issue](https://github.com/amosproj/amos-ss2021-project2-context-map/issues/22).
 
 ### Test design
 A test tests the behavior of a single unit (for unit tests) or the integrated set of multiple units that interact with each other (for E2E tests). All types of tests **SHOULD** only test a single condition. They are a necessary part of a source code contribution and are therefore part of the living code in the repository. While they are not part of the productive code, all rules and definitions for productive code also applies to test code. In particular, they should be clean, well documented, consistent with the productive code and maintainable.  
@@ -68,6 +68,7 @@ describe('User', () => {
   beforeEach(() => {
     // Global setup for all tests of the unit or user story
     // Omit if not needed.
+    cy.visit('http://localhost:3000/');
   });
   afterEach(() => {
     // Global teardown for all tests of the unit or user story
@@ -82,29 +83,45 @@ describe('User', () => {
       // Global teardown for all tests of the function or acceptance criterion
       // Omit if not needed.
     });
-    it('with wrong password should return false', () => {
+    it('with wrong password should fail', () => {
         // Arrange
+        const newNameInput = cy.get("input#new-name");
+        const currPasswordInput = cy.get("input#curr-password");
+        const saveButton = cy.get("input[type=submit]");
+
+        newNameInput.type("New user name");
+        currPasswordInput.type("Wrong password");
+
         // Act
+        saveButton.click();
+
         // Assert
+        cy.contains("Sorry, wrong password.");
     });
-    it('with correct password should return true', () => {
+    it('with correct password should succeed', () => {
         // Arrange
+        const newNameInput = cy.get("input#new-name");
+        const currPasswordInput = cy.get("input#curr-password");
+        const saveButton = cy.get("input[type=submit]");
+
+        newNameInput.type("New user name");
+        currPasswordInput.type("Correct password");
+
         // Act
+        saveButton.click();
+
         // Assert
+        cy.contains("Your username was changed successfully.");
     });
   });
 });
 ```
-
-**TODO** Give an example. This is test-runner dependent.
 
 All tests **MUST** follow a common naming convention. Unit and integration tests are separated by the subject that is tested. The subject for unit tests is the unit, the subject for integration tests is the group of units that are to be integrated. This separation is done by placing the test code in dedicated files. For unit and integration tests, all test code **MUST** be located in a file thats name is the name of the unit that is postfixed with `.tests`. For acceptance tests, the file name is the user-story that is tested, postfixed with `.tests.e2e`. For file names the pascal-case naming convention is mandatory. 
 
 Example:  
 Unit test code that tests the behavior of a unit named `User` is placed in a file named `User.tests.ts`.  
 Acceptance test code for the user-story called `User can change own password` needs to be located in a file called `UserCanChangeOwnPassword.tests.e2e.ts`.
-
-**TODO** The file names are test-runner dependent.
 
 The test methods that contain the test code follow the convention:  
 ```
@@ -138,14 +155,12 @@ Productive code **MUST** be designed in a way to be test-able. This section list
 
 Subdivide the code into small units with a well defined behavior that match domain entities, when possible. Do not built large functions and types that do everything that a user-story needs in a single unit, but factor out everything that does not naturally fit into the unit.  
 
-Use dependency injection with the help of the **[TODO: decide whether we use an IOC container and insert a link to the usage instructions]** inversion-of-control (IOC) container. Do not create the dependencies of your unit yourself.
+Use dependency injection with the help of the [inversify](https://inversify.io/) inversion-of-control (IOC) container that is used in the project. Do not create the dependencies of your unit yourself.
 
 Do not code against implementations but create an interface (API) with an API specification that the implementation implements instead. This will enable to mock or fake the interface in tests.
 
 ## Continuous integration - github actions
 When code is contributed, all tests are run with github actions to ensure that the contributed code is doing what is expected and that no existing functionality is broken. Do not merge pull request into the `main` branch, if tests are failing. 
-
-**TODO** Enable this in the repository settings
 
 ## Test driven development (TDD)
 Test driven development is a way to write tests as a specification of the code to be implemented. It serves additionally as a guideline what code is already running correctly and where additional work is needed. It therefore also prevents over-engineering. In short, with TDD test are written before the productive code, only then the productive code is written until all test pass.
