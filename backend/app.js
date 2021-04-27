@@ -33,8 +33,10 @@ function queryCypher(query) {
             .then(function (result) {
                 let dispArr = [];
                 result.records.forEach(function (record) {
-                    //console.log(record);
+                    // log to console if you want to
+                    // console.log(record);
                     dispArr.push({
+                        // specify content that gets displayed in view/index.ejs
                         location: record._fields[0].start.properties.location
                     });
                 });
