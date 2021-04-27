@@ -2,7 +2,7 @@ import React from "react";
 import { Container } from "inversify";
 import { ContainerBuilder } from "./ContainerBuilder";
 
-var globalContainer: Container | null = null;
+let globalContainer: Container | null = null;
 
 export function createContainer() {
     if(globalContainer === null) {
