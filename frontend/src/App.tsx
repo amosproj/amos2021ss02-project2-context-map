@@ -9,7 +9,7 @@ type AppProps = {
 };
 
 function App(props: AppProps = {}) {
-  const rnd = props.rnd ?? useService<RandomNumberGenerator>(RandomNumberGenerator);
+  const rnd = useService(RandomNumberGenerator, props.rnd);
 
   return (
     <div className="App">
