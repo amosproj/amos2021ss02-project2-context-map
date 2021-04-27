@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { RandomNumberGeneratorImpl } from "../services/RandomNumberGeneratorImpl";
+import { RandomNumberGeneratorImpl } from "../services/RandomNumberGenerator";
 
 // This is just a fake implementation until we select and integrate a true DI container.
 export class DIContainer {
