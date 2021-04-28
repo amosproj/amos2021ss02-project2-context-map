@@ -1,4 +1,4 @@
-import RandomNumberGenerator from './RandomNumberGenerator';
+import RandomNumberGenerator from '../../src/services/RandomNumberGenerator';
 
 export default class RandomNumberGeneratorFake
   implements RandomNumberGenerator {
