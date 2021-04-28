@@ -2,7 +2,8 @@ import React from 'react';
 import {mount} from "@cypress/react";
 import App from "../../../src/App";
 import {createContainer, DependencyInjectionContext} from "../../../src/dependency-injection/DependencyInjectionContext";
-import {RandomNumberGenerator, RandomNumberGeneratorFake} from "../../../src/services/RandomNumberGenerator";
+import RandomNumberGenerator from "../../../src/services/RandomNumberGenerator";
+import RandomNumberGeneratorFake from "../../../src/services/RandomNumberGeneratorFake";
 
 describe("App", () => {
   it('Prints a fake random number', function () {

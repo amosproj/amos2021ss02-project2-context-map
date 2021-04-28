@@ -1,25 +1,24 @@
-import React from "react";
-import { Container } from "inversify";
-import { ContainerBuilder } from "./ContainerBuilder";
+import React from 'react';
+import { Container } from 'inversify';
+import ContainerBuilder from './ContainerBuilder';
 
 let globalContainer: Container | null = null;
 
-export function createContainer() {
-    if(globalContainer === null) {
-        const containerBuilder = new ContainerBuilder();
+export function createContainer(): Container {
+  if (globalContainer === null) {
+    const containerBuilder = new ContainerBuilder();
 
-        // We do not need to synchronize, as JS is single threaded
-        globalContainer = containerBuilder.buildContainer();
-    }
+    // We do not need to synchronize, as JS is single threaded
+    globalContainer = containerBuilder.buildContainer();
+  }
 
-    return globalContainer;
+  return globalContainer;
 }
 
-function createContext() : React.Context<Container>
-{
-    const container = createContainer();
+function createContext(): React.Context<Container> {
+  const container = createContainer();
 
-    return React.createContext(container);
+  return React.createContext(container);
 }
 
 /**
