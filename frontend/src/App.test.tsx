@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import App from './App';
-import RandomNumberGeneratorFake from './services/RandomNumberGeneratorFake';
+import RandomNumberGeneratorFake from '../cypress/fixtures/RandomNumberGeneratorFake';
 
 test('renders hello world with number form DI', () => {
   // Arrange
