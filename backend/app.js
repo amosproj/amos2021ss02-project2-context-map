@@ -40,7 +40,8 @@ function queryCypher(query) {
                     dispArr.push({
                         // specify content that gets displayed in view/index.ejs
                         // right now the locations of the DataCenters are displayed
-                        location: record._fields[0].start.properties.location
+                        name: record.get('name'),
+                        ip: record.get('ip')
                     });
                 });
                 res.render('index', {
