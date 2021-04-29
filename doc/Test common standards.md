@@ -43,7 +43,14 @@ When the code clearly contains a single hot code path, this code path should be 
 ### The test runner
 The test runner is responsible for running tests. We use the [cypress](https://www.cypress.io/) test runner for all code in the repository, for all types of tests.  
 
-**TODO**: Add some short description of how to execute the tests and give a link for further information and instructions. See [issue](https://github.com/amosproj/amos-ss2021-project2-context-map/issues/22).
+To support development, cypress offers a visual test runner. It can be started with
+`npm run cy:open:e2e` for integration tests and `npm run cy:open:unit` for unit tests.
+The specific tests must be selected by hand by the developer.
+
+All available tests can be executed in a single run in the terminal via the commands
+`npm run cy:run:e2e` and `npm run cy:run:unit`.
+
+Keep in mind that the integration tests require a running development server (`npm run start`)
 
 ### Test design
 A test tests the behavior of a single unit (for unit tests) or the integrated set of multiple units that interact with each other (for E2E tests). All types of tests **SHOULD** only test a single condition. They are a necessary part of a source code contribution and are therefore part of the living code in the repository. While they are not part of the productive code, all rules and definitions for productive code also applies to test code. In particular, they should be clean, well documented, consistent with the productive code and maintainable.  
@@ -150,16 +157,6 @@ describe('User', () => {
 ```
 
 The `[Function or acceptance criterion]` component is `calling TryChangeName` as this is the method name of the `User` unit, the `[Action or Parameters]` component is `wrong password` as a description that a wrong argument is specified, the `[DesiredResult]` component is `return false`, because the test condition is that the call to the subjects function return a value of false to indicate failure.
-
-## Running Tests
-To support development, cypress offers a visual test runner. This can be started with
-`npm run cy:open:e2e` for integration tests and `npm run cy:open:unit` for unit tests.
-The specific tests must be selected by hand by the developer.
-
-All available tests can be executed in a single run in the terminal via the commands
-`npm run cy:run:e2e` and `npm run cy:run:unit`.
-
-Keep in mind that the integration tests require a running development server (`npm run start`)
 
 ## Productive code design
 Productive code **MUST** be designed in a way to be test-able. This section lists some best practices that enable this. Please be aware that this list is not complete and use all practices from Domain-driven design (DDD) and software architecture to ensure test-ability.  
