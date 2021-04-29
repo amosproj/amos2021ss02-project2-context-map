@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // example query from neo4j/sandbox that looks for specific DataCenters
-query = 'MATCH network = (dc:DataCenter {name:"DC1",location:"Iceland, Rekjavik"}) -[:CONTAINS]->(:Router) -[:ROUTES]->(:Interface) RETURN network'
+query = 'MATCH network = (dc:DataCenter {name:"DC1",location:"Iceland, Rekjavik"}) -[:CONTAINS]->(r:Router) -[:ROUTES]->(i:Interface) RETURN r.name as name, i.ip as ip'
 queryCypher(query);
 
 app.listen(3000);
