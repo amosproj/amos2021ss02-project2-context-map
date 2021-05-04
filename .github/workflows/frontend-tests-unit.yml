@@ -32,7 +32,6 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with: 
-          command: cypress run-ct
+          command: yarn cypress run-ct
           browser: ${{ matrix.browser }}
           working-directory: ${{ env.working-directory }}
-
