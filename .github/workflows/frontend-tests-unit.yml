@@ -10,17 +10,17 @@ jobs:
         browser: [chrome, firefox]
         include:
           - os: windows-latest
-            browser: edge
             node-version: 10.x
-          - os: windows-latest
             browser: edge
+          - os: windows-latest
             node-version: 12.x
-          - os: windows-latest
             browser: edge
+          - os: windows-latest
             node-version: 14.x
+            browser: edge           
           - os: windows-latest
-            browser: edge
             node-version: 15.x
+            browser: edge
     env:
       working-directory: ./frontend
     steps:
