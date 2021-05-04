@@ -11,7 +11,16 @@ jobs:
         include:
           - os: windows-latest
             browser: edge
-            node-version: ${{ matrix.node-version }}
+            node-version: 10.x
+          - os: windows-latest
+            browser: edge
+            node-version: 12.x
+          - os: windows-latest
+            browser: edge
+            node-version: 14.x
+          - os: windows-latest
+            browser: edge
+            node-version: 15.x
     env:
       working-directory: ./frontend
     steps:
