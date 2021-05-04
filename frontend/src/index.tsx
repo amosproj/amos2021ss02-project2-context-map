@@ -3,10 +3,16 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import {
+  DependencyInjectionContext,
+  createContainer,
+} from './dependency-injection/DependencyInjectionContext';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <DependencyInjectionContext.Provider value={createContainer()}>
+      <App />
+    </DependencyInjectionContext.Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );

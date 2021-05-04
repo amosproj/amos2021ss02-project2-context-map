@@ -6,7 +6,7 @@ This project was created via `npx create-react-app hello-world-app --template ty
 
 ## Available Scripts
 
-In the project directory (`amos-ss2021-project2-context-map/hello-world-app/`), the following commands are helpful:
+In the project directory (`amos-ss2021-project2-context-map/frontend/`), the following commands are helpful:
 
 ### `npm install`
 

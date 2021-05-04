@@ -2,9 +2,13 @@
   "compilerOptions": {
     "target": "es5",
     "lib": [
+      "es6",
       "dom",
       "dom.iterable",
       "esnext"
+    ],
+    "types": [
+      "reflect-metadata"
     ],
     "allowJs": true,
     "skipLibCheck": true,
@@ -18,9 +22,12 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": [
-    "src"
+    "src", 
+    "cypress"  
   ]
 }
