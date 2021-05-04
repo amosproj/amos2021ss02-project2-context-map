@@ -32,6 +32,5 @@ jobs:
           start: npm run start
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
-          command: npm run cy:run:e2e
           browser: ${{ matrix.browser }}
           working-directory: ${{ env.working-directory }}
