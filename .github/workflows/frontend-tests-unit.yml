@@ -7,17 +7,6 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
         node-version: [10.x, 12.x, 14.x]
-        browser: [chrome, firefox]
-        include:
-          - os: windows-latest
-            node-version: 10.x
-            browser: edge
-          - os: windows-latest
-            node-version: 12.x
-            browser: edge
-          - os: windows-latest
-            node-version: 14.x
-            browser: edge
     env:
       working-directory: ./frontend
     steps:
@@ -30,5 +19,4 @@ jobs:
         uses: cypress-io/github-action@v2
         with: 
           command: npm run cy:run:unit
-          browser: ${{ matrix.browser }}
           working-directory: ${{ env.working-directory }}
