@@ -11,6 +11,7 @@ jobs:
         include:
           - os: windows-latest
             browser: edge
+            node-version: ${{ matrix.node-version }}
     env:
       working-directory: ./frontend
     steps:
@@ -24,4 +25,5 @@ jobs:
         with: 
           command: cypress run-ct
           browser: ${{ matrix.browser }}
+          working-directory: ${{ env.working-directory }}
 
