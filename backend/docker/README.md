@@ -22,8 +22,8 @@ The following parameters should be set:
 
 - Environment Variables
 
-  | Variable                       | Value / \<Type> | Required            | Comment                                  |
-      |--------------------------------|-----------------|---------------------|------------------------------------------|
+  | Variable | Value / \<Type> | Required | Comment |
+  |---|---|---|---|
   | NEO4J_ACCEPT_LICENSE_AGREEMENT | yes             | yes                 |                                          |
   | DB_PASSWORD                    | \<string>       | yes                 | Change it!                               |
   | DB_URL                         | \<string>       | iff DB_PATH is empty | This dump-file is downloaded and loaded. |
@@ -53,7 +53,6 @@ You can use that *as a template*, so make sure to copy it to apply your individu
 Currently, there is a problem with relative paths, so e.g. the mount path must be provided as an absolute path.
 
 ## Datasets
-
 Example datasets can be found in the `mount/dumps` directory.
 Currently, there are none created by us and thus the directory is empty.
 Public dumps are listed in the [neo4j-graph-examples](https://github.com/neo4j-graph-examples) repository.
