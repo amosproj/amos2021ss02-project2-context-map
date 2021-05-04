@@ -1,11 +1,10 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Docker Image" type="docker-deploy" factoryName="docker-image" server-name="Docker">
+  <configuration default="false" name="Database" type="docker-deploy" factoryName="docker-image" server-name="Docker">
     <deployment type="docker-image">
       <settings>
         <option name="imageTag" value="neo4j:enterprise" />
-        <option name="command" value="bash /mnt/docker/load-dump.sh" />
+        <option name="command" value="/mnt/amos/load-dump.sh" />
         <option name="containerName" value="neo4j-DB" />
-        <option name="entrypoint" value="" />
         <option name="envVars">
           <list>
             <DockerEnvVarImpl>
@@ -15,6 +14,14 @@
             <DockerEnvVarImpl>
               <option name="name" value="DB_PASSWORD" />
               <option name="value" value="amos" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="DB_URL" />
+              <option name="value" value="https://example.com/example.dump" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="DB_PATH" />
+              <option name="value" value="/mnt/amos/dumps/example.dump" />
             </DockerEnvVarImpl>
           </list>
         </option>
@@ -30,16 +37,12 @@
             </DockerPortBindingImpl>
           </list>
         </option>
-        <option name="commandLineOptions" value="" />
         <option name="volumeBindings">
           <list>
             <DockerVolumeBindingImpl>
-              <option name="containerPath" value="/mnt/docker" />
-              <option name="hostPath" value="C:\Users\thorb\IdeaProjects\amos-ss2021-project2-context-map\backend\docker" />
-            </DockerVolumeBindingImpl>
-            <DockerVolumeBindingImpl>
-              <option name="containerPath" value="/mnt/dumps" />
-              <option name="hostPath" value="C:\Users\thorb\IdeaProjects\amos-ss2021-project2-context-map\backend\dumps" />
+              <option name="containerPath" value="/mnt/amos" />
+              <option name="hostPath" value="/path/to/backend/docker/mount" />
+              <option name="readOnly" value="true" />
             </DockerVolumeBindingImpl>
           </list>
         </option>
