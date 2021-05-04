@@ -7,7 +7,9 @@
       "dom.iterable",
       "esnext"
     ],
-    "types": ["reflect-metadata"],
+    "types": [
+      "reflect-metadata"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -25,6 +27,7 @@
     "emitDecoratorMetadata": true
   },
   "include": [
-    "src"
+    "src", 
+    "cypress"  
   ]
 }

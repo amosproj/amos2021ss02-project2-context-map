@@ -1,5 +1,5 @@
 import { interfaces } from 'inversify';
-import { useContainer } from './useContainer';
+import useContainer from './useContainer';
 
 /**
  * A hook that accesses a service specified inside of a react component.
@@ -10,7 +10,7 @@ import { useContainer } from './useContainer';
  */
 export default function useService<T>(
   serviceIdentifier: interfaces.ServiceIdentifier<T>,
-  existing?: T
+  existing?: T | null | undefined
 ): T {
   // We have to fetch from the container unconditionally, because this is a requirement of react hooks.
   // Throw away the value, if we do not need it.

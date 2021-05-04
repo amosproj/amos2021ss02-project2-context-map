@@ -1,5 +1,5 @@
 import { Container, interfaces } from 'inversify';
-import { configureServices } from '../configureServices';
+import configureServices from '../configureServices';
 
 export default class ContainerBuilder {
   private readonly options: interfaces.ContainerOptions;

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Container } from 'inversify';
-import { ContainerBuilder } from './ContainerBuilder';
+import ContainerBuilder from './ContainerBuilder';
 
 let globalContainer: Container | null = null;
 
-export function createContainer() {
+export function createContainer(): Container {
   if (globalContainer === null) {
     const containerBuilder = new ContainerBuilder();
 
