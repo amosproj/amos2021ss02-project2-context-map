@@ -26,7 +26,7 @@ module.exports = app;
 function queryCypher(query) {
     const neo4j = require('neo4j-driver');
 
-    const driver = neo4j.driver('bolt://34.237.218.15:7687', neo4j.auth.basic('neo4j', 'winch-stub-bases'));
+    const driver = neo4j.driver('http://localhost:7474/', neo4j.auth.basic('neo4j', 'test'));
     const session = driver.session();
 
     app.get('/', function (req, res) {
