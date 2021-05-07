@@ -1,4 +1,5 @@
 import React from 'react';
+import Button from '@material-ui/core/Button';
 import logo from './logo.svg';
 import './App.css';
 import RandomNumberGenerator from './services/RandomNumberGenerator';
@@ -18,7 +19,9 @@ function App(props: AppProps = {}) {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello World {rnd.next(2, 3).toPrecision(3)}</p>
+        <Button variant="contained" color="primary">
+          Hello World {rnd.next(2, 3).toPrecision(3)}
+        </Button>
       </header>
     </div>
   );
