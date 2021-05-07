@@ -1,26 +1,27 @@
 import React from 'react';
-import logo from './logo.svg';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import './App.css';
-import RandomNumberGenerator from './services/RandomNumberGenerator';
-import useService from './dependency-injection/useService';
+import Home from './Home';
+import Layout from './Layout';
+import NotFound from './NotFound';
 
-type AppProps = {
-  // TODO: Is there a better way then suppressing this? See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/24
-  // eslint-disable-next-line react/require-default-props
-  rnd?: RandomNumberGenerator;
-};
-
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-function App(props: AppProps = {}) {
-  const rnd = useService(RandomNumberGenerator, props.rnd);
-
+function App(): JSX.Element {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello World {rnd.next(2, 3).toPrecision(3)}</p>
-      </header>
-    </div>
+    <Layout>
+      <Router>
+        <Switch>
+          <Route exact path="/">
+            <Home />
+          </Route>
+          <Route path="/home">
+            <Home />
+          </Route>
+          <Route path="*">
+            <NotFound />
+          </Route>
+        </Switch>
+      </Router>
+    </Layout>
   );
 }
 
