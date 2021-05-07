@@ -15,8 +15,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - run: npm install -g yarn
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with: 
-          command: npm run cy:run:unit
+          command: yarn run cy:run:unit
           working-directory: ${{ env.working-directory }}

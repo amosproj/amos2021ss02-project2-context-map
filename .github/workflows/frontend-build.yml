@@ -15,7 +15,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm i
+      - run: npm install -g yarn
+      - run: yarn i
         working-directory: ${{ env.working-directory }}
-      - run: npm run build
+      - run: yarn run build
         working-directory: ${{ env.working-directory }}

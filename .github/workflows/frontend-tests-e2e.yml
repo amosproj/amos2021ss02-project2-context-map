@@ -26,10 +26,11 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - run: npm install -g yarn
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with: 
-          start: npm run start
+          start: yarn run start
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
           browser: ${{ matrix.browser }}
