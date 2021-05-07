@@ -14,6 +14,11 @@ type AppProps = {
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 function App(props: AppProps = {}) {
   const rnd = useService(RandomNumberGenerator, props.rnd);
+
+  // This is here to test code sharing. Remove me when everything is working pls...
+  const sharedThing = new SharedClass();
+  sharedThing.doNothing();
+
   return (
     <div className="App">
       <header className="App-header">
