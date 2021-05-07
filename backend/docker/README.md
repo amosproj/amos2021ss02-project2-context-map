@@ -12,7 +12,7 @@ a special configuration to load dump files.
 docker
 └─ mount // This folder is be mounted on the container
     ├─ dumps // This folder can contain dump files that can be loaded
-    │   └─ example.dump  
+    │   └─ northwind.dump  
     └─ load-dump.sh // This script is the entrypoint in the container  
 ```
 
@@ -54,5 +54,12 @@ Currently, there is a problem with relative paths, so e.g. the mount path must b
 
 ## Datasets
 Example datasets can be found in the `mount/dumps` directory.
-Currently, there are none created by us and thus the directory is empty.
+Currently there is one dataset, the [northwind dump](#northwind-dump).  
 Public dumps are listed in the [neo4j-graph-examples](https://github.com/neo4j-graph-examples) repository.
+
+### Northwind dump
+The Northwind  dump consists of the 5 nodes `Orders`, `Products`, `Suppliers`, `Categories` and `Employees`. Their relationships are illustrated below.
+![northwind-graph](northwind-graph.png)
+
+Properties of the nodes can be seen in the following ER-diagram.
+![northwind-er-diagram](northwind-ER-diagram.png)
