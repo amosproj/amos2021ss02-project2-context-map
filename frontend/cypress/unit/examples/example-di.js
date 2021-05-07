@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import App from '../../../src/App';
+import Home from '../../../src/Home';
 import {
   createContainer,
   DependencyInjectionContext,
@@ -8,7 +8,7 @@ import {
 import RandomNumberGenerator from '../../../src/services/RandomNumberGenerator';
 import RandomNumberGeneratorFake from '../../fixtures/RandomNumberGeneratorFake';
 
-describe('App', () => {
+describe('Home', () => {
   it('Prints a fake random number', () => {
     // If the service 'RandomNumberGeneratorFake' is requested, return a fake implementation
     const container = createContainer();
@@ -19,7 +19,7 @@ describe('App', () => {
     // The 'fake' container must be provided in the di-context-provider
     mount(
       <DependencyInjectionContext.Provider value={container}>
-        <App />
+        <Home />
       </DependencyInjectionContext.Provider>
     );
 
