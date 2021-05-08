@@ -1,9 +1,10 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { Node } from './entities/Node';
 import { Edge } from './entities/Edge';
-import { DetailedEdge } from './entities/DetailedEdge';
 import { ParseIntArrayPipe } from './pipes/ParseIntArrayPipe';
 import { AppService } from './app.service';
+import { LimitQuery } from './entities/queries/LimitQuery';
+import { QueryResult } from './entities/queries/QueryResult';
 
 /**
  * Main App Controller.
@@ -16,38 +17,30 @@ export class AppController {
   /**
    * Returns a list the ids of all nodes
    */
-  @Get('getAllNodes')
-  async getAllNodes(): Promise<number[]> {
-    return this.appService.getAllNodes();
+  @Post('queryAll')
+  async queryAll(@Body() query?: LimitQuery): Promise<QueryResult> {
+    return this.appService.queryAll(query);
   }
 
   /**
    * Returns list of Nodes
    */
-  @Get('getNodeDetails')
-  async getNodeDetails(
+  @Get('getNodesById')
+  async getNodesById(
     @Query('ids', ParseIntArrayPipe) ids: number[],
   ): Promise<Node[]> {
-    return this.appService.getNodeDetails(ids);
-  }
-
-  /**
-   * Returns a list the ids of all edges
-   */
-  @Get('getAllEdges')
-  async getAllEdges(): Promise<Edge[]> {
-    return this.appService.getAllEdges();
+    return this.appService.getNodesById(ids);
   }
 
   /**
    * Returns list of detailed edges
    *
-   * @example call it with /getEdgeDetails?ids=1&ids=2
+   * @example call it with /getEdgesById?ids=1&ids=2
    */
-  @Get('getEdgeDetails')
-  async getEdgeDetails(
+  @Get('getEdgesById')
+  async getEdgesById(
     @Query('ids', ParseIntArrayPipe) ids: number[],
-  ): Promise<DetailedEdge[]> {
-    return this.appService.getEdgeDetails(ids);
+  ): Promise<Edge[]> {
+    return this.appService.getEdgesById(ids);
   }
 }

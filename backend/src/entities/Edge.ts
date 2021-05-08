@@ -1,14 +1,12 @@
+import { EdgeDescriptor } from './EdgeDescriptor';
+import { Property } from './Property';
+
 /**
- * Represents an edge / a relations of a graph.
+ * Represents an edge of a graph with additional information.
  */
-export interface Edge {
-  id: number;
-  /**
-   * ID of the start node
-   */
-  from: number;
-  /**
-   * ID of the end node
-   */
-  to: number;
+export interface Edge extends EdgeDescriptor {
+  type: string;
+  properties: {
+    [key: string]: Property;
+  };
 }
