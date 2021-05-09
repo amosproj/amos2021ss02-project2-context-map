@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import Home from '../../../src/Home';
+import Home from '../../../src/home/Home';
 import {
   createContainer,
   DependencyInjectionContext,

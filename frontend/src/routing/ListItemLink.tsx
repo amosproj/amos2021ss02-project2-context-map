@@ -12,11 +12,12 @@ interface ListItemLinkProps {
   to: string;
 }
 
-function ListItemLink(props: ListItemLinkProps) {
+function ListItemLink(props: ListItemLinkProps): JSX.Element {
   const { icon, primary, to } = props;
 
   const renderLink = React.useMemo(
     () =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       React.forwardRef<any, Omit<LinkProps, 'to'>>((itemProps, ref) => (
         <NavLink
           to={to}
