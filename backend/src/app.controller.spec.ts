@@ -1,23 +1,26 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
 
-describe('AppController', () => {
+describe("AppController", () => {
   let appController: AppController;
+  let appService: AppService;
 
   beforeEach(async () => {
+
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [AppService],
+      providers: [AppService]
     }).compile();
 
     appController = app.get<AppController>(AppController);
+    appService = app.get<AppService>(AppService);
   });
 
   // TODO Create tests
-  describe('root', () => {
-    it('should return list of edge-ids!', () => {
-      expect(appController.getAllEdges()).toBe('Fail');
+  describe("root", () => {
+    it("should return list of nodes corresponding to ids!", async () => {
+
     });
   });
 });
