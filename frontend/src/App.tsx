@@ -1,6 +1,6 @@
 import React from 'react';
 import logo from './logo.svg';
-import './App.css';
+import './App.scss';
 import RandomNumberGenerator from './services/RandomNumberGenerator';
 import useService from './dependency-injection/useService';
 import SharedClass from './shared/SharedClass';
@@ -23,7 +23,9 @@ function App(props: AppProps = {}) {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello World {rnd.next(2, 3).toPrecision(3)}</p>
+        <p className="App-hello-world-text">
+          Hello World {rnd.next(2, 3).toPrecision(3)}
+        </p>
       </header>
     </div>
   );
