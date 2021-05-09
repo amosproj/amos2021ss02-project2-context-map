@@ -1,27 +1,36 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from 'react-router-dom';
 import './App.css';
 import Home from './Home';
 import Layout from './Layout';
 import NotFound from './NotFound';
+import Visualization from './Visualization';
 
 function App(): JSX.Element {
   return (
-    <Layout>
-      <Router>
+    <Router>
+      <Layout>
         <Switch>
           <Route exact path="/">
-            <Home />
+            <Redirect to="/home" />
           </Route>
           <Route path="/home">
             <Home />
+          </Route>
+          <Route path="/visualization">
+            <Visualization />
           </Route>
           <Route path="*">
             <NotFound />
           </Route>
         </Switch>
-      </Router>
-    </Layout>
+      </Layout>
+    </Router>
   );
 }
 
