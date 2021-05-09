@@ -17,15 +17,16 @@ const routes: RouteDefinition[] = [
   {
     path: '/visualization',
     label: 'Visualization',
+    exact: true,
     content: () => <Visualization />,
     tabs: [
       {
-        path: '/graph',
+        path: '/visualization/graph',
         label: 'Graph',
         content: () => <Graph />,
       },
       {
-        path: '/schema',
+        path: '/visualization/schema',
         label: 'Schema',
         content: () => <Schema />,
       },
