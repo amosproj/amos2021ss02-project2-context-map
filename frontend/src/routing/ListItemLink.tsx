@@ -5,9 +5,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
 interface ListItemLinkProps {
-  // TODO: Is there a better way then suppressing this? See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/24
-  // eslint-disable-next-line react/require-default-props
-  icon?: React.ReactElement;
+  icon?: React.ReactElement | undefined;
   primary: string;
   to: string;
 }
@@ -40,5 +38,9 @@ function ListItemLink(props: ListItemLinkProps): JSX.Element {
     </li>
   );
 }
+
+ListItemLink.defaultProps = {
+  icon: undefined,
+};
 
 export default ListItemLink;
