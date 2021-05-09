@@ -1,4 +1,6 @@
 import { Container } from 'inversify';
+import { FakeDataQueryService } from './services/FakeDataQueryService';
+import QueryService from './services/QueryService';
 import RandomNumberGenerator from './services/RandomNumberGenerator';
 import RandomNumberGeneratorImpl from './services/RandomNumberGeneratorImpl';
 
@@ -9,9 +11,9 @@ import RandomNumberGeneratorImpl from './services/RandomNumberGeneratorImpl';
  */
 export default function configureServices(container: Container): void {
   // A service used for testing the DI setup
-  container
-    .bind<RandomNumberGenerator>(RandomNumberGenerator)
-    .to(RandomNumberGeneratorImpl);
+  container.bind(RandomNumberGenerator).to(RandomNumberGeneratorImpl);
+
+  container.bind(QueryService).to(FakeDataQueryService);
 
   // Add your services here...
 }

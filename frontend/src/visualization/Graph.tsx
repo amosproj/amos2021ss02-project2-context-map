@@ -1,10 +1,154 @@
 import React from 'react';
+import VisGraph, { GraphData } from 'react-graph-vis';
+// TODO: What's wrong here???
+// eslint-disable-next-line import/no-unresolved
+import * as vis from 'vis';
+import { AsyncProps, useAsync } from 'react-async';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Button from '@material-ui/core/Button';
+import CloseIcon from '@material-ui/icons/Close';
+import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import useService from '../dependency-injection/useService';
+import { EdgeDescriptor } from '../entities/EdgeDescriptor';
+import { NodeDescriptor } from '../entities/NodeDescriptor';
+import { QueryResult } from '../entities/queries/QueryResult';
+import QueryService from '../services/QueryService';
+import {
+  CancellationToken,
+  CancellationTokenSource,
+} from '../utils/CancellationToken';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    backdrop: {
+      zIndex: theme.zIndex.drawer + 1,
+      color: '#fff',
+    },
+    backdropContent: {
+      marginTop: theme.spacing(3),
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+    },
+    backdropCancel: {
+      marginTop: theme.spacing(3),
+    },
+  })
+);
+
+function convertNode(node: NodeDescriptor): vis.Node {
+  return {
+    id: node.id,
+    label: node.id.toString(),
+    // Advanced stuff, like styling nodes with different labels differently...
+  };
+}
+
+function convertNodes(nodes: NodeDescriptor[]): vis.Node[] {
+  return nodes.map((node) => convertNode(node));
+}
+
+function convertEdge(edge: EdgeDescriptor): vis.Edge {
+  return {
+    id: edge.id,
+    from: edge.from,
+    to: edge.to,
+    // Advanced stuff, like styling nodes with different labels differently...
+  };
+}
+
+function convertEdges(edges: EdgeDescriptor[]): vis.Edge[] {
+  return edges.map((edge) => convertEdge(edge));
+}
+
+function convertQueryResult(queryResult: QueryResult): GraphData {
+  return {
+    nodes: convertNodes(queryResult.nodes ?? []),
+    edges: convertEdges(queryResult.edges ?? []),
+  };
+}
+
+const options = {
+  layout: {
+    hierarchical: true,
+  },
+  edges: {
+    color: '#000000',
+  },
+  height: '500px',
+};
+
+const events = {
+  select(event: any) {
+    const { nodes, edges } = event;
+  },
+};
+
+function executeQuery(props: AsyncProps<QueryResult>): Promise<QueryResult> {
+  const queryService = props.queryService as QueryService;
+  const cancellation = props.cancellation as CancellationToken;
+  return queryService.queryAll(undefined, cancellation);
+}
 
 function Graph(): JSX.Element {
+  const classes = useStyles();
+  const queryService = useService(QueryService, null);
+  // The component state that contains the cancellation token source used to cancel the load operation.
+  const [loadingCancellationSource, _] = React.useState(
+    new CancellationTokenSource()
+  );
+  const { data, error, isLoading } = useAsync({
+    promiseFn: executeQuery,
+    queryService,
+    cancellation: loadingCancellationSource.token,
+  });
+
+  const cancelFuckingLongLoading = () => {
+    loadingCancellationSource.cancel();
+  };
+
+  if (isLoading) {
+    return (
+      <Backdrop className={classes.backdrop} open>
+        <div className={classes.backdropContent}>
+          <CircularProgress color="inherit" />
+          <Button
+            variant="outlined"
+            color="default"
+            onClick={cancelFuckingLongLoading}
+            className={classes.backdropCancel}
+          >
+            <CloseIcon />
+            Cancel
+          </Button>
+        </div>
+      </Backdrop>
+    );
+  }
+
+  if (error) {
+    return <div>Something went wrong: {error.message}</div>;
+  }
+
+  if (!data) {
+    return <div>Something went wrong</div>;
+  }
+
+  const graphData = convertQueryResult(data);
+
   return (
     <>
-      <h1>Graph</h1>
-      <p>TODO: Implement me, pls</p>
+      <VisGraph
+        graph={graphData}
+        options={options}
+        events={events}
+        // TODO: Remove me
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        getNetwork={(network) => {
+          //  if you want access to vis.js network api you can set the state in a parent component using this property
+        }}
+      />
     </>
   );
 }
