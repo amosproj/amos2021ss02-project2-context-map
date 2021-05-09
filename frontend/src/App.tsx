@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.scss';
 import RandomNumberGenerator from './services/RandomNumberGenerator';
 import useService from './dependency-injection/useService';
+import SharedClass from './shared/SharedClass';
 
 type AppProps = {
   // TODO: Is there a better way then suppressing this? See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/24
@@ -13,6 +14,10 @@ type AppProps = {
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 function App(props: AppProps = {}) {
   const rnd = useService(RandomNumberGenerator, props.rnd);
+
+  // This is here to test code sharing. Remove me when everything is working pls...
+  const sharedThing = new SharedClass();
+  sharedThing.doNothing();
 
   return (
     <div className="App">

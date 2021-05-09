@@ -4,6 +4,12 @@
   "private": true,
   "scripts": {
     "start": "react-scripts start",
+    "postinstall": "run-script-os",
+    "postinstall:windows": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ..\\build\\frontend-prebuild.ps1",
+    "postinstall:default": "../build/frontend-prebuild.sh",
+    "prebuild": "run-script-os",
+    "prebuild:windows": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ..\\build\\frontend-prebuild.ps1",
+    "prebuild:default": "../build/frontend-prebuild.sh",
     "build": "react-scripts build",
     "test": "npm run cy:run:e2e && npm run cy:run:unit",
     "eject": "react-scripts eject",
@@ -54,7 +60,8 @@
     "stylelint-config-airbnb": "^0.0.0",
     "stylelint-order": "^4.1.0",
     "stylelint-scss": "^3.19.0",
-    "stylelint-webpack-plugin": "^2.1.1"
+    "stylelint-webpack-plugin": "^2.1.1",
+    "run-script-os": "^1.1.6"
   },
   "browserslist": {
     "production": [
