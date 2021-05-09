@@ -29,7 +29,7 @@ describe("AppController (e2e)", () => {
     await app.init();
   });
 
-  it("/GET queryAll", async () => {
+  it("/POST queryAll", async () => {
     const expectedFromService = await appService.queryAll(TestingDumpData.limitQuery);
 
     const expectedResult = {
