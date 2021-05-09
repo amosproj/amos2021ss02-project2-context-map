@@ -21,10 +21,12 @@ function ListItemLink(props: ListItemLinkProps): JSX.Element {
           to={to}
           ref={ref}
           activeClassName="Mui-selected"
-          // TODO: Fix this, so that the rule does not have to be disabled
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          {...itemProps}
-        />
+          className={itemProps.className}
+          role={itemProps.role}
+          tabIndex={itemProps.tabIndex}
+        >
+          {itemProps.children}
+        </NavLink>
       )),
     [to]
   );
