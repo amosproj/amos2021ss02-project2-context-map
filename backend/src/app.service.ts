@@ -60,6 +60,7 @@ export class AppService {
       `
       MATCH (from)-[e]-(to) 
       RETURN ID(e) as id, ID(from) as from, ID(to) as to
+      ORDER BY id, from
       ${query?.limit?.edges ? 'LIMIT toInteger($limitEdges)' : ''}
     `,
       {
@@ -80,6 +81,7 @@ export class AppService {
       MATCH (from)-[e]-(to) 
       WHERE ID(e) in $ids
       RETURN ID(e) as id, ID(from) as from, ID(to) as to, properties(e) as properties, type(e) as type
+      ORDER BY id, from
     `,
       { ids },
     );
