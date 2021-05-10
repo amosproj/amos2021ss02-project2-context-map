@@ -1,7 +1,8 @@
 import { Box, Container, Grid } from '@material-ui/core';
 import React from 'react';
 import routes from '../routing/routes';
-import DashboardCard from './DashboardCard';
+import DashboardCard from './dashboard-card/DashboardCard';
+import createCard from './dashboard-card/cardContents';
 
 function Visualization(): JSX.Element {
   const { tabs } = routes.Visualization;
@@ -10,6 +11,9 @@ function Visualization(): JSX.Element {
     throw new Error('Cannot read Visualization tabs');
     return <></>;
   }
+
+  const cards = tabs.map((tab) => createCard(tab));
+
   return (
     <>
       <h1>Visualization Dashboard</h1>
@@ -17,16 +21,16 @@ function Visualization(): JSX.Element {
         <Container maxWidth={false}>
           <Box>
             <Grid container spacing={3}>
-              {tabs.map((tab) => (
-                <Grid item key={tab.label} lg={4} md={6} xs={12}>
-                  <a href={tab.path}>
-                    <DashboardCard
-                      path={tab.path}
-                      label={tab.label}
-                      content={tab.content}
-                      exact={tab.exact}
-                    />
-                  </a>
+              {cards.map((card) => (
+                <Grid item key={card.label} lg={4} md={6} xs={12}>
+                  <DashboardCard
+                    label={card.label}
+                    path={card.path}
+                    content={card.content}
+                    description={card.description}
+                    subLabel={card.subLabel}
+                    icon={card.icon}
+                  />
                 </Grid>
               ))}
             </Grid>
