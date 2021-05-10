@@ -6,11 +6,15 @@ import { Node } from '../../entities/Node';
 import { Edge } from '../../entities/Edge';
 import * as request from 'supertest';
 import {
-  queryAllDummies,
-  getNodesByIdDummies,
   getEdgesByIdDummies,
-} from '../../fixtures/testingDumpData';
-import { INestApplication } from '@nestjs/common';
+  getNodesByIdDummies,
+  queryAllDummies,
+} from '../fixtures/testingDumpData';
+import { FactoryProvider, INestApplication } from '@nestjs/common';
+
+const notImplemented = () => {
+  throw 'Not implemented';
+};
 
 describe('AppController', () => {
   let app: INestApplication;
@@ -19,12 +23,12 @@ describe('AppController', () => {
 
   beforeEach(async () => {
     // Global setup
-    const AppServiceProvider = {
+    const AppServiceProvider: FactoryProvider = {
       provide: AppService,
       useFactory: () => ({
-        queryAll: jest.fn(),
-        getNodesById: jest.fn(),
-        getEdgesById: jest.fn(),
+        queryAll: jest.fn(notImplemented),
+        getNodesById: jest.fn(notImplemented),
+        getEdgesById: jest.fn(notImplemented),
       }),
     };
 
@@ -45,21 +49,38 @@ describe('AppController', () => {
   });
 
   describe('queryAll', () => {
-    it('should POST edge and node ids (and from and to for edges) with limit', async () => {
+    it('should return QueryResult with limits from the LimitQuery-Body ', async () => {
       // Arrange
       const result: QueryResult = queryAllDummies.queryResult;
 
-      jest
+      // Mock
+      const queryAll = jest
         .spyOn(appService, 'queryAll')
         .mockImplementation(() => Promise.resolve(result));
 
-      // Act
-      const respond: request.Test = request(app.getHttpServer())
+      // Act & Verify
+      await request(app.getHttpServer())
+        // Query that address
         .post('/queryAll')
-        .send(queryAllDummies.limitQuery);
+        // Send this in the body
+        .send(queryAllDummies.limitQuery)
+        // Expect this HttpCode and result
+        .expect(200, result);
 
-      // Assert
-      return respond.expect(201, result);
+      // Mock must have been called with the QueryResult sent in the body
+      expect(queryAll).toBeCalledWith(queryAllDummies.limitQuery);
+    });
+
+    it('should not fail without body', async () => {
+      // Mock
+      const queryAll = jest
+        .spyOn(appService, 'queryAll')
+        .mockImplementation(() => Promise.resolve(null));
+
+      // Act & Verify
+      await request(app.getHttpServer()).post('/queryAll').expect(200);
+
+      expect(queryAll).toBeCalled();
     });
   });
 
@@ -68,17 +89,17 @@ describe('AppController', () => {
       // Arrange
       const result: Node[] = getNodesByIdDummies.nodes;
 
-      jest
+      const getNodesById = jest
         .spyOn(appService, 'getNodesById')
         .mockImplementation(() => Promise.resolve(result));
 
-      // Act
-      const respond: request.Test = request(app.getHttpServer()).get(
-        '/getNodesById?ids=1&ids=2&ids=3',
-      );
+      // Act & Assert
+      await request(app.getHttpServer())
+        .get('/getNodesById?ids=1&ids=2&ids=3')
+        .expect(200, result);
 
-      // Assert
-      return respond.expect(200, result);
+      // Assert mock called with parameter from the query params
+      expect(getNodesById).toBeCalledWith([1, 2, 3]);
     });
   });
 
@@ -87,17 +108,16 @@ describe('AppController', () => {
       // Arrange
       const result: Edge[] = getEdgesByIdDummies.edges;
 
-      jest
+      const getEdgesById = jest
         .spyOn(appService, 'getEdgesById')
         .mockImplementation(() => Promise.resolve(result));
 
-      // Act
-      const respond: request.Test = request(app.getHttpServer()).get(
-        '/getEdgesById?ids=1&ids=2',
-      );
+      // Act & Assert
+      await request(app.getHttpServer())
+        .get('/getEdgesById?ids=1&ids=2')
+        .expect(200, result);
 
-      // Assert
-      return respond.expect(200, result);
+      expect(getEdgesById).toBeCalledWith([1, 2]);
     });
   });
 });

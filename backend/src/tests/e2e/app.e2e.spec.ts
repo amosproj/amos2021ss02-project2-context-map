@@ -4,10 +4,10 @@ import { AppService } from '../../app.service';
 import { Node } from '../../entities/Node';
 import { Edge } from '../../entities/Edge';
 import {
-  queryAllDummies,
-  getNodesByIdDummies,
   getEdgesByIdDummies,
-} from '../../fixtures/testingDumpData';
+  getNodesByIdDummies,
+  queryAllDummies,
+} from '../fixtures/testingDumpData';
 import { QueryResult } from '../../entities/queries/QueryResult';
 import { KmapNeo4jModule } from '../../config/neo4j/KmapNeo4jModule';
 
@@ -24,41 +24,57 @@ describe('AppService (e2e)', () => {
     appService = await mockAppModule.resolve<AppService>(AppService);
   });
 
-  it('should return edge and node ids (and from and to for edges)', async () => {
-    // Arrange
-    const expectedResult = queryAllDummies.queryResult;
+  describe('Method queryAll', () => {
+    it('should return edge and node ids (and from and to for edges)', async () => {
+      // Arrange
+      const expectedResult = queryAllDummies.queryResult;
 
-    // Act
-    const actualResult: QueryResult = await appService.queryAll(
-      queryAllDummies.limitQuery,
-    );
+      // Act
+      const actualResult: QueryResult = await appService.queryAll(
+        queryAllDummies.limitQuery,
+      );
 
-    // Assert
-    expect(actualResult).toEqual(expectedResult);
+      // Assert
+      expect(actualResult).toEqual(expectedResult);
+    });
+
+    it('should return no nodes when called with nodes limited to 0', async () => {
+      const result = await appService.queryAll({ limit: { nodes: 0 } });
+      expect(result.nodes.length).toEqual(0);
+    });
+
+    it('should return no edges when called with edges limited to 0', async () => {
+      const result = await appService.queryAll({ limit: { edges: 0 } });
+      expect(result.edges.length).toEqual(0);
+    });
   });
 
-  it('should return nodes corresponding to ids', async () => {
-    // Arrange
-    const expectedNodes: Node[] = getNodesByIdDummies.nodes;
+  describe('Method getNodesById', () => {
+    it('should return nodes corresponding to ids', async () => {
+      // Arrange
+      const expectedNodes: Node[] = getNodesByIdDummies.nodes;
 
-    // Act
-    const actualNodes: Node[] = await appService.getNodesById(
-      getNodesByIdDummies.ids,
-    );
+      // Act
+      const actualNodes: Node[] = await appService.getNodesById(
+        getNodesByIdDummies.ids,
+      );
 
-    // Assert
-    expect(actualNodes).toEqual(expectedNodes);
+      // Assert
+      expect(actualNodes).toEqual(expectedNodes);
+    });
   });
 
-  it('should return edges corresponding to ids', async () => {
-    const expectedEdges: Edge[] = getEdgesByIdDummies.edges;
+  describe('Method getEdgesById', () => {
+    it('should return edges corresponding to ids', async () => {
+      const expectedEdges: Edge[] = getEdgesByIdDummies.edges;
 
-    // Act
-    const actualEdges: Edge[] = await appService.getEdgesById(
-      getEdgesByIdDummies.ids,
-    );
+      // Act
+      const actualEdges: Edge[] = await appService.getEdgesById(
+        getEdgesByIdDummies.ids,
+      );
 
-    // Assert
-    expect(actualEdges).toEqual(expectedEdges);
+      // Assert
+      expect(actualEdges).toEqual(expectedEdges);
+    });
   });
 });
