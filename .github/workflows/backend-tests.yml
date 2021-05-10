@@ -15,6 +15,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - run: chmod +x ${GITHUB_WORKSPACE}/backend/docker/mount/load-dump.sh
       - run: |
           docker run -p 7474:7474 -p 7687:7687 \
           	-v ${GITHUB_WORKSPACE}/backend/docker/mount:/mnt/amos \
@@ -22,10 +23,18 @@ jobs:
           	--env DB_PASSWORD=amos \
           	--env DB_PATH=/mnt/amos/dumps/northwind.dump \
           	--name neo4j-DB neo4j:enterprise \
-          	/bin/bash -c "chmod +x /mnt/amos/load-dump.sh; /mnt/amos/load-dump.sh"
+          	/mnt/amos/load-dump.sh
       - run: npm install -g yarn
       - run: yarn install --frozen-lockfile
         working-directory: ${{ env.working-directory }}
       - run: npx wait-on http://localhost:7474
       - run: yarn run test
         working-directory: ${{ env.working-directory }}
+        env:
+          NEO4J_SCHEME: neo4j
+          NEO4J_HOST: localhost
+          NEO4J_PORT: 7687
+          NEO4J_USERNAME: neo4j
+          NEO4J_PASSWORD: amos
+          NEO4J_DATABASE: neo4j
+          CORS_URL: http://localhost:3000
