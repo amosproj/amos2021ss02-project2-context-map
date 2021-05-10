@@ -7,16 +7,16 @@ async function bootstrap() {
 
   const corsUrl = process.env.CORS_URL;
 
-  await app.listen(8080).then(() => {
-    if (corsUrl) {
-      app.enableCors({
-        origin: corsUrl,
-      });
-      Logger.log(`Cors enabled for ${corsUrl}`);
-    } else {
-      Logger.log('Cors not enabled');
-    }
-  });
+  if (corsUrl) {
+    app.enableCors({
+      origin: corsUrl,
+    });
+    Logger.log(`Cors enabled for ${corsUrl}`);
+  } else {
+    Logger.log('Cors not enabled');
+  }
+
+  await app.listen(8080);
 }
 
 bootstrap();
