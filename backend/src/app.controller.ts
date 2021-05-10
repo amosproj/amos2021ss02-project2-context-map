@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import { Node } from './entities/Node';
 import { Edge } from './entities/Edge';
 import { ParseIntArrayPipe } from './pipes/ParseIntArrayPipe';
@@ -18,6 +18,7 @@ export class AppController {
    * Returns a list the ids of all nodes
    */
   @Post('queryAll')
+  @HttpCode(200)
   async queryAll(@Body() query?: LimitQuery): Promise<QueryResult> {
     return this.appService.queryAll(query);
   }

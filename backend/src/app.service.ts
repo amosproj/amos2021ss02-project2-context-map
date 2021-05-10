@@ -13,8 +13,8 @@ export class AppService {
 
   async queryAll(query?: LimitQuery): Promise<QueryResult> {
     return {
-      edges: await this.getAllEdges(query),
-      nodes: await this.getAllNodes(query),
+      edges: query?.limit?.edges === 0 ? [] : await this.getAllEdges(query),
+      nodes: query?.limit?.nodes === 0 ? [] : await this.getAllNodes(query),
     };
   }
 
@@ -52,9 +52,6 @@ export class AppService {
    * Returns a list the ids of all edges
    */
   private async getAllEdges(query?: LimitQuery): Promise<EdgeDescriptor[]> {
-    console.log(query, {
-      limitEdges: query?.limit?.edges,
-    });
     // toInteger required, since apparently it converts int to double...
     const result = await this.neo4jService.read(
       `
