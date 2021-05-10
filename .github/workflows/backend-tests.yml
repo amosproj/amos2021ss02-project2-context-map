@@ -13,7 +13,7 @@ jobs:
       neo4j-database:
         image: neo4j:enterprise
         volumes:
-          - ${{ env.GITHUB_WORKSPACE }}/backend/docker/mount:/mnt/amos
+          - ${GITHUB_WORKSPACE}/backend/docker/mount:/mnt/amos
         ports:
           - 7474:7474
           - 7687:7687
@@ -33,6 +33,3 @@ jobs:
         working-directory: ${{ env.working-directory }}
       - run: yarn run test
         working-directory: ${{ env.working-directory }}
-        with:
-          wait-on: 'http://localhost:7474/'
-          wait-on-timeout: 60
