@@ -9,4 +9,5 @@ export const configuration = () => ({
   'neo4j.username': process.env.NEO4J_USERNAME,
   'neo4j.password': process.env.NEO4J_PASSWORD,
   'neo4j.database': process.env.NEO4J_DATABASE,
+  'cors.url': process.env.CORS_URL,
 });
