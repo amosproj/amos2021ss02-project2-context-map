@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../../app.module';
-import { AppService } from '../../app.service';
-import { Node } from '../../entities/Node';
-import { Edge } from '../../entities/Edge';
+import { AppModule } from '../../src/app.module';
+import { AppService } from '../../src/app.service';
+import { Node } from '../../src/entities/Node';
+import { Edge } from '../../src/entities/Edge';
 import {
   getEdgesByIdDummies,
   getNodesByIdDummies,
   queryAllDummies,
 } from '../fixtures/testingDumpData';
-import { QueryResult } from '../../entities/queries/QueryResult';
-import { KmapNeo4jModule } from '../../config/neo4j/KmapNeo4jModule';
+import { QueryResult } from '../../src/entities/queries/QueryResult';
+import { KmapNeo4jModule } from '../../src/config/neo4j/KmapNeo4jModule';
 
 describe('AppService (e2e)', () => {
   let appService: AppService;

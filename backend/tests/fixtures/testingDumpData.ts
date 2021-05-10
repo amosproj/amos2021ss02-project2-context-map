@@ -1,7 +1,7 @@
-import { Node } from '../../entities/Node';
-import { Edge } from '../../entities/Edge';
-import { LimitQuery } from '../../entities/queries/LimitQuery';
-import { QueryResult } from '../../entities/queries/QueryResult';
+import { Node } from '../../src/entities/Node';
+import { Edge } from '../../src/entities/Edge';
+import { LimitQuery } from '../../src/entities/queries/LimitQuery';
+import { QueryResult } from '../../src/entities/queries/QueryResult';
 
 export const queryAllDummies: {
   limitQuery: LimitQuery;
