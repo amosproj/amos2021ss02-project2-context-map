@@ -1,5 +1,5 @@
-import React from "react";
-import TabDefinition from "./TabDefinition";
+import React from 'react';
+import TabDefinition from './TabDefinition';
 
 export default interface RouteDefinition {
   path: string;

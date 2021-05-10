@@ -22,8 +22,10 @@ interface RenderRoute {
 function buildRenderRoutes(): RenderRoute[] {
   const result: RenderRoute[] = [];
 
-  for (let routeIdx = 0; routeIdx < routes.length; routeIdx += 1) {
-    const route = routes[routeIdx];
+  const routeKeys = Object.keys(routes);
+  const routeValues = Object.values(routes);
+  for (let routeIdx = 0; routeIdx < routeKeys.length; routeIdx += 1) {
+    const route = routeValues[routeIdx];
     let renderTabs: RenderTab[] = [];
 
     if (route.tabs && route.tabs.length > 0) {
