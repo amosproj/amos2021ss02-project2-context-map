@@ -1,8 +1,6 @@
 import React from 'react';
 import VisGraph, { GraphData } from 'react-graph-vis';
-// TODO: What's wrong here???
-// eslint-disable-next-line import/no-unresolved
-import * as vis from 'vis';
+import * as vis from 'vis-network';
 import { AsyncProps, useAsync } from 'react-async';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -54,7 +52,7 @@ function convertEdge(edge: EdgeDescriptor): vis.Edge {
     id: edge.id,
     from: edge.from,
     to: edge.to,
-    // Advanced stuff, like styling nodes with different labels differently...
+    // Advanced stuff, like styling edges with different labels differently...
   };
 }
 
@@ -71,7 +69,7 @@ function convertQueryResult(queryResult: QueryResult): GraphData {
 
 const options = {
   layout: {
-    hierarchical: true,
+    hierarchical: false,
   },
   edges: {
     color: '#000000',
