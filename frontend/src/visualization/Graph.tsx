@@ -43,6 +43,9 @@ const useStyles = makeStyles((theme: Theme) =>
       visibility: 'hidden',
       pointerEvents: 'none',
     },
+    contentContainer: {
+      padding: theme.spacing(3),
+    },
   })
 );
 
@@ -78,15 +81,18 @@ function convertQueryResult(queryResult: QueryResult): GraphData {
   };
 }
 
-const options = {
-  layout: {
-    hierarchical: false,
-  },
-  edges: {
-    color: '#000000',
-  },
-  height: '500px',
-};
+function buildOptions(width: number, height: number) {
+  return {
+    layout: {
+      hierarchical: false,
+    },
+    edges: {
+      color: '#000000',
+    },
+    width: `${width}px`,
+    height: `${height}px`,
+  };
+}
 
 const events = {
   select(event: any) {
@@ -145,14 +151,20 @@ function Graph(): JSX.Element {
   }
 
   if (error) {
-    return <div>Something went wrong: {error.message}</div>;
+    return (
+      <div className={classes.contentContainer}>
+        Something went wrong: {error.message}
+      </div>
+    );
   }
 
   if (!data) {
-    return <div>Something went wrong</div>;
+    return <div className={classes.contentContainer}>Something went wrong</div>;
   }
 
   const graphData = convertQueryResult(data);
+  const options = buildOptions(containerSize.width, containerSize.height);
+  console.log('draw graph');
 
   return (
     <>
@@ -164,7 +176,7 @@ function Graph(): JSX.Element {
         graph={graphData}
         // TODO: Remove me
         // eslint-disable-next-line prefer-template
-        options={{ ...options, height: containerSize.height + 'px' }}
+        options={options}
         events={events}
         // TODO: Remove me
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
