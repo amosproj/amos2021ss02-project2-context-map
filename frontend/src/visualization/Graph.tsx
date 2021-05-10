@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import VisGraph, { GraphData } from 'react-graph-vis';
 import * as vis from 'vis-network';
 import { AsyncProps, useAsync } from 'react-async';
@@ -7,6 +7,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import useService from '../dependency-injection/useService';
 import { EdgeDescriptor } from '../entities/EdgeDescriptor';
 import { NodeDescriptor } from '../entities/NodeDescriptor';
@@ -16,6 +17,7 @@ import {
   CancellationToken,
   CancellationTokenSource,
 } from '../utils/CancellationToken';
+import { useContainerSize } from '../utils/useContainerSize';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,6 +33,15 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     backdropCancel: {
       marginTop: theme.spacing(3),
+    },
+    sizeMeasureContainer: {
+      position: 'absolute',
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      visibility: 'hidden',
+      pointerEvents: 'none',
     },
   })
 );
@@ -91,6 +102,8 @@ function executeQuery(props: AsyncProps<QueryResult>): Promise<QueryResult> {
 
 function Graph(): JSX.Element {
   const classes = useStyles();
+  const sizeMeasureContainerRef = useRef<HTMLDivElement>(null);
+  const containerSize = useContainerSize(sizeMeasureContainerRef);
   const queryService = useService(QueryService, null);
   // The component state that contains the cancellation token source used to cancel the load operation.
   const [loadingCancellationSource, _] = React.useState(
@@ -108,20 +121,26 @@ function Graph(): JSX.Element {
 
   if (isLoading) {
     return (
-      <Backdrop className={classes.backdrop} open>
-        <div className={classes.backdropContent}>
-          <CircularProgress color="inherit" />
-          <Button
-            variant="outlined"
-            color="default"
-            onClick={cancelFuckingLongLoading}
-            className={classes.backdropCancel}
-          >
-            <CloseIcon />
-            Cancel
-          </Button>
-        </div>
-      </Backdrop>
+      <>
+        <div
+          className={classes.sizeMeasureContainer}
+          ref={sizeMeasureContainerRef}
+        />
+        <Backdrop className={classes.backdrop} open>
+          <div className={classes.backdropContent}>
+            <CircularProgress color="inherit" />
+            <Button
+              variant="outlined"
+              color="default"
+              onClick={cancelFuckingLongLoading}
+              className={classes.backdropCancel}
+            >
+              <CloseIcon />
+              Cancel
+            </Button>
+          </div>
+        </Backdrop>
+      </>
     );
   }
 
@@ -137,9 +156,15 @@ function Graph(): JSX.Element {
 
   return (
     <>
+      <div
+        className={classes.sizeMeasureContainer}
+        ref={sizeMeasureContainerRef}
+      />
       <VisGraph
         graph={graphData}
-        options={options}
+        // TODO: Remove me
+        // eslint-disable-next-line prefer-template
+        options={{ ...options, height: containerSize.height + 'px' }}
         events={events}
         // TODO: Remove me
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

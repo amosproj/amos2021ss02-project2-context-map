@@ -25,10 +25,10 @@ export class FakeDataQueryService extends QueryService {
     query?: LimitQuery,
     cancellation?: CancellationToken
   ): Promise<QueryResult> {
-    await delay(3000, cancellation);
+    await delay(0, cancellation);
 
-    const numNodes = query?.limit?.nodes ?? 1000;
-    const numEdges = query?.limit?.edges ?? 1500;
+    const numNodes = query?.limit?.nodes ?? 100;
+    const numEdges = query?.limit?.edges ?? 150;
     const nodes: NodeDescriptor[] = [];
     const edges: EdgeDescriptor[] = [];
 
