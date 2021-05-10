@@ -1,4 +1,3 @@
-import React from 'react';
 import CardDefinition from './CardDefinition';
 import TabDefinition from '../../routing/TabDefinition';
 

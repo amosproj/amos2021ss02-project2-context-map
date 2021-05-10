@@ -1,4 +1,3 @@
-import React from 'react';
 import TabDefinition from '../../routing/TabDefinition';
 
 export default interface CardDefinition extends TabDefinition{
