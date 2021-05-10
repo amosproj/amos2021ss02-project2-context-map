@@ -7,7 +7,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import clsx from 'clsx';
 import useService from '../dependency-injection/useService';
 import { EdgeDescriptor } from '../entities/EdgeDescriptor';
 import { NodeDescriptor } from '../entities/NodeDescriptor';
@@ -18,6 +17,8 @@ import {
   CancellationTokenSource,
 } from '../utils/CancellationToken';
 import { useContainerSize } from '../utils/useContainerSize';
+import { deduplicateEntities } from '../utils/deduplicateEntities';
+import filterQueryResult from '../utils/filterQueryResult';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -58,7 +59,8 @@ function convertNode(node: NodeDescriptor): vis.Node {
 }
 
 function convertNodes(nodes: NodeDescriptor[]): vis.Node[] {
-  return nodes.map((node) => convertNode(node));
+  const dedupNodes = deduplicateEntities(nodes, false);
+  return dedupNodes.map((node) => convertNode(node));
 }
 
 function convertEdge(edge: EdgeDescriptor): vis.Edge {
@@ -71,13 +73,16 @@ function convertEdge(edge: EdgeDescriptor): vis.Edge {
 }
 
 function convertEdges(edges: EdgeDescriptor[]): vis.Edge[] {
-  return edges.map((edge) => convertEdge(edge));
+  const dedupEdges = deduplicateEntities(edges, false);
+  return dedupEdges.map((edge) => convertEdge(edge));
 }
 
 function convertQueryResult(queryResult: QueryResult): GraphData {
+  const filteredQueryResult = filterQueryResult(queryResult);
+
   return {
-    nodes: convertNodes(queryResult.nodes ?? []),
-    edges: convertEdges(queryResult.edges ?? []),
+    nodes: convertNodes(filteredQueryResult.nodes),
+    edges: convertEdges(filteredQueryResult.edges),
   };
 }
 
@@ -103,7 +108,10 @@ const events = {
 function executeQuery(props: AsyncProps<QueryResult>): Promise<QueryResult> {
   const queryService = props.queryService as QueryService;
   const cancellation = props.cancellation as CancellationToken;
-  return queryService.queryAll(undefined, cancellation);
+  return queryService.queryAll(
+    { limit: { nodes: 200, edges: undefined } },
+    cancellation
+  );
 }
 
 function Graph(): JSX.Element {

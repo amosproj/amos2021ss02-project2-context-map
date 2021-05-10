@@ -8,49 +8,52 @@ import nop from '../utils/nop';
 import QueryService from './QueryService';
 
 @injectable()
-export class QueryServiceImpl extends QueryService {
-  private readonly baseUri = 'localhost:8080'; // TODO: Make me configurable
+export default class QueryServiceImpl extends QueryService {
+  private readonly baseUri = 'http://localhost:8080'; // TODO: Make me configurable
 
-  public queryAll(query?: LimitQuery, cancellation?: CancellationToken): Promise<QueryResult> {
+  public queryAll(
+    query?: LimitQuery,
+    cancellation?: CancellationToken
+  ): Promise<QueryResult> {
     const url = `${this.baseUri}/queryAll`;
-    
-    return new Promise<QueryResult>(function(resolve, reject) {
-      if(cancellation?.isCancellationRequested) {
+
+    return new Promise<QueryResult>((resolve, reject) => {
+      if (cancellation?.isCancellationRequested) {
         reject(new CancellationError());
       }
 
-      var request = new XMLHttpRequest();
+      const request = new XMLHttpRequest();
       request.open('post', url, true);
       request.setRequestHeader('Content-Type', 'application/json');
 
       let cancellationUnsubscribe = nop;
 
-      if(cancellation) {
+      if (cancellation) {
         cancellationUnsubscribe = cancellation.subscribe(() => request.abort());
       }
 
-      request.onload = function() {
+      request.onload = function () {
         cancellationUnsubscribe();
-        if (request.status == 200) {
+        if (request.status >= 200 && request.status <= 299) {
           resolve(JSON.parse(request.response)); // TODO: Validate the response?
         } else {
           reject(Error(request.statusText));
         }
-      }
+      };
 
-      request.onerror = function() {
+      request.onerror = function () {
         cancellationUnsubscribe();
-        if(cancellation?.isCancellationRequested) {
+        if (cancellation?.isCancellationRequested) {
           reject(new CancellationError());
         } else {
-          reject(Error());
-        }   
-      }
+          reject(Error('A network error occured.'));
+        }
+      };
 
-      request.onabort = function() {
+      request.onabort = function () {
         cancellationUnsubscribe();
         reject(new CancellationError());
-      }
+      };
 
       request.send(JSON.stringify(query ?? {}));
     });
