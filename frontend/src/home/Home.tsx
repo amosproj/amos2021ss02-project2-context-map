@@ -1,14 +1,13 @@
 import React from 'react';
-import logo from './logo.svg';
+import Button from '@material-ui/core/Button';
+import logo from '../logo.svg';
 import './Home.css';
-import RandomNumberGenerator from './services/RandomNumberGenerator';
-import useService from './dependency-injection/useService';
-import SharedClass from './shared/SharedClass';
+import RandomNumberGenerator from '../services/RandomNumberGenerator';
+import useService from '../dependency-injection/useService';
+import SharedClass from '../shared/SharedClass';
 
 type HomeProps = {
-  // TODO: Is there a better way then suppressing this? See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/24
-  // eslint-disable-next-line react/require-default-props
-  rnd?: RandomNumberGenerator;
+  rnd?: RandomNumberGenerator | undefined;
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -23,10 +22,16 @@ function Home(props: HomeProps = {}) {
     <div className="Home">
       <header className="Home-header">
         <img src={logo} className="Home-logo" alt="logo" />
-        <p>Hello World {rnd.next(2, 3).toPrecision(3)}</p>
+        <Button variant="contained" color="primary">
+          Hello World {rnd.next(2, 3).toPrecision(3)}
+        </Button>
       </header>
     </div>
   );
 }
+
+Home.defaultProps = {
+  rnd: undefined,
+};
 
 export default Home;
