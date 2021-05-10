@@ -1,4 +1,3 @@
-import { Neo4jModule } from 'nest-neo4j/dist';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../app.module';
 import { AppService } from '../../app.service';
@@ -10,6 +9,7 @@ import {
   getEdgesByIdDummies,
 } from '../../fixtures/testingDumpData';
 import { QueryResult } from '../../entities/queries/QueryResult';
+import { KmapNeo4jModule } from '../../config/neo4j/KmapNeo4jModule';
 
 describe('AppService (e2e)', () => {
   let appService: AppService;
@@ -17,7 +17,7 @@ describe('AppService (e2e)', () => {
   beforeAll(async () => {
     // Global setup
     const mockAppModule: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, Neo4jModule],
+      imports: [AppModule, KmapNeo4jModule],
       providers: [AppService],
     }).compile();
 
