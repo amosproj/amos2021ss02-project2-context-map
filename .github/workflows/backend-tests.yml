@@ -17,7 +17,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: |
           docker run -p 7474:7474 -p 7687:7687 \
-          	-v ${GITHUB_WORKSPACE}/backend/docker/mount:/mnt/amos:ro \
+          	-v ${GITHUB_WORKSPACE}/backend/docker/mount:/mnt/amos \
           	--env NEO4J_ACCEPT_LICENSE_AGREEMENT=yes \
           	--env DB_PASSWORD=amos \
           	--env DB_PATH=/mnt/amos/dumps/northwind.dump \
