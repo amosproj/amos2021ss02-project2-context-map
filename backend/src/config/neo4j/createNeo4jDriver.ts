@@ -1,5 +1,6 @@
 import { Neo4jConfig } from 'nest-neo4j/src/interfaces/neo4j-config.interface';
 import neo4j, { Config as OriginalNeo4jConfig } from 'neo4j-driver';
+import Driver from 'neo4j-driver';
 
 /**
  * Adapted from @nest-neo4j's createDriver
@@ -9,7 +10,7 @@ import neo4j, { Config as OriginalNeo4jConfig } from 'neo4j-driver';
 export const createNeo4jDriver = async (
   config: Neo4jConfig,
   neo4jConfig: OriginalNeo4jConfig,
-) => {
+): Promise<typeof Driver.Driver> => {
   const driver = neo4j.driver(
     `${config.scheme}://${config.host}:${config.port}`,
     neo4j.auth.basic(config.username, config.password),

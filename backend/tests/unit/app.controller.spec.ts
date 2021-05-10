@@ -18,7 +18,6 @@ const notImplemented = () => {
 
 describe('AppController', () => {
   let app: INestApplication;
-  let appController: AppController;
   let appService: AppService;
 
   beforeEach(async () => {
@@ -38,7 +37,6 @@ describe('AppController', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
-    appController = moduleRef.get<AppController>(AppController);
     appService = moduleRef.get<AppService>(AppService);
     await app.init();
   });

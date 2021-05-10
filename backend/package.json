@@ -15,9 +15,9 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,tests}/**/*.ts\"",
     "lint-fix": "yarn run lint --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
+    "test": "jest --rootDir=.",
+    "test:watch": "yarn test --watch",
+    "test:cov": "yarn test --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "dependencies": {
@@ -25,6 +25,7 @@
     "@nestjs/config": "^0.6.3",
     "@nestjs/core": "^7.6.15",
     "@nestjs/platform-express": "^7.6.15",
+    "neo4j-driver": "^4.2.3",
     "nest-neo4j": "^0.1.4",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
@@ -41,7 +42,6 @@
     "@typescript-eslint/eslint-plugin": "^4.19.0",
     "@typescript-eslint/parser": "^4.19.0",
     "eslint": "^7.22.0",
-    "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.1",
     "jest": "^26.6.3",

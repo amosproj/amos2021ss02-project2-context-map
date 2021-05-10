@@ -13,7 +13,7 @@ import {
 
 export interface ParseIntPipeOptions {
   errorHttpStatusCode?: ErrorHttpStatusCode;
-  exceptionFactory?: (error: string) => any;
+  exceptionFactory?: (error: string) => unknown;
 }
 
 /**
@@ -23,7 +23,7 @@ export interface ParseIntPipeOptions {
  */
 @Injectable()
 export class ParseIntArrayPipe implements PipeTransform {
-  protected exceptionFactory: (error: string) => any;
+  protected exceptionFactory: (error: string) => unknown;
 
   private readonly parseIntPipe: ParseIntPipe;
 
