@@ -6,7 +6,7 @@ import { NodeDescriptor } from '../entities/NodeDescriptor';
 import { EdgeDescriptor } from '../entities/EdgeDescriptor';
 import delay from '../utils/delay';
 import QueryService from './QueryService';
-import { CancellationToken, None } from '../utils/CancellationToken';
+import { CancellationToken } from '../utils/CancellationToken';
 
 export function getRandomIndex(n: number): number {
   return Math.floor(Math.random() * n);
@@ -25,10 +25,10 @@ export class FakeDataQueryService extends QueryService {
     query?: LimitQuery,
     cancellation?: CancellationToken
   ): Promise<QueryResult> {
-    await delay(5000, cancellation ?? None);
+    await delay(3000, cancellation);
 
-    const numNodes = query?.limit?.nodes ?? 200;
-    const numEdges = query?.limit?.edges ?? 150;
+    const numNodes = query?.limit?.nodes ?? 1000;
+    const numEdges = query?.limit?.edges ?? 1500;
     const nodes: NodeDescriptor[] = [];
     const edges: EdgeDescriptor[] = [];
 

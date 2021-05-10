@@ -4,7 +4,7 @@ import nop from './nop';
 
 export default function delay(
   ms: number,
-  cancellation: CancellationToken = None
+  cancellation?: CancellationToken
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     let unsubscribe = nop;
@@ -13,7 +13,7 @@ export default function delay(
       resolve();
     }, ms);
 
-    unsubscribe = cancellation.subscribe(() => {
+    unsubscribe = (cancellation ?? None).subscribe(() => {
       clearTimeout(handle);
       reject(new CancellationError());
     });
