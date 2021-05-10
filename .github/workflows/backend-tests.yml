@@ -22,7 +22,7 @@ jobs:
           	--env DB_PASSWORD=amos \
           	--env DB_PATH=/mnt/amos/dumps/northwind.dump \
           	--name neo4j-DB neo4j:enterprise \
-          	/mnt/amos/load-dump.sh
+          	/bin/bash -c "chmod +x /mnt/amos/load-dump.sh; /mnt/amos/load-dump.sh"
       - run: npm install -g yarn
       - run: yarn install --frozen-lockfile
         working-directory: ${{ env.working-directory }}
