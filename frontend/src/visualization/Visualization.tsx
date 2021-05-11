@@ -8,7 +8,6 @@ function Visualization(): JSX.Element {
   const { tabs } = routes.Visualization;
 
   if (tabs === undefined) {
-    throw new Error('Cannot read Visualization tabs');
     return <></>;
   }
 
