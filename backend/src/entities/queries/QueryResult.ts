@@ -4,7 +4,7 @@ import { NodeDescriptor } from '../NodeDescriptor';
 /**
  * Generic Result of an API Query
  */
-export class QueryResult {
+export interface QueryResult {
   nodes: NodeDescriptor[];
   edges: EdgeDescriptor[];
 }
