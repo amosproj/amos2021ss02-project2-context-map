@@ -3,7 +3,8 @@ import RandomNumberGenerator from './RandomNumberGenerator';
 
 @injectable()
 export default class RandomNumberGeneratorImpl
-  implements RandomNumberGenerator {
+  implements RandomNumberGenerator
+{
   // eslint-disable-next-line class-methods-use-this
   public next(minOrMax?: number, max?: number): number {
     // eslint-disable-next-line no-param-reassign

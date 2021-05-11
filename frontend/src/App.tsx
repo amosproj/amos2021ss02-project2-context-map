@@ -5,7 +5,7 @@ import {
   Route,
   Redirect,
 } from 'react-router-dom';
-import './App.css';
+import './App.scss';
 import Layout, { RenderTab } from './Layout';
 import NotFound from './NotFound';
 import routes from './routing/routes';
