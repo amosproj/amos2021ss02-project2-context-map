@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
-import { Node } from '../../shared/src/entities/Node';
-import { EdgeDescriptor } from '../../shared/src/entities/EdgeDescriptor';
-import { Edge } from '../../shared/src/entities/Edge';
-import { QueryResult } from '../../shared/src/queries/QueryResult';
-import { LimitQuery } from '../../shared/src/queries/LimitQuery';
-import { NodeDescriptor } from '../../shared/src/entities/NodeDescriptor';
+import { Node } from './shared/entities/Node';
+import { EdgeDescriptor } from './shared/entities/EdgeDescriptor';
+import { Edge } from './shared/entities/Edge';
+import { QueryResult } from './shared/queries/QueryResult';
+import { LimitQuery } from './shared/queries/LimitQuery';
+import { NodeDescriptor } from './shared/entities/NodeDescriptor';
 import consolidateQueryResult from './utils/consolidateQueryResult';
 
 @Injectable()
