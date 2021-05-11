@@ -9,7 +9,7 @@ export class QueryResult {
     this.nodes = [];
     this.edges = [];
   }
-  
+
   nodes: NodeDescriptor[];
   edges: EdgeDescriptor[];
 }
