@@ -13,7 +13,11 @@ export default function configureServices(container: Container): void {
   // A service used for testing the DI setup
   container.bind(RandomNumberGenerator).to(RandomNumberGeneratorImpl);
 
-  container.bind(QueryService).to(QueryServiceImpl);
+  container.bind(QueryService).toConstantValue(
+    new QueryServiceImpl({
+      backendBaseUri: process.env.REACT_APP_QUERY_SERVICE_BACKEND_BASE_URI,
+    })
+  );
 
   // Add your services here...
 }
