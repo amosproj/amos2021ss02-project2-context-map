@@ -15,30 +15,28 @@ function Visualization(): JSX.Element {
   const cards = tabs.map((tab) => createCard(tab));
 
   return (
-    <>
-      <h1>Visualization Dashboard</h1>
-      <Box>
-        <Container maxWidth={false}>
-          <Box>
-            <Grid container spacing={3}>
-              {cards.map((card) => (
-                <Grid item key={card.label} lg={4} md={6} xs={12}>
-                  <DashboardCard
-                    label={card.label}
-                    path={card.path}
-                    content={card.content}
-                    description={card.description}
-                    subLabel={card.subLabel}
-                    icon={card.icon}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-          <Box />
-        </Container>
-      </Box>
-    </>
+    <Box>
+      <Container maxWidth={false}>
+        <h1>Visualization Dashboard</h1>
+        <Box>
+          <Grid container spacing={3}>
+            {cards.map((card) => (
+              <Grid item key={card.label} lg={4} md={6} xs={12}>
+                <DashboardCard
+                  label={card.label}
+                  path={card.path}
+                  content={card.content}
+                  description={card.description}
+                  subLabel={card.subLabel}
+                  icon={card.icon}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+        <Box />
+      </Container>
+    </Box>
   );
 }
 
