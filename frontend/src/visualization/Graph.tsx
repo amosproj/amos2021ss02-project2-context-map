@@ -17,7 +17,6 @@ import {
   CancellationTokenSource,
 } from '../utils/CancellationToken';
 import { useContainerSize } from '../utils/useContainerSize';
-import { deduplicateEntities } from '../utils/deduplicateEntities';
 import consolidateQueryResult from '../utils/consolidateQueryResult';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -59,8 +58,7 @@ function convertNode(node: NodeDescriptor): vis.Node {
 }
 
 function convertNodes(nodes: NodeDescriptor[]): vis.Node[] {
-  const dedupNodes = deduplicateEntities(nodes, false);
-  return dedupNodes.map((node) => convertNode(node));
+  return nodes.map((node) => convertNode(node));
 }
 
 function convertEdge(edge: EdgeDescriptor): vis.Edge {
@@ -73,8 +71,7 @@ function convertEdge(edge: EdgeDescriptor): vis.Edge {
 }
 
 function convertEdges(edges: EdgeDescriptor[]): vis.Edge[] {
-  const dedupEdges = deduplicateEntities(edges, false);
-  return dedupEdges.map((edge) => convertEdge(edge));
+  return edges.map((edge) => convertEdge(edge));
 }
 
 function convertQueryResult(queryResult: QueryResult): GraphData {
