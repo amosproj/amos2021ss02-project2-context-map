@@ -12,9 +12,8 @@ export function useContainerSize(
   const [size, setSize] = useState({ width: 0, height: 0 });
 
   // eslint-disable-next-line prefer-const
-  let [resizeObserver, setResizeObserver] = useState<ResizeObserver | null>(
-    null
-  );
+  let [resizeObserver, setResizeObserver] =
+    useState<ResizeObserver | null>(null);
 
   useLayoutEffect(() => {
     const element = ref.current;
