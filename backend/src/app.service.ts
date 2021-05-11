@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
-import { Node } from '../../shared/src/entities/Node';
-import { EdgeDescriptor } from '../../shared/src/entities/EdgeDescriptor';
-import { Edge } from '../../shared/src/entities/Edge';
-import { QueryResult } from '../../shared/src/queries/QueryResult';
-import { LimitQuery } from '../../shared/src/queries/LimitQuery';
-import { NodeDescriptor } from '../../shared/src/entities/NodeDescriptor';
+import { Node } from './shared/entities/Node';
+import { EdgeDescriptor } from './shared/entities/EdgeDescriptor';
+import { Edge } from './shared/entities/Edge';
+import { QueryResult } from './shared/queries/QueryResult';
+import { LimitQuery } from './shared/queries/LimitQuery';
+import { NodeDescriptor } from './shared/entities/NodeDescriptor';
 import consolidateQueryResult from './utils/consolidateQueryResult';
 
 @Injectable()
@@ -79,7 +79,7 @@ export class AppService {
     // toInteger required, since apparently it converts int to double...
     const result = await this.neo4jService.read(
       `
-      MATCH (from)-[e]-(to) 
+      MATCH (from)-[e]->(to) 
       RETURN ID(e) as id, ID(from) as from, ID(to) as to
       ORDER BY id, from
       ${edgeLimit ? 'LIMIT toInteger($limitEdges)' : ''}
@@ -101,7 +101,7 @@ export class AppService {
   async getEdgesById(ids: number[]): Promise<Edge[]> {
     const result = await this.neo4jService.read(
       `
-      MATCH (from)-[e]-(to) 
+      MATCH (from)-[e]->(to) 
       WHERE ID(e) in $ids
       RETURN ID(e) as id, ID(from) as from, ID(to) as to, properties(e) as properties, type(e) as type
       ORDER BY id, from
