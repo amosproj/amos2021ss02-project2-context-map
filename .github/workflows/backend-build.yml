@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install -g yarn
-      - run: yarn install --frozen-lockfile
+      - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
         working-directory: ${{ env.working-directory }}
       - run: yarn run build
         working-directory: ${{ env.working-directory }}
