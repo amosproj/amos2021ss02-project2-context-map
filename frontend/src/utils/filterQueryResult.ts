@@ -1,4 +1,4 @@
-import { QueryResult } from '../entities/queries/QueryResult';
+import { QueryResult } from '../shared/queries/QueryResult';
 
 /**
  * Filters the specified query result, such that it contains only edges

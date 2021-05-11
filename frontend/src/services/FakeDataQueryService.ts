@@ -1,9 +1,9 @@
 import { injectable } from 'inversify';
 import 'reflect-metadata';
-import { LimitQuery } from '../entities/queries/LimitQuery';
-import { QueryResult } from '../entities/queries/QueryResult';
-import { NodeDescriptor } from '../entities/NodeDescriptor';
-import { EdgeDescriptor } from '../entities/EdgeDescriptor';
+import { LimitQuery } from '../shared/queries/LimitQuery';
+import { QueryResult } from '../shared/queries/QueryResult';
+import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
+import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import delay from '../utils/delay';
 import QueryService from './QueryService';
 import { CancellationToken } from '../utils/CancellationToken';

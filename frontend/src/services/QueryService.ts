@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 import 'reflect-metadata';
-import { LimitQuery } from '../entities/queries/LimitQuery';
-import { QueryResult } from '../entities/queries/QueryResult';
+import { LimitQuery } from '../shared/queries/LimitQuery';
+import { QueryResult } from '../shared/queries/QueryResult';
 import { CancellationToken } from '../utils/CancellationToken';
 
 @injectable()

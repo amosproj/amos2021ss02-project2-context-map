@@ -8,9 +8,9 @@ import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import useService from '../dependency-injection/useService';
-import { EdgeDescriptor } from '../entities/EdgeDescriptor';
-import { NodeDescriptor } from '../entities/NodeDescriptor';
-import { QueryResult } from '../entities/queries/QueryResult';
+import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
+import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
+import { QueryResult } from '../shared/queries/QueryResult';
 import QueryService from '../services/QueryService';
 import {
   CancellationToken,
