@@ -97,7 +97,7 @@ describe('AppController', () => {
         .expect(200, result);
 
       // Assert mock called with parameter from the query params
-      expect(getNodesById).toBeCalledWith([1, 2, 3]);
+      expect(getNodesById).toBeCalledWith(getNodesByIdDummies.ids);
     });
   });
 
@@ -115,7 +115,7 @@ describe('AppController', () => {
         .get('/getEdgesById?ids=1&ids=2')
         .expect(200, result);
 
-      expect(getEdgesById).toBeCalledWith([1, 2]);
+      expect(getEdgesById).toBeCalledWith(getEdgesByIdDummies.ids);
     });
   });
 });
