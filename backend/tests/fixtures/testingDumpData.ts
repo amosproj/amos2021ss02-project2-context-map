@@ -15,7 +15,9 @@ export const queryAllDummies: {
   queryResult: {
     nodes: [{ id: 0 }, { id: 1 }, { id: 2 }],
     edges: [
+      { id: 0, from: 0, to: 1 },
       { id: 0, from: 1, to: 0 },
+      { id: 1, from: 0, to: 2 },
       { id: 1, from: 2, to: 0 },
     ],
   },
@@ -27,8 +29,11 @@ export const queryAllNoLimitDummies: {
   queryResult: {
     nodes: [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
     edges: [
+      { id: 0, from: 0, to: 1 },
       { id: 0, from: 1, to: 0 },
+      { id: 1, from: 0, to: 2 },
       { id: 1, from: 2, to: 0 },
+      { id: 2, from: 0, to: 3 },
       { id: 2, from: 3, to: 0 },
     ],
   },
@@ -60,11 +65,19 @@ export const getEdgesByIdDummies: { ids: number[]; edges: Edge[] } = {
   edges: [
     {
       id: 1,
+      from: 0,
+      to: 2,
+      properties: { roles: ['Trinity'] },
+      type: 'ACTED_IN',
+    },
+    {
+      id: 1,
       from: 2,
       to: 0,
       properties: { roles: ['Trinity'] },
       type: 'ACTED_IN',
     },
+    { id: 2, from: 0, to: 3, properties: {}, type: 'DIRECTED' },
     { id: 2, from: 3, to: 0, properties: {}, type: 'DIRECTED' },
   ],
 };

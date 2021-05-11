@@ -79,7 +79,7 @@ export class AppService {
     // toInteger required, since apparently it converts int to double...
     const result = await this.neo4jService.read(
       `
-      MATCH (from)-[e]->(to) 
+      MATCH (from)-[e]-(to) 
       RETURN ID(e) as id, ID(from) as from, ID(to) as to
       ORDER BY id, from
       ${edgeLimit ? 'LIMIT toInteger($limitEdges)' : ''}
@@ -101,7 +101,7 @@ export class AppService {
   async getEdgesById(ids: number[]): Promise<Edge[]> {
     const result = await this.neo4jService.read(
       `
-      MATCH (from)-[e]->(to) 
+      MATCH (from)-[e]-(to) 
       WHERE ID(e) in $ids
       RETURN ID(e) as id, ID(from) as from, ID(to) as to, properties(e) as properties, type(e) as type
       ORDER BY id, from
