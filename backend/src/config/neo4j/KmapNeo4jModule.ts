@@ -24,6 +24,7 @@ export class KmapNeo4jModule {
     ) as FactoryProvider;
 
     if (driverProvider == null) {
+      /* istanbul ignore next */
       throw Error('Neo4j driver provider not found.');
     }
 
