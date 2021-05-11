@@ -2,15 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Neo4jService } from 'nest-neo4j/dist';
 import { AppModule } from '../../src/app.module';
 import { AppService } from '../../src/app.service';
-import { Node } from '../../src/shared/entities/Node';
-import { Edge } from '../../src/shared/entities/Edge';
+import { Node } from '../../../shared/src/entities/Node';
+import { Edge } from '../../../shared/src/entities/Edge';
 import {
   getEdgesByIdDummies,
   getNodesByIdDummies,
   queryAllDummies,
   queryAllNoLimitDummies,
 } from '../fixtures/testingDumpData';
-import { QueryResult } from '../../src/shared/queries/QueryResult';
+import { QueryResult } from '../../../shared/src/queries/QueryResult';
 import { KmapNeo4jModule } from '../../src/config/neo4j/KmapNeo4jModule';
 
 describe('AppService (e2e)', () => {
