@@ -19,6 +19,22 @@ export const queryAllDummies: {
   },
 };
 
+export const queryAllNoLimitDummies: {
+  queryResult: QueryResult;
+} = {
+  queryResult: {
+    nodes: [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
+    edges: [
+      { id: 0, from: 0, to: 1 },
+      { id: 0, from: 1, to: 0 },
+      { id: 1, from: 0, to: 2 },
+      { id: 1, from: 2, to: 0 },
+      { id: 2, from: 0, to: 3 },
+      { id: 2, from: 3, to: 0 },
+    ],
+  },
+};
+
 export const getNodesByIdDummies: { ids: number[]; nodes: Node[] } = {
   ids: [1, 2, 3],
   nodes: [
