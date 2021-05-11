@@ -32,7 +32,7 @@ export default class QueryServiceImpl extends QueryService {
         cancellationUnsubscribe = cancellation.subscribe(() => request.abort());
       }
 
-      request.onload = function () {
+      request.onload = () => {
         cancellationUnsubscribe();
         if (request.status >= 200 && request.status <= 299) {
           resolve(JSON.parse(request.response)); // TODO: Validate the response?
@@ -41,7 +41,7 @@ export default class QueryServiceImpl extends QueryService {
         }
       };
 
-      request.onerror = function () {
+      request.onerror = () => {
         cancellationUnsubscribe();
         if (cancellation?.isCancellationRequested) {
           reject(new CancellationError());
@@ -50,7 +50,7 @@ export default class QueryServiceImpl extends QueryService {
         }
       };
 
-      request.onabort = function () {
+      request.onabort = () => {
         cancellationUnsubscribe();
         reject(new CancellationError());
       };

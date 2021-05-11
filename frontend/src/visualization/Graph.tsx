@@ -99,12 +99,6 @@ function buildOptions(width: number, height: number) {
   };
 }
 
-const events = {
-  select(event: any) {
-    const { nodes, edges } = event;
-  },
-};
-
 function executeQuery(props: AsyncProps<QueryResult>): Promise<QueryResult> {
   const queryService = props.queryService as QueryService;
   const cancellation = props.cancellation as CancellationToken;
@@ -120,7 +114,7 @@ function Graph(): JSX.Element {
   const containerSize = useContainerSize(sizeMeasureContainerRef);
   const queryService = useService(QueryService, null);
   // The component state that contains the cancellation token source used to cancel the load operation.
-  const [loadingCancellationSource, _] = React.useState(
+  const [loadingCancellationSource] = React.useState(
     new CancellationTokenSource()
   );
   const { data, error, isLoading } = useAsync({
@@ -129,7 +123,7 @@ function Graph(): JSX.Element {
     cancellation: loadingCancellationSource.token,
   });
 
-  const cancelFuckingLongLoading = () => {
+  const cancelLoading = () => {
     loadingCancellationSource.cancel();
   };
 
@@ -146,7 +140,7 @@ function Graph(): JSX.Element {
             <Button
               variant="outlined"
               color="default"
-              onClick={cancelFuckingLongLoading}
+              onClick={cancelLoading}
               className={classes.backdropCancel}
             >
               <CloseIcon />
@@ -172,7 +166,6 @@ function Graph(): JSX.Element {
 
   const graphData = convertQueryResult(data);
   const options = buildOptions(containerSize.width, containerSize.height);
-  console.log('draw graph');
 
   return (
     <>
@@ -180,18 +173,7 @@ function Graph(): JSX.Element {
         className={classes.sizeMeasureContainer}
         ref={sizeMeasureContainerRef}
       />
-      <VisGraph
-        graph={graphData}
-        // TODO: Remove me
-        // eslint-disable-next-line prefer-template
-        options={options}
-        events={events}
-        // TODO: Remove me
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        getNetwork={(network) => {
-          //  if you want access to vis.js network api you can set the state in a parent component using this property
-        }}
-      />
+      <VisGraph graph={graphData} options={options} />
     </>
   );
 }
