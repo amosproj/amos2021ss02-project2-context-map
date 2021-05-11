@@ -1,7 +1,8 @@
 {
-  "name": "hello-world-app",
+  "name": "kmap",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "start": "react-scripts start",
     "postinstall": "run-script-os",
