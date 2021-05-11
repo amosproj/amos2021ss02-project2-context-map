@@ -3,6 +3,10 @@ import { Edge } from '../../src/entities/Edge';
 import { LimitQuery } from '../../src/entities/queries/LimitQuery';
 import { QueryResult } from '../../src/entities/queries/QueryResult';
 
+/**
+ * Data that is used for testing in app.service.e2e.spec.ts and app.controller.spec.ts
+ */
+
 export const queryAllDummies: {
   limitQuery: LimitQuery;
   queryResult: QueryResult;
