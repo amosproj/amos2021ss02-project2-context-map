@@ -100,16 +100,8 @@ export interface RenderTab {
 
 type LayoutProps = {
   children: React.ReactNode;
-  // TODO: Is there a better way then suppressing this? See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/24
-  // eslint-disable-next-line react/require-default-props
   tabs?: RenderTab[] | undefined;
-
-  // TODO: Is there a better way then suppressing this? See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/24
-  // eslint-disable-next-line react/require-default-props
   tabIdx?: number | undefined;
-
-  // TODO: Is there a better way then suppressing this? See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/24
-  // eslint-disable-next-line react/require-default-props
   label?: string | undefined;
 };
 
@@ -245,5 +237,11 @@ function Layout(props: LayoutProps): JSX.Element {
     </div>
   );
 }
+
+Layout.defaultProps = {
+  tabs: undefined,
+  tabIdx: undefined,
+  label: undefined,
+};
 
 export default Layout;

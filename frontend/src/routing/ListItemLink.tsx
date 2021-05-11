@@ -5,9 +5,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
 interface ListItemLinkProps {
-  // TODO: Is there a better way then suppressing this? See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/24
-  // eslint-disable-next-line react/require-default-props
-  icon?: React.ReactElement;
+  icon?: React.ReactElement | undefined;
   primary: string;
   to: string;
 }
@@ -23,10 +21,12 @@ function ListItemLink(props: ListItemLinkProps): JSX.Element {
           to={to}
           ref={ref}
           activeClassName="Mui-selected"
-          // TODO: Fix this, so that the rule does not have to be disabled
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          {...itemProps}
-        />
+          className={itemProps.className}
+          role={itemProps.role}
+          tabIndex={itemProps.tabIndex}
+        >
+          {itemProps.children}
+        </NavLink>
       )),
     [to]
   );
@@ -40,5 +40,9 @@ function ListItemLink(props: ListItemLinkProps): JSX.Element {
     </li>
   );
 }
+
+ListItemLink.defaultProps = {
+  icon: undefined,
+};
 
 export default ListItemLink;

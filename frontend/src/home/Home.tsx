@@ -7,9 +7,7 @@ import useService from '../dependency-injection/useService';
 import SharedClass from '../shared/SharedClass';
 
 type HomeProps = {
-  // TODO: Is there a better way then suppressing this? See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/24
-  // eslint-disable-next-line react/require-default-props
-  rnd?: RandomNumberGenerator;
+  rnd?: RandomNumberGenerator | undefined;
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -31,5 +29,9 @@ function Home(props: HomeProps = {}) {
     </div>
   );
 }
+
+Home.defaultProps = {
+  rnd: undefined,
+};
 
 export default Home;
