@@ -1,10 +1,10 @@
 import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
-import { Node } from './shared/entities/Node';
-import { Edge } from './shared/entities/Edge';
+import { Node } from '../../shared/src/entities/Node';
+import { Edge } from '../../shared/src/entities/Edge';
 import { ParseIntArrayPipe } from './pipes/ParseIntArrayPipe';
 import { AppService } from './app.service';
-import { LimitQuery } from './shared/queries/LimitQuery';
-import { QueryResult } from './shared/queries/QueryResult';
+import { LimitQuery } from '../../shared/src/queries/LimitQuery';
+import { QueryResult } from '../../shared/src/queries/QueryResult';
 
 /**
  * Main App Controller.
