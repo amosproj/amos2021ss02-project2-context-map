@@ -1,11 +1,11 @@
 import { QueryResult } from '../shared/queries/QueryResult';
 
 /**
- * Filters the specified query result, such that it contains only edges
+ * Consolidates the specified query result, such that it contains only edges
  * that's to and from nodes are included in the query-result.
  * @param queryResult The query-result to filter
  */
-export default function filterQueryResult(
+export default function consolidateQueryResult(
   queryResult: QueryResult
 ): QueryResult {
   const nodeIds = new Set<number>(
