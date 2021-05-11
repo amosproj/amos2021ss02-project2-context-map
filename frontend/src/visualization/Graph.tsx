@@ -80,6 +80,12 @@ function convertQueryResult(queryResult: QueryResult): GraphData {
   };
 }
 
+/**
+ * Builds the graph options passed to react-graph-vis.
+ * @param width The width of the graph.
+ * @param height The height of the graph.
+ * @returns The react-graph-vis options.
+ */
 function buildOptions(width: number, height: number) {
   return {
     layout: {
@@ -93,6 +99,11 @@ function buildOptions(width: number, height: number) {
   };
 }
 
+/**
+ * A function that wraps the call to the query-service to be usable with react-async.
+ * @param props The props that contains our paramter in an untyped way.
+ * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the query result.
+ */
 function executeQuery(props: AsyncProps<QueryResult>): Promise<QueryResult> {
   const queryService = props.queryService as QueryService;
   const cancellation = props.cancellation as CancellationToken;
@@ -104,23 +115,34 @@ function executeQuery(props: AsyncProps<QueryResult>): Promise<QueryResult> {
 
 function Graph(): JSX.Element {
   const classes = useStyles();
+
+  // A React ref to the container that is used to measure the available space for the graph.
   const sizeMeasureContainerRef = useRef<HTMLDivElement>(null);
+
+  // The size of the container that is used to measure the available space for the graph.
   const containerSize = useContainerSize(sizeMeasureContainerRef);
+
+  // The query service injected from DI.
   const queryService = useService(QueryService, null);
-  // The component state that contains the cancellation token source used to cancel the load operation.
+
+  // The component state that contains the cancellation token source used to cancel the query operation.
   const [loadingCancellationSource] = React.useState(
     new CancellationTokenSource()
   );
+
+  // The state, as returned by react-async. Data is the query-result, when available.
   const { data, error, isLoading } = useAsync({
     promiseFn: executeQuery,
     queryService,
     cancellation: loadingCancellationSource.token,
   });
 
+  // A function that must be here (unless you want React to explode) that cancels the query operation.
   const cancelLoading = () => {
     loadingCancellationSource.cancel();
   };
 
+  // Display a waiting screen with a cancel options, while the query is in progress.
   if (isLoading) {
     return (
       <>
@@ -146,6 +168,8 @@ function Graph(): JSX.Element {
     );
   }
 
+  // Display the raw error message if an error occurred.
+  // See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/77
   if (error) {
     return (
       <div className={classes.contentContainer}>
@@ -154,11 +178,16 @@ function Graph(): JSX.Element {
     );
   }
 
+  // Display an error message if something went wrong. This should not happen normally.
+  // See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/77
   if (!data) {
     return <div className={classes.contentContainer}>Something went wrong</div>;
   }
 
+  // Convert the query result to an object, react-graph-vis understands.
   const graphData = convertQueryResult(data);
+
+  // Build the react-graph-vis graph options.
   const options = buildOptions(containerSize.width, containerSize.height);
 
   return (

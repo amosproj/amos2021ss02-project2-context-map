@@ -4,10 +4,19 @@ interface HasId {
   id: number;
 }
 
+/**
+ * Compared to entities via their id property.
+ */
 function compareById<T extends HasId>(a: T, b: T) {
   return a.id - b.id;
 }
 
+/**
+ * Deduplicates an array of entities via their id property.
+ * @param nodes The array of entities to deduplicate.
+ * @param maintainOrder A boolean indicating whether to maintain the order of the entities.
+ * @returns An array of entities without duplicates.
+ */
 function deduplicateEntities<T extends HasId>(
   nodes: T[],
   maintainOrder = true

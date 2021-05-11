@@ -8,11 +8,18 @@ import nop from '../utils/nop';
 import QueryService from './QueryService';
 import { QueryServiceOptions } from './QueryServiceOptions';
 
+/**
+ * Builds the query service options.
+ * @param options The partial options that very specified externally.
+ * @returns The built options.
+ */
 function buildOptions(
   options: Partial<QueryServiceOptions>
 ): QueryServiceOptions {
   let { backendBaseUri } = options;
 
+  // As per the spec of QueryServiceOptions, we use the base URI of the source the frontend
+  // was loaded from, if no backend base uri was specified in the options.
   if (!backendBaseUri) {
     const { location } = window;
     backendBaseUri = `${location.protocol}//${location.host}/${
@@ -23,6 +30,10 @@ function buildOptions(
   return { backendBaseUri };
 }
 
+/**
+ * The implementation of query service that performs query requests
+ * via the backend.
+ */
 @injectable()
 export default class QueryServiceImpl extends QueryService {
   private readonly options: QueryServiceOptions;

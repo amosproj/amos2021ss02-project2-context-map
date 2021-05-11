@@ -12,6 +12,9 @@ export function getRandomIndex(n: number): number {
   return Math.floor(Math.random() * n);
 }
 
+/**
+ * A fake implementation that delivers random data.
+ */
 @injectable()
 export class FakeDataQueryService extends QueryService {
   private readonly allowSelfReferencingNodes: boolean;

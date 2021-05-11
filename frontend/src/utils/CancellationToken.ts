@@ -5,15 +5,34 @@ import nop from './nop';
 export type CancellationTokenSubscriber = () => void;
 export type CancellationTokenUnsubscribe = () => void;
 
+/**
+ * A cancellation token that can be passed to functions.
+ */
 export abstract class CancellationToken {
+  /**
+   * Get a boolean value indicating whether cancellation is requested.
+   */
   public abstract get isCancellationRequested(): boolean;
 
+  /**
+   * Throws a {@link CancellationError} if cancellation is requested.
+   */
+  public throwIfCancellationRequested(): void {
+    if (this.isCancellationRequested) {
+      throw new CancellationError();
+    }
+  }
+
+  /**
+   * Subscribes to the cancellation token.
+   * @param subscriber A callback that gets triggered, when cancellation is requested.
+   */
   public abstract subscribe(
     subscriber: CancellationTokenSubscriber
   ): CancellationTokenUnsubscribe;
 }
 
-export class CancellationTokenImpl extends CancellationToken {
+class CancellationTokenImpl extends CancellationToken {
   private readonly source: CancellationTokenSource | null;
 
   public constructor(source: CancellationTokenSource | null) {
@@ -25,12 +44,6 @@ export class CancellationTokenImpl extends CancellationToken {
     return this.source?.isCancellationRequested ?? false;
   }
 
-  public throwIfCancellationRequested(): void {
-    if (this.isCancellationRequested) {
-      throw new CancellationError();
-    }
-  }
-
   public subscribe(
     subscriber: CancellationTokenSubscriber
   ): CancellationTokenUnsubscribe {
@@ -38,8 +51,14 @@ export class CancellationTokenImpl extends CancellationToken {
   }
 }
 
+/**
+ * A {@link CancellationToken} that cannot get canceled.
+ */
 export const None: CancellationToken = new CancellationTokenImpl(null);
 
+/**
+ * Represents a cancellation token source that manages a single cancellation token.
+ */
 export class CancellationTokenSource {
   private readonly storedToken: CancellationToken;
 
@@ -51,14 +70,24 @@ export class CancellationTokenSource {
     this.storedToken = new CancellationTokenImpl(this);
   }
 
+  /**
+   * Gets the cancellation token of this instance.
+   */
   public get token(): CancellationToken {
     return this.storedToken;
   }
 
+  /**
+   * Get a boolean value indicating whether cancellation is requested.
+   */
   public get isCancellationRequested(): boolean {
     return this.internalIsCancellationRequested;
   }
 
+  /**
+   * Subscribes to the cancellation token.
+   * @param subscriber A callback that gets triggered, when cancellation is requested.
+   */
   public subscribe(
     subscriber: CancellationTokenSubscriber
   ): CancellationTokenUnsubscribe {
@@ -73,6 +102,9 @@ export class CancellationTokenSource {
     };
   }
 
+  /**
+   * Requests cancellation.
+   */
   public cancel(): void {
     this.internalIsCancellationRequested = true;
     this.subscribers.splice(0).forEach((subscriber) => subscriber());
