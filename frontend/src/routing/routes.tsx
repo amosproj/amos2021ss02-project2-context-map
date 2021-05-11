@@ -30,26 +30,6 @@ const routes: Record<string, RouteDefinition> = {
         label: 'Schema',
         content: () => <Schema />,
       },
-      {
-        path: '/visualization/schema',
-        label: 'Schema',
-        content: () => <Schema />,
-      },
-      {
-        path: '/visualization/schema',
-        label: 'Schema',
-        content: () => <Schema />,
-      },
-      {
-        path: '/visualization/schema',
-        label: 'Schema',
-        content: () => <Schema />,
-      },
-      {
-        path: '/visualization/schema',
-        label: 'Schema',
-        content: () => <Schema />,
-      },
     ],
   },
   Exploration: {
