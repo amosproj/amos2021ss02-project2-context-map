@@ -27,6 +27,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with: 
+          install-command: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
           start: yarn run start
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
