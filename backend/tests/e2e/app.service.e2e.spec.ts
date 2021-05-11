@@ -7,6 +7,7 @@ import {
   getEdgesByIdDummies,
   getNodesByIdDummies,
   queryAllDummies,
+  queryAllNoLimitDummies,
 } from '../fixtures/testingDumpData';
 import { QueryResult } from '../../src/entities/queries/QueryResult';
 import { KmapNeo4jModule } from '../../src/config/neo4j/KmapNeo4jModule';
@@ -40,6 +41,17 @@ describe('AppService (e2e)', () => {
       const actualResult: QueryResult = await appService.queryAll(
         queryAllDummies.limitQuery,
       );
+
+      // Assert
+      expect(actualResult).toEqual(expectedResult);
+    });
+
+    it('should return edge and node ids (and from and to for edges)', async () => {
+      // Arrange
+      const expectedResult = queryAllNoLimitDummies.queryResult;
+
+      // Act
+      const actualResult: QueryResult = await appService.queryAll();
 
       // Assert
       expect(actualResult).toEqual(expectedResult);
