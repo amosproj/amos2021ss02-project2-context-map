@@ -33,7 +33,7 @@ export class ParseIntArrayPipe implements PipeTransform {
 
   async transform(
     value: unknown,
-    metadata: ArgumentMetadata,
+    metadata: ArgumentMetadata
   ): Promise<number[]> {
     if (typeof value === 'number' || typeof value === 'string') {
       value = [value]; // eslint-disable-line no-param-reassign
@@ -41,12 +41,12 @@ export class ParseIntArrayPipe implements PipeTransform {
 
     if (Array.isArray(value)) {
       return Promise.all(
-        value.map((v) => this.parseIntPipe.transform(v, metadata)),
+        value.map((v) => this.parseIntPipe.transform(v, metadata))
       );
     }
 
     throw this.exceptionFactory(
-      'Validation failed (list of numeric strings expected)',
+      'Validation failed (list of numeric strings expected)'
     );
   }
 }

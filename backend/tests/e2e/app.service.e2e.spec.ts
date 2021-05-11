@@ -40,7 +40,7 @@ describe('AppService (e2e)', () => {
 
       // Act
       const actualResult: QueryResult = await appService.queryAll(
-        queryAllDummies.limitQuery,
+        queryAllDummies.limitQuery
       );
 
       // Assert
@@ -82,7 +82,7 @@ describe('AppService (e2e)', () => {
 
       // Act
       const actualNodes: Node[] = await appService.getNodesById(
-        getNodesByIdDummies.ids,
+        getNodesByIdDummies.ids
       );
 
       // Assert
@@ -97,7 +97,7 @@ describe('AppService (e2e)', () => {
 
       // Act
       const actualEdges: Edge[] = await appService.getEdgesById(
-        getEdgesByIdDummies.ids,
+        getEdgesByIdDummies.ids
       );
 
       // Assert

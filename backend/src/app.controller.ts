@@ -34,7 +34,7 @@ export class AppController {
    */
   @Get('getNodesById')
   async getNodesById(
-    @Query('ids', ParseIntArrayPipe) ids: number[],
+    @Query('ids', ParseIntArrayPipe) ids: number[]
   ): Promise<Node[]> {
     return this.appService.getNodesById(ids);
   }
@@ -47,7 +47,7 @@ export class AppController {
    */
   @Get('getEdgesById')
   async getEdgesById(
-    @Query('ids', ParseIntArrayPipe) ids: number[],
+    @Query('ids', ParseIntArrayPipe) ids: number[]
   ): Promise<Edge[]> {
     return this.appService.getEdgesById(ids);
   }

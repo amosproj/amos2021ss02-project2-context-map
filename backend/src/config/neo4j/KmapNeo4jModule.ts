@@ -16,11 +16,11 @@ export class KmapNeo4jModule {
    */
   private static replaceDriverWithCustomDriver(
     module: DynamicModule,
-    options: Neo4jDriverOptions,
+    options: Neo4jDriverOptions
   ): DynamicModule {
     const driverProvider = module.providers.find(
       // eslint-disable-next-line dot-notation
-      (provider) => provider['provide'] === NEO4J_DRIVER,
+      (provider) => provider['provide'] === NEO4J_DRIVER
     ) as FactoryProvider;
 
     if (driverProvider == null) {

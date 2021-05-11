@@ -17,7 +17,6 @@ import {
   CancellationTokenSource,
 } from '../utils/CancellationToken';
 import { useContainerSize } from '../utils/useContainerSize';
-import consolidateQueryResult from '../utils/consolidateQueryResult';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -75,11 +74,9 @@ function convertEdges(edges: EdgeDescriptor[]): vis.Edge[] {
 }
 
 function convertQueryResult(queryResult: QueryResult): GraphData {
-  const filteredQueryResult = consolidateQueryResult(queryResult);
-
   return {
-    nodes: convertNodes(filteredQueryResult.nodes),
-    edges: convertEdges(filteredQueryResult.edges),
+    nodes: convertNodes(queryResult.nodes),
+    edges: convertEdges(queryResult.edges),
   };
 }
 
