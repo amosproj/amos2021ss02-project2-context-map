@@ -19,5 +19,6 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with: 
+          install-command: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
           command: yarn run cy:run:unit
           working-directory: ${{ env.working-directory }}
