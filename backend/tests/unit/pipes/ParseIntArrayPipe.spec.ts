@@ -1,5 +1,5 @@
-import { ParseIntArrayPipe } from '../../../src/pipes/ParseIntArrayPipe';
 import { ArgumentMetadata } from '@nestjs/common';
+import { ParseIntArrayPipe } from '../../../src/pipes/ParseIntArrayPipe';
 
 describe('ParseIntArrayPipe', () => {
   const pipe = new ParseIntArrayPipe();

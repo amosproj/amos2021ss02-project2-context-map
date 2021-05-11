@@ -4,6 +4,7 @@
     "es2021": true
   },
   "extends": [
+    "airbnb-base",
     "prettier",
     "plugin:@typescript-eslint/recommended"
   ],
@@ -24,11 +25,18 @@
       }
     ],
     "no-use-before-define": "off",
-    "@typescript-eslint/no-use-before-define": ["error"]
+    "@typescript-eslint/no-use-before-define": ["error"],
+    "import/extensions": "off",
+    "import/prefer-default-export": "off",
+    // Supports constructors with only paramerter properties
+    "no-useless-constructor": "off",
+    "@typescript-eslint/no-useless-constructor": ["error"]
   },
   "settings": {
     "import/resolver": {
-      "typescript": {}
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
     }
   }
 }

@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Neo4jService } from 'nest-neo4j/dist';
 import { AppModule } from '../../src/app.module';
 import { AppService } from '../../src/app.service';
 import { Node } from '../../src/entities/Node';
@@ -11,7 +12,6 @@ import {
 } from '../fixtures/testingDumpData';
 import { QueryResult } from '../../src/entities/queries/QueryResult';
 import { KmapNeo4jModule } from '../../src/config/neo4j/KmapNeo4jModule';
-import { Neo4jService } from 'nest-neo4j/dist';
 
 describe('AppService (e2e)', () => {
   let appService: AppService;
