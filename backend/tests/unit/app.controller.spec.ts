@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from '../../src/app.controller';
 import { AppService } from '../../src/app.service';
-import { QueryResult } from '../../src/entities/queries/QueryResult';
-import { Node } from '../../src/entities/Node';
-import { Edge } from '../../src/entities/Edge';
+import { QueryResult } from '../../src/shared/queries/QueryResult';
+import { Node } from '../../src/shared/entities/Node';
+import { Edge } from '../../src/shared/entities/Edge';
 import * as request from 'supertest';
 import {
   getEdgesByIdDummies,
