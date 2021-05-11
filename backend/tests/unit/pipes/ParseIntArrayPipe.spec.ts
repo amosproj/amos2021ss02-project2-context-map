@@ -1,9 +1,9 @@
-import { ParseIntArrayPipe } from './ParseIntArrayPipe';
+import { ParseIntArrayPipe } from '../../../src/pipes/ParseIntArrayPipe';
 import { ArgumentMetadata } from '@nestjs/common';
 
 describe('ParseIntArrayPipe', () => {
-  let pipe = new ParseIntArrayPipe();
-  let metadata: ArgumentMetadata = {
+  const pipe = new ParseIntArrayPipe();
+  const metadata: ArgumentMetadata = {
     type: 'query',
   };
 
