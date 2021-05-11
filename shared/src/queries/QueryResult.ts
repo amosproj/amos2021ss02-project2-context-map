@@ -4,7 +4,7 @@ import { NodeDescriptor } from '../entities/NodeDescriptor';
 /**
  * Generic Result of an API Query
  */
- export interface QueryResult {
+export interface QueryResult {
   /**
    * NodeDescriptors (array of node-ids) as result of the Query
    */
