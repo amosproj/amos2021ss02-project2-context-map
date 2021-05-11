@@ -6,12 +6,12 @@ import { NodeDescriptor } from './NodeDescriptor';
  */
 export interface Node extends NodeDescriptor {
   /**
-   * labels-property of a neo4j-node
+   * labels-property of a node
    */
   labels: string[];
 
   /**
-   * properties-property of a neo4j-node
+   * properties-property of a node
    */
   properties: {
     [key: string]: Property;
