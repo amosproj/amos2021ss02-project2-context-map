@@ -6,7 +6,15 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import {
+  Accordion,
+  AccordionActions,
+  AccordionDetails,
+  AccordionSummary,
+  Divider,
+} from '@material-ui/core';
 import useService from '../dependency-injection/useService';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
@@ -44,6 +52,19 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     contentContainer: {
       padding: theme.spacing(3),
+    },
+    graphPage: {
+      position: 'absolute',
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    graphContainer: {
+      position: 'relative',
+      flexGrow: 1,
     },
   })
 );
@@ -192,11 +213,28 @@ function Graph(): JSX.Element {
 
   return (
     <>
-      <div
-        className={classes.sizeMeasureContainer}
-        ref={sizeMeasureContainerRef}
-      />
-      <VisGraph graph={graphData} options={options} />
+      <div className={classes.graphPage}>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            Filter
+          </AccordionSummary>
+          <AccordionDetails>TODO</AccordionDetails>
+          <Divider />
+          <AccordionActions>
+            <Button size="small">Reset</Button>
+            <Button size="small" color="primary">
+              Apply
+            </Button>
+          </AccordionActions>
+        </Accordion>
+        <div className={classes.graphContainer}>
+          <div
+            className={classes.sizeMeasureContainer}
+            ref={sizeMeasureContainerRef}
+          />
+          <VisGraph graph={graphData} options={options} />
+        </div>
+      </div>
     </>
   );
 }
