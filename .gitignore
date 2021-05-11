@@ -498,4 +498,3 @@ FodyWeavers.xsd
 
 # End of https://www.toptal.com/developers/gitignore/api/react,visualstudiocode,visualstudio,intellij
 frontend/src/shared
-backend/src/shared
