@@ -4,17 +4,10 @@ import {
   Injectable,
   Optional,
   ParseIntPipe,
+  ParseIntPipeOptions,
   PipeTransform,
 } from '@nestjs/common';
-import {
-  ErrorHttpStatusCode,
-  HttpErrorByCode,
-} from '@nestjs/common/utils/http-error-by-code.util';
-
-export interface ParseIntPipeOptions {
-  errorHttpStatusCode?: ErrorHttpStatusCode;
-  exceptionFactory?: (error: string) => unknown;
-}
+import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
 
 /**
  * Transforms an input to an int-array.
@@ -28,11 +21,8 @@ export class ParseIntArrayPipe implements PipeTransform {
   private readonly parseIntPipe: ParseIntPipe;
 
   constructor(@Optional() options?: ParseIntPipeOptions) {
-    options = options || {};
-    const {
-      exceptionFactory,
-      errorHttpStatusCode = HttpStatus.BAD_REQUEST,
-    } = options;
+    const { exceptionFactory, errorHttpStatusCode = HttpStatus.BAD_REQUEST } =
+      options || {};
 
     this.exceptionFactory =
       exceptionFactory ||
@@ -46,7 +36,7 @@ export class ParseIntArrayPipe implements PipeTransform {
     metadata: ArgumentMetadata,
   ): Promise<number[]> {
     if (typeof value === 'number' || typeof value === 'string') {
-      value = [value];
+      value = [value]; // eslint-disable-line no-param-reassign
     }
 
     if (Array.isArray(value)) {

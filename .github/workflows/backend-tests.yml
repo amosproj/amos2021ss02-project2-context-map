@@ -15,7 +15,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: chmod +x ${GITHUB_WORKSPACE}/backend/docker/mount/load-dump.sh
       - run: |
           docker run -d -p 7474:7474 -p 7687:7687 \
           	-v ${GITHUB_WORKSPACE}/backend/docker/mount:/mnt/amos \
@@ -25,7 +24,7 @@ jobs:
           	--name neo4j-DB neo4j:enterprise \
           	/mnt/amos/load-dump.sh
       - run: npm install -g yarn
-      - run: yarn install --frozen-lockfile
+      - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
         working-directory: ${{ env.working-directory }}
       - run: npx wait-on http://localhost:7474
       - run: yarn run test

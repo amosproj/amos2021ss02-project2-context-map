@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Neo4jService } from 'nest-neo4j/dist';
 import { AppModule } from '../../src/app.module';
 import { AppService } from '../../src/app.service';
 import { Node } from '../../src/shared/entities/Node';
@@ -7,10 +8,10 @@ import {
   getEdgesByIdDummies,
   getNodesByIdDummies,
   queryAllDummies,
+  queryAllNoLimitDummies,
 } from '../fixtures/testingDumpData';
 import { QueryResult } from '../../src/shared/queries/QueryResult';
 import { KmapNeo4jModule } from '../../src/config/neo4j/KmapNeo4jModule';
-import { Neo4jService } from 'nest-neo4j/dist';
 
 describe('AppService (e2e)', () => {
   let appService: AppService;
@@ -28,11 +29,12 @@ describe('AppService (e2e)', () => {
   });
 
   afterAll(async () => {
+    // Global teardown
     await neo4jService.getDriver().close();
   });
 
   describe('Method queryAll', () => {
-    it('should return edge and node ids (and from and to for edges)', async () => {
+    it('should return edge and node ids (and from and to for edges) for limit', async () => {
       // Arrange
       const expectedResult = queryAllDummies.queryResult;
 
@@ -45,13 +47,30 @@ describe('AppService (e2e)', () => {
       expect(actualResult).toEqual(expectedResult);
     });
 
+    it('should return edge and node ids (and from and to for edges) for no limit', async () => {
+      // Arrange
+      const expectedResult = queryAllNoLimitDummies.queryResult;
+
+      // Act
+      const actualResult: QueryResult = await appService.queryAll();
+
+      // Assert
+      expect(actualResult).toEqual(expectedResult);
+    });
+
     it('should return no nodes when called with nodes limited to 0', async () => {
+      // Arrange
       const result = await appService.queryAll({ limit: { nodes: 0 } });
+
+      // Act & Assert
       expect(result.nodes.length).toEqual(0);
     });
 
     it('should return no edges when called with edges limited to 0', async () => {
+      // Arrange
       const result = await appService.queryAll({ limit: { edges: 0 } });
+
+      // Act & Assert
       expect(result.edges.length).toEqual(0);
     });
   });
@@ -73,6 +92,7 @@ describe('AppService (e2e)', () => {
 
   describe('Method getEdgesById', () => {
     it('should return edges corresponding to ids', async () => {
+      // Arrange
       const expectedEdges: Edge[] = getEdgesByIdDummies.edges;
 
       // Act

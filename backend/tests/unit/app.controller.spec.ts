@@ -1,19 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import * as request from 'supertest';
+import { FactoryProvider, INestApplication } from '@nestjs/common';
 import { AppController } from '../../src/app.controller';
 import { AppService } from '../../src/app.service';
 import { QueryResult } from '../../src/shared/queries/QueryResult';
 import { Node } from '../../src/shared/entities/Node';
 import { Edge } from '../../src/shared/entities/Edge';
-import * as request from 'supertest';
 import {
   getEdgesByIdDummies,
   getNodesByIdDummies,
   queryAllDummies,
 } from '../fixtures/testingDumpData';
-import { FactoryProvider, INestApplication } from '@nestjs/common';
 
 const notImplemented = () => {
-  throw 'Not implemented';
+  throw new Error('Not implemented');
 };
 
 describe('AppController', () => {
@@ -97,7 +97,7 @@ describe('AppController', () => {
         .expect(200, result);
 
       // Assert mock called with parameter from the query params
-      expect(getNodesById).toBeCalledWith([1, 2, 3]);
+      expect(getNodesById).toBeCalledWith(getNodesByIdDummies.ids);
     });
   });
 
@@ -115,7 +115,7 @@ describe('AppController', () => {
         .get('/getEdgesById?ids=1&ids=2')
         .expect(200, result);
 
-      expect(getEdgesById).toBeCalledWith([1, 2]);
+      expect(getEdgesById).toBeCalledWith(getEdgesByIdDummies.ids);
     });
   });
 });

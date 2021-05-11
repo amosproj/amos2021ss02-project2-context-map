@@ -35,7 +35,6 @@ function deduplicateEntities<T extends HasId>(
   return result;
 }
 
-
 /**
  * Consolidates the specified query result, such that it contains only edges
  * that's to and from nodes are included in the query-result.

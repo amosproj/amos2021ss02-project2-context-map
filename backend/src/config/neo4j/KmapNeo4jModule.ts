@@ -1,13 +1,12 @@
 import { DynamicModule, FactoryProvider } from '@nestjs/common';
 import { Neo4jConfig, Neo4jModule } from 'nest-neo4j/dist';
 import { NEO4J_DRIVER } from 'nest-neo4j/dist/neo4j.constants';
-import { createNeo4jDriver } from './createNeo4jDriver';
 import { Config as Neo4jDriverOptions } from 'neo4j-driver';
+import { createNeo4jDriver } from './createNeo4jDriver';
 
 /**
  * Drop in replacement for {@link Neo4jModule} to enable
  * additional neo4j driver options.
- * TODO Create Tests
  */
 export class KmapNeo4jModule {
   /**
@@ -20,10 +19,12 @@ export class KmapNeo4jModule {
     options: Neo4jDriverOptions,
   ): DynamicModule {
     const driverProvider = module.providers.find(
-      (provider: unknown) => provider['provide'] === NEO4J_DRIVER,
+      // eslint-disable-next-line dot-notation
+      (provider) => provider['provide'] === NEO4J_DRIVER,
     ) as FactoryProvider;
 
     if (driverProvider == null) {
+      /* istanbul ignore next */
       throw Error('Neo4j driver provider not found.');
     }
 

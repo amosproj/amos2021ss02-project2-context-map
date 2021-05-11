@@ -15,7 +15,10 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   /**
-   * Returns a list the ids of all nodes
+   * Returns QueryResult for given LimitQuery from appService
+   *
+   * @param query  sets limits for number of nodes and edges to be send to appService
+   * @return QueryResult for given limitQuery
    */
   @Post('queryAll')
   @HttpCode(200)
@@ -24,7 +27,10 @@ export class AppController {
   }
 
   /**
-   * Returns list of Nodes
+   * Returns array of nodes for given array of node-ids
+   *
+   * @param ids  node-ids that are being given to appService; string to number conversion is done by ParseIntArrayPipe
+   * @return array of nodes having the input-ids as id ordered by id
    */
   @Get('getNodesById')
   async getNodesById(
@@ -34,9 +40,10 @@ export class AppController {
   }
 
   /**
-   * Returns list of detailed edges
+   * Returns array of edges for given array of node-ids
    *
-   * @example call it with /getEdgesById?ids=1&ids=2
+   * @param ids  edge-ids that are being given to appService; string to number conversion is done by ParseIntArrayPipe
+   * @return array of edges having the input-ids as id ordered by id
    */
   @Get('getEdgesById')
   async getEdgesById(

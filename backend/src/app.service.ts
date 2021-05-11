@@ -11,33 +11,51 @@ import { NodeDescriptor } from './shared/entities/NodeDescriptor';
 export class AppService {
   constructor(private readonly neo4jService: Neo4jService) {}
 
+  /**
+   * Queries Node- and EdgeDescriptors for given LimitQuery
+   *
+   * @param query  sets limits for number of nodes and edges to be queried
+   * @return Node- and EdgeDescriptors for given limitQuery as QueryResult
+   */
   async queryAll(query?: LimitQuery): Promise<QueryResult> {
     return {
-      edges: query?.limit?.edges === 0 ? [] : await this.getAllEdges(query),
-      nodes: query?.limit?.nodes === 0 ? [] : await this.getAllNodes(query),
+      nodes:
+        query?.limit?.nodes === 0
+          ? []
+          : await this.getAllNodes(query?.limit?.nodes),
+      edges:
+        query?.limit?.edges === 0
+          ? []
+          : await this.getAllEdges(query?.limit?.edges),
     };
   }
 
   /**
-   * Returns a list the ids of all nodes
+   * Queries NodeDescriptors for a given limit of number of nodes
+   *
+   * @param nodeLimit  limit number of nodes to be queried
+   * @return NodeDescriptor as a result of the Query
    */
-  private async getAllNodes(query?: LimitQuery): Promise<NodeDescriptor[]> {
+  private async getAllNodes(nodeLimit?: number): Promise<NodeDescriptor[]> {
     // toInteger required, since apparently it converts int to double...
     const result = await this.neo4jService.read(
       `
-      MATCH (n)
-      RETURN ID(n) as id
-      ${query?.limit?.nodes ? 'LIMIT toInteger($limitNodes)' : ''}
+      MATCH (n) 
+      RETURN ID(n) as id 
+      ${nodeLimit ? 'LIMIT toInteger($limitNodes)' : ''}
     `,
       {
-        limitNodes: query?.limit?.nodes,
+        limitNodes: nodeLimit,
       },
     );
     return result.records.map((x) => x.toObject() as NodeDescriptor);
   }
 
   /**
-   * Returns list of Nodes
+   * Queries nodes for a given array of ids
+   *
+   * @param ids  node-ids that are being searched for
+   * @return array of nodes having the input-ids as id ordered by id
    */
   async getNodesById(ids: number[]): Promise<Node[]> {
     const result = await this.neo4jService.read(
@@ -49,28 +67,33 @@ export class AppService {
   }
 
   /**
-   * Returns a list the ids of all edges
+   * Queries EdgeDescriptors for a given limit of number of edges
+   *
+   * @param edgeLimit  limit number of edges to be queried
+   * @return EdgeDescriptor as a result of the Query
    */
-  private async getAllEdges(query?: LimitQuery): Promise<EdgeDescriptor[]> {
+  private async getAllEdges(edgeLimit?: number): Promise<EdgeDescriptor[]> {
     // toInteger required, since apparently it converts int to double...
     const result = await this.neo4jService.read(
       `
       MATCH (from)-[e]-(to) 
       RETURN ID(e) as id, ID(from) as from, ID(to) as to
       ORDER BY id, from
-      ${query?.limit?.edges ? 'LIMIT toInteger($limitEdges)' : ''}
+      ${edgeLimit ? 'LIMIT toInteger($limitEdges)' : ''}
     `,
       {
-        limitEdges: query?.limit?.edges,
+        limitEdges: edgeLimit,
       },
     );
     return result.records.map((r) => r.toObject() as EdgeDescriptor);
   }
 
   /**
-   * Returns list of detailed edges
+   * Queries edges for a given array of ids
    *
    * @example call it with /getEdgesById?ids=1&ids=2
+   * @param ids  edge-ids that are being searched for
+   * @return array of edges having the input-ids as id ordered by id
    */
   async getEdgesById(ids: number[]): Promise<Edge[]> {
     const result = await this.neo4jService.read(
