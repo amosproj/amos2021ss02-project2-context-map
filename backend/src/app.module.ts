@@ -4,6 +4,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { configuration } from './config/configuration';
 import { KmapNeo4jModule } from './config/neo4j/KmapNeo4jModule';
+import { GraphInfoController } from './graph-info/graph-info.controller';
+import { GraphInfoService } from './graph-info/graph-info.service';
 
 @Module({
   imports: [
@@ -17,7 +19,7 @@ import { KmapNeo4jModule } from './config/neo4j/KmapNeo4jModule';
       disableLosslessIntegers: true,
     }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, GraphInfoController],
+  providers: [AppService, GraphInfoService],
 })
 export class AppModule {}
