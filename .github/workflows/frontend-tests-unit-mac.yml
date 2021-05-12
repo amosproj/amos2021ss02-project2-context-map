@@ -1,4 +1,4 @@
-name: Frontend unit tests
+name: Frontend unit tests mac
 on: 
   push:
     branches:

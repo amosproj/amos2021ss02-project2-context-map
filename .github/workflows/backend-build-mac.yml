@@ -1,4 +1,4 @@
-name: Backend build
+name: Backend build mac
 on: 
   push:
     branches:

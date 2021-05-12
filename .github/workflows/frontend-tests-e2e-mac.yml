@@ -1,4 +1,4 @@
-name: Frontend e2e tests
+name: Frontend e2e tests mac
 on: 
   push:
     branches:
