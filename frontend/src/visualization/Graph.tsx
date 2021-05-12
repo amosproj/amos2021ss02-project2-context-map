@@ -24,7 +24,7 @@ import {
   CancellationToken,
   CancellationTokenSource,
 } from '../utils/CancellationToken';
-import { useContainerSize } from '../utils/useContainerSize';
+import { useSize } from '../utils/useSize';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -65,6 +65,8 @@ const useStyles = makeStyles((theme: Theme) =>
     graphContainer: {
       position: 'relative',
       flexGrow: 1,
+      overflowY: 'hidden',
+      overflowX: 'hidden',
     },
   })
 );
@@ -141,7 +143,7 @@ function Graph(): JSX.Element {
   const sizeMeasureContainerRef = useRef<HTMLDivElement>(null);
 
   // The size of the container that is used to measure the available space for the graph.
-  const containerSize = useContainerSize(sizeMeasureContainerRef);
+  const containerSize = useSize(sizeMeasureContainerRef);
 
   // The query service injected from DI.
   const queryService = useService(QueryService, null);
