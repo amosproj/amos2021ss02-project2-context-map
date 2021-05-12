@@ -13,12 +13,12 @@ import {
  */
 export const createNeo4jDriver = async (
   config: Neo4jConfig,
-  neo4jConfig: OriginalNeo4jConfig,
+  neo4jConfig: OriginalNeo4jConfig
 ): Promise<Driver> => {
   const driver = neo4jDriver(
     `${config.scheme}://${config.host}:${config.port}`,
     auth.basic(config.username, config.password),
-    neo4jConfig,
+    neo4jConfig
   );
 
   await driver.verifyConnectivity();

@@ -6,7 +6,12 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "prebuild": "rimraf dist && yarn lint",
+    "postinstall": "run-script-os",
+    "postinstall:windows": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ..\\build\\backend-prebuild.ps1",
+    "postinstall:default": "../build/backend-prebuild.sh",
+    "prebuild": "run-script-os",
+    "prebuild:windows": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ..\\build\\backend-prebuild.ps1",
+    "prebuild:default": "../build/backend-prebuild.sh",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -28,7 +33,8 @@
     "neo4j-driver": "^4.2.3",
     "nest-neo4j": "^0.1.4",
     "reflect-metadata": "^0.1.13",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "run-script-os": "^1.1.6"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.6.0",

@@ -1,5 +1,5 @@
-import { EdgeDescriptor } from '../EdgeDescriptor';
-import { NodeDescriptor } from '../NodeDescriptor';
+import { EdgeDescriptor } from '../entities/EdgeDescriptor';
+import { NodeDescriptor } from '../entities/NodeDescriptor';
 
 /**
  * Generic Result of an API Query

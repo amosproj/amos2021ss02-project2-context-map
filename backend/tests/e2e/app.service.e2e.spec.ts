@@ -2,15 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Neo4jService } from 'nest-neo4j/dist';
 import { AppModule } from '../../src/app.module';
 import { AppService } from '../../src/app.service';
-import { Node } from '../../src/entities/Node';
-import { Edge } from '../../src/entities/Edge';
+import { Node } from '../../src/shared/entities/Node';
+import { Edge } from '../../src/shared/entities/Edge';
 import {
   getEdgesByIdDummies,
   getNodesByIdDummies,
   queryAllDummies,
   queryAllNoLimitDummies,
 } from '../fixtures/testingDumpData';
-import { QueryResult } from '../../src/entities/queries/QueryResult';
+import { QueryResult } from '../../src/shared/queries/QueryResult';
 import { KmapNeo4jModule } from '../../src/config/neo4j/KmapNeo4jModule';
 
 describe('AppService (e2e)', () => {
@@ -40,7 +40,7 @@ describe('AppService (e2e)', () => {
 
       // Act
       const actualResult: QueryResult = await appService.queryAll(
-        queryAllDummies.limitQuery,
+        queryAllDummies.limitQuery
       );
 
       // Assert
@@ -82,7 +82,7 @@ describe('AppService (e2e)', () => {
 
       // Act
       const actualNodes: Node[] = await appService.getNodesById(
-        getNodesByIdDummies.ids,
+        getNodesByIdDummies.ids
       );
 
       // Assert
@@ -97,7 +97,7 @@ describe('AppService (e2e)', () => {
 
       // Act
       const actualEdges: Edge[] = await appService.getEdgesById(
-        getEdgesByIdDummies.ids,
+        getEdgesByIdDummies.ids
       );
 
       // Assert

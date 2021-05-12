@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
-import { Node } from './entities/Node';
-import { EdgeDescriptor } from './entities/EdgeDescriptor';
-import { Edge } from './entities/Edge';
-import { QueryResult } from './entities/queries/QueryResult';
-import { LimitQuery } from './entities/queries/LimitQuery';
-import { NodeDescriptor } from './entities/NodeDescriptor';
+import { Node } from './shared/entities/Node';
+import { EdgeDescriptor } from './shared/entities/EdgeDescriptor';
+import { Edge } from './shared/entities/Edge';
+import { QueryResult } from './shared/queries/QueryResult';
+import { LimitQuery } from './shared/queries/LimitQuery';
+import { NodeDescriptor } from './shared/entities/NodeDescriptor';
+import consolidateQueryResult from './utils/consolidateQueryResult';
 
 @Injectable()
 export class AppService {
@@ -18,7 +19,7 @@ export class AppService {
    * @return Node- and EdgeDescriptors for given limitQuery as QueryResult
    */
   async queryAll(query?: LimitQuery): Promise<QueryResult> {
-    return {
+    const queryResult = {
       nodes:
         query?.limit?.nodes === 0
           ? []
@@ -28,6 +29,8 @@ export class AppService {
           ? []
           : await this.getAllEdges(query?.limit?.edges),
     };
+
+    return consolidateQueryResult(queryResult);
   }
 
   /**
@@ -46,7 +49,7 @@ export class AppService {
     `,
       {
         limitNodes: nodeLimit,
-      },
+      }
     );
     return result.records.map((x) => x.toObject() as NodeDescriptor);
   }
@@ -60,7 +63,7 @@ export class AppService {
   async getNodesById(ids: number[]): Promise<Node[]> {
     const result = await this.neo4jService.read(
       'MATCH (n) WHERE ID(n) IN $ids RETURN ID(n) as id, labels(n) as labels, properties(n) as properties',
-      { ids },
+      { ids }
     );
 
     return result.records.map((record) => record.toObject() as Node);
@@ -76,14 +79,14 @@ export class AppService {
     // toInteger required, since apparently it converts int to double...
     const result = await this.neo4jService.read(
       `
-      MATCH (from)-[e]-(to) 
+      MATCH (from)-[e]->(to) 
       RETURN ID(e) as id, ID(from) as from, ID(to) as to
       ORDER BY id, from
       ${edgeLimit ? 'LIMIT toInteger($limitEdges)' : ''}
     `,
       {
         limitEdges: edgeLimit,
-      },
+      }
     );
     return result.records.map((r) => r.toObject() as EdgeDescriptor);
   }
@@ -98,12 +101,12 @@ export class AppService {
   async getEdgesById(ids: number[]): Promise<Edge[]> {
     const result = await this.neo4jService.read(
       `
-      MATCH (from)-[e]-(to) 
+      MATCH (from)-[e]->(to) 
       WHERE ID(e) in $ids
       RETURN ID(e) as id, ID(from) as from, ID(to) as to, properties(e) as properties, type(e) as type
       ORDER BY id, from
     `,
-      { ids },
+      { ids }
     );
 
     return result.records.map((r) => r.toObject() as Edge);

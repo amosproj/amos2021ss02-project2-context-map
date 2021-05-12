@@ -9,10 +9,6 @@ export interface Edge extends EdgeDescriptor {
    * type-property of a neo4j-edge
    */
   type: string;
-
-  /**
-   * properties-property of a neo4j-edge
-   */
   properties: {
     [key: string]: Property;
   };

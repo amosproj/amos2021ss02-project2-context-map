@@ -23,14 +23,14 @@ describe('ParseIntArrayPipe', () => {
     it('should return int array when called with int array', async () => {
       // Act & Assert
       await expect(
-        pipe.transform([1, 2, 3, 4], metadata),
+        pipe.transform([1, 2, 3, 4], metadata)
       ).resolves.toStrictEqual([1, 2, 3, 4]);
     });
 
     it('should return int array when called with string array', async () => {
       // Act & Assert
       await expect(
-        pipe.transform(['1', '2', '3'], metadata),
+        pipe.transform(['1', '2', '3'], metadata)
       ).resolves.toStrictEqual([1, 2, 3]);
     });
   });
