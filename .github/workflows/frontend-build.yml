@@ -24,7 +24,7 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
         uses: actions/cache@v2
         with:
-          path: ~/AppData/Local/Cypress/Cache/${{ steps.cypress-version-frontend }}
+          path: ~/AppData/Local/Cypress/Cache/${{ steps.cypress-version-frontend.outputs.version }}
           key: cypress-cache-windows-${{ matrix.node-version }}-${{ steps.cypress-version-frontend.outputs.version }}
       - run: npm install -g yarn
       - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
