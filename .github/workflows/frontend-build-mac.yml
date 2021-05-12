@@ -1,11 +1,13 @@
 name: Frontend build
-on: [push]
+on: 
+  push:
+    branches:
+      - main
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-latest
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
         node-version: [12.x, 14.x, 15.x]
     env:
       working-directory: ./frontend

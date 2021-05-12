@@ -1,11 +1,13 @@
 name: Frontend e2e tests
-on: [push]
+on: 
+  push:
+    branches:
+      - main
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-latest
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
         node-version: [12.x, 14.x]
         browser: [chrome, firefox]
         include:

@@ -1,20 +1,14 @@
-name: Frontend e2e tests
-on: [push]
+name: Frontend unit tests
+on: 
+  push:
+    branches:
+      - main
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-latest
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
         node-version: [12.x, 14.x]
-        browser: [chrome, firefox]
-        include:
-          - os: windows-latest
-            node-version: 12.x
-            browser: edge
-          - os: windows-latest
-            node-version: 14.x
-            browser: edge
     env:
       working-directory: ./frontend
     steps:
@@ -28,8 +22,5 @@ jobs:
         uses: cypress-io/github-action@v2
         with: 
           install-command: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
-          start: yarn run start
-          wait-on: 'http://localhost:3000'
-          wait-on-timeout: 120
-          browser: ${{ matrix.browser }}
+          command: yarn run cy:run:unit
           working-directory: ${{ env.working-directory }}
