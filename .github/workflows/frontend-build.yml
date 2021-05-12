@@ -15,7 +15,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: echo ${{ matrix.os }}
       - name: Get cypress version from yarn.lock
         if: ${{ matrix.os == 'windows-latest' }}
         id: cypress-version-frontend
