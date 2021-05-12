@@ -12,7 +12,8 @@ describe('GraphInfoController', () => {
     const GraphInfoServiceMock: FactoryProvider = {
       provide: GraphInfoService,
       useFactory: () => ({
-        getEntityTypes: jest.fn(() => []),
+        getEdgeTypes: jest.fn(() => []),
+        getNodeTypes: jest.fn(() => []),
       }),
     };
 
@@ -36,28 +37,14 @@ describe('GraphInfoController', () => {
     describe('successful requests', () => {
       it('should return edge information', async () => {
         await request(app.getHttpServer())
-          .get(`${baseUrl}/getEntityTypes?which=edges`)
+          .get(`${baseUrl}/getEdgeTypes`)
           .expect(200);
       });
 
       it('should return node information', async () => {
         await request(app.getHttpServer())
-          .get(`${baseUrl}/getEntityTypes?which=edges`)
+          .get(`${baseUrl}/getNodeTypes`)
           .expect(200);
-      });
-    });
-
-    describe('errors', () => {
-      it('should fail if query-param is not given', async () => {
-        await request(app.getHttpServer())
-          .get(`${baseUrl}/getEntityTypes`)
-          .expect(500);
-      });
-
-      it('should fail if query-param is wrong', async () => {
-        await request(app.getHttpServer())
-          .get(`${baseUrl}/getEntityTypes?which=everything`)
-          .expect(500);
       });
     });
   });

@@ -1,26 +1,25 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { GraphInfoService } from './graph-info.service';
-import { EntityType } from '../shared/graph-information/EntityType';
+import { NodeType } from '../shared/graph-information/NodeType';
+import { EdgeType } from '../shared/graph-information/EdgeType';
 
 @Controller('graphInfo')
 export class GraphInfoController {
   constructor(private readonly graphInfoService: GraphInfoService) {}
 
   /**
-   * Returns information about all nodes or edges of a graph
-   * @param whichQuery either 'nodes' or 'edges'
+   * Returns information about all edges of a graph
    */
-  @Get('getEntityTypes')
-  getEntityTypes(@Query('which') whichQuery: string): Promise<EntityType[]> {
-    let about: 'node' | 'rel';
-    if (whichQuery === 'edges') {
-      about = 'rel';
-    } else if (whichQuery === 'nodes') {
-      about = 'node';
-    } else {
-      throw Error(`Query-Parameter 'about' must be either 'nodes' or 'edges'`);
-    }
+  @Get('getEdgeTypes')
+  getEdgeTypes(): Promise<EdgeType[]> {
+    return this.graphInfoService.getEdgeTypes();
+  }
 
-    return this.graphInfoService.getEntityTypes(about);
+  /**
+   * Returns information about all nodes of a graph
+   */
+  @Get('getNodeTypes')
+  getNodeTypes(): Promise<NodeType[]> {
+    return this.graphInfoService.getNodeTypes();
   }
 }

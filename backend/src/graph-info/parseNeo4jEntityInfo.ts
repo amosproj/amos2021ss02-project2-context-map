@@ -38,17 +38,18 @@ export function parseNeo4jEntityInfo(
     // eslint-disable-next-line no-restricted-syntax
     for (let nodeName of nodeNames) {
       // example: map "`User`" to "User"
-      nodeName = nodeName.substring(1, nodeName.length - 1);
+      nodeName = nodeName.slice(1, -1);
 
       // Put nodes in Map if missing
-      if (!types.has(nodeName)) {
-        types.set(nodeName, { name: nodeName, attributes: [] });
+      let entityType = types.get(nodeName);
+      if (!entityType) {
+        entityType = { name: nodeName, attributes: [] };
+        types.set(nodeName, entityType);
       }
 
       // Only push iff name is set
       if (attr.name !== null) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        types.get(nodeName)!.attributes.push(attr); // not null was asserted before
+        entityType.attributes.push(attr);
       }
     }
   }

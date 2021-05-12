@@ -1,26 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
 import { parseNeo4jEntityInfo } from './parseNeo4jEntityInfo';
-import { EntityType } from '../shared/graph-information/EntityType';
+import { EdgeType } from '../shared/graph-information/EdgeType';
+import { NodeType } from '../shared/graph-information/NodeType';
 
 @Injectable()
 export class GraphInfoService {
   constructor(private readonly neo4jService: Neo4jService) {}
 
   /**
-   * Returns information about all nodes or edges of a graph
-   * @param which get graph info about nodes ('node') or relationships/edges ('rel')
+   * Returns information about all edges of a graph
    */
-  async getEntityTypes(which: 'node' | 'rel'): Promise<EntityType[]> {
-    // Throw Error to avoid "SQL"-injection
-    if (which !== 'node' && which !== 'rel') {
-      throw Error(`Parameter must be either 'node' or 'rel'`);
-    }
-
+  async getEdgeTypes(): Promise<EdgeType[]> {
     const result = await this.neo4jService.read(
-      `CALL db.schema.${which}TypeProperties`
+      `CALL db.schema.relTypeProperties`
     );
+    return parseNeo4jEntityInfo(result.records, 'rel');
+  }
 
-    return parseNeo4jEntityInfo(result.records, which);
+  /**
+   * Returns information about all nodes of a graph
+   */
+  async getNodeTypes(): Promise<NodeType[]> {
+    const result = await this.neo4jService.read(
+      `CALL db.schema.nodeTypeProperties`
+    );
+    return parseNeo4jEntityInfo(result.records, 'node');
   }
 }

@@ -1,6 +1,6 @@
 /**
  * Attributes of a entity type.
- * Contains descriptive information about a entity type.
+ * Contains descriptive information about an entity type.
  */
 export interface EntityTypeAttribute {
   /**

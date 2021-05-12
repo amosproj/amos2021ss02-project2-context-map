@@ -34,12 +34,12 @@ describe('GraphInfoService', () => {
 
   describe('Method getEntityTypes', () => {
     it('should return nodes-info when requested', async () => {
-      const result = await service.getEntityTypes('node');
+      const result = await service.getNodeTypes();
       expect(result).toEqual(nodeInfo.expected);
     });
 
     it('should return edges-info when requested', async () => {
-      const result = await service.getEntityTypes('rel');
+      const result = await service.getEdgeTypes();
       expect(result).toEqual(edgeInfo.expected);
     });
   });
