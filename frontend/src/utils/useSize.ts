@@ -15,22 +15,15 @@ export function useSize(ref: React.RefObject<HTMLElement>): ContainerSize {
   // This state holds the current size of the container.
   const [size, setSize] = useState({ width: 0, height: 0 });
 
-  function updateSize(value: ContainerSize) {
-    console.log(
-      `update size: { width: ${value.width}, height: ${value.height} }`
-    );
-    setSize(value);
-  }
-
   useLayoutEffect(() => {
     const element = ref.current;
 
     if (element) {
-      updateSize(element.getBoundingClientRect());
+      setSize(element.getBoundingClientRect());
     }
   }, [ref]);
 
-  useResizeObserver(ref, (entry) => updateSize(entry.contentRect));
+  useResizeObserver(ref, (entry) => setSize(entry.contentRect));
 
   return size;
 }
