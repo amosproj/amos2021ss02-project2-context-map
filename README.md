@@ -19,7 +19,7 @@ This project was created as a university project and is part of the set of AMOS 
 Current development concentrates on creating a minimum viable product for KMAP. Core functionality will be integrating graph data bases, visualizing the graph data in a modular dashboard, and exploring the data with a no-code query builder.
 
 ## How to build
-> :warning: **There is currently no common build system in place. Currently development focuses on this issue, which is tracked by [#37](https://github.com/amosproj/amos-ss2021-project2-context-map/issues/37) and [#60](https://github.com/amosproj/amos-ss2021-project2-context-map/issues/60).**  
+> :warning: **There is currently no common build system in place. Current development focuses on this issue, which is tracked by [#37](https://github.com/amosproj/amos-ss2021-project2-context-map/issues/37) and [#60](https://github.com/amosproj/amos-ss2021-project2-context-map/issues/60).**  
 
 ### Prerequisites
 1. Clone the repository via  
@@ -32,7 +32,7 @@ It is required to install node with version 12.x or higher.
 `npm i -g yarn`
 
 ### Run the project
-> :warning: **Scripts are currently only available for windows platforms or platforms that have powershell installed**  
+> :warning: **Scripts are currently only available for the windows platform or platforms that have powershell installed**  
 
 To start the project, navigate to the `/build` directory within the repository clone and run each of the scripts in the following order within a separate shell instance.
 ```
