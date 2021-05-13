@@ -28,14 +28,23 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
         id: cypress-version-frontend
         run: echo "::set-output name=version::$(node .\build\getCypressVersion)"
-      - name: Setup cypress cache
+      - name: Setup cypress cache (windows)
+        id: cypress-cache-windows
         if: ${{ matrix.os == 'windows-latest' }}
         uses: actions/cache@v2
         with:
           path: ~/AppData/Local/Cypress/Cache/${{ steps.cypress-version-frontend.outputs.version }}
           key: cypress-cache-windows-${{ matrix.node-version }}-${{ steps.cypress-version-frontend.outputs.version }}
+      - name: Setup cypress cache (ubuntu)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        id: cypress-cache-ubuntu
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/Cypress/${{ steps.cypress-version-frontend.outputs.version }}
+          key: cypress-cache-ubuntu-${{ matrix.node-version }}-${{ steps.cypress-version-frontend.outputs.version }}
 
       - name: Cache node_modules
+        if: ${{ steps.cypress-cache-ubuntu.outputs.cache-hit == 'true' || steps.cypress-cache-windows.outputs.cache-hit == 'true' }}
         uses: actions/cache@v2
         with:
           path: frontend/node_modules
