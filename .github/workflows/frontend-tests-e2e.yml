@@ -23,10 +23,28 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: Get cypress version from yarn.lock
+        if: ${{ matrix.os == 'windows-latest' }}
+        id: cypress-version-frontend
+        run: echo "::set-output name=version::$(node .\build\getCypressVersion)"
+      - name: Setup cypress cache
+        if: ${{ matrix.os == 'windows-latest' }}
+        uses: actions/cache@v2
+        with:
+          path: ~/AppData/Local/Cypress/Cache/${{ steps.cypress-version-frontend.outputs.version }}
+          key: cypress-cache-windows-${{ matrix.node-version }}-${{ steps.cypress-version-frontend.outputs.version }}
+
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        with:
+          path: frontend/node_modules
+          key: ${{ matrix.os }}-${{ matrix.node-version }}-yarn-frontend-${{ hashFiles('frontend/yarn.lock') }}
+
       - run: npm install -g yarn
       - name: Cypress run
         uses: cypress-io/github-action@v2
-        with: 
+        with:
           install-command: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
           start: yarn run start
           wait-on: 'http://localhost:3000'
