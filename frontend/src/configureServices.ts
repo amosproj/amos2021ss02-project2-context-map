@@ -14,14 +14,13 @@ export default function configureServices(container: Container): void {
   // A service used for testing the DI setup
   container.bind(RandomNumberGenerator).to(RandomNumberGeneratorImpl);
 
-  container.bind(HTTPHelper).toSelf();
-
-  container.bind(QueryService).toDynamicValue(
-    (context) =>
-      new QueryServiceImpl(context.container.get(HTTPHelper), {
-        backendBaseUri: process.env.REACT_APP_QUERY_SERVICE_BACKEND_BASE_URI,
-      })
+  container.bind(HTTPHelper).toConstantValue(
+    new HTTPHelper({
+      baseUri: process.env.REACT_APP_QUERY_SERVICE_BASE_URI,
+    })
   );
+
+  container.bind(QueryService).to(QueryServiceImpl);
 
   // Add your services here...
 }

@@ -4,6 +4,7 @@ import ArgumentError from '../errors/ArgumentError';
 import CancellationError from '../utils/CancellationError';
 import { CancellationToken } from '../utils/CancellationToken';
 import nop from '../utils/nop';
+import { HTTPHelperOptions } from './HTTPHelperOptions';
 import NetworkError from './NetworkError';
 
 interface HttpHeaderCollection {
@@ -45,10 +46,36 @@ function parseResponseHeaders(headers: string): HttpHeaderCollection {
   return result;
 }
 
+/**
+ * Builds the query service options.
+ * @param options The partial options that very specified externally.
+ * @returns The built options.
+ */
+function buildOptions(options: Partial<HTTPHelperOptions>): HTTPHelperOptions {
+  let { baseUri } = options;
+
+  // As per the spec of HTTPHelperOptions, we use the base URI of the source the frontend
+  // was loaded from, if no base uri was specified in the options.
+  if (!baseUri) {
+    const { location } = window;
+    baseUri = `${location.protocol}//${location.host}/${
+      location.pathname.split('/')[1]
+    }`;
+  }
+
+  return { baseUri };
+}
+
 @injectable()
 export default class HTTPHelper {
+  private readonly options: HTTPHelperOptions;
+
+  public constructor(options: Partial<HTTPHelperOptions> = {}) {
+    this.options = buildOptions(options);
+  }
+
   public tryPost<TResult>(
-    url: string,
+    url: string | URL,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     body: any,
     headers?: HttpHeaderCollection,
@@ -56,7 +83,7 @@ export default class HTTPHelper {
   ): Promise<HTTPResponse<TResult>>;
 
   public tryPost<TResult>(
-    url: string,
+    url: string | URL,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     body: any,
     cancellation?: CancellationToken
@@ -64,7 +91,7 @@ export default class HTTPHelper {
 
   // eslint-disable-next-line class-methods-use-this
   public tryPost<TResult>(
-    url: string,
+    url: string | URL,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     body: any,
     headersOrCancellation?: CancellationToken | HttpHeaderCollection,
@@ -80,6 +107,14 @@ export default class HTTPHelper {
       headers = { ...headers, ...headersOrCancellation };
     }
 
+    let parsedURL: URL;
+
+    if (typeof url === 'string') {
+      parsedURL = new URL(url, this.options.baseUri);
+    } else {
+      parsedURL = url;
+    }
+
     return new Promise<HTTPResponse<TResult>>((resolve, reject) => {
       // If the cancellation token is already canceled, we can reject right away.
       if (resolvedCancellation?.isCancellationRequested) {
@@ -87,7 +122,7 @@ export default class HTTPHelper {
       }
 
       const request = new XMLHttpRequest();
-      request.open('post', url, true);
+      request.open('post', parsedURL.href, true);
 
       // Process the request-headers
       // Walk over all attributes of the 'headers' object and set the key-value pairs as request header.
@@ -162,7 +197,7 @@ export default class HTTPHelper {
   }
 
   public post<TResult>(
-    url: string,
+    url: string | URL,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     body: any,
     headers?: HttpHeaderCollection,
@@ -170,14 +205,14 @@ export default class HTTPHelper {
   ): Promise<TResult>;
 
   public post<TResult>(
-    url: string,
+    url: string | URL,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     body: any,
     cancellation?: CancellationToken
   ): Promise<TResult>;
 
   public async post<TResult>(
-    url: string,
+    url: string | URL,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     body: any,
     headersOrCancellation?: CancellationToken | HttpHeaderCollection,
