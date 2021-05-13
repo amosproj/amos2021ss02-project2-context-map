@@ -1,4 +1,5 @@
 import { Container } from 'inversify';
+import HTTPHelper from './services/HTTPHelper';
 import QueryService from './services/QueryService';
 import QueryServiceImpl from './services/QueryServiceImpl';
 import RandomNumberGenerator from './services/RandomNumberGenerator';
@@ -13,10 +14,13 @@ export default function configureServices(container: Container): void {
   // A service used for testing the DI setup
   container.bind(RandomNumberGenerator).to(RandomNumberGeneratorImpl);
 
-  container.bind(QueryService).toConstantValue(
-    new QueryServiceImpl({
-      backendBaseUri: process.env.REACT_APP_QUERY_SERVICE_BACKEND_BASE_URI,
-    })
+  container.bind(HTTPHelper).toSelf();
+
+  container.bind(QueryService).toDynamicValue(
+    (context) =>
+      new QueryServiceImpl(context.container.get(HTTPHelper), {
+        backendBaseUri: process.env.REACT_APP_QUERY_SERVICE_BACKEND_BASE_URI,
+      })
   );
 
   // Add your services here...

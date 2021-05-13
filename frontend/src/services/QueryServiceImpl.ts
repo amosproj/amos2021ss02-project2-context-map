@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { LimitQuery } from '../shared/queries/LimitQuery';
 import { QueryResult } from '../shared/queries/QueryResult';
 import { CancellationToken } from '../utils/CancellationToken';
-import { httpPost } from './httpPost';
+import HTTPHelper from './HTTPHelper';
 import QueryService from './QueryService';
 import { QueryServiceOptions } from './QueryServiceOptions';
 
@@ -37,7 +37,10 @@ function buildOptions(
 export default class QueryServiceImpl extends QueryService {
   private readonly options: QueryServiceOptions;
 
-  public constructor(options: Partial<QueryServiceOptions> = {}) {
+  public constructor(
+    private readonly http: HTTPHelper,
+    options: Partial<QueryServiceOptions> = {}
+  ) {
     super();
 
     this.options = buildOptions(options);
@@ -49,6 +52,6 @@ export default class QueryServiceImpl extends QueryService {
   ): Promise<QueryResult> {
     const url = `${this.options.backendBaseUri}/queryAll`;
 
-    return httpPost<QueryResult>(url, query, cancellation);
+    return this.http.post<QueryResult>(url, query, cancellation);
   }
 }
