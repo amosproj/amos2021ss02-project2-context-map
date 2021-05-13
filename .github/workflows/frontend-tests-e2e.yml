@@ -1,13 +1,13 @@
 name: Frontend e2e tests
-on: [push]
+on: [ push ]
 jobs:
   test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
-        node-version: [12.x, 14.x]
-        browser: [chrome, firefox]
+        os: [ windows-latest, ubuntu-latest ]
+        node-version: [ 12.x, 14.x ]
+        browser: [ chrome, firefox ]
         include:
           - os: windows-latest
             node-version: 12.x
@@ -24,10 +24,15 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - run: npm install -g yarn
+      - run: npm install -g wait-on
+      - name: npm install -g pm2 # used to start server in parallel
+        run: npm install -g pm2
+
       - name: Get cypress version from yarn.lock
-        if: ${{ matrix.os == 'windows-latest' }}
         id: cypress-version-frontend
         run: echo "::set-output name=version::$(node .\build\getCypressVersion)"
+
       - name: Setup cypress cache (windows)
         id: cypress-cache-windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -50,9 +55,6 @@ jobs:
           path: frontend/node_modules
           key: ${{ matrix.os }}-${{ matrix.node-version }}-yarn-frontend-${{ hashFiles('frontend/yarn.lock') }}
 
-      - run: npm install -g yarn
-      - name: npm install -g pm2 # used to start server in parallel
-        run: npm install -g pm2
       - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
         working-directory: ${{ env.working-directory }}
 
@@ -60,11 +62,11 @@ jobs:
         run: pm2 start ./build/start-frontend-detached.js
 
       - name: Wait on Dev Server
-        run: npx wait-on http://localhost:3000
+        run: wait-on http://localhost:3000
         timeout-minutes: 3
 
       - name: Cypress run
-        run: yarn run cy:run:e2e --browser ${{ matrix.browser }}
+        run: yarn run cy:run:e2e --browser ${{ matrix.browser }} --headless
         working-directory: ${{ env.working-directory }}
 
       - name: Stop Dev Server
