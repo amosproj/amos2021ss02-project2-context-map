@@ -7,12 +7,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import {
-  Grid,
-  GridList,
-  ListItemText,
-  withStyles,
-} from '@material-ui/core';
+import { Grid, IconButton, ListItemText, withStyles } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
 import useService from '../dependency-injection/useService';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
@@ -96,7 +92,6 @@ const useStyles = makeStyles((theme: Theme) =>
       left: 0,
       right: 0,
       display: 'flex',
-      flexDirection: 'column',
     },
     graphContainer: {
       position: 'relative',
@@ -104,15 +99,8 @@ const useStyles = makeStyles((theme: Theme) =>
       overflowY: 'hidden',
       overflowX: 'hidden',
     },
-    listContainer: {
-      maxWidth: 360,
-    },
     margin: {
       margin: theme.spacing(1),
-    },
-    gridList: {
-      width: 200,
-      height: 200,
     },
   })
 );
@@ -273,6 +261,9 @@ function Graph(): JSX.Element {
         >
           {name}
         </BootstrapButton>
+        <IconButton aria-label="upload picture" component="span">
+          <AddIcon />
+        </IconButton>
       </Grid>
     );
   });
@@ -291,6 +282,9 @@ function Graph(): JSX.Element {
         >
           {name}
         </BootstrapButton>
+        <IconButton aria-label="upload picture" component="span">
+          <AddIcon />
+        </IconButton>
       </Grid>
     );
   });
@@ -298,14 +292,12 @@ function Graph(): JSX.Element {
   return (
     <>
       <div className={classes.graphPage}>
-        <GridList cellHeight={160} className={classes.gridList} cols={1}>
-          <Grid justify="flex-start">
-            <ListItemText primary="Node Types" />
-            {nodeTypes}
-            <ListItemText primary="Edge Types" />
-            {edgeTypes}
-          </Grid>
-        </GridList>
+        <div className={classes.margin}>
+          <ListItemText primary="Node Types" />
+          <div>{nodeTypes}</div>
+          <ListItemText primary="Edge Types" />
+          {edgeTypes}
+        </div>
         <div className={classes.graphContainer}>
           <div
             className={classes.sizeMeasureContainer}
