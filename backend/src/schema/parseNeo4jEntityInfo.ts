@@ -24,7 +24,7 @@ export function parseNeo4jEntityInfo(
   // eslint-disable-next-line no-restricted-syntax
   for (const record of result) {
     // Parse properties
-    const attr: EntityTypeProperty = {
+    const prop: EntityTypeProperty = {
       name: record.get('propertyName'),
       types: record.get('propertyTypes'),
       mandatory: record.get('mandatory'),
@@ -48,8 +48,8 @@ export function parseNeo4jEntityInfo(
       }
 
       // Only push iff name is set
-      if (attr.name !== null) {
-        entityType.properties.push(attr);
+      if (prop.name !== null) {
+        entityType.properties.push(prop);
       }
     }
   }

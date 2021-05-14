@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { SchemaController } from '../../../src/schema/schema.controller';
 import { SchemaService } from '../../../src/schema/schema.service';
 
-describe('GraphInfoController', () => {
+describe('SchemaController', () => {
   let app: INestApplication;
 
   // Global setup
@@ -32,13 +32,13 @@ describe('GraphInfoController', () => {
   });
 
   describe('getEntityTypes', () => {
-    const baseUrl = '/graphInfo';
+    const baseUrl = '/schema';
 
     describe('successful requests', () => {
       it('should not fail when edges queried', async () => {
         // Act
         await request(app.getHttpServer())
-          .get(`${baseUrl}/getEdgeTypes`)
+          .get(`${baseUrl}/edge-types`)
           // Assert
           .expect(200);
       });
@@ -46,7 +46,7 @@ describe('GraphInfoController', () => {
       it('should not fail when nodes queried', async () => {
         // Act
         await request(app.getHttpServer())
-          .get(`${baseUrl}/getNodeTypes`)
+          .get(`${baseUrl}/node-types`)
           // Assert
           .expect(200);
       });

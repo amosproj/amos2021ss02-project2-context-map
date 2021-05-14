@@ -39,7 +39,7 @@ export const nodeInfo = {
   expected: [
     {
       name: 'Person',
-      attributes: [
+      properties: [
         {
           name: 'born',
           types: ['Long'],
@@ -54,7 +54,7 @@ export const nodeInfo = {
     },
     {
       name: 'Movie',
-      attributes: [
+      properties: [
         {
           name: 'tagline',
           types: ['String'],
@@ -93,7 +93,7 @@ export const edgeInfo = {
   expected: [
     {
       name: 'ACTED_IN',
-      attributes: [
+      properties: [
         {
           name: 'roles',
           types: ['StringArray'],
@@ -103,7 +103,7 @@ export const edgeInfo = {
     },
     {
       name: 'DIRECTED',
-      attributes: [],
+      properties: [],
     },
   ],
 };

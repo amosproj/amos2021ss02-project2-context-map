@@ -6,10 +6,10 @@ import { AppModule } from '../../../src/app.module';
 import { edgeInfo, nodeInfo } from '../../fixtures/nodeInfo/GraphInfoDb';
 
 /*
-Tests graph-info.spec.ts
+Tests schema.service.ts
 Tests parseNeo4jEntityInfo indirectly
  */
-describe('GraphInfoService', () => {
+describe('SchemaService', () => {
   let service: SchemaService;
   let neo4jService: Neo4jService;
 
