@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Neo4jService } from 'nest-neo4j/dist';
-import { GraphInfoService } from '../../../src/graph-info/graph-info.service';
+import { SchemaService } from '../../../src/schema/schema.service';
 import { KmapNeo4jModule } from '../../../src/config/neo4j/KmapNeo4jModule';
 import { AppModule } from '../../../src/app.module';
 import { edgeInfo, nodeInfo } from '../../fixtures/nodeInfo/GraphInfoDb';
@@ -10,7 +10,7 @@ Tests graph-info.spec.ts
 Tests parseNeo4jEntityInfo indirectly
  */
 describe('GraphInfoService', () => {
-  let service: GraphInfoService;
+  let service: SchemaService;
   let neo4jService: Neo4jService;
 
   // Global Setup
@@ -20,7 +20,7 @@ describe('GraphInfoService', () => {
       providers: [],
     }).compile();
 
-    service = module.get<GraphInfoService>(GraphInfoService);
+    service = module.get<SchemaService>(SchemaService);
     neo4jService = await module.resolve(Neo4jService);
   });
 

@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FactoryProvider, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { GraphInfoController } from '../../../src/graph-info/graph-info.controller';
-import { GraphInfoService } from '../../../src/graph-info/graph-info.service';
+import { SchemaController } from '../../../src/schema/schema.controller';
+import { SchemaService } from '../../../src/schema/schema.service';
 
 describe('GraphInfoController', () => {
   let app: INestApplication;
@@ -10,7 +10,7 @@ describe('GraphInfoController', () => {
   // Global setup
   beforeEach(async () => {
     const GraphInfoServiceMock: FactoryProvider = {
-      provide: GraphInfoService,
+      provide: SchemaService,
       useFactory: () => ({
         getEdgeTypes: jest.fn(() => []),
         getNodeTypes: jest.fn(() => []),
@@ -18,7 +18,7 @@ describe('GraphInfoController', () => {
     };
 
     const moduleRef: TestingModule = await Test.createTestingModule({
-      controllers: [GraphInfoController],
+      controllers: [SchemaController],
       providers: [GraphInfoServiceMock],
     }).compile();
 

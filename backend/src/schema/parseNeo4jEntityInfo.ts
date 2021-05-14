@@ -1,6 +1,6 @@
 import { Record as Neo4jRecord } from 'neo4j-driver';
 import { EntityType } from '../shared/schema/EntityType';
-import { EntityTypeAttribute } from '../shared/schema/EntityTypeAttribute';
+import { EntityTypeProperty } from '../shared/schema/EntityTypeProperty';
 
 /**
  * Converts result from neo4j-query 'CALL db.schema.nodeTypeProperties'
@@ -24,7 +24,7 @@ export function parseNeo4jEntityInfo(
   // eslint-disable-next-line no-restricted-syntax
   for (const record of result) {
     // Parse properties
-    const attr: EntityTypeAttribute = {
+    const attr: EntityTypeProperty = {
       name: record.get('propertyName'),
       types: record.get('propertyTypes'),
       mandatory: record.get('mandatory'),
@@ -43,13 +43,13 @@ export function parseNeo4jEntityInfo(
       // Put nodes in Map if missing
       let entityType = types.get(nodeName);
       if (!entityType) {
-        entityType = { name: nodeName, attributes: [] };
+        entityType = { name: nodeName, properties: [] };
         types.set(nodeName, entityType);
       }
 
       // Only push iff name is set
       if (attr.name !== null) {
-        entityType.attributes.push(attr);
+        entityType.properties.push(attr);
       }
     }
   }

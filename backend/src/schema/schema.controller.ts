@@ -1,16 +1,16 @@
 import { Controller, Get } from '@nestjs/common';
-import { GraphInfoService } from './graph-info.service';
+import { SchemaService } from './schema.service';
 import { NodeType } from '../shared/schema/NodeType';
 import { EdgeType } from '../shared/schema/EdgeType';
 
-@Controller('graphInfo')
-export class GraphInfoController {
-  constructor(private readonly graphInfoService: GraphInfoService) {}
+@Controller('schema')
+export class SchemaController {
+  constructor(private readonly graphInfoService: SchemaService) {}
 
   /**
    * Returns information about all edges of a graph
    */
-  @Get('getEdgeTypes')
+  @Get('edge-types')
   getEdgeTypes(): Promise<EdgeType[]> {
     return this.graphInfoService.getEdgeTypes();
   }
@@ -18,7 +18,7 @@ export class GraphInfoController {
   /**
    * Returns information about all nodes of a graph
    */
-  @Get('getNodeTypes')
+  @Get('node-types')
   getNodeTypes(): Promise<NodeType[]> {
     return this.graphInfoService.getNodeTypes();
   }

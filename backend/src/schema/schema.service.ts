@@ -5,7 +5,7 @@ import { EdgeType } from '../shared/schema/EdgeType';
 import { NodeType } from '../shared/schema/NodeType';
 
 @Injectable()
-export class GraphInfoService {
+export class SchemaService {
   constructor(private readonly neo4jService: Neo4jService) {}
 
   /**
