@@ -6,14 +6,12 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import {
-  Accordion,
-  AccordionActions,
-  AccordionDetails,
-  AccordionSummary,
-  Divider,
+  Grid,
+  GridList,
+  ListItemText,
+  withStyles,
 } from '@material-ui/core';
 import useService from '../dependency-injection/useService';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
@@ -25,6 +23,44 @@ import {
   CancellationTokenSource,
 } from '../utils/CancellationToken';
 import { useSize } from '../utils/useSize';
+
+const BootstrapButton = withStyles({
+  root: {
+    boxShadow: 'none',
+    textTransform: 'none',
+    fontSize: 16,
+    padding: '6px 12px',
+    border: '1px solid',
+    lineHeight: 1.5,
+    backgroundColor: '#0063cc',
+    borderColor: '#0063cc',
+    fontFamily: [
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
+    '&:hover': {
+      backgroundColor: '#0069d9',
+      borderColor: '#0062cc',
+      boxShadow: 'none',
+    },
+    '&:active': {
+      boxShadow: 'none',
+      backgroundColor: '#0062cc',
+      borderColor: '#005cbf',
+    },
+    '&:focus': {
+      boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
+    },
+  },
+})(Button);
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -67,6 +103,16 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
       overflowY: 'hidden',
       overflowX: 'hidden',
+    },
+    listContainer: {
+      maxWidth: 360,
+    },
+    margin: {
+      margin: theme.spacing(1),
+    },
+    gridList: {
+      width: 200,
+      height: 200,
     },
   })
 );
@@ -213,22 +259,53 @@ function Graph(): JSX.Element {
   // Build the react-graph-vis graph options.
   const options = buildOptions(containerSize.width, containerSize.height);
 
+  const nodeTypeNames = ['Node Type 1', 'Node Type 2'];
+  const nodeTypes: unknown[] = [];
+
+  nodeTypeNames.forEach((name) => {
+    nodeTypes.push(
+      <Grid item xs={12}>
+        <BootstrapButton
+          variant="contained"
+          color="primary"
+          disableRipple
+          className={classes.margin}
+        >
+          {name}
+        </BootstrapButton>
+      </Grid>
+    );
+  });
+
+  const edgeTypeNames = ['Edge Type 1', 'Edge Type 2'];
+  const edgeTypes: unknown[] = [];
+
+  edgeTypeNames.forEach((name) => {
+    edgeTypes.push(
+      <Grid item xs={12}>
+        <BootstrapButton
+          variant="contained"
+          color="primary"
+          disableRipple
+          className={classes.margin}
+        >
+          {name}
+        </BootstrapButton>
+      </Grid>
+    );
+  });
+
   return (
     <>
       <div className={classes.graphPage}>
-        <Accordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            Filter
-          </AccordionSummary>
-          <AccordionDetails>TODO</AccordionDetails>
-          <Divider />
-          <AccordionActions>
-            <Button size="small">Reset</Button>
-            <Button size="small" color="primary">
-              Apply
-            </Button>
-          </AccordionActions>
-        </Accordion>
+        <GridList cellHeight={160} className={classes.gridList} cols={1}>
+          <Grid justify="flex-start">
+            <ListItemText primary="Node Types" />
+            {nodeTypes}
+            <ListItemText primary="Edge Types" />
+            {edgeTypes}
+          </Grid>
+        </GridList>
         <div className={classes.graphContainer}>
           <div
             className={classes.sizeMeasureContainer}
