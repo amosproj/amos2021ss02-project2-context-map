@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
 import { parseNeo4jEntityInfo } from './parseNeo4jEntityInfo';
-import { EdgeType } from '../shared/graph-information/EdgeType';
-import { NodeType } from '../shared/graph-information/NodeType';
+import { EdgeType } from '../shared/schema/EdgeType';
+import { NodeType } from '../shared/schema/NodeType';
 
 @Injectable()
 export class GraphInfoService {

@@ -7,8 +7,8 @@ import { GraphInfoService } from '../../../src/graph-info/graph-info.service';
 describe('GraphInfoController', () => {
   let app: INestApplication;
 
+  // Global setup
   beforeEach(async () => {
-    // Global setup
     const GraphInfoServiceMock: FactoryProvider = {
       provide: GraphInfoService,
       useFactory: () => ({
@@ -26,8 +26,8 @@ describe('GraphInfoController', () => {
     await app.init();
   });
 
+  // Global teardown
   afterEach(async () => {
-    // Global teardown
     await app.close();
   });
 
@@ -35,15 +35,19 @@ describe('GraphInfoController', () => {
     const baseUrl = '/graphInfo';
 
     describe('successful requests', () => {
-      it('should return edge information', async () => {
+      it('should not fail when edges queried', async () => {
+        // Act
         await request(app.getHttpServer())
           .get(`${baseUrl}/getEdgeTypes`)
+          // Assert
           .expect(200);
       });
 
-      it('should return node information', async () => {
+      it('should not fail when nodes queried', async () => {
+        // Act
         await request(app.getHttpServer())
           .get(`${baseUrl}/getNodeTypes`)
+          // Assert
           .expect(200);
       });
     });

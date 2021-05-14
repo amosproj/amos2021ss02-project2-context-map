@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { GraphInfoService } from './graph-info.service';
-import { NodeType } from '../shared/graph-information/NodeType';
-import { EdgeType } from '../shared/graph-information/EdgeType';
+import { NodeType } from '../shared/schema/NodeType';
+import { EdgeType } from '../shared/schema/EdgeType';
 
 @Controller('graphInfo')
 export class GraphInfoController {

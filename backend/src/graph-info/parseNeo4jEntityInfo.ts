@@ -1,6 +1,6 @@
 import { Record as Neo4jRecord } from 'neo4j-driver';
-import { EntityType } from '../shared/graph-information/EntityType';
-import { EntityTypeAttribute } from '../shared/graph-information/EntityTypeAttribute';
+import { EntityType } from '../shared/schema/EntityType';
+import { EntityTypeAttribute } from '../shared/schema/EntityTypeAttribute';
 
 /**
  * Converts result from neo4j-query 'CALL db.schema.nodeTypeProperties'
@@ -8,7 +8,7 @@ import { EntityTypeAttribute } from '../shared/graph-information/EntityTypeAttri
  * {@link EntityType}.
  *
  * @param result query-result from neo4j
- * @param type is result about nodes oder edges/rels?
+ * @param type is result about nodes or edges/rels?
  *
  * @throws Error
  * if was result does not stem from 'CALL db.schema.nodeTypeProperties'
@@ -16,7 +16,7 @@ import { EntityTypeAttribute } from '../shared/graph-information/EntityTypeAttri
  */
 export function parseNeo4jEntityInfo(
   result: Neo4jRecord[],
-  type: 'rel' | 'node'
+  type: 'node' | 'rel'
 ): EntityType[] {
   // Entities stored in Map for direct access
   const types: Map<string, EntityType> = new Map();

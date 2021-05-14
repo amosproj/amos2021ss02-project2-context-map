@@ -13,6 +13,7 @@ describe('GraphInfoService', () => {
   let service: GraphInfoService;
   let neo4jService: Neo4jService;
 
+  // Global Setup
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule, KmapNeo4jModule],
@@ -23,8 +24,8 @@ describe('GraphInfoService', () => {
     neo4jService = await module.resolve(Neo4jService);
   });
 
+  // Global teardown
   afterAll(async () => {
-    // Global teardown
     await neo4jService.getDriver().close();
   });
 
@@ -34,12 +35,16 @@ describe('GraphInfoService', () => {
 
   describe('Method getEntityTypes', () => {
     it('should return nodes-info when requested', async () => {
+      // Act
       const result = await service.getNodeTypes();
+      // Assert
       expect(result).toEqual(nodeInfo.expected);
     });
 
     it('should return edges-info when requested', async () => {
+      // Act
       const result = await service.getEdgeTypes();
+      // Assert
       expect(result).toEqual(edgeInfo.expected);
     });
   });
