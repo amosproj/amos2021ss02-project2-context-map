@@ -10,9 +10,9 @@ export interface EntityTypeProperty {
   /**
    * Possible data types of the attribute.
    */
-  types: ('Long' | 'String' | 'StringArray' | string)[];
+  types: ("Long" | "String" | "StringArray" | string)[];
   /**
-   * If true, this attribut cannot be null
+   * If true, this attribute cannot be null
    */
   mandatory: boolean;
 }
