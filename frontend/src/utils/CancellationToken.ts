@@ -15,6 +15,11 @@ export abstract class CancellationToken {
   public abstract get isCancellationRequested(): boolean;
 
   /**
+   * Get a boolean value indicating whether cancellation can be requested.
+   */
+  public abstract get canGetCanceled(): boolean;
+
+  /**
    * Throws a {@link CancellationError} if cancellation is requested.
    */
   public throwIfCancellationRequested(): void {
@@ -42,6 +47,10 @@ class CancellationTokenImpl extends CancellationToken {
 
   public get isCancellationRequested(): boolean {
     return this.source?.isCancellationRequested ?? false;
+  }
+
+  public get canGetCanceled(): boolean {
+    return this.source !== null;
   }
 
   public subscribe(

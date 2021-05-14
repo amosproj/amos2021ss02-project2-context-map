@@ -7,10 +7,7 @@ import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import delay from '../utils/delay';
 import QueryService from './QueryService';
 import { CancellationToken } from '../utils/CancellationToken';
-
-export function getRandomIndex(n: number): number {
-  return Math.floor(Math.random() * n);
-}
+import getRandomIndex from '../utils/getRandomIndex';
 
 /**
  * A fake implementation that delivers random data.

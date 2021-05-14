@@ -1,8 +1,10 @@
 import { Container } from 'inversify';
+import { FakeDataSchemaService } from './services/FakeDataSchemaService';
 import QueryService from './services/QueryService';
 import QueryServiceImpl from './services/QueryServiceImpl';
 import RandomNumberGenerator from './services/RandomNumberGenerator';
 import RandomNumberGeneratorImpl from './services/RandomNumberGeneratorImpl';
+import SchemaService from './services/SchemaService';
 
 /**
  * Configures all services in the frontend app.
@@ -18,6 +20,8 @@ export default function configureServices(container: Container): void {
       backendBaseUri: process.env.REACT_APP_QUERY_SERVICE_BACKEND_BASE_URI,
     })
   );
+
+  container.bind(SchemaService).to(FakeDataSchemaService);
 
   // Add your services here...
 }
