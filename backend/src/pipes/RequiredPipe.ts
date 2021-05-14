@@ -1,6 +1,10 @@
 import { HttpStatus, Injectable, PipeTransform } from '@nestjs/common';
 import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
 
+/**
+ * Makes sure that a parameter is given.
+ * Interprets an empty string as not given.
+ */
 @Injectable()
 export class RequiredPipe implements PipeTransform {
   // eslint-disable-next-line class-methods-use-this

@@ -9,6 +9,10 @@ import { RequiredPipe } from '../pipes/RequiredPipe';
 export class SearchController {
   constructor(private readonly searchService: SearchService) {}
 
+  /**
+   * Filters through all properties of all edges (case-insensitive) .
+   * @param filter filter string ("if edge-property contains filter -> return it")
+   */
   @Get('edges')
   searchInEdgeProperties(
     @Query('filter', RequiredPipe) filter: string
@@ -16,6 +20,10 @@ export class SearchController {
     return this.searchService.searchInEdgeProperties(filter);
   }
 
+  /**
+   * Filters through all properties of all nodes (case-insensitive) .
+   * @param filter filter string ("if node-property contains filter -> return it")
+   */
   @Get('nodes')
   searchInNodeProperties(
     @Query('filter', RequiredPipe) filter: string
@@ -23,6 +31,10 @@ export class SearchController {
     return this.searchService.searchInNodeProperties(filter);
   }
 
+  /**
+   * Filters through all properties of all nodes and all edges (case-insensitive) .
+   * @param filter filter string ("if node/edge-property contains filter -> return it")
+   */
   @Get('all')
   async searchInAllEntitiesProperties(
     @Query('filter', RequiredPipe) filter: string

@@ -1,3 +1,7 @@
+/*
+This file contains functions that are shared across the app
+ */
+
 /* istanbul ignore next */
 /**
  * Returns the string that returns our NodeDescriptor object
