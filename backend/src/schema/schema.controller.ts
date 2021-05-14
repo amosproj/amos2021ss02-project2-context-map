@@ -5,14 +5,14 @@ import { EdgeType } from '../shared/schema/EdgeType';
 
 @Controller('schema')
 export class SchemaController {
-  constructor(private readonly graphInfoService: SchemaService) {}
+  constructor(private readonly schemaService: SchemaService) {}
 
   /**
    * Returns information about all edges of a graph
    */
   @Get('edge-types')
   getEdgeTypes(): Promise<EdgeType[]> {
-    return this.graphInfoService.getEdgeTypes();
+    return this.schemaService.getEdgeTypes();
   }
 
   /**
@@ -20,6 +20,6 @@ export class SchemaController {
    */
   @Get('node-types')
   getNodeTypes(): Promise<NodeType[]> {
-    return this.graphInfoService.getNodeTypes();
+    return this.schemaService.getNodeTypes();
   }
 }

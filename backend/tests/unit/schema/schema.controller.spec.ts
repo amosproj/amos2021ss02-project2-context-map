@@ -9,7 +9,7 @@ describe('SchemaController', () => {
 
   // Global setup
   beforeEach(async () => {
-    const GraphInfoServiceMock: FactoryProvider = {
+    const SchemaServiceMock: FactoryProvider = {
       provide: SchemaService,
       useFactory: () => ({
         getEdgeTypes: jest.fn(() => []),
@@ -19,7 +19,7 @@ describe('SchemaController', () => {
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [SchemaController],
-      providers: [GraphInfoServiceMock],
+      providers: [SchemaServiceMock],
     }).compile();
 
     app = moduleRef.createNestApplication();
