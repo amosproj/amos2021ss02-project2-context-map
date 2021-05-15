@@ -18,15 +18,34 @@ interface URLQuery {
   [key: string]: URLQueryValueType;
 }
 
-export class HTTPRequest {
+export abstract class HTTPRequest {
+  // TODO: Why is this constructor useless? It protects the class to be consistent.
+  // eslint-disable-next-line no-useless-constructor
+  public constructor(
+    public readonly headers: HTTPHeaderCollection = {},
+    public readonly query: URLQuery = {}
+  ) {}
+}
+
+export class HTTPGETRequest extends HTTPRequest {
+  // TODO: Why is this constructor useless? It protects the class to be consistent.
+  // eslint-disable-next-line no-useless-constructor
+  public constructor(headers: HTTPHeaderCollection = {}, query: URLQuery = {}) {
+    super(headers, query);
+  }
+}
+
+export class HTTPPOSTRequest extends HTTPRequest {
   // TODO: Why is this constructor useless? It protects the class to be consistent.
   // eslint-disable-next-line no-useless-constructor
   public constructor(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     public readonly body: any,
-    public readonly headers: HTTPHeaderCollection = {},
-    public readonly query: URLQuery = {}
-  ) {}
+    headers: HTTPHeaderCollection = {},
+    query: URLQuery = {}
+  ) {
+    super(headers, query);
+  }
 }
 
 export class HTTPResponse<TResult> {
@@ -96,10 +115,26 @@ export default class HTTPHelper {
     this.options = buildOptions(options);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   public tryPost<TResult>(
     url: string | URL,
+    request: HTTPPOSTRequest,
+    cancellation?: CancellationToken
+  ): Promise<HTTPResponse<TResult>> {
+    return this.executeRequest(
+      url,
+      request,
+      'post',
+      request.body,
+      cancellation
+    );
+  }
+
+  private executeRequest<TResult>(
+    url: string | URL,
     request: HTTPRequest,
+    method: 'post' | 'get' | 'head' | 'put' | 'delete' | 'patch',
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+    body?: any,
     cancellation?: CancellationToken
   ): Promise<HTTPResponse<TResult>> {
     // Pre-process arguments, extract the header collection and set a default content type header, that can be overridden by the caller.
@@ -117,7 +152,7 @@ export default class HTTPHelper {
       }
 
       const httpClient = new XMLHttpRequest();
-      httpClient.open('post', parsedURL.href, true);
+      httpClient.open(method, parsedURL.href, true);
 
       // Process the request-headers
       // Walk over all attributes of the 'headers' object and set the key-value pairs as request header.
@@ -189,13 +224,13 @@ export default class HTTPHelper {
       };
 
       // Start the request
-      httpClient.send(JSON.stringify(request.body ?? {}));
+      httpClient.send(JSON.stringify(body ?? {}));
     });
   }
 
   public post<TResult>(
     url: string | URL,
-    request: HTTPRequest,
+    request: HTTPPOSTRequest,
     cancellation?: CancellationToken
   ): Promise<TResult>;
 
@@ -209,14 +244,14 @@ export default class HTTPHelper {
   public async post<TResult>(
     url: string | URL,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    requestOrBody: HTTPRequest | any,
+    requestOrBody: HTTPPOSTRequest | any,
     cancellation?: CancellationToken
   ): Promise<TResult> {
-    let request: HTTPRequest;
-    if (requestOrBody instanceof HTTPRequest) {
+    let request: HTTPPOSTRequest;
+    if (requestOrBody instanceof HTTPPOSTRequest) {
       request = requestOrBody;
     } else {
-      request = new HTTPRequest(requestOrBody);
+      request = new HTTPPOSTRequest(requestOrBody);
     }
 
     const httpResponse = await this.tryPost<TResult>(
