@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import { injectable } from 'inversify';
 import 'reflect-metadata';
 import ArgumentError from '../errors/ArgumentError';
@@ -7,25 +8,46 @@ import nop from '../utils/nop';
 import { HTTPHelperOptions } from './HTTPHelperOptions';
 import NetworkError from './NetworkError';
 
-interface HttpHeaderCollection {
+interface HTTPHeaderCollection {
   [key: string]: string | undefined;
 }
 
-interface HTTPResponse<TResult> {
-  result: TResult | null;
-  headers: HttpHeaderCollection;
-  status: number;
-  statusText: string;
+type URLQueryValueType = number | string | (number | string)[];
+
+interface URLQuery {
+  [key: string]: URLQueryValueType;
 }
 
-function parseResponseHeaders(headers: string): HttpHeaderCollection {
+export class HTTPRequest {
+  // TODO: Why is this constructor useless? It protects the class to be consistent.
+  // eslint-disable-next-line no-useless-constructor
+  public constructor(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+    public readonly body: any,
+    public readonly headers: HTTPHeaderCollection = {},
+    public readonly query: URLQuery = {}
+  ) {}
+}
+
+export class HTTPResponse<TResult> {
+  // TODO: Why is this constructor useless? It protects the class to be consistent.
+  // eslint-disable-next-line no-useless-constructor
+  public constructor(
+    public readonly result: TResult | null,
+    public readonly headers: HTTPHeaderCollection,
+    public readonly status: number,
+    public readonly statusText: string
+  ) {}
+}
+
+function parseResponseHeaders(headers: string): HTTPHeaderCollection {
   /* Example:
    * date: Fri, 08 Dec 2017 21:04:30 GMT\r\n
    * content-encoding: gzip\r\n
    * x-content-type-options: nosniff\r\n
    */
   const headerKVPs = headers.split('\r\n');
-  const result: HttpHeaderCollection = {};
+  const result: HTTPHeaderCollection = {};
   for (let i = 0; i < headerKVPs.length; i += 1) {
     // Example: date: Fri, 08 Dec 2017 21:04:30 GMT\r\n
     const kvp = headerKVPs[i];
@@ -74,55 +96,28 @@ export default class HTTPHelper {
     this.options = buildOptions(options);
   }
 
-  public tryPost<TResult>(
-    url: string | URL,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    body: any,
-    headers?: HttpHeaderCollection,
-    cancellation?: CancellationToken
-  ): Promise<HTTPResponse<TResult>>;
-
-  public tryPost<TResult>(
-    url: string | URL,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    body: any,
-    cancellation?: CancellationToken
-  ): Promise<HTTPResponse<TResult>>;
-
   // eslint-disable-next-line class-methods-use-this
   public tryPost<TResult>(
     url: string | URL,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    body: any,
-    headersOrCancellation?: CancellationToken | HttpHeaderCollection,
+    request: HTTPRequest,
     cancellation?: CancellationToken
   ): Promise<HTTPResponse<TResult>> {
     // Pre-process arguments, extract the header collection and set a default content type header, that can be overridden by the caller.
-    let headers: HttpHeaderCollection = { 'Content-Type': 'application/json' };
-    let resolvedCancellation = cancellation;
+    const headers: HTTPHeaderCollection = {
+      'Content-Type': 'application/json',
+      ...request.headers,
+    };
 
-    if (headersOrCancellation instanceof CancellationToken) {
-      resolvedCancellation = headersOrCancellation;
-    } else {
-      headers = { ...headers, ...headersOrCancellation };
-    }
-
-    let parsedURL: URL;
-
-    if (typeof url === 'string') {
-      parsedURL = new URL(url, this.options.baseUri);
-    } else {
-      parsedURL = url;
-    }
+    const parsedURL = this.appendQuery(url, request.query);
 
     return new Promise<HTTPResponse<TResult>>((resolve, reject) => {
       // If the cancellation token is already canceled, we can reject right away.
-      if (resolvedCancellation?.isCancellationRequested) {
+      if (cancellation?.isCancellationRequested) {
         reject(new CancellationError());
       }
 
-      const request = new XMLHttpRequest();
-      request.open('post', parsedURL.href, true);
+      const httpClient = new XMLHttpRequest();
+      httpClient.open('post', parsedURL.href, true);
 
       // Process the request-headers
       // Walk over all attributes of the 'headers' object and set the key-value pairs as request header.
@@ -132,7 +127,7 @@ export default class HTTPHelper {
         const value = headers[key];
 
         if (typeof value === 'string') {
-          request.setRequestHeader(key, value);
+          httpClient.setRequestHeader(key, value);
         } else {
           throw new ArgumentError(
             'The header collection is not a valid set of key-value pairs.',
@@ -143,40 +138,42 @@ export default class HTTPHelper {
 
       // Register to the cancellation token, if present.
       let cancellationUnsubscribe = nop;
-      if (resolvedCancellation) {
-        cancellationUnsubscribe = resolvedCancellation.subscribe(() =>
-          request.abort()
+      if (cancellation) {
+        cancellationUnsubscribe = cancellation.subscribe(() =>
+          httpClient.abort()
         );
       }
 
       // Callback that is executed, when the load operation was performed.
       // This does not necessarily mean, that everything was successful.
-      request.onload = () => {
+      httpClient.onload = () => {
         // Unsubscribe from the cancellation token.
         cancellationUnsubscribe();
 
-        const response: HTTPResponse<TResult> = {
-          status: request.status,
-          statusText: request.statusText,
-          headers: parseResponseHeaders(request.getAllResponseHeaders()),
-          result: null,
-        };
+        let result: TResult | null = null;
 
         // Check the HTTP response status code to be in the success range.
-        if (request.status >= 200 && request.status <= 299) {
-          response.result = JSON.parse(request.response);
+        if (httpClient.status >= 200 && httpClient.status <= 299) {
+          result = JSON.parse(httpClient.response);
         }
+
+        const response = new HTTPResponse<TResult>(
+          result,
+          parseResponseHeaders(httpClient.getAllResponseHeaders()),
+          httpClient.status,
+          httpClient.statusText
+        );
 
         resolve(response);
       };
 
       // Callback that is executed, when the load operation failed due to a network error.
-      request.onerror = () => {
+      httpClient.onerror = () => {
         // Unsubscribe from the cancellation token.
         cancellationUnsubscribe();
 
         // Double check whether cancellation was requested.
-        if (resolvedCancellation?.isCancellationRequested) {
+        if (cancellation?.isCancellationRequested) {
           reject(new CancellationError());
         } else {
           reject(new NetworkError());
@@ -184,7 +181,7 @@ export default class HTTPHelper {
       };
 
       // Callback that is executed, when the load operation was aborted due to cancellation.
-      request.onabort = () => {
+      httpClient.onabort = () => {
         // Unsubscribe from the cancellation token.
         cancellationUnsubscribe();
 
@@ -192,15 +189,13 @@ export default class HTTPHelper {
       };
 
       // Start the request
-      request.send(JSON.stringify(body ?? {}));
+      httpClient.send(JSON.stringify(request.body ?? {}));
     });
   }
 
   public post<TResult>(
     url: string | URL,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    body: any,
-    headers?: HttpHeaderCollection,
+    request: HTTPRequest,
     cancellation?: CancellationToken
   ): Promise<TResult>;
 
@@ -214,24 +209,20 @@ export default class HTTPHelper {
   public async post<TResult>(
     url: string | URL,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    body: any,
-    headersOrCancellation?: CancellationToken | HttpHeaderCollection,
+    requestOrBody: HTTPRequest | any,
     cancellation?: CancellationToken
   ): Promise<TResult> {
-    let resolvedHeaders: HttpHeaderCollection = {};
-    let resolvedCancellation = cancellation;
-
-    if (headersOrCancellation instanceof CancellationToken) {
-      resolvedCancellation = headersOrCancellation;
-    } else if (headersOrCancellation) {
-      resolvedHeaders = headersOrCancellation;
+    let request: HTTPRequest;
+    if (requestOrBody instanceof HTTPRequest) {
+      request = requestOrBody;
+    } else {
+      request = new HTTPRequest(requestOrBody);
     }
 
     const httpResponse = await this.tryPost<TResult>(
       url,
-      body,
-      resolvedHeaders,
-      resolvedCancellation
+      request,
+      cancellation
     );
 
     // Check the HTTP response status code to be in the success range.
@@ -244,5 +235,47 @@ export default class HTTPHelper {
     }
 
     throw Error(httpResponse.statusText);
+  }
+
+  private appendQuery(url: URL | string, query: URLQuery): URL {
+    let queryString = '';
+    const keys = Object.keys(query);
+
+    for (let i = 0; i < keys.length; i += 1) {
+      const key = keys[i];
+      const value = query[key];
+
+      if (Array.isArray(value)) {
+        for (let j = 0; j < value.length; j += 1) {
+          const arrayValue = value[j];
+          if (i > 0 || j > 0) {
+            queryString += '&';
+          }
+          queryString += `${key}=${arrayValue.toString()}`;
+        }
+      } else {
+        if (i > 0) {
+          queryString += '&';
+        }
+        queryString += `${key}=${value.toString()}`;
+      }
+    }
+
+    const result =
+      url instanceof URL ? url : new URL(url, this.options.baseUri);
+
+    if (queryString.length > 0) {
+      if (
+        !result.search ||
+        result.search.length === 0 ||
+        (result.search.length === 1 && result.search.charAt(0) === '?')
+      ) {
+        result.search = `?${queryString}`;
+      } else {
+        result.search = `${result.search}&${queryString}`;
+      }
+    }
+
+    return result;
   }
 }
