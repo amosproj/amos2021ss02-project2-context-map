@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
   root: {
+    maxWidth: 150,
     boxShadow: 'none',
     textTransform: 'none',
     fontSize: 16,
@@ -31,7 +32,7 @@ const useStyles = makeStyles({
   },
 });
 
-const Neo4jElementComponent = (props: {
+const EntityComponent = (props: {
   backgroundColor: string;
   content: string;
 }) => {
@@ -50,4 +51,4 @@ const Neo4jElementComponent = (props: {
   );
 };
 
-export default Neo4jElementComponent;
+export default EntityComponent;
