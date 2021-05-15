@@ -115,6 +115,14 @@ export default class HTTPHelper {
     this.options = buildOptions(options);
   }
 
+  public tryGet<TResult>(
+    url: string | URL,
+    request: HTTPGETRequest,
+    cancellation?: CancellationToken
+  ): Promise<HTTPResponse<TResult>> {
+    return this.executeRequest(url, request, 'get', undefined, cancellation);
+  }
+
   public tryPost<TResult>(
     url: string | URL,
     request: HTTPPOSTRequest,
@@ -226,6 +234,50 @@ export default class HTTPHelper {
       // Start the request
       httpClient.send(JSON.stringify(body ?? {}));
     });
+  }
+
+  public get<TResult>(
+    url: string | URL,
+    request: HTTPGETRequest,
+    cancellation?: CancellationToken
+  ): Promise<TResult>;
+
+  public get<TResult>(
+    url: string | URL,
+    cancellation?: CancellationToken
+  ): Promise<TResult>;
+
+  public async get<TResult>(
+    url: string | URL,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+    requestOrCancellation?: HTTPGETRequest | CancellationToken,
+    cancellation?: CancellationToken
+  ): Promise<TResult> {
+    let request: HTTPGETRequest;
+    let resolvedCancellation: CancellationToken | undefined = cancellation;
+    if (requestOrCancellation instanceof HTTPGETRequest) {
+      request = requestOrCancellation;
+    } else {
+      request = new HTTPGETRequest();
+      resolvedCancellation = requestOrCancellation;
+    }
+
+    const httpResponse = await this.tryGet<TResult>(
+      url,
+      request,
+      resolvedCancellation
+    );
+
+    // Check the HTTP response status code to be in the success range.
+    if (
+      httpResponse.status >= 200 &&
+      httpResponse.status <= 299 &&
+      httpResponse.result
+    ) {
+      return httpResponse.result;
+    }
+
+    throw Error(httpResponse.statusText);
   }
 
   public post<TResult>(
