@@ -7,7 +7,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { Grid, IconButton, ListItemText, withStyles } from '@material-ui/core';
+import { IconButton, ListItemText } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import useService from '../dependency-injection/useService';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
@@ -19,44 +19,7 @@ import {
   CancellationTokenSource,
 } from '../utils/CancellationToken';
 import { useSize } from '../utils/useSize';
-
-const BootstrapButton = withStyles({
-  root: {
-    boxShadow: 'none',
-    textTransform: 'none',
-    fontSize: 16,
-    padding: '6px 12px',
-    border: '1px solid',
-    lineHeight: 1.5,
-    backgroundColor: '#0063cc',
-    borderColor: '#0063cc',
-    fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"',
-    ].join(','),
-    '&:hover': {
-      backgroundColor: '#0069d9',
-      borderColor: '#0062cc',
-      boxShadow: 'none',
-    },
-    '&:active': {
-      boxShadow: 'none',
-      backgroundColor: '#0062cc',
-      borderColor: '#005cbf',
-    },
-    '&:focus': {
-      boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
-    },
-  },
-})(Button);
+import Neo4jElementComponent from '../components/Neo4jElementComponent';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -252,19 +215,12 @@ function Graph(): JSX.Element {
 
   nodeTypeNames.forEach((name) => {
     nodeTypes.push(
-      <Grid item xs={12}>
-        <BootstrapButton
-          variant="contained"
-          color="primary"
-          disableRipple
-          className={classes.margin}
-        >
-          {name}
-        </BootstrapButton>
+      <div>
+        <Neo4jElementComponent backgroundColor="#0063cc" content={name} />
         <IconButton aria-label="upload picture" component="span">
           <AddIcon />
         </IconButton>
-      </Grid>
+      </div>
     );
   });
 
@@ -273,19 +229,12 @@ function Graph(): JSX.Element {
 
   edgeTypeNames.forEach((name) => {
     edgeTypes.push(
-      <Grid item xs={12}>
-        <BootstrapButton
-          variant="contained"
-          color="primary"
-          disableRipple
-          className={classes.margin}
-        >
-          {name}
-        </BootstrapButton>
+      <div>
+        <Neo4jElementComponent backgroundColor="#0063cc" content={name} />
         <IconButton aria-label="upload picture" component="span">
           <AddIcon />
         </IconButton>
-      </Grid>
+      </div>
     );
   });
 
