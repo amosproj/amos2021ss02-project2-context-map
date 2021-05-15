@@ -7,8 +7,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { IconButton, ListItemText } from '@material-ui/core';
+import { Box, IconButton, ListItemText } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
+import TuneIcon from '@material-ui/icons/Tune';
 import useService from '../dependency-injection/useService';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
@@ -19,7 +20,7 @@ import {
   CancellationTokenSource,
 } from '../utils/CancellationToken';
 import { useSize } from '../utils/useSize';
-import Neo4jElementComponent from '../components/Neo4jElementComponent';
+import EntityComponent from '../components/EntityComponent';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -61,6 +62,9 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
       overflowY: 'hidden',
       overflowX: 'hidden',
+    },
+    entityContainer: {
+      width: 300,
     },
     margin: {
       margin: theme.spacing(1),
@@ -210,32 +214,51 @@ function Graph(): JSX.Element {
   // Build the react-graph-vis graph options.
   const options = buildOptions(containerSize.width, containerSize.height);
 
-  const nodeTypeNames = ['Node Type 1', 'Node Type 2'];
+  // const [pressedColor, setPressedColor] = useState('#ffffff');
+  //
+  // const handleClick = () => {
+  //   setPressedColor('#00ffff');
+  // };
+
+  const entityTemplate = (color: string, type: string) => (
+    <div className={classes.entityContainer}>
+      <Box display="flex" p={1}>
+        <EntityComponent backgroundColor={color} content={type} />
+        <div>
+          <IconButton component="span">
+            <AddIcon />
+          </IconButton>
+          <IconButton component="span">
+            <TuneIcon />
+          </IconButton>
+        </div>
+      </Box>
+    </div>
+  );
+
+  const nodeColorsAndTypes = [
+    { color: '#e6194b', type: 'Node Type 1' },
+    { color: '#3cb44b', type: 'Node Type 2' },
+    { color: '#ffe119', type: 'Node Type 3' },
+    { color: '#4363d8', type: 'Node Type 4' },
+    { color: '#f58231', type: 'Node Type 5' },
+    { color: '#911eb4', type: 'Node Type 6' },
+    { color: '#46f0f0', type: 'Node Type 7' },
+  ];
   const nodeTypes: unknown[] = [];
 
-  nodeTypeNames.forEach((name) => {
-    nodeTypes.push(
-      <div>
-        <Neo4jElementComponent backgroundColor="#0063cc" content={name} />
-        <IconButton aria-label="upload picture" component="span">
-          <AddIcon />
-        </IconButton>
-      </div>
-    );
+  nodeColorsAndTypes.forEach((colorsAndTypes) => {
+    nodeTypes.push(entityTemplate(colorsAndTypes.color, colorsAndTypes.type));
   });
 
-  const edgeTypeNames = ['Edge Type 1', 'Edge Type 2'];
+  const edgeColorsAndTypes = [
+    { color: '#a9a9a9', type: 'Edge Type 1' },
+    { color: '#a9a9a9', type: 'Edge Type 2' },
+  ];
   const edgeTypes: unknown[] = [];
 
-  edgeTypeNames.forEach((name) => {
-    edgeTypes.push(
-      <div>
-        <Neo4jElementComponent backgroundColor="#0063cc" content={name} />
-        <IconButton aria-label="upload picture" component="span">
-          <AddIcon />
-        </IconButton>
-      </div>
-    );
+  edgeColorsAndTypes.forEach((colorsAndTypes) => {
+    edgeTypes.push(entityTemplate(colorsAndTypes.color, colorsAndTypes.type));
   });
 
   return (
