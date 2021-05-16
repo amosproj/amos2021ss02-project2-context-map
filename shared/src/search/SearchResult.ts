@@ -2,11 +2,11 @@ import { EdgeDescriptor } from '../entities/EdgeDescriptor';
 import { NodeDescriptor } from '../entities/NodeDescriptor';
 
 /**
- * Generic Result of an API Query.
- * It is guaranteed that an instance contains all nodes descriptors that are
+ * Represents the result of a search request.
+ * It is NOT guaranteed that an instance contains all nodes descriptors that are
  * referenced in the edge descriptors via 'to' and 'from' attributes.
  */
-export interface QueryResult {
+export interface SearchResult {
   /**
    * NodeDescriptors (array of node-ids) as result of the Query
    */

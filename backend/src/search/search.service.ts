@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
 import MiniSearch from 'minisearch';
-import { QueryResult } from '../shared/queries/QueryResult';
+import { SearchResult } from '../shared/search/SearchResult';
 import AsyncLazy from '../utils/AsyncLazy';
 import { Node } from '../shared/entities/Node';
 import { Edge } from '../shared/entities/Edge';
@@ -197,7 +197,7 @@ export class SearchService {
     return index;
   }
 
-  public async search(searchString: string): Promise<QueryResult> {
+  public async search(searchString: string): Promise<SearchResult> {
     const index = await this.index.value;
 
     // TODO: We could add additional functionality, like special syntax to search in a specified field.
