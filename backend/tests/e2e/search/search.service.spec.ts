@@ -26,40 +26,48 @@ describe('SearchService', () => {
 
   describe('Method search', () => {
     it('finds single node by property', async () => {
+      // Arrange
+      const expected = { edges: [], nodes: [{ id: 3 }] };
+
       // Act
       const result = await service.search('lana');
+
       // Assert
-      expect(result).toEqual({'edges': [], 'nodes': [{'id': 3}]});
+      expect(result).toEqual(expected);
     });
 
     it('finds nodes by type', async () => {
+      // Arrange
+      const expected = { edges: [], nodes: [{ id: 3 }, { id: 2 }, { id: 1 }] };
+
       // Act
       const result = await service.search('person');
+
       // Assert
-      expect(result).toEqual({'edges': [], 'nodes': [{'id': 3}, {'id': 2}, {'id': 1}]});
+      expect(result).toEqual(expected);
     });
 
     it('finds edges by entity type', async () => {
       // Arrange
       const expected = {
-        'edges': [
+        edges: [
           {
-            'from': 3,
-            'id': 2,
-            'to': 0,
-            },
-          {
-            'from': 2,
-            'id': 1,
-            'to': 0,
+            from: 3,
+            id: 2,
+            to: 0,
           },
           {
-            'from': 1,
-            'id': 0,
-            'to': 0,
-          }
+            from: 2,
+            id: 1,
+            to: 0,
+          },
+          {
+            from: 1,
+            id: 0,
+            to: 0,
+          },
         ],
-        'nodes': [],
+        nodes: [],
       };
 
       // Act
