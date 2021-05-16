@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { SearchController } from '../../../src/search/search.controller';
 import { SearchService } from '../../../src/search/search.service';
 
@@ -34,13 +34,13 @@ describe('SearchController', () => {
   });
 
   /* eslint-disable no-loop-func, no-restricted-syntax -- allow loop */
-  for (const what of ['edges', 'nodes', 'all']) {
+  for (const what of ['all']) {
     /* eslint-disable no-restricted-syntax -- allow describe and it in loop */
     describe(`Search ${what}`, () => {
       it('should not fail when called with filter string', async () => {
         // Act
         await request(app.getHttpServer())
-          .get(`${baseUrl}/${what}?filter=hallo`)
+          .get(`${baseUrl}/${what}?filter=trinity`)
           // Assert
           .expect(200);
       });

@@ -6,9 +6,9 @@ import { NodeDescriptor } from './NodeDescriptor';
  */
 export interface Node extends NodeDescriptor {
   /**
-   * labels-property of a node
+   * The unique name of the types of the node.
    */
-  labels: string[];
+  types: string[];
 
   /**
    * properties-property of a node

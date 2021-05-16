@@ -6,7 +6,7 @@ import { Property } from './Property';
  */
 export interface Edge extends EdgeDescriptor {
   /**
-   * type-property of a neo4j-edge
+   * The unique name of the type of the edge.
    */
   type: string;
   properties: {
