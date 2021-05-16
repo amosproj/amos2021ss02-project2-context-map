@@ -166,7 +166,7 @@ export class SearchService {
     );
 
     // Build the index
-    const fields = ['id', 'type'];
+    const fields = ['entityType', 'type'];
     const storeFields = ['entityType', 'id', 'from', 'to'];
 
     // Process all entries: We need to now which properties we have
