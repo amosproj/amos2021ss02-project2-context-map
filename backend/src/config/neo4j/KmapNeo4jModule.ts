@@ -18,9 +18,10 @@ export class KmapNeo4jModule {
     module: DynamicModule,
     options: Neo4jDriverOptions
   ): DynamicModule {
-    const driverProvider = module.providers.find(
+    const driverProvider = module.providers?.find(
       // eslint-disable-next-line dot-notation
-      (provider) => provider['provide'] === NEO4J_DRIVER
+      (provider) =>
+        typeof provider === 'object' && provider.provide === NEO4J_DRIVER
     ) as FactoryProvider;
 
     if (driverProvider == null) {

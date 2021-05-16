@@ -2,7 +2,7 @@ import { injectable } from 'inversify';
 import 'reflect-metadata';
 import { EdgeType } from '../shared/schema/EdgeType';
 import { EntityType } from '../shared/schema/EntityType';
-import { EntityTypeAttribute } from '../shared/schema/EntityTypeAttribute';
+import { EntityTypeProperty } from '../shared/schema/EntityTypeProperty';
 import { NodeType } from '../shared/schema/NodeType';
 import { CancellationToken } from '../utils/CancellationToken';
 import delay from '../utils/delay';
@@ -37,7 +37,7 @@ export class FakeDataSchemaService extends SchemaService {
     return nouns[nounIndex];
   }
 
-  private generateRandomEntityTypeAttribute(): EntityTypeAttribute {
+  private generateRandomEntityTypeProperty(): EntityTypeProperty {
     const name = this.getRandomNoun();
 
     // Build the string array that contains the types the attribute may contain.
@@ -71,13 +71,13 @@ export class FakeDataSchemaService extends SchemaService {
   private generateRandomEntityType(): EntityType {
     const name = this.getRandomNoun();
     const numberOfAttributes = getRandomIndex(20);
-    const attributes: EntityTypeAttribute[] = [];
+    const properties: EntityTypeProperty[] = [];
 
     for (let i = 0; i < numberOfAttributes; i += 1) {
-      attributes.push(this.generateRandomEntityTypeAttribute());
+      properties.push(this.generateRandomEntityTypeProperty());
     }
 
-    return { name, attributes };
+    return { name, properties };
   }
 
   public generateRandomEntityTypes(max: number): EntityType[] {
@@ -97,7 +97,7 @@ export class FakeDataSchemaService extends SchemaService {
     }
 
     // Cancel only the promise we are handing back to the caller, not the underlying operation
-    // as the result will be added to the cache. 
+    // as the result will be added to the cache.
     return withCancellation(this.edgeTypesPromise, cancellation);
   }
 
@@ -112,7 +112,7 @@ export class FakeDataSchemaService extends SchemaService {
     }
 
     // Cancel only the promise we are handing back to the caller, not the underlying operation
-    // as the result will be added to the cache. 
+    // as the result will be added to the cache.
     return withCancellation(this.nodeTypesPromise, cancellation);
   }
 

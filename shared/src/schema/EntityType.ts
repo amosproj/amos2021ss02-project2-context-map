@@ -1,4 +1,4 @@
-import { EntityTypeAttribute } from './EntityTypeAttribute';
+import { EntityTypeProperty } from './EntityTypeProperty';
 
 /**
  * Entity type of a graph.
@@ -11,5 +11,5 @@ export interface EntityType {
   /**
    * Attributes of the entity type
    */
-  attributes: EntityTypeAttribute[];
+  properties: EntityTypeProperty[];
 }

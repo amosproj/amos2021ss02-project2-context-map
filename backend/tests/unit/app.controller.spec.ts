@@ -11,10 +11,7 @@ import {
   getNodesByIdDummies,
   queryAllDummies,
 } from '../fixtures/testingDumpData';
-
-const notImplemented = () => {
-  throw new Error('Not implemented');
-};
+import { notImplemented } from './notImplemented';
 
 describe('AppController', () => {
   let app: INestApplication;
@@ -73,7 +70,7 @@ describe('AppController', () => {
       // Mock
       const queryAll = jest
         .spyOn(appService, 'queryAll')
-        .mockImplementation(() => Promise.resolve(null));
+        .mockImplementation(() => Promise.resolve({ edges: [], nodes: [] }));
 
       // Act & Verify
       await request(app.getHttpServer()).post('/queryAll').expect(200);
