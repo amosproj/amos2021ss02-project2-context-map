@@ -27,7 +27,7 @@ describe('FakeDataSchemaService', () => {
       assert.equal(types, expected);
     });
 
-    it('returns entries with non empty name', async () => {
+    it('returns entries with trimmed name', async () => {
       // Arrange
       const service = new FakeDataSchemaService();
 
@@ -37,6 +37,18 @@ describe('FakeDataSchemaService', () => {
       // Assert
       for(const type of types) {
         assert.equal(type.name, type.name.trim());
+      }
+    });
+
+    it('returns entries with non empty name', async () => {
+      // Arrange
+      const service = new FakeDataSchemaService();
+
+      // Act
+      const types = await service.getEdgeTypes();
+
+      // Assert
+      for(const type of types) {
         assert.isAbove(type.name.length, 0);
       }
     });
@@ -71,7 +83,7 @@ describe('FakeDataSchemaService', () => {
       }
     });
 
-    it('returns entries with properties with non empty name', async () => {
+    it('returns entries with properties with trimmed name', async () => {
       // Arrange
       const service = new FakeDataSchemaService();
 
@@ -82,6 +94,20 @@ describe('FakeDataSchemaService', () => {
       for(const type of types) {
         for(const prop of type.properties) {
           assert.equal(prop.name, prop.name.trim());
+        }
+      }
+    });
+
+    it('returns entries with properties with non empty name', async () => {
+      // Arrange
+      const service = new FakeDataSchemaService();
+
+      // Act
+      const types = await service.getEdgeTypes();
+
+      // Assert
+      for(const type of types) {
+        for(const prop of type.properties) {
           assert.isAbove(prop.name.length, 0);
         }
       }
@@ -145,7 +171,7 @@ describe('FakeDataSchemaService', () => {
       assert.equal(types, expected);
     });
 
-    it('returns entries with non empty name', async () => {
+    it('returns entries with trimmed name', async () => {
       // Arrange
       const service = new FakeDataSchemaService();
 
@@ -155,6 +181,18 @@ describe('FakeDataSchemaService', () => {
       // Assert
       for(const type of types) {
         assert.equal(type.name, type.name.trim());
+      }
+    });
+
+    it('returns entries with non empty name', async () => {
+      // Arrange
+      const service = new FakeDataSchemaService();
+
+      // Act
+      const types = await service.getNodeTypes();
+
+      // Assert
+      for(const type of types) {
         assert.isAbove(type.name.length, 0);
       }
     });
@@ -189,7 +227,7 @@ describe('FakeDataSchemaService', () => {
       }
     });
 
-    it('returns entries with properties with non empty name', async () => {
+    it('returns entries with properties with trimmed name', async () => {
       // Arrange
       const service = new FakeDataSchemaService();
 
@@ -200,6 +238,20 @@ describe('FakeDataSchemaService', () => {
       for(const type of types) {
         for(const prop of type.properties) {
           assert.equal(prop.name, prop.name.trim());
+        }
+      }
+    });
+
+    it('returns entries with properties with non empty name', async () => {
+      // Arrange
+      const service = new FakeDataSchemaService();
+
+      // Act
+      const types = await service.getNodeTypes();
+
+      // Assert
+      for(const type of types) {
+        for(const prop of type.properties) {
           assert.isAbove(prop.name.length, 0);
         }
       }
