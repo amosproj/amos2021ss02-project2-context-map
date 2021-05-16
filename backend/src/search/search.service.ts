@@ -143,6 +143,12 @@ export class SearchService {
   }
 
   private async buildIndex(): Promise<MiniSearch> {
+    // TODO: For large databases it would be beneficial, if we read the entries in smaller batches,
+    //       so we don't have to copy the entire dataset into memory (again).
+    //       The problem here, is that we need the property names before adding the entries to the
+    //       index. This can be done by executing an up-front query for the schema of the data,
+    //       as is done in the SchemaService.
+
     // Get all nodes from the database
     const nodeResults = await this.neo4jService.read(
       'MATCH (n) RETURN ID(n) as id, labels(n) as types, properties(n) as properties'
