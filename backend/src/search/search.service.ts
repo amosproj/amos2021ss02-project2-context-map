@@ -33,7 +33,7 @@ interface RestoredIndexEntry {
 
 interface IndexEntry extends RestoredIndexEntry {
   /**
-   * Contains the type of entity, that is the type of node or the combined labels of the node.
+   * Contains the type of entity, that is the type of edge or the combined types of the node.
    */
   type: string;
 
@@ -58,10 +58,10 @@ function recordPropertyKeys(
   }
 }
 
-function convertLabels(labels: string[]): string {
+function flattenArray(array: string[]): string {
   let result = '[';
-  for (let j = 0; j < labels.length; j += 1) {
-    const label = labels[j];
+  for (let j = 0; j < array.length; j += 1) {
+    const label = array[j];
 
     if (j > 0) {
       result += ', ';
@@ -129,7 +129,7 @@ function convertNode(node: Node): IndexEntry {
   return {
     entityType: 'node',
     id: node.id,
-    type: convertLabels(node.labels),
+    type: flattenArray(node.types),
     properties: convertProperties(node.properties),
   };
 }
@@ -145,7 +145,7 @@ export class SearchService {
   private async buildIndex(): Promise<MiniSearch> {
     // Get all nodes from the database
     const nodeResults = await this.neo4jService.read(
-      'MATCH (n) RETURN ID(n) as id, labels(n) as labels, properties(n) as properties'
+      'MATCH (n) RETURN ID(n) as id, labels(n) as types, properties(n) as properties'
     );
 
     const nodeEntries = nodeResults.records.map((record) =>

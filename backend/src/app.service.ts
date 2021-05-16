@@ -62,7 +62,7 @@ export class AppService {
    */
   async getNodesById(ids: number[]): Promise<Node[]> {
     const result = await this.neo4jService.read(
-      'MATCH (n) WHERE ID(n) IN $ids RETURN ID(n) as id, labels(n) as labels, properties(n) as properties',
+      'MATCH (n) WHERE ID(n) IN $ids RETURN ID(n) as id, labels(n) as types, properties(n) as properties',
       { ids }
     );
 

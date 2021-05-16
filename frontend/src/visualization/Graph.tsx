@@ -75,7 +75,7 @@ function convertNode(node: NodeDescriptor): vis.Node {
   return {
     id: node.id,
     label: node.id.toString(),
-    // Advanced stuff, like styling nodes with different labels differently...
+    // Advanced stuff, like styling nodes with different types differently...
   };
 }
 
@@ -88,7 +88,7 @@ function convertEdge(edge: EdgeDescriptor): vis.Edge {
     id: edge.id,
     from: edge.from,
     to: edge.to,
-    // Advanced stuff, like styling edges with different labels differently...
+    // Advanced stuff, like styling edges with different types differently...
   };
 }
 
