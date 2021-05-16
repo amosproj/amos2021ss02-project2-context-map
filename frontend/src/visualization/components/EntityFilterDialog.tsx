@@ -14,6 +14,7 @@ import {
   TableRow,
 } from '@material-ui/core';
 
+// TODO: Replace content with EntityTypeProperty[] from query in Graph.tsx and add argument to component.
 const EntityFilterDialog = (props: {
   filterOpen: boolean;
   handleCloseFilter: () => void;
