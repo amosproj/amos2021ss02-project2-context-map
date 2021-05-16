@@ -8,7 +8,7 @@ import { CancellationToken } from '../utils/CancellationToken';
 import delay from '../utils/delay';
 import nouns from '../utils/nouns';
 import withCancellation from '../utils/withCancellation';
-import getRandomIndex from '../utils/getRandomIndex';
+import getRandomInteger from '../utils/getRandomInteger';
 import SchemaService from './SchemaService';
 
 // TODO: What else is possible?
@@ -20,17 +20,23 @@ export const possibleAttributeTypes: string[] = [
 
 @injectable()
 export default class FakeDataSchemaService extends SchemaService {
+  /* eslint-disable lines-between-class-members */
   private readonly usedNounIndices: Set<number> = new Set<number>();
-
+  private readonly minNumberOfNodeTypes = 5;
+  private readonly maxNumberOfNodeTypes = 25;
+  private readonly minNumberOfEdgeTypes = 5;
+  private readonly maxNumberOfEdgeTypes = 25;
+  private readonly minNumberOfProperties = 0;
+  private readonly maxNumberOfProperties = 20;
   private edgeTypesPromise: Promise<EdgeType[]> | null = null;
-
   private nodeTypesPromise: Promise<NodeType[]> | null = null;
+  /* eslint-enable lines-between-class-members */
 
   private getRandomNoun(): string {
-    let nounIndex = getRandomIndex(nouns.length);
+    let nounIndex = getRandomInteger(nouns.length);
 
     while (this.usedNounIndices.has(nounIndex)) {
-      nounIndex = getRandomIndex(nouns.length);
+      nounIndex = getRandomInteger(nouns.length);
     }
 
     this.usedNounIndices.add(nounIndex);
@@ -46,14 +52,14 @@ export default class FakeDataSchemaService extends SchemaService {
 
     // Get a random number in the range [1..possibleAttributeTypes.length[ that determines
     // the amount of types that the array will contain.
-    const numberOfTypes = getRandomIndex(possibleAttributeTypes.length - 1) + 1;
+    const numberOfTypes = getRandomInteger(1, possibleAttributeTypes.length);
 
     // A copy of the possibleAttributeTypes, as we modify this list now.
     const nonAllocatedAttributeTypes = [...possibleAttributeTypes];
 
     for (let i = 0; i < numberOfTypes; i += 1) {
       // First get an index into the collection of not yet allocated attribute types.
-      const idx = getRandomIndex(nonAllocatedAttributeTypes.length);
+      const idx = getRandomInteger(nonAllocatedAttributeTypes.length);
 
       // Add the attribute type to the collection.
       types.push(nonAllocatedAttributeTypes[idx]);
@@ -63,14 +69,17 @@ export default class FakeDataSchemaService extends SchemaService {
       nonAllocatedAttributeTypes.splice(idx, 1);
     }
 
-    const mandatory = getRandomIndex(1) === 1;
+    const mandatory = getRandomInteger(1) === 1;
 
     return { name, types: <[string]>types, mandatory };
   }
 
   private generateRandomEntityType(): EntityType {
     const name = this.getRandomNoun();
-    const numberOfAttributes = getRandomIndex(20);
+    const numberOfAttributes = getRandomInteger(
+      this.minNumberOfProperties,
+      this.maxNumberOfProperties
+    );
     const properties: EntityTypeProperty[] = [];
 
     for (let i = 0; i < numberOfAttributes; i += 1) {
@@ -80,15 +89,15 @@ export default class FakeDataSchemaService extends SchemaService {
     return { name, properties };
   }
 
-  public generateRandomEntityTypes(max: number): EntityType[] {
-    const numberOfEdgeTypes = getRandomIndex(max - 1) + 1;
-    const edgeTypes: EntityType[] = [];
+  public generateRandomEntityTypes(min: number, max: number): EntityType[] {
+    const numberOfEntityTypes = getRandomInteger(min, max);
+    const entityTypes: EntityType[] = [];
 
-    for (let i = 0; i < numberOfEdgeTypes; i += 1) {
-      edgeTypes.push(this.generateRandomEntityType());
+    for (let i = 0; i < numberOfEntityTypes; i += 1) {
+      entityTypes.push(this.generateRandomEntityType());
     }
 
-    return edgeTypes;
+    return entityTypes;
   }
 
   public getEdgeTypes(cancellation?: CancellationToken): Promise<EdgeType[]> {
@@ -103,7 +112,10 @@ export default class FakeDataSchemaService extends SchemaService {
 
   private async buildEdgeTypes(): Promise<EdgeType[]> {
     await delay(1000);
-    return this.generateRandomEntityTypes(30);
+    return this.generateRandomEntityTypes(
+      this.minNumberOfEdgeTypes,
+      this.maxNumberOfEdgeTypes
+    );
   }
 
   public getNodeTypes(cancellation?: CancellationToken): Promise<NodeType[]> {
@@ -118,6 +130,9 @@ export default class FakeDataSchemaService extends SchemaService {
 
   private async buildNodeTypes(): Promise<NodeType[]> {
     await delay(800);
-    return this.generateRandomEntityTypes(20);
+    return this.generateRandomEntityTypes(
+      this.minNumberOfNodeTypes,
+      this.maxNumberOfNodeTypes
+    );
   }
 }
