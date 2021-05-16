@@ -29,21 +29,44 @@ describe('SearchService', () => {
       // Act
       const result = await service.search('lana');
       // Assert
-      expect(result).toEqual({"edges": [], "nodes": [{"id": 3}]});
+      expect(result).toEqual({'edges': [], 'nodes': [{'id': 3}]});
     });
 
     it('finds nodes by type', async () => {
       // Act
       const result = await service.search('person');
       // Assert
-      expect(result).toEqual({"edges": [], "nodes": [{"id": 3}, {"id": 2}, {"id": 1}]});
+      expect(result).toEqual({'edges': [], 'nodes': [{'id': 3}, {'id': 2}, {'id': 1}]});
     });
 
     it('finds edges by entity type', async () => {
+      // Arrange
+      const expected = {
+        'edges': [
+          {
+            'from': 3,
+            'id': 2,
+            'to': 0,
+            },
+          {
+            'from': 2,
+            'id': 1,
+            'to': 0,
+          },
+          {
+            'from': 1,
+            'id': 0,
+            'to': 0,
+          }
+        ],
+        'nodes': [],
+      };
+
       // Act
       const result = await service.search('edge');
+
       // Assert
-      expect(result).toEqual({"edges": [{"id": 3}, {"id": 2}, {"id": 1}], "nodes": [] });
+      expect(result).toEqual(expected);
     });
   });
 });

@@ -219,8 +219,8 @@ export class SearchService {
         nodes.push({ id: searchResult.id });
       } else if (
         searchResult.entityType === 'edge' &&
-        searchResult.from &&
-        searchResult.to
+        typeof searchResult.from === 'number' &&
+        typeof searchResult.to === 'number'
       ) {
         edges.push({
           id: searchResult.id,
