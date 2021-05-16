@@ -27,8 +27,8 @@ describe('SearchService', () => {
   describe('Method search', () => {
     it('finds single node by property', async () => {
       // Arrange
-      const expected = { 
-        edges: [], 
+      const expected = {
+        edges: [],
         nodes: [{ id: 3 }],
         nodeTypes: [],
         edgeTypes: [],
@@ -41,12 +41,16 @@ describe('SearchService', () => {
       expect(result).toEqual(expected);
     });
 
-    it('finds nodes by type', async () => {
+    it('finds nodes and node type by type', async () => {
       // Arrange
-      const expected = { 
-        edges: [], 
+      const expected = {
+        edges: [],
         nodes: [{ id: 3 }, { id: 2 }, { id: 1 }],
-        nodeTypes: [],
+        nodeTypes: [
+          {
+            name: 'Person',
+          },
+        ],
         edgeTypes: [],
       };
 
@@ -57,7 +61,43 @@ describe('SearchService', () => {
       expect(result).toEqual(expected);
     });
 
-    it('finds edges by entity type', async () => {
+    it('finds nodes and node-types by node type', async () => {
+      // Arrange
+      const expected = {
+        edges: [],
+        nodes: [
+          {
+            id: 3,
+          },
+          {
+            id: 2,
+          },
+          {
+            id: 1,
+          },
+          {
+            id: 0,
+          },
+        ],
+        nodeTypes: [
+          {
+            name: 'Movie',
+          },
+          {
+            name: 'Person',
+          },
+        ],
+        edgeTypes: [],
+      };
+
+      // Act
+      const result = await service.search('node');
+
+      // Assert
+      expect(result).toEqual(expected);
+    });
+
+    it('finds edges and edge types by entity type', async () => {
       // Arrange
       const expected = {
         edges: [
@@ -79,7 +119,14 @@ describe('SearchService', () => {
         ],
         nodes: [],
         nodeTypes: [],
-        edgeTypes: [],
+        edgeTypes: [
+          {
+            name: 'DIRECTED',
+          },
+          {
+            name: 'ACTED_IN',
+          },
+        ],
       };
 
       // Act
@@ -89,7 +136,7 @@ describe('SearchService', () => {
       expect(result).toEqual(expected);
     });
 
-    it('finds single edge by type', async () => {
+    it('finds edges and edge type by type', async () => {
       // Arrange
       const expected = {
         edges: [
@@ -101,7 +148,11 @@ describe('SearchService', () => {
         ],
         nodes: [],
         nodeTypes: [],
-        edgeTypes: [],
+        edgeTypes: [
+          {
+            name: 'DIRECTED',
+          },
+        ],
       };
 
       // Act
@@ -128,6 +179,46 @@ describe('SearchService', () => {
 
       // Act
       const result = await service.search('trinity');
+
+      // Assert
+      expect(result).toEqual(expected);
+    });
+
+    it('finds edge types by property name', async () => {
+      // Arrange
+      const expected = {
+        edges: [],
+        nodes: [],
+        nodeTypes: [],
+        edgeTypes: [
+          {
+            name: 'ACTED_IN',
+          },
+        ],
+      };
+
+      // Act
+      const result = await service.search('roles');
+
+      // Assert
+      expect(result).toEqual(expected);
+    });
+
+    it('finds node types by property name', async () => {
+      // Arrange
+      const expected = {
+        edges: [],
+        nodes: [],
+        nodeTypes: [
+          {
+            name: 'Movie',
+          },
+        ],
+        edgeTypes: [],
+      };
+
+      // Act
+      const result = await service.search('released');
 
       // Assert
       expect(result).toEqual(expected);

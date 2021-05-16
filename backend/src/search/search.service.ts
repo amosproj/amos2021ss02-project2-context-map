@@ -8,17 +8,23 @@ import { Edge } from '../shared/entities/Edge';
 import { Property } from '../shared/entities/Property';
 import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
+import { parseNeo4jEntityInfo } from '../schema/parseNeo4jEntityInfo';
+import { EdgeType } from '../shared/schema/EdgeType';
+import { NodeType } from '../shared/schema/NodeType';
+import { EntityType } from '../shared/schema/EntityType';
+import { NodeTypeDescriptor } from '../shared/schema/NodeTypeDescriptor';
+import { EdgeTypeDescriptor } from '../shared/schema/EdgeTypeDescriptor';
 
 interface RestoredIndexEntry {
   /**
    * Contains the type of index entry.
    */
-  entityType: 'node' | 'edge';
+  entityType: 'node' | 'edge' | 'node-type' | 'edge-type';
 
   /**
-   * Contains the id of the entry.
+   * Contains the id of the entity or the name of the entity type.
    */
-  id: number;
+  id: number | string;
 
   /**
    * Contains the id of the from node of the edge, if {@link entityType} is 'edge', {@code undefined} otherwise.
@@ -33,9 +39,10 @@ interface RestoredIndexEntry {
 
 interface IndexEntry extends RestoredIndexEntry {
   /**
-   * Contains the type of entity, that is the type of edge or the combined types of the node.
+   * Contains the type of entity, that is the type of edge or the combined types of the node if the entry represents an entity,
+   * or the name of the entity-type if the entry represents an entity-type.
    */
-  type: string;
+  type?: string;
 
   /**
    * Contains the properties of the entity.
@@ -59,18 +66,7 @@ function recordPropertyKeys(
 }
 
 function flattenArray(array: string[]): string {
-  let result = '[';
-  for (let j = 0; j < array.length; j += 1) {
-    const label = array[j];
-
-    if (j > 0) {
-      result += ', ';
-    }
-    result += label;
-  }
-
-  result += ']';
-  return result;
+  return `[${array.join(', ')}]`;
 }
 
 function convertProperties(properties: {
@@ -134,6 +130,28 @@ function convertNode(node: Node): IndexEntry {
   };
 }
 
+function convertEntityType(
+  entityType: EntityType,
+  type: 'node-type' | 'edge-type'
+): IndexEntry {
+  return {
+    entityType: type,
+    id: entityType.name,
+    type: entityType.name,
+    properties: {
+      properties: flattenArray(entityType.properties.map((prop) => prop.name)),
+    },
+  };
+}
+
+function convertEdgeType(edgeType: EdgeType): IndexEntry {
+  return convertEntityType(edgeType, 'edge-type');
+}
+
+function convertNodeType(nodeType: NodeType): IndexEntry {
+  return convertEntityType(nodeType, 'node-type');
+}
+
 @Injectable()
 export class SearchService {
   private readonly index: AsyncLazy<MiniSearch>;
@@ -171,6 +189,26 @@ export class SearchService {
       convertEdge(record.toObject() as Edge)
     );
 
+    // Get all node types from the database
+    const nodeTypeResults = await this.neo4jService.read(
+      `CALL db.schema.nodeTypeProperties`
+    );
+
+    const nodeTypeEntries = parseNeo4jEntityInfo(
+      nodeTypeResults.records,
+      'node'
+    ).map((record) => convertNodeType(record));
+
+    // Get all edge types from the database
+    const edgeTypeResults = await this.neo4jService.read(
+      `CALL db.schema.relTypeProperties`
+    );
+
+    const edgeTypeEntries = parseNeo4jEntityInfo(
+      edgeTypeResults.records,
+      'rel'
+    ).map((record) => convertEdgeType(record));
+
     // Build the index
     const fields = ['entityType', 'type'];
     const storeFields = ['entityType', 'id', 'from', 'to'];
@@ -180,6 +218,8 @@ export class SearchService {
 
     recordPropertyKeys(nodeEntries, properties);
     recordPropertyKeys(edgeEntries, properties);
+    recordPropertyKeys(nodeTypeEntries, properties);
+    recordPropertyKeys(edgeTypeEntries, properties);
 
     // eslint-disable-next-line no-restricted-syntax
     for (const property of properties) {
@@ -200,6 +240,8 @@ export class SearchService {
     });
     index.addAll(nodeEntries);
     index.addAll(edgeEntries);
+    index.addAll(nodeTypeEntries);
+    index.addAll(edgeTypeEntries);
     return index;
   }
 
@@ -218,13 +260,19 @@ export class SearchService {
 
     const nodes: NodeDescriptor[] = [];
     const edges: EdgeDescriptor[] = [];
+    const nodeTypes: NodeTypeDescriptor[] = [];
+    const edgeTypes: EdgeTypeDescriptor[] = [];
 
     // eslint-disable-next-line no-restricted-syntax
     for (const searchResult of searchResults) {
-      if (searchResult.entityType === 'node') {
+      if (
+        searchResult.entityType === 'node' &&
+        typeof searchResult.id === 'number'
+      ) {
         nodes.push({ id: searchResult.id });
       } else if (
         searchResult.entityType === 'edge' &&
+        typeof searchResult.id === 'number' &&
         typeof searchResult.from === 'number' &&
         typeof searchResult.to === 'number'
       ) {
@@ -233,10 +281,24 @@ export class SearchService {
           from: searchResult.from,
           to: searchResult.to,
         });
+      } else if (
+        searchResult.entityType === 'node-type' &&
+        typeof searchResult.id === 'string'
+      ) {
+        nodeTypes.push({
+          name: searchResult.id,
+        });
+      } else if (
+        searchResult.entityType === 'edge-type' &&
+        typeof searchResult.id === 'string'
+      ) {
+        edgeTypes.push({
+          name: searchResult.id,
+        });
       }
     }
 
-    return { nodes, edges, nodeTypes: [], edgeTypes: [] };
+    return { nodes, edges, nodeTypes, edgeTypes };
   }
 
   public async getAutoSuggestions(searchString: string): Promise<string[]> {
