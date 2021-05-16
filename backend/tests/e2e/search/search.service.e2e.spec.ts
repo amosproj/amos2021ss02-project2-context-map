@@ -27,7 +27,12 @@ describe('SearchService', () => {
   describe('Method search', () => {
     it('finds single node by property', async () => {
       // Arrange
-      const expected = { edges: [], nodes: [{ id: 3 }] };
+      const expected = { 
+        edges: [], 
+        nodes: [{ id: 3 }],
+        nodeTypes: [],
+        edgeTypes: [],
+      };
 
       // Act
       const result = await service.search('lana');
@@ -38,7 +43,12 @@ describe('SearchService', () => {
 
     it('finds nodes by type', async () => {
       // Arrange
-      const expected = { edges: [], nodes: [{ id: 3 }, { id: 2 }, { id: 1 }] };
+      const expected = { 
+        edges: [], 
+        nodes: [{ id: 3 }, { id: 2 }, { id: 1 }],
+        nodeTypes: [],
+        edgeTypes: [],
+      };
 
       // Act
       const result = await service.search('person');
@@ -68,6 +78,8 @@ describe('SearchService', () => {
           },
         ],
         nodes: [],
+        nodeTypes: [],
+        edgeTypes: [],
       };
 
       // Act
@@ -88,6 +100,8 @@ describe('SearchService', () => {
           },
         ],
         nodes: [],
+        nodeTypes: [],
+        edgeTypes: [],
       };
 
       // Act
@@ -108,6 +122,8 @@ describe('SearchService', () => {
           },
         ],
         nodes: [],
+        nodeTypes: [],
+        edgeTypes: [],
       };
 
       // Act

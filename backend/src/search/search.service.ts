@@ -236,7 +236,7 @@ export class SearchService {
       }
     }
 
-    return { nodes, edges };
+    return { nodes, edges, nodeTypes: [], edgeTypes: [] };
   }
 
   public async getAutoSuggestions(searchString: string): Promise<string[]> {
