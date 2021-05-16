@@ -20,8 +20,6 @@ interface URLQuery {
 }
 
 export abstract class HTTPRequest {
-  // TODO: Why is this constructor useless? It protects the class to be consistent.
-  // eslint-disable-next-line no-useless-constructor
   public constructor(
     public readonly headers: HTTPHeaderCollection = {},
     public readonly query: URLQuery = {}
@@ -29,16 +27,12 @@ export abstract class HTTPRequest {
 }
 
 export class HTTPGETRequest extends HTTPRequest {
-  // TODO: Why is this constructor useless? It protects the class to be consistent.
-  // eslint-disable-next-line no-useless-constructor
   public constructor(headers: HTTPHeaderCollection = {}, query: URLQuery = {}) {
     super(headers, query);
   }
 }
 
 export class HTTPPOSTRequest extends HTTPRequest {
-  // TODO: Why is this constructor useless? It protects the class to be consistent.
-  // eslint-disable-next-line no-useless-constructor
   public constructor(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     public readonly body: any,
@@ -50,8 +44,6 @@ export class HTTPPOSTRequest extends HTTPRequest {
 }
 
 export class HTTPResponse<TResult> {
-  // TODO: Why is this constructor useless? It protects the class to be consistent.
-  // eslint-disable-next-line no-useless-constructor
   public constructor(
     public readonly result: TResult | null,
     public readonly headers: HTTPHeaderCollection,
