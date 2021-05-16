@@ -13,7 +13,7 @@ import getRandomIndex from '../utils/getRandomIndex';
  * A fake implementation that delivers random data.
  */
 @injectable()
-export class FakeDataQueryService extends QueryService {
+export default class FakeDataQueryService extends QueryService {
   private readonly allowSelfReferencingNodes: boolean;
 
   public constructor(allowSelfReferencingNodes = true) {

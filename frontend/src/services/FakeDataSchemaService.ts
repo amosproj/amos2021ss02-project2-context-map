@@ -19,7 +19,7 @@ export const possibleAttributeTypes: string[] = [
 ];
 
 @injectable()
-export class FakeDataSchemaService extends SchemaService {
+export default class FakeDataSchemaService extends SchemaService {
   private readonly usedNounIndices: Set<number> = new Set<number>();
 
   private edgeTypesPromise: Promise<EdgeType[]> | null = null;
@@ -81,7 +81,7 @@ export class FakeDataSchemaService extends SchemaService {
   }
 
   public generateRandomEntityTypes(max: number): EntityType[] {
-    const numberOfEdgeTypes = getRandomIndex(max);
+    const numberOfEdgeTypes = getRandomIndex(max - 1) + 1;
     const edgeTypes: EntityType[] = [];
 
     for (let i = 0; i < numberOfEdgeTypes; i += 1) {

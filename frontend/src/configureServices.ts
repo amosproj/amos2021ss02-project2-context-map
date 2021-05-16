@@ -1,5 +1,5 @@
 import { Container } from 'inversify';
-import { FakeDataSchemaService } from './services/FakeDataSchemaService';
+import FakeDataSchemaService from './services/FakeDataSchemaService';
 import QueryService from './services/QueryService';
 import QueryServiceImpl from './services/QueryServiceImpl';
 import RandomNumberGenerator from './services/RandomNumberGenerator';
