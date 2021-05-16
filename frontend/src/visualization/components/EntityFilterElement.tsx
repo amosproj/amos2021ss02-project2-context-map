@@ -29,7 +29,7 @@ const useStyles = makeStyles({
   },
 });
 
-const EntityComponent = (props: {
+const EntityFilterElement = (props: {
   backgroundColor: string;
   boxShadow: string;
   content: string;
@@ -50,4 +50,4 @@ const EntityComponent = (props: {
   );
 };
 
-export default EntityComponent;
+export default EntityFilterElement;
