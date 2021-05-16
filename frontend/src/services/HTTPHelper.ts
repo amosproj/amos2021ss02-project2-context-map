@@ -90,11 +90,7 @@ function buildOptions(options: Partial<HTTPHelperOptions>): HTTPHelperOptions {
   // As per the spec of HTTPHelperOptions, we use the base URI of the source the frontend
   // was loaded from, if no base uri was specified in the options.
   if (!baseUri) {
-    const { location } = window;
-    // location.protocol already includes the colon at the end, so do not include it here
-    baseUri = `${location.protocol}//${location.host}/${
-      location.pathname.split('/')[1]
-    }`;
+    baseUri = window.location.origin;
   }
 
   return { baseUri };
