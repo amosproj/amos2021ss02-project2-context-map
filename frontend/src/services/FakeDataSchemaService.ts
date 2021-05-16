@@ -43,6 +43,10 @@ export default class FakeDataSchemaService extends SchemaService {
     return nouns[nounIndex];
   }
 
+  /**
+   * Builds a random entity property type object that represents a single property of an entity type.
+   * @returns The generated property type object.
+   */
   private generateRandomEntityTypeProperty(): EntityTypeProperty {
     const name = this.getRandomNoun();
 
@@ -74,6 +78,10 @@ export default class FakeDataSchemaService extends SchemaService {
     return { name, types: <[string]>types, mandatory };
   }
 
+  /**
+   * Build a random entity type object.
+   * @returns The generated entity type object.
+   */
   private generateRandomEntityType(): EntityType {
     const name = this.getRandomNoun();
     const numberOfProperties = getRandomInteger(
