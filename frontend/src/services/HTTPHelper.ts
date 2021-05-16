@@ -34,8 +34,7 @@ export class HTTPGETRequest extends HTTPRequest {
 
 export class HTTPPOSTRequest extends HTTPRequest {
   public constructor(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    public readonly body: any,
+    public readonly body: unknown,
     headers: HTTPHeaderCollection = {},
     query: URLQuery = {}
   ) {
@@ -135,8 +134,7 @@ export default class HTTPHelper {
     url: string | URL,
     request: HTTPRequest,
     method: 'post' | 'get' | 'head' | 'put' | 'delete' | 'patch',
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    body?: any,
+    body?: unknown,
     cancellation?: CancellationToken
   ): Promise<HTTPResponse<TResult>> {
     // Pre-process arguments, extract the header collection and set a default content type header, that can be overridden by the caller.
@@ -243,7 +241,6 @@ export default class HTTPHelper {
 
   public async get<TResult>(
     url: string | URL,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     requestOrCancellation?: HTTPGETRequest | CancellationToken,
     cancellation?: CancellationToken
   ): Promise<TResult> {
@@ -282,15 +279,13 @@ export default class HTTPHelper {
 
   public post<TResult>(
     url: string | URL,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    body: any,
+    body: unknown,
     cancellation?: CancellationToken
   ): Promise<TResult>;
 
   public async post<TResult>(
     url: string | URL,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    requestOrBody: HTTPPOSTRequest | any,
+    requestOrBody: HTTPPOSTRequest | unknown,
     cancellation?: CancellationToken
   ): Promise<TResult> {
     let request: HTTPPOSTRequest;
