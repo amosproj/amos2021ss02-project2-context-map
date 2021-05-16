@@ -1,7 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { injectable } from 'inversify';
 import 'reflect-metadata';
-import ArgumentError from '../errors/ArgumentError';
 import HttpError from '../errors/HttpError';
 import CancellationError from '../utils/CancellationError';
 import { CancellationToken } from '../utils/CancellationToken';
@@ -153,17 +152,11 @@ export default class HTTPHelper {
       // Process the request-headers
       // Walk over all attributes of the 'headers' object and set the key-value pairs as request header.
       const keys = Object.keys(headers);
-      for (let i = 0; i < keys.length; i += 1) {
-        const key = keys[i];
+      for (const key of keys) {
         const value = headers[key];
 
         if (typeof value === 'string') {
           httpClient.setRequestHeader(key, value);
-        } else {
-          throw new ArgumentError(
-            'The header collection is not a valid set of key-value pairs.',
-            'headers'
-          );
         }
       }
 
