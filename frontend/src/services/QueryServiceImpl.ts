@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { LimitQuery } from '../shared/queries/LimitQuery';
 import { QueryResult } from '../shared/queries/QueryResult';
 import { CancellationToken } from '../utils/CancellationToken';
-import HTTPHelper from './HTTPHelper';
+import HttpService from './HttpService';
 import QueryService from './QueryService';
 
 /**
@@ -12,9 +12,9 @@ import QueryService from './QueryService';
  */
 @injectable()
 export default class QueryServiceImpl extends QueryService {
-  @inject(HTTPHelper)
+  @inject(HttpService)
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  private readonly http: HTTPHelper = null!;
+  private readonly http: HttpService = null!;
 
   public queryAll(
     query?: LimitQuery,

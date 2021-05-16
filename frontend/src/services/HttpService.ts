@@ -5,10 +5,10 @@ import HttpError from '../errors/HttpError';
 import CancellationError from '../utils/CancellationError';
 import { CancellationToken } from '../utils/CancellationToken';
 import nop from '../utils/nop';
-import { HTTPHelperOptions } from './HTTPHelperOptions';
+import { HttpServiceOptions } from './HttpServiceOptions';
 import NetworkError from './NetworkError';
 
-interface HTTPHeaderCollection {
+interface HttpHeaderCollection {
   [key: string]: string | undefined;
 }
 
@@ -18,46 +18,46 @@ interface URLQuery {
   [key: string]: URLQueryValueType;
 }
 
-export abstract class HTTPRequest {
+export abstract class HttpRequest {
   public constructor(
-    public readonly headers: HTTPHeaderCollection = {},
+    public readonly headers: HttpHeaderCollection = {},
     public readonly query: URLQuery = {}
   ) {}
 }
 
-export class HTTPGETRequest extends HTTPRequest {
-  public constructor(headers: HTTPHeaderCollection = {}, query: URLQuery = {}) {
+export class HttpGetRequest extends HttpRequest {
+  public constructor(headers: HttpHeaderCollection = {}, query: URLQuery = {}) {
     super(headers, query);
   }
 }
 
-export class HTTPPOSTRequest extends HTTPRequest {
+export class HttpPostRequest extends HttpRequest {
   public constructor(
     public readonly body: unknown,
-    headers: HTTPHeaderCollection = {},
+    headers: HttpHeaderCollection = {},
     query: URLQuery = {}
   ) {
     super(headers, query);
   }
 }
 
-export class HTTPResponse<TResult> {
+export class HttpResponse<TResult> {
   public constructor(
     public readonly result: TResult | null,
-    public readonly headers: HTTPHeaderCollection,
+    public readonly headers: HttpHeaderCollection,
     public readonly status: number,
     public readonly statusText: string
   ) {}
 }
 
-function parseResponseHeaders(headers: string): HTTPHeaderCollection {
+function parseResponseHeaders(headers: string): HttpHeaderCollection {
   /* Example:
    * date: Fri, 08 Dec 2017 21:04:30 GMT\r\n
    * content-encoding: gzip\r\n
    * x-content-type-options: nosniff\r\n
    */
   const headerKVPs = headers.split('\r\n');
-  const result: HTTPHeaderCollection = {};
+  const result: HttpHeaderCollection = {};
   for (let i = 0; i < headerKVPs.length; i += 1) {
     // Example: date: Fri, 08 Dec 2017 21:04:30 GMT\r\n
     const kvp = headerKVPs[i];
@@ -83,10 +83,12 @@ function parseResponseHeaders(headers: string): HTTPHeaderCollection {
  * @param options The partial options that very specified externally.
  * @returns The built options.
  */
-function buildOptions(options: Partial<HTTPHelperOptions>): HTTPHelperOptions {
+function buildOptions(
+  options: Partial<HttpServiceOptions>
+): HttpServiceOptions {
   let { baseUri } = options;
 
-  // As per the spec of HTTPHelperOptions, we use the base URI of the source the frontend
+  // As per the spec of HttpServiceOptions, we use the base URI of the source the frontend
   // was loaded from, if no base uri was specified in the options.
   if (!baseUri) {
     baseUri = window.location.origin;
@@ -139,26 +141,26 @@ function appendQuery(url: URL, query: URLQuery): URL {
 }
 
 @injectable()
-export default class HTTPHelper {
-  private readonly options: HTTPHelperOptions;
+export default class HttpService {
+  private readonly options: HttpServiceOptions;
 
-  public constructor(options: Partial<HTTPHelperOptions> = {}) {
+  public constructor(options: Partial<HttpServiceOptions> = {}) {
     this.options = buildOptions(options);
   }
 
   public tryGet<TResult>(
     url: string | URL,
-    request: HTTPGETRequest,
+    request: HttpGetRequest,
     cancellation?: CancellationToken
-  ): Promise<HTTPResponse<TResult>> {
+  ): Promise<HttpResponse<TResult>> {
     return this.executeRequest(url, request, 'get', undefined, cancellation);
   }
 
   public tryPost<TResult>(
     url: string | URL,
-    request: HTTPPOSTRequest,
+    request: HttpPostRequest,
     cancellation?: CancellationToken
-  ): Promise<HTTPResponse<TResult>> {
+  ): Promise<HttpResponse<TResult>> {
     return this.executeRequest(
       url,
       request,
@@ -170,13 +172,13 @@ export default class HTTPHelper {
 
   private executeRequest<TResult>(
     url: string | URL,
-    request: HTTPRequest,
+    request: HttpRequest,
     method: 'post' | 'get' | 'head' | 'put' | 'delete' | 'patch',
     body?: unknown,
     cancellation?: CancellationToken
-  ): Promise<HTTPResponse<TResult>> {
+  ): Promise<HttpResponse<TResult>> {
     // Pre-process arguments, extract the header collection and set a default content type header, that can be overridden by the caller.
-    const headers: HTTPHeaderCollection = {
+    const headers: HttpHeaderCollection = {
       'Content-Type': 'application/json',
       ...request.headers,
     };
@@ -186,7 +188,7 @@ export default class HTTPHelper {
       request.query
     );
 
-    return new Promise<HTTPResponse<TResult>>((resolve, reject) => {
+    return new Promise<HttpResponse<TResult>>((resolve, reject) => {
       // If the cancellation token is already canceled, we can reject right away.
       if (cancellation?.isCancellationRequested) {
         reject(new CancellationError());
@@ -227,7 +229,7 @@ export default class HTTPHelper {
           result = JSON.parse(httpClient.response);
         }
 
-        const response = new HTTPResponse<TResult>(
+        const response = new HttpResponse<TResult>(
           result,
           parseResponseHeaders(httpClient.getAllResponseHeaders()),
           httpClient.status,
@@ -265,7 +267,7 @@ export default class HTTPHelper {
 
   public get<TResult>(
     url: string | URL,
-    request: HTTPGETRequest,
+    request: HttpGetRequest,
     cancellation?: CancellationToken
   ): Promise<TResult>;
 
@@ -276,15 +278,15 @@ export default class HTTPHelper {
 
   public async get<TResult>(
     url: string | URL,
-    requestOrCancellation?: HTTPGETRequest | CancellationToken,
+    requestOrCancellation?: HttpGetRequest | CancellationToken,
     cancellation?: CancellationToken
   ): Promise<TResult> {
-    let request: HTTPGETRequest;
+    let request: HttpGetRequest;
     let resolvedCancellation: CancellationToken | undefined = cancellation;
-    if (requestOrCancellation instanceof HTTPGETRequest) {
+    if (requestOrCancellation instanceof HttpGetRequest) {
       request = requestOrCancellation;
     } else {
-      request = new HTTPGETRequest();
+      request = new HttpGetRequest();
       resolvedCancellation = requestOrCancellation;
     }
 
@@ -308,7 +310,7 @@ export default class HTTPHelper {
 
   public post<TResult>(
     url: string | URL,
-    request: HTTPPOSTRequest,
+    request: HttpPostRequest,
     cancellation?: CancellationToken
   ): Promise<TResult>;
 
@@ -320,14 +322,14 @@ export default class HTTPHelper {
 
   public async post<TResult>(
     url: string | URL,
-    requestOrBody: HTTPPOSTRequest | unknown,
+    requestOrBody: HttpPostRequest | unknown,
     cancellation?: CancellationToken
   ): Promise<TResult> {
-    let request: HTTPPOSTRequest;
-    if (requestOrBody instanceof HTTPPOSTRequest) {
+    let request: HttpPostRequest;
+    if (requestOrBody instanceof HttpPostRequest) {
       request = requestOrBody;
     } else {
-      request = new HTTPPOSTRequest(requestOrBody);
+      request = new HttpPostRequest(requestOrBody);
     }
 
     const httpResponse = await this.tryPost<TResult>(

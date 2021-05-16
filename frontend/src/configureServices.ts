@@ -1,5 +1,5 @@
 import { Container } from 'inversify';
-import HTTPHelper from './services/HTTPHelper';
+import HttpService from './services/HttpService';
 import QueryService from './services/QueryService';
 import QueryServiceImpl from './services/QueryServiceImpl';
 import RandomNumberGenerator from './services/RandomNumberGenerator';
@@ -14,8 +14,8 @@ export default function configureServices(container: Container): void {
   // A service used for testing the DI setup
   container.bind(RandomNumberGenerator).to(RandomNumberGeneratorImpl);
 
-  container.bind(HTTPHelper).toConstantValue(
-    new HTTPHelper({
+  container.bind(HttpService).toConstantValue(
+    new HttpService({
       baseUri: process.env.REACT_APP_QUERY_SERVICE_BASE_URI,
     })
   );

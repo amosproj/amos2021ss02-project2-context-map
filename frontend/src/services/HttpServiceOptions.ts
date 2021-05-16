@@ -1,7 +1,7 @@
 /**
- * Contains options for the HTTP helper
+ * Contains options for the {@link HttpService}
  */
-export interface HTTPHelperOptions {
+export interface HttpServiceOptions {
     /**
      * The base URI to use.
      * If not specified, uses the base URI of the source the frontend was loaded from.
