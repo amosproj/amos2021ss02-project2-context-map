@@ -99,6 +99,7 @@ function buildOptions(options: Partial<HTTPHelperOptions>): HTTPHelperOptions {
   // was loaded from, if no base uri was specified in the options.
   if (!baseUri) {
     const { location } = window;
+    // location.protocol already includes the colon at the end, so do not include it here
     baseUri = `${location.protocol}//${location.host}/${
       location.pathname.split('/')[1]
     }`;
