@@ -26,21 +26,20 @@ const useStyles = makeStyles({
     '&:hover': {
       boxShadow: 'none',
     },
-    '&:focus': {
-      boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
-    },
   },
 });
 
 const EntityComponent = (props: {
   backgroundColor: string;
+  boxShadow: string;
   content: string;
 }) => {
-  const { backgroundColor, content } = props;
+  const { backgroundColor, boxShadow, content } = props;
   const classes = useStyles();
+
   return (
     <Button
-      style={{ backgroundColor }}
+      style={{ backgroundColor, boxShadow }}
       variant="contained"
       color="primary"
       disableRipple
