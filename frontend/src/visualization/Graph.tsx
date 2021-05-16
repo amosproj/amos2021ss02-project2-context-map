@@ -155,6 +155,7 @@ function Graph(): JSX.Element {
     new CancellationTokenSource()
   );
 
+  // TODO: Replace node- and edgeTypes with EntityType.name from query
   const nodeColorsAndTypes = [
     { color: '#e6194b', type: 'Node Type 1' },
     { color: '#3cb44b', type: 'Node Type 2' },
@@ -164,17 +165,28 @@ function Graph(): JSX.Element {
     { color: '#911eb4', type: 'Node Type 6' },
     { color: '#46f0f0', type: 'Node Type 7' },
   ];
-  const nodeTypes: unknown[] = [];
+
+  const edgeColorsAndTypes = [
+    { color: '#a9a9a9', type: 'Edge Type 1' },
+    { color: '#a9a9a9', type: 'Edge Type 2' },
+  ];
 
   const boxShadowStates: {
     boxShadow: string;
     setBoxShadow: React.Dispatch<React.SetStateAction<string>>;
-    handleAddNode: () => void;
+    handleAddEntitiesToView: () => void;
   }[] = [];
 
-  nodeColorsAndTypes.forEach(() => {
+  // For every EntityFilterElement: Give it a boxShadow boolean that indicates
+  // if entities of the specific type are added to the view.
+  // TODO: Currently I am using useState() for every EntityType. Is there a better way to solve this?
+  for (
+    let i = 0;
+    i < nodeColorsAndTypes.length + edgeColorsAndTypes.length;
+    i += 1
+  ) {
     const [boxShadow, setBoxShadow] = React.useState('None');
-    const handleAddNode = () => {
+    const handleAddEntitiesToView = () => {
       setBoxShadow(
         boxShadow === 'None' ? '0 0 0 0.2rem rgba(0,123,255,.5)' : 'None'
       );
@@ -182,11 +194,19 @@ function Graph(): JSX.Element {
     boxShadowStates.push({
       boxShadow,
       setBoxShadow,
-      handleAddNode,
+      handleAddEntitiesToView,
     });
-  });
+  }
 
+  // Indicates if filter-dialog is opened.
   const [filterOpen, setFilterOpen] = React.useState(false);
+
+  const handleOpenFilter = () => {
+    setFilterOpen(true);
+  };
+  const handleCloseFilter = () => {
+    setFilterOpen(false);
+  };
 
   // The state, as returned by react-async. Data is the query-result, when available.
   const { data, error, isLoading } = useAsync({
@@ -248,13 +268,6 @@ function Graph(): JSX.Element {
   // Build the react-graph-vis graph options.
   const options = buildOptions(containerSize.width, containerSize.height);
 
-  const handleOpenFilter = () => {
-    setFilterOpen(true);
-  };
-  const handleCloseFilter = () => {
-    setFilterOpen(false);
-  };
-
   const entityTemplate = (
     color: string,
     type: string,
@@ -280,6 +293,10 @@ function Graph(): JSX.Element {
     </div>
   );
 
+  const nodeTypes: unknown[] = [];
+  const edgeTypes: unknown[] = [];
+
+  // store entityType-elements.
   let i = 0;
   nodeColorsAndTypes.forEach((colorsAndTypes) => {
     nodeTypes.push(
@@ -287,27 +304,22 @@ function Graph(): JSX.Element {
         colorsAndTypes.color,
         colorsAndTypes.type,
         boxShadowStates[i].boxShadow,
-        boxShadowStates[i].handleAddNode
+        boxShadowStates[i].handleAddEntitiesToView
       )
     );
     i += 1;
   });
-
-  const edgeColorsAndTypes = [
-    { color: '#a9a9a9', type: 'Edge Type 1' },
-    { color: '#a9a9a9', type: 'Edge Type 2' },
-  ];
-  const edgeTypes: unknown[] = [];
 
   edgeColorsAndTypes.forEach((colorsAndTypes) => {
     edgeTypes.push(
       entityTemplate(
         colorsAndTypes.color,
         colorsAndTypes.type,
-        boxShadowStates[0].boxShadow,
-        boxShadowStates[0].handleAddNode
+        boxShadowStates[i].boxShadow,
+        boxShadowStates[i].handleAddEntitiesToView
       )
     );
+    i += 1;
   });
 
   return (
