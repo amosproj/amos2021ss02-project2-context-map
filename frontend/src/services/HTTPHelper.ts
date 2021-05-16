@@ -2,6 +2,7 @@
 import { injectable } from 'inversify';
 import 'reflect-metadata';
 import ArgumentError from '../errors/ArgumentError';
+import HttpError from '../errors/HttpError';
 import CancellationError from '../utils/CancellationError';
 import { CancellationToken } from '../utils/CancellationToken';
 import nop from '../utils/nop';
@@ -278,7 +279,7 @@ export default class HTTPHelper {
       return httpResponse.result;
     }
 
-    throw Error(httpResponse.statusText);
+    throw new HttpError(httpResponse.status, httpResponse.statusText);
   }
 
   public post<TResult>(
@@ -322,7 +323,7 @@ export default class HTTPHelper {
       return httpResponse.result;
     }
 
-    throw Error(httpResponse.statusText);
+    throw new HttpError(httpResponse.status, httpResponse.statusText);
   }
 
   private appendQuery(url: URL | string, query: URLQuery): URL {
