@@ -12,7 +12,7 @@ import getRandomInteger from '../utils/getRandomInteger';
 import SchemaService from './SchemaService';
 
 // TODO: What else is possible?
-export const possibleAttributeTypes: string[] = [
+export const possiblePropertyTypes: string[] = [
   'String',
   'Long',
   'StringArray',
@@ -46,27 +46,27 @@ export default class FakeDataSchemaService extends SchemaService {
   private generateRandomEntityTypeProperty(): EntityTypeProperty {
     const name = this.getRandomNoun();
 
-    // Build the string array that contains the types the attribute may contain.
+    // Build the string array that contains the types the property may contain.
     // The possible types are stored in a constant.
     const types: string[] = [];
 
-    // Get a random number in the range [1..possibleAttributeTypes.length[ that determines
+    // Get a random number in the range [1..possiblePropertyTypes.length[ that determines
     // the amount of types that the array will contain.
-    const numberOfTypes = getRandomInteger(1, possibleAttributeTypes.length);
+    const numberOfTypes = getRandomInteger(1, possiblePropertyTypes.length);
 
-    // A copy of the possibleAttributeTypes, as we modify this list now.
-    const nonAllocatedAttributeTypes = [...possibleAttributeTypes];
+    // A copy of the possiblePropertyTypes, as we modify this list now.
+    const nonAllocatedPropertyTypes = [...possiblePropertyTypes];
 
     for (let i = 0; i < numberOfTypes; i += 1) {
-      // First get an index into the collection of not yet allocated attribute types.
-      const idx = getRandomInteger(nonAllocatedAttributeTypes.length);
+      // First get an index into the collection of not yet allocated property types.
+      const idx = getRandomInteger(nonAllocatedPropertyTypes.length);
 
-      // Add the attribute type to the collection.
-      types.push(nonAllocatedAttributeTypes[idx]);
+      // Add the property type to the collection.
+      types.push(nonAllocatedPropertyTypes[idx]);
 
-      // Remove the attribute type from the collection of non allocated attribute types,
+      // Remove the property type from the collection of non allocated property types,
       // as we just allocated it.
-      nonAllocatedAttributeTypes.splice(idx, 1);
+      nonAllocatedPropertyTypes.splice(idx, 1);
     }
 
     const mandatory = getRandomInteger(1) === 1;
@@ -76,13 +76,13 @@ export default class FakeDataSchemaService extends SchemaService {
 
   private generateRandomEntityType(): EntityType {
     const name = this.getRandomNoun();
-    const numberOfAttributes = getRandomInteger(
+    const numberOfProperties = getRandomInteger(
       this.minNumberOfProperties,
       this.maxNumberOfProperties
     );
     const properties: EntityTypeProperty[] = [];
 
-    for (let i = 0; i < numberOfAttributes; i += 1) {
+    for (let i = 0; i < numberOfProperties; i += 1) {
       properties.push(this.generateRandomEntityTypeProperty());
     }
 
