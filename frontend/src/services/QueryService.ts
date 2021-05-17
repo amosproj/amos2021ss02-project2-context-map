@@ -2,6 +2,7 @@ import { injectable } from 'inversify';
 import 'reflect-metadata';
 import { LimitQuery } from '../shared/queries/LimitQuery';
 import { QueryResult } from '../shared/queries/QueryResult';
+import { SearchResult } from '../shared/search/SearchResult';
 import { CancellationToken } from '../utils/CancellationToken';
 
 /**
@@ -19,4 +20,15 @@ export default abstract class QueryService {
     query?: LimitQuery,
     cancellation?: CancellationToken
   ): Promise<QueryResult>;
+
+  /**
+   * Searches through all entities and entity types and returns those, that
+   * match the searchString. It only returns those value with the prefix of
+   * searchStrings.
+   * Values with n spaces are considered as n+1 single values.
+   */
+  public abstract fullTextSearch(
+    searchString: string,
+    cancellation?: CancellationToken
+  ): Promise<SearchResult>;
 }
