@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FactoryProvider, INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { SchemaController } from '../../../src/schema/schema.controller';
 import { SchemaService } from '../../../src/schema/schema.service';
 
