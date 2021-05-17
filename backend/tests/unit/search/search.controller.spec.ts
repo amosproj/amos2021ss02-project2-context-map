@@ -3,13 +3,15 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { SearchController } from '../../../src/search/search.controller';
 import { SearchService } from '../../../src/search/search.service';
+import { ISearchService } from '../../../src/search/ISearch.service';
+import { notImplemented } from '../notImplemented';
 
 describe('SearchController', () => {
   let app: INestApplication;
   const baseUrl = '/search';
-  const mockSearchService = {
-    searchInNodeProperties: jest.fn(() => []),
-    searchInEdgeProperties: jest.fn(() => []),
+  const mockSearchService: ISearchService = {
+    search: notImplemented,
+    getAutoSuggestions: notImplemented,
   };
 
   // Global setup
@@ -33,33 +35,38 @@ describe('SearchController', () => {
     await app.close();
   });
 
-  /* eslint-disable no-loop-func, no-restricted-syntax -- allow loop */
-  for (const what of ['all']) {
-    /* eslint-disable no-restricted-syntax -- allow describe and it in loop */
-    describe(`Search ${what}`, () => {
-      it('should not fail when called with filter string', async () => {
-        // Act
-        await request(app.getHttpServer())
-          .get(`${baseUrl}/${what}?filter=trinity`)
-          // Assert
-          .expect(200);
-      });
+  describe(`Search all`, () => {
+    it('should not fail when called with filter string', async () => {
+      jest.spyOn(mockSearchService, 'search').mockImplementation(() =>
+        Promise.resolve({
+          nodes: [],
+          edges: [],
+          edgeTypes: [],
+          nodeTypes: [],
+        })
+      );
 
-      it('should fail when called with empty filter', async () => {
-        // Act
-        await request(app.getHttpServer())
-          .get(`${baseUrl}/${what}?filter=`)
-          // Assert
-          .expect(400);
-      });
-
-      it('should fail when called with not query param', async () => {
-        // Act
-        await request(app.getHttpServer())
-          .get(`${baseUrl}/${what}`)
-          // Assert
-          .expect(400);
-      });
+      // Act
+      await request(app.getHttpServer())
+        .get(`${baseUrl}/all?filter=trinity`)
+        // Assert
+        .expect(200);
     });
-  }
+
+    it('should fail when called with empty filter', async () => {
+      // Act
+      await request(app.getHttpServer())
+        .get(`${baseUrl}/all?filter=`)
+        // Assert
+        .expect(400);
+    });
+
+    it('should fail when called with not query param', async () => {
+      // Act
+      await request(app.getHttpServer())
+        .get(`${baseUrl}/all`)
+        // Assert
+        .expect(400);
+    });
+  });
 });

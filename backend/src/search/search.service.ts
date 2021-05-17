@@ -14,6 +14,7 @@ import { NodeType } from '../shared/schema/NodeType';
 import { EntityType } from '../shared/schema/EntityType';
 import { NodeTypeDescriptor } from '../shared/schema/NodeTypeDescriptor';
 import { EdgeTypeDescriptor } from '../shared/schema/EdgeTypeDescriptor';
+import { ISearchService } from './ISearch.service';
 
 interface RestoredIndexEntry {
   /**
@@ -71,7 +72,9 @@ function flattenArray(array: string[]): string {
 
 function convertProperties(properties: {
   [key: string]: Property;
-}): { [key: string]: string | undefined } {
+}): {
+  [key: string]: string | undefined;
+} {
   const result: { [key: string]: string | undefined } = {};
   const keys = Object.keys(properties);
 
@@ -153,7 +156,7 @@ function convertNodeType(nodeType: NodeType): IndexEntry {
 }
 
 @Injectable()
-export class SearchService {
+export class SearchService implements ISearchService {
   private readonly index: AsyncLazy<MiniSearch>;
 
   constructor(private readonly neo4jService: Neo4jService) {
