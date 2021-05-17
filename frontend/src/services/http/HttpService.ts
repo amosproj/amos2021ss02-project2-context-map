@@ -1,82 +1,18 @@
-/* eslint-disable max-classes-per-file */
 import { injectable } from 'inversify';
 import 'reflect-metadata';
 import HttpError from './HttpError';
 import CancellationError from '../../utils/CancellationError';
 import { CancellationToken } from '../../utils/CancellationToken';
 import nop from '../../utils/nop';
-import { HttpServiceOptions } from './HttpServiceOptions';
+import HttpServiceOptions from './HttpServiceOptions';
 import NetworkError from './NetworkError';
-
-interface HttpHeaderCollection {
-  [key: string]: string | undefined;
-}
-
-type URLQueryValueType = number | string | (number | string)[];
-
-interface URLQuery {
-  [key: string]: URLQueryValueType;
-}
-
-export abstract class HttpRequest {
-  public constructor(
-    public readonly headers: HttpHeaderCollection = {},
-    public readonly query: URLQuery = {}
-  ) {}
-}
-
-export class HttpGetRequest extends HttpRequest {
-  public constructor(headers: HttpHeaderCollection = {}, query: URLQuery = {}) {
-    super(headers, query);
-  }
-}
-
-export class HttpPostRequest extends HttpRequest {
-  public constructor(
-    public readonly body: unknown,
-    headers: HttpHeaderCollection = {},
-    query: URLQuery = {}
-  ) {
-    super(headers, query);
-  }
-}
-
-export class HttpResponse<TResult> {
-  public constructor(
-    public readonly result: TResult | null,
-    public readonly headers: HttpHeaderCollection,
-    public readonly status: number,
-    public readonly statusText: string
-  ) {}
-}
-
-function parseResponseHeaders(headers: string): HttpHeaderCollection {
-  /* Example:
-   * date: Fri, 08 Dec 2017 21:04:30 GMT\r\n
-   * content-encoding: gzip\r\n
-   * x-content-type-options: nosniff\r\n
-   */
-  const headerKVPs = headers.split('\r\n');
-  const result: HttpHeaderCollection = {};
-  for (let i = 0; i < headerKVPs.length; i += 1) {
-    // Example: date: Fri, 08 Dec 2017 21:04:30 GMT\r\n
-    const kvp = headerKVPs[i];
-    const indexOfColon = kvp.indexOf(':');
-
-    // A colon was not found in the header line.
-    // This is a malformed header line.
-    if (indexOfColon >= 0) {
-      const key = kvp.slice(0, indexOfColon).trim();
-      const value = kvp.slice(indexOfColon + 1).trim();
-
-      if (key.length > 0 && value.length > 0) {
-        result[key] = value;
-      }
-    }
-  }
-
-  return result;
-}
+import HttpHeaderCollection from './HttpHeaderCollection';
+import HttpRequest from './HttpRequest';
+import HttpGetRequest from './HttpGetRequest';
+import HttpPostRequest from './HttpPostRequest';
+import HttpResponse from './HttpResponse';
+import parseResponseHeaders from './parseResponseHeaders';
+import appendQuery from './appendQuery';
 
 /**
  * Builds the query service options.
@@ -95,49 +31,6 @@ function buildOptions(
   }
 
   return { baseUri };
-}
-
-function appendQuery(url: URL, query: URLQuery): URL {
-  let queryString = '';
-  const keys = Object.keys(query);
-
-  for (let i = 0; i < keys.length; i += 1) {
-    const key = keys[i];
-    const value = query[key];
-
-    if (Array.isArray(value)) {
-      for (let j = 0; j < value.length; j += 1) {
-        const arrayValue = value[j];
-        if (i > 0 || j > 0) {
-          queryString += '&';
-        }
-        queryString += `${key}=${arrayValue.toString()}`;
-      }
-    } else {
-      if (i > 0) {
-        queryString += '&';
-      }
-      queryString += `${key}=${value.toString()}`;
-    }
-  }
-
-  // Copy the url, so we don't touch the object of the caller,
-  // that maybe reused for other stuff, we cannot know of.
-  const result = new URL(url.href);
-
-  if (queryString.length > 0) {
-    if (
-      !result.search ||
-      result.search.length === 0 ||
-      (result.search.length === 1 && result.search.charAt(0) === '?')
-    ) {
-      result.search = `?${queryString}`;
-    } else {
-      result.search = `${result.search}&${queryString}`;
-    }
-  }
-
-  return result;
 }
 
 @injectable()

@@ -1,5 +1,5 @@
 import { Container } from 'inversify';
-import HttpService from './services/http/HttpService';
+import HttpService from './services/http';
 import QueryService from './services/QueryService';
 import QueryServiceImpl from './services/QueryServiceImpl';
 import RandomNumberGenerator from './services/RandomNumberGenerator';

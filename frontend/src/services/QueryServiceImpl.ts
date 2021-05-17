@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { LimitQuery } from '../shared/queries/LimitQuery';
 import { QueryResult } from '../shared/queries/QueryResult';
 import { CancellationToken } from '../utils/CancellationToken';
-import HttpService from './http/HttpService';
+import HttpService from './http';
 import QueryService from './QueryService';
 
 /**
