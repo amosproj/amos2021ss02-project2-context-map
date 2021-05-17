@@ -23,10 +23,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Searchbar() {
+export default function Searchbar(): JSX.Element {
   const classes = useStyles();
   const [value, setValue] = React.useState<SearchResultOption | null>(null);
-  const [inputValue, setInputValue] = React.useState('');
+  // TODO use the inputValue for the service call
+  const [inputValue, setInputValue] = React.useState(''); // eslint-disable-line @typescript-eslint/no-unused-vars
   const [options, setOptions] = React.useState<SearchResultOption[]>([]);
 
   /* const searchService = useService(SearchService, null);
@@ -84,7 +85,7 @@ export default function Searchbar() {
       includeInputInList
       filterSelectedOptions
       value={value}
-      onChange={(event: any, newValue: SearchResultOption | null) => {
+      onChange={(event, newValue: SearchResultOption | null) => {
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
       }}
