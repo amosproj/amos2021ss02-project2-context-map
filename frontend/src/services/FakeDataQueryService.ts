@@ -2,7 +2,9 @@ import { injectable } from 'inversify';
 import 'reflect-metadata';
 import { LimitQuery } from '../shared/queries/LimitQuery';
 import { QueryResult } from '../shared/queries/QueryResult';
+import { Node } from '../shared/entities/Node';
 import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
+import { Edge } from '../shared/entities/Edge';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import delay from '../utils/delay';
 import QueryService from './QueryService';
@@ -54,5 +56,19 @@ export default class FakeDataQueryService extends QueryService {
     }
 
     return { nodes, edges };
+  }
+
+  public getEdgesById(
+    idsOrDescriptors: number[] | EdgeDescriptor[],
+    cancellation?: CancellationToken
+  ): Promise<(Edge | null)[]> {
+    return Promise.resolve<(Edge | null)[]>(idsOrDescriptors.map(() => null));
+  }
+
+  public getNodesById(
+    idsOrDescriptors: number[] | NodeDescriptor[],
+    cancellation?: CancellationToken
+  ): Promise<(Node | null)[]> {
+    return Promise.resolve<(Node | null)[]>(idsOrDescriptors.map(() => null));
   }
 }
