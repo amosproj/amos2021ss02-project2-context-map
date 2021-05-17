@@ -45,8 +45,8 @@ export default class QueryServiceImpl extends QueryService {
   public getEdgesById(
     idsOrDescriptors: number[] | EdgeDescriptor[],
     cancellation?: CancellationToken
-  ): Promise<(Edge | null)[]> {
-    return this.http.get<(Edge | null)[]>(
+  ): Promise<Edge[]> {
+    return this.http.get<Edge[]>(
       '/getEdgesById',
       buildDetailsRequest(idsOrDescriptors),
       cancellation
@@ -56,8 +56,8 @@ export default class QueryServiceImpl extends QueryService {
   public getNodesById(
     idsOrDescriptors: number[] | NodeDescriptor[],
     cancellation?: CancellationToken
-  ): Promise<(Node | null)[]> {
-    return this.http.get<(Node | null)[]>(
+  ): Promise<Node[]> {
+    return this.http.get<Node[]>(
       '/getNodesById',
       buildDetailsRequest(idsOrDescriptors),
       cancellation

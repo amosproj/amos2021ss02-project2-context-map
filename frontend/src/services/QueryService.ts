@@ -52,12 +52,12 @@ export default abstract class QueryService {
   public abstract getEdgesById(
     ids: number[],
     cancellation?: CancellationToken
-  ): Promise<(Edge | null)[]>;
+  ): Promise<Edge[]>;
 
   public abstract getEdgesById(
     descriptors: EdgeDescriptor[],
     cancellation?: CancellationToken
-  ): Promise<(Edge | null)[]>;
+  ): Promise<Edge[]>;
 
   public getNodeById(
     id: number,
@@ -87,10 +87,10 @@ export default abstract class QueryService {
   public abstract getNodesById(
     ids: number[],
     cancellation?: CancellationToken
-  ): Promise<(Node | null)[]>;
+  ): Promise<Node[]>;
 
   public abstract getNodesById(
     descriptors: NodeDescriptor[],
     cancellation?: CancellationToken
-  ): Promise<(Node | null)[]>;
+  ): Promise<Node[]>;
 }
