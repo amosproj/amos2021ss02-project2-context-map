@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
 import { LimitQuery } from '../shared/queries/LimitQuery';
 import { QueryResult } from '../shared/queries/QueryResult';
+import { SearchResult } from '../shared/search/SearchResult';
 import { CancellationToken } from '../utils/CancellationToken';
 import HttpService from './http';
 import QueryService from './QueryService';
@@ -23,5 +24,14 @@ export default class QueryServiceImpl extends QueryService {
     const url = `/queryAll`;
 
     return this.http.post<QueryResult>(url, query, cancellation);
+  }
+
+  public fullTextSearch(
+    searchString?: string,
+    cancellation?: CancellationToken
+  ): Promise<SearchResult> {
+    const url = `/search/all?${searchString}`;
+
+    return this.http.get<SearchResult>(url, cancellation);
   }
 }
