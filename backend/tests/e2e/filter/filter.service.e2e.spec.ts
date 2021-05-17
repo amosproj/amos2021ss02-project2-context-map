@@ -34,7 +34,7 @@ describe('SchemaService', () => {
   });
 
   describe('Method getNodeTypeFilterModel', () => {
-    it('should XX', async () => {
+    it('should return node filter model when requested', async () => {
       // Act
       const result = await service.getNodeTypeFilterModel('Movie');
 
@@ -45,7 +45,7 @@ describe('SchemaService', () => {
   });
 
   describe('Method getEdgeTypeFilterModel', () => {
-    it('should XX', async () => {
+    it('should return edge filter model when requested', async () => {
       // Act
       const result = await service.getEdgeTypeFilterModel('ACTED_IN');
 
