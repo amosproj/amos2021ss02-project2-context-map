@@ -20,6 +20,7 @@ import Divider from '@material-ui/core/Divider';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import MainMenu from './MainMenu';
+import Searchbar from './search/Searchbar';
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme: Theme) =>
@@ -90,6 +91,12 @@ const useStyles = makeStyles((theme: Theme) =>
     tabToolbar: {
       height: 48,
     },
+    searchbarWrapper: {
+      alignSelf: 'flex-end',
+      marginLeft: 'auto',
+      marginTop: 10,
+      marginBottom: 10,
+    },
   })
 );
 
@@ -103,6 +110,7 @@ type LayoutProps = {
   tabs?: RenderTab[] | undefined;
   tabIdx?: number | undefined;
   label?: string | undefined;
+  currentPath?: string | undefined;
 };
 
 function isNullOrEmpty(str: string | null | undefined): boolean {
@@ -118,7 +126,7 @@ function isNullOrEmpty(str: string | null | undefined): boolean {
 }
 
 function Layout(props: LayoutProps): JSX.Element {
-  const { children, tabs, tabIdx, label } = props;
+  const { children, tabs, tabIdx, label, currentPath } = props;
   const classes = useStyles();
   const theme = useTheme();
   const history = useHistory();
@@ -172,6 +180,18 @@ function Layout(props: LayoutProps): JSX.Element {
     );
   }
 
+  function RenderSearchbar(): JSX.Element | null {
+    if (currentPath === '/home') {
+      return null;
+    }
+
+    return (
+      <div className={classes.searchbarWrapper}>
+        <Searchbar />
+      </div>
+    );
+  }
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -196,6 +216,7 @@ function Layout(props: LayoutProps): JSX.Element {
           <Typography variant="h6" noWrap>
             {title}
           </Typography>
+          <RenderSearchbar />
         </Toolbar>
         <RenderTabs />
       </AppBar>
@@ -242,6 +263,7 @@ Layout.defaultProps = {
   tabs: undefined,
   tabIdx: undefined,
   label: undefined,
+  currentPath: undefined,
 };
 
 export default Layout;

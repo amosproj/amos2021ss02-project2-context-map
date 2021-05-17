@@ -83,7 +83,12 @@ function App(): JSX.Element {
         </Route>
         {renderRoutes.map((route) => (
           <Route key={route.path} path={route.path} exact={route.exact}>
-            <Layout tabs={route.tabs} label={route.label} tabIdx={route.tabIdx}>
+            <Layout
+              currentPath={route.path}
+              tabs={route.tabs}
+              label={route.label}
+              tabIdx={route.tabIdx}
+            >
               <route.content />
             </Layout>
           </Route>
