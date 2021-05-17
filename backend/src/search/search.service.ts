@@ -14,7 +14,8 @@ import { NodeType } from '../shared/schema/NodeType';
 import { EntityType } from '../shared/schema/EntityType';
 import { NodeTypeDescriptor } from '../shared/schema/NodeTypeDescriptor';
 import { EdgeTypeDescriptor } from '../shared/schema/EdgeTypeDescriptor';
-import { ISearchService } from './ISearch.service';
+import { SearchServiceBase } from './search.service.base';
+import { neo4jReturnEdge, neo4jReturnNode } from '../config/commonFunctions';
 
 interface RestoredIndexEntry {
   /**
@@ -156,7 +157,7 @@ function convertNodeType(nodeType: NodeType): IndexEntry {
 }
 
 @Injectable()
-export class SearchService implements ISearchService {
+export class SearchService implements SearchServiceBase {
   private readonly index: AsyncLazy<MiniSearch>;
 
   constructor(private readonly neo4jService: Neo4jService) {
@@ -172,7 +173,7 @@ export class SearchService implements ISearchService {
 
     // Get all nodes from the database
     const nodeResults = await this.neo4jService.read(
-      'MATCH (n) RETURN ID(n) as id, labels(n) as types, properties(n) as properties'
+      `MATCH (n) RETURN ${neo4jReturnNode('n')}`
     );
 
     const nodeEntries = nodeResults.records.map((record) =>
@@ -183,7 +184,7 @@ export class SearchService implements ISearchService {
     const edgeResults = await this.neo4jService.read(
       `
       MATCH (from)-[e]->(to) 
-      RETURN ID(e) as id, ID(from) as from, ID(to) as to, properties(e) as properties, type(e) as type
+      RETURN ${neo4jReturnEdge('e', 'from', 'to')}
       ORDER BY id, from
       `
     );

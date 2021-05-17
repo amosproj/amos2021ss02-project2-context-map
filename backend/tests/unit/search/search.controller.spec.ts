@@ -3,13 +3,13 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { SearchController } from '../../../src/search/search.controller';
 import { SearchService } from '../../../src/search/search.service';
-import { ISearchService } from '../../../src/search/ISearch.service';
+import { SearchServiceBase } from '../../../src/search/search.service.base';
 import { notImplemented } from '../notImplemented';
 
 describe('SearchController', () => {
   let app: INestApplication;
   const baseUrl = '/search';
-  const mockSearchService: ISearchService = {
+  const mockSearchService: SearchServiceBase = {
     search: notImplemented,
     getAutoSuggestions: notImplemented,
   };
