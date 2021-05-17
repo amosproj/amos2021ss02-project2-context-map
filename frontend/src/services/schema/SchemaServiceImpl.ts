@@ -9,7 +9,7 @@ import HttpService from '../http';
 import SchemaService from './SchemaService';
 
 /**
- * The implementation of query service that performs query requests
+ * The implementation of schema service that performs requests
  * via the backend.
  */
 @injectable()
@@ -41,7 +41,7 @@ export default class SchemaServiceImpl extends SchemaService {
   }
 
   private requestNodeTypes(): Promise<NodeType[]> {
-    return this.http.get<NodeType[]>('schema/edge-types');
+    return this.http.get<NodeType[]>('schema/node-types');
   }
 
   public getEdgeTypes(cancellation?: CancellationToken): Promise<EdgeType[]> {
