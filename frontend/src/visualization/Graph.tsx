@@ -21,7 +21,7 @@ import {
 } from '../utils/CancellationToken';
 import { useSize } from '../utils/useSize';
 import EntityFilterElement from './components/EntityFilterElement';
-import EntityFilterDialog from './components/EntityFilterDialog';
+import EntityFilterDialog from './components/dialog/EntityFilterDialog';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -322,6 +322,7 @@ function Graph(): JSX.Element {
     i += 1;
   });
 
+  const entityTypeProperties: string[] = ['name', 'Peter'];
   return (
     <>
       <div className={classes.graphPage}>
@@ -335,6 +336,7 @@ function Graph(): JSX.Element {
           <EntityFilterDialog
             filterOpen={filterOpen}
             handleCloseFilter={handleCloseFilter}
+            entityTypes={entityTypeProperties}
           />
         </div>
         <div className={classes.graphContainer}>
