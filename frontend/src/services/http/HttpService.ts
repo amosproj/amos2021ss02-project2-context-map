@@ -1,10 +1,10 @@
 /* eslint-disable max-classes-per-file */
 import { injectable } from 'inversify';
 import 'reflect-metadata';
-import HttpError from '../errors/HttpError';
-import CancellationError from '../utils/CancellationError';
-import { CancellationToken } from '../utils/CancellationToken';
-import nop from '../utils/nop';
+import HttpError from './HttpError';
+import CancellationError from '../../utils/CancellationError';
+import { CancellationToken } from '../../utils/CancellationToken';
+import nop from '../../utils/nop';
 import { HttpServiceOptions } from './HttpServiceOptions';
 import NetworkError from './NetworkError';
 
