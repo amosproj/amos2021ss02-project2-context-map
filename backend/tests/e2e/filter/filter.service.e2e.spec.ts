@@ -4,6 +4,7 @@ import { FilterService } from '../../../src/filter/filter.service';
 import { KmapNeo4jModule } from '../../../src/config/neo4j/KmapNeo4jModule';
 import { AppModule } from '../../../src/app.module';
 import { edgeInfo, nodeInfo } from '../../fixtures/nodeInfo/GraphInfoDb';
+import { getEdgeTypeFilterModelResult, getNodeTypeFilterModelResult } from 'tests/fixtures/filter/FilterQueryResults';
 
 /*
 Tests filter.service.ts
@@ -39,8 +40,7 @@ describe('SchemaService', () => {
       const result = await service.getNodeTypeFilterModel('Movie');
 
       // Assert
-      // TODO: Make me beautiful
-      expect(result).toEqual({"name": "Movie", "properties": [{"key": "title", "values": ["The Matrix"]}, {"key": "tagline", "values": ["Welcome to the Real World"]}, {"key": "released", "values": [1999]}]});
+      expect(result).toEqual(getNodeTypeFilterModelResult);
     });
   });
 
@@ -50,8 +50,7 @@ describe('SchemaService', () => {
       const result = await service.getEdgeTypeFilterModel('ACTED_IN');
 
       // Assert
-      // TODO: Make me beautiful
-      expect(result).toEqual({"name": "ACTED_IN", "properties": [{"key": "roles", "values": [["Trinity"], ["Neo"]]}]});
+      expect(result).toEqual(getEdgeTypeFilterModelResult);
     });
   });
 });
