@@ -14,7 +14,7 @@ NEO4J_USERNAME=$dbUsername
 NEO4J_PASSWORD=$dbPassword
 NEO4J_DATABASE=neo4j
 
-CORS_URL=http://localhost:3000" >> $backendConfigPath
+CORS_URL=http://localhost:3000" > $backendConfigPath
 
 yarn --cwd $backendDir install
 yarn --cwd $backendDir start
