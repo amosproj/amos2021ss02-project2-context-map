@@ -27,28 +27,21 @@ export default class QueryServiceImpl extends QueryService {
   }
 
   public fullTextSearch(
-    searchString?: string,
+    searchString: string,
+    path: string,
     cancellation?: CancellationToken
   ): Promise<SearchResult> {
+    const possiblePaths = ['all', 'nodes', 'edges'];
+    if (!possiblePaths.includes(path)) {
+      // TODO return an error here instead?
+      return Promise.resolve({
+        nodes: [],
+        edges: [],
+        nodeTypes: [],
+        edgeTypes: [],
+      });
+    }
     const url = `/search/all?filter=${searchString}`;
-
-    return this.http.get<SearchResult>(url, cancellation);
-  }
-
-  public fullTextSearchNodes(
-    searchString?: string,
-    cancellation?: CancellationToken
-  ): Promise<SearchResult> {
-    const url = `/search/nodes?filter=${searchString}`;
-
-    return this.http.get<SearchResult>(url, cancellation);
-  }
-
-  public fullTextSearchEdges(
-    searchString?: string,
-    cancellation?: CancellationToken
-  ): Promise<SearchResult> {
-    const url = `/search/edges?filter=${searchString}`;
 
     return this.http.get<SearchResult>(url, cancellation);
   }
