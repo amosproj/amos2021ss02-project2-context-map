@@ -1,11 +1,11 @@
 import { Container } from 'inversify';
 import HttpService from './services/http';
-import FakeDataSchemaService from './services/FakeDataSchemaService';
+import FakeDataSchemaService from './services/schema/FakeDataSchemaService';
 import QueryService from './services/QueryService';
 import QueryServiceImpl from './services/QueryServiceImpl';
 import RandomNumberGenerator from './services/RandomNumberGenerator';
 import RandomNumberGeneratorImpl from './services/RandomNumberGeneratorImpl';
-import SchemaService from './services/SchemaService';
+import { SchemaService } from './services/schema';
 
 /**
  * Configures all services in the frontend app.

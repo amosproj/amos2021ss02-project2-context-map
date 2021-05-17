@@ -1,8 +1,8 @@
 import { injectable } from 'inversify';
 import 'reflect-metadata';
-import { EdgeType } from '../shared/schema/EdgeType';
-import { NodeType } from '../shared/schema/NodeType';
-import { CancellationToken } from '../utils/CancellationToken';
+import { EdgeType } from '../../shared/schema/EdgeType';
+import { NodeType } from '../../shared/schema/NodeType';
+import { CancellationToken } from '../../utils/CancellationToken';
 
 /**
  * A service that can be used to request information about the data schema.
