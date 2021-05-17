@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
-import { Property } from 'src/shared/entities/Property';
+import { Property } from '../shared/entities/Property';
 
 interface NodeTypeFilterModel {
   name: string;
@@ -21,7 +21,9 @@ interface FilterModelEntry {
 export class FilterService {
   constructor(private readonly neo4jService: Neo4jService) {}
 
-  public async getNodeTypeFilterModel(nodeType: string): Promise<NodeTypeFilterModel> {
+  public async getNodeTypeFilterModel(
+    nodeType: string
+  ): Promise<NodeTypeFilterModel> {
     const result = await this.neo4jService.read(
       `
         MATCH (n)
@@ -39,7 +41,9 @@ export class FilterService {
       { nodeType }
     );
 
-    const properties = result.records.map((x) => x.toObject() as FilterModelEntry);
+    const properties = result.records.map(
+      (x) => x.toObject() as FilterModelEntry
+    );
 
     return {
       name: nodeType,
@@ -47,7 +51,9 @@ export class FilterService {
     };
   }
 
-  public async getEdgeTypeFilterModel(edgeType: string): Promise<EdgeTypeFilterModel> {
+  public async getEdgeTypeFilterModel(
+    edgeType: string
+  ): Promise<EdgeTypeFilterModel> {
     const result = await this.neo4jService.read(
       `
         MATCH ()-[n]->()
@@ -65,7 +71,9 @@ export class FilterService {
       { edgeType }
     );
 
-    const properties = result.records.map((x) => x.toObject() as FilterModelEntry);
+    const properties = result.records.map(
+      (x) => x.toObject() as FilterModelEntry
+    );
 
     return {
       name: edgeType,

@@ -3,8 +3,10 @@ import { Neo4jService } from 'nest-neo4j/dist';
 import { FilterService } from '../../../src/filter/filter.service';
 import { KmapNeo4jModule } from '../../../src/config/neo4j/KmapNeo4jModule';
 import { AppModule } from '../../../src/app.module';
-import { edgeInfo, nodeInfo } from '../../fixtures/nodeInfo/GraphInfoDb';
-import { getEdgeTypeFilterModelResult, getNodeTypeFilterModelResult } from 'tests/fixtures/filter/FilterQueryResults';
+import {
+  getEdgeTypeFilterModelResult,
+  getNodeTypeFilterModelResult,
+} from '../../fixtures/filter/FilterQueryResults';
 
 /*
 Tests filter.service.ts
