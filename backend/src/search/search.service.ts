@@ -248,6 +248,21 @@ export class SearchService implements ISearchService {
     return index;
   }
 
+  /**
+   * Searches through all entities and entity types and returns those, that
+   * match the searchString. It only returns those value with the prefix of
+   * searchStrings.
+   * Values with n spaces are considered as n+1 single values.
+   *
+   * @example
+   * 'Keanu' returns 'Keanu Reeves'
+   * @example
+   * 'kean' returns 'Keanu Reeves'
+   * @example
+   * 'reev' returns 'Keanu Reeves'
+   * @example
+   * 'name' returns 'Keanu Reeves' (since this node has the attribute 'name')
+   */
   public async search(searchString: string): Promise<SearchResult> {
     const index = await this.index.value;
 
@@ -257,7 +272,7 @@ export class SearchService implements ISearchService {
     //        ! means 'exact match' and
     //        ~ means 'does not include'
     const searchResults = index
-      .search(searchString)
+      .search(searchString, { prefix: true })
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .map((result) => (result as any) as RestoredIndexEntry);
 

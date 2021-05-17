@@ -41,6 +41,22 @@ describe('SearchService', () => {
       expect(result).toEqual(expected);
     });
 
+    it('finds single node by property stub', async () => {
+      // Arrange
+      const expected = {
+        edges: [],
+        nodes: [{ id: 1 }],
+        nodeTypes: [],
+        edgeTypes: [],
+      };
+
+      // Act
+      const result = await service.search('reev');
+
+      // Assert
+      expect(result).toEqual(expected);
+    });
+
     it('finds nodes and node type by type', async () => {
       // Arrange
       const expected = {
@@ -56,6 +72,26 @@ describe('SearchService', () => {
 
       // Act
       const result = await service.search('person');
+
+      // Assert
+      expect(result).toEqual(expected);
+    });
+
+    it('finds nodes and node type by type stub', async () => {
+      // Arrange
+      const expected = {
+        edges: [],
+        nodes: [{ id: 3 }, { id: 2 }, { id: 1 }],
+        nodeTypes: [
+          {
+            name: 'Person',
+          },
+        ],
+        edgeTypes: [],
+      };
+
+      // Act
+      const result = await service.search('pers');
 
       // Assert
       expect(result).toEqual(expected);
@@ -184,6 +220,28 @@ describe('SearchService', () => {
       expect(result).toEqual(expected);
     });
 
+    it('finds single edge by property stub', async () => {
+      // Arrange
+      const expected = {
+        edges: [
+          {
+            from: 2,
+            id: 1,
+            to: 0,
+          },
+        ],
+        nodes: [],
+        nodeTypes: [],
+        edgeTypes: [],
+      };
+
+      // Act
+      const result = await service.search('trini');
+
+      // Assert
+      expect(result).toEqual(expected);
+    });
+
     it('finds edge types by property name', async () => {
       // Arrange
       const expected = {
@@ -225,7 +283,7 @@ describe('SearchService', () => {
     });
   });
 
-  describe('Method autosuggest', () => {
+  describe('Method autosuggestion', () => {
     it('finds autosuggestion by edge property', async () => {
       // Arrange
       const expected = ['trinity'];

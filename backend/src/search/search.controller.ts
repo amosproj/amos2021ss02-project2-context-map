@@ -10,6 +10,15 @@ export class SearchController {
   /**
    * Filters through all properties of all nodes and all edges (case-insensitive) .
    * @param filter filter string ("if node/edge-property contains filter -> return it")
+   *
+   * @example
+   * 'Keanu' returns 'Keanu Reeves'
+   * @example
+   * 'kean' returns 'Keanu Reeves'
+   * @example
+   * 'reev' returns 'Keanu Reeves'
+   * @example
+   * 'name' returns 'Keanu Reeves' (since this node has the attribute 'name')
    */
   @Get('all')
   all(@Query('filter', RequiredPipe) filter: string): Promise<SearchResult> {
