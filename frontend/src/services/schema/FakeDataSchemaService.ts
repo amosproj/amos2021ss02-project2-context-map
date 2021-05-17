@@ -1,14 +1,14 @@
 import { injectable } from 'inversify';
 import 'reflect-metadata';
-import { EdgeType } from '../shared/schema/EdgeType';
-import { EntityType } from '../shared/schema/EntityType';
-import { EntityTypeProperty } from '../shared/schema/EntityTypeProperty';
-import { NodeType } from '../shared/schema/NodeType';
-import { CancellationToken } from '../utils/CancellationToken';
-import delay from '../utils/delay';
-import nouns from '../utils/nouns';
-import withCancellation from '../utils/withCancellation';
-import getRandomInteger from '../utils/getRandomInteger';
+import { EdgeType } from '../../shared/schema/EdgeType';
+import { EntityType } from '../../shared/schema/EntityType';
+import { EntityTypeProperty } from '../../shared/schema/EntityTypeProperty';
+import { NodeType } from '../../shared/schema/NodeType';
+import { CancellationToken } from '../../utils/CancellationToken';
+import delay from '../../utils/delay';
+import nouns from '../../utils/nouns';
+import withCancellation from '../../utils/withCancellation';
+import getRandomInteger from '../../utils/getRandomInteger';
 import SchemaService from './SchemaService';
 
 // TODO: What else is possible?

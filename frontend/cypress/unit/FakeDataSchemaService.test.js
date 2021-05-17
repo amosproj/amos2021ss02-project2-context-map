@@ -1,4 +1,4 @@
-import FakeDataSchemaService from '../../src/services/FakeDataSchemaService';
+import FakeDataSchemaService from '../../src/services/schema/FakeDataSchemaService';
 import CancellationError from '../../src/utils/CancellationError';
 import { CancellationTokenSource } from '../../src/utils/CancellationToken';
 
@@ -290,4 +290,4 @@ describe('FakeDataSchemaService', () => {
       }
     });
   });
- });
+});
