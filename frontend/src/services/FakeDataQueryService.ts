@@ -10,16 +10,13 @@ import delay from '../utils/delay';
 import QueryService from './QueryService';
 import { CancellationToken } from '../utils/CancellationToken';
 import { SearchResult } from '../shared/search/SearchResult';
-
-export function getRandomIndex(n: number): number {
-  return Math.floor(Math.random() * n);
-}
+import getRandomInteger from '../utils/getRandomInteger';
 
 /**
  * A fake implementation that delivers random data.
  */
 @injectable()
-export class FakeDataQueryService extends QueryService {
+export default class FakeDataQueryService extends QueryService {
   private readonly allowSelfReferencingNodes: boolean;
 
   public constructor(allowSelfReferencingNodes = true) {
@@ -43,12 +40,12 @@ export class FakeDataQueryService extends QueryService {
     }
 
     for (let i = 0; i < numEdges; i += 1) {
-      const from = getRandomIndex(numNodes);
-      let to = getRandomIndex(numNodes);
+      const from = getRandomInteger(numNodes);
+      let to = getRandomInteger(numNodes);
 
       if (!this.allowSelfReferencingNodes) {
         while (to === from) {
-          to = getRandomIndex(numNodes);
+          to = getRandomInteger(numNodes);
         }
       }
 
