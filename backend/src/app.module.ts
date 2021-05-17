@@ -4,6 +4,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { configuration } from './config/configuration';
 import { KmapNeo4jModule } from './config/neo4j/KmapNeo4jModule';
+import { SchemaController } from './schema/schema.controller';
+import { SchemaService } from './schema/schema.service';
 
 @Module({
   imports: [
@@ -17,7 +19,7 @@ import { KmapNeo4jModule } from './config/neo4j/KmapNeo4jModule';
       disableLosslessIntegers: true,
     }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, SchemaController],
+  providers: [AppService, SchemaService],
 })
 export class AppModule {}
