@@ -18,7 +18,7 @@ import {
 const EntityFilterDialog = (props: {
   filterOpen: boolean;
   handleCloseFilter: () => void;
-}) => {
+}): JSX.Element => {
   function createData(
     name: string,
     calories: number,

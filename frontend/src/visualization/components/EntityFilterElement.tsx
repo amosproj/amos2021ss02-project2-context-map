@@ -33,7 +33,7 @@ const EntityFilterElement = (props: {
   backgroundColor: string;
   boxShadow: string;
   content: string;
-}) => {
+}): JSX.Element => {
   const { backgroundColor, boxShadow, content } = props;
   const classes = useStyles();
 
