@@ -34,4 +34,22 @@ export default class QueryServiceImpl extends QueryService {
 
     return this.http.get<SearchResult>(url, cancellation);
   }
+
+  public fullTextSearchNodes(
+    searchString?: string,
+    cancellation?: CancellationToken
+  ): Promise<SearchResult> {
+    const url = `/search/nodes?filter=${searchString}`;
+
+    return this.http.get<SearchResult>(url, cancellation);
+  }
+
+  public fullTextSearchEdges(
+    searchString?: string,
+    cancellation?: CancellationToken
+  ): Promise<SearchResult> {
+    const url = `/search/edges?filter=${searchString}`;
+
+    return this.http.get<SearchResult>(url, cancellation);
+  }
 }

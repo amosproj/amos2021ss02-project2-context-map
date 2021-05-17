@@ -33,4 +33,30 @@ export default abstract class QueryService {
     searchString: string,
     cancellation?: CancellationToken
   ): Promise<SearchResult>;
+
+  /**
+   * Searches through all nodes and returns those, that
+   * match the searchString. Only returns those values with the prefix of searchStrings.
+   * Values with n spaces are considered as n+1 single values.
+   * @param searchString The string to search for.
+   * @param cancellation A CancellationToken used to cancel the asynchronous operation.
+   * @returns A promise that when evaluated, contains a {@link SearchResult} (nodes, edges, edgetypes and nodetypes).
+   */
+  public abstract fullTextSearchNodes(
+    searchString: string,
+    cancellation?: CancellationToken
+  ): Promise<SearchResult>;
+
+  /**
+   * Searches through all edges and returns those, that
+   * match the searchString. Only returns those values with the prefix of searchStrings.
+   * Values with n spaces are considered as n+1 single values.
+   * @param searchString The string to search for.
+   * @param cancellation A CancellationToken used to cancel the asynchronous operation.
+   * @returns A promise that when evaluated, contains a {@link SearchResult} (nodes, edges, edgetypes and nodetypes).
+   */
+  public abstract fullTextSearchEdges(
+    searchString: string,
+    cancellation?: CancellationToken
+  ): Promise<SearchResult>;
 }

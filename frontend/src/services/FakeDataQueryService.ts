@@ -101,4 +101,66 @@ export default class FakeDataQueryService extends QueryService {
 
     return { nodes, edges, nodeTypes, edgeTypes };
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  public async fullTextSearchNodes(
+    searchString: string,
+    cancellation?: CancellationToken
+  ): Promise<SearchResult> {
+    await delay(0, cancellation);
+
+    const numNodes = 100;
+    const nodes: NodeDescriptor[] = [];
+    const edges: EdgeDescriptor[] = [];
+    const nodeTypes: NodeTypeDescriptor[] = [
+      { name: 'Person' },
+      { name: 'Movie' },
+    ];
+    const edgeTypes: EdgeTypeDescriptor[] = [];
+
+    for (let i = 0; i < numNodes; i += 1) {
+      nodes.push({ id: i });
+    }
+
+    return { nodes, edges, nodeTypes, edgeTypes };
+  }
+
+  public async fullTextSearchEdges(
+    searchString: string,
+    cancellation?: CancellationToken
+  ): Promise<SearchResult> {
+    await delay(0, cancellation);
+
+    const numNodes = 100;
+    const numEdges = 150;
+    const nodes: NodeDescriptor[] = [];
+    const edges: EdgeDescriptor[] = [];
+    const nodeTypes: NodeTypeDescriptor[] = [
+      { name: 'Person' },
+      { name: 'Movie' },
+    ];
+    const edgeTypes: EdgeTypeDescriptor[] = [
+      { name: 'ACTED_IN' },
+      { name: 'DIRECTED' },
+    ];
+
+    for (let i = 0; i < numEdges; i += 1) {
+      const from = getRandomInteger(numNodes);
+      let to = getRandomInteger(numNodes);
+
+      if (!this.allowSelfReferencingNodes) {
+        while (to === from) {
+          to = getRandomInteger(numNodes);
+        }
+      }
+
+      edges.push({
+        id: i,
+        from,
+        to,
+      });
+    }
+
+    return { nodes, edges, nodeTypes, edgeTypes };
+  }
 }
