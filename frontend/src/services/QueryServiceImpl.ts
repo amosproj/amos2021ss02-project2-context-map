@@ -30,7 +30,7 @@ export default class QueryServiceImpl extends QueryService {
     searchString?: string,
     cancellation?: CancellationToken
   ): Promise<SearchResult> {
-    const url = `/search/all?${searchString}`;
+    const url = `/search/all?filter=${searchString}`;
 
     return this.http.get<SearchResult>(url, cancellation);
   }
