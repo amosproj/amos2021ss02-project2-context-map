@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { configuration } from './config/configuration';
 import { KmapNeo4jModule } from './config/neo4j/KmapNeo4jModule';
+import { FilterService } from './filter/filter.service';
 import { SchemaController } from './schema/schema.controller';
 import { SchemaService } from './schema/schema.service';
 
@@ -20,6 +21,6 @@ import { SchemaService } from './schema/schema.service';
     }),
   ],
   controllers: [AppController, SchemaController],
-  providers: [AppService, SchemaService],
+  providers: [AppService, SchemaService, FilterService],
 })
 export class AppModule {}
