@@ -4,14 +4,7 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
-import {
-  AppBar,
-  Box,
-  List,
-  Tab,
-  Tabs,
-  Typography,
-} from '@material-ui/core';
+import { AppBar, Box, List, Tab, Tabs, Typography } from '@material-ui/core';
 import React, { useRef } from 'react';
 import entityColors from '../fixtures/GraphData';
 
