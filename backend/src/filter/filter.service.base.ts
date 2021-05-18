@@ -2,10 +2,10 @@ import { EdgeTypeFilterModel, NodeTypeFilterModel } from '../shared/filter';
 
 export abstract class FilterServiceBase {
   public abstract getNodeTypeFilterModel(
-    nodeType: string
+    type: string
   ): Promise<NodeTypeFilterModel>;
 
   public abstract getEdgeTypeFilterModel(
-    edgeType: string
+    type: string
   ): Promise<EdgeTypeFilterModel>;
 }

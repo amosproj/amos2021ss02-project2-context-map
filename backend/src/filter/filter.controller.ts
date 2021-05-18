@@ -13,7 +13,7 @@ export class FilterController {
   @Get('node-type')
   getNodeTypeFilterModel(
     @Query('type') type: string
-  ): Promise<NodeTypeFilterModel | null> {
+  ): Promise<NodeTypeFilterModel> {
     if (typeof type !== 'string' || type.length === 0) {
       // TODO: Replace with much better solution:
       // https://github.com/amosproj/amos-ss2021-project2-context-map/blob/0a972dc11e29ebe59343de48a497cdb0f98d5d94/backend/src/pipes/RequiredPipe.ts
@@ -31,7 +31,7 @@ export class FilterController {
   @Get('edge-type')
   getEdgeTypeFilterModel(
     @Query('type') type: string
-  ): Promise<NodeTypeFilterModel | null> {
+  ): Promise<NodeTypeFilterModel> {
     if (typeof type !== 'string' || type.length === 0) {
       // TODO: Replace with much better solution:
       // https://github.com/amosproj/amos-ss2021-project2-context-map/blob/0a972dc11e29ebe59343de48a497cdb0f98d5d94/backend/src/pipes/RequiredPipe.ts
