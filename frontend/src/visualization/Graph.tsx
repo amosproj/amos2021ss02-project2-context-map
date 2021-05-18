@@ -7,9 +7,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { Box, IconButton, ListItemText } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
-import TuneIcon from '@material-ui/icons/Tune';
 import useService from '../dependency-injection/useService';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
@@ -20,8 +17,7 @@ import {
   CancellationTokenSource,
 } from '../utils/CancellationToken';
 import { useSize } from '../utils/useSize';
-import EntityFilterElement from './components/EntityFilterElement';
-import EntityFilterDialog from './components/EntityFilterDialog';
+import Filter from './filtering/Filter';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -63,9 +59,6 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
       overflowY: 'hidden',
       overflowX: 'hidden',
-    },
-    entityContainer: {
-      width: 300,
     },
     margin: {
       margin: theme.spacing(1),
@@ -147,66 +140,13 @@ function Graph(): JSX.Element {
   // The size of the container that is used to measure the available space for the graph.
   const containerSize = useSize(sizeMeasureContainerRef);
 
-  // The query service injected from DI.
+  // The query- and schema-service injected from DI.
   const queryService = useService(QueryService, null);
 
   // The component state that contains the cancellation token source used to cancel the query operation.
   const [loadingCancellationSource] = React.useState(
     new CancellationTokenSource()
   );
-
-  // TODO: Replace node- and edgeTypes with EntityType.name from query
-  const nodeColorsAndTypes = [
-    { color: '#e6194b', type: 'Node Type 1' },
-    { color: '#3cb44b', type: 'Node Type 2' },
-    { color: '#ffe119', type: 'Node Type 3' },
-    { color: '#4363d8', type: 'Node Type 4' },
-    { color: '#f58231', type: 'Node Type 5' },
-    { color: '#911eb4', type: 'Node Type 6' },
-    { color: '#46f0f0', type: 'Node Type 7' },
-  ];
-
-  const edgeColorsAndTypes = [
-    { color: '#a9a9a9', type: 'Edge Type 1' },
-    { color: '#a9a9a9', type: 'Edge Type 2' },
-  ];
-
-  const boxShadowStates: {
-    boxShadow: string;
-    setBoxShadow: React.Dispatch<React.SetStateAction<string>>;
-    handleAddEntitiesToView: () => void;
-  }[] = [];
-
-  // For every EntityFilterElement: Give it a boxShadow boolean that indicates
-  // if entities of the specific type are added to the view.
-  // TODO: Currently I am using useState() for every EntityType. Is there a better way to solve this?
-  for (
-    let i = 0;
-    i < nodeColorsAndTypes.length + edgeColorsAndTypes.length;
-    i += 1
-  ) {
-    const [boxShadow, setBoxShadow] = React.useState('None');
-    const handleAddEntitiesToView = () => {
-      setBoxShadow(
-        boxShadow === 'None' ? '0 0 0 0.2rem rgba(0,123,255,.5)' : 'None'
-      );
-    };
-    boxShadowStates.push({
-      boxShadow,
-      setBoxShadow,
-      handleAddEntitiesToView,
-    });
-  }
-
-  // Indicates if filter-dialog is opened.
-  const [filterOpen, setFilterOpen] = React.useState(false);
-
-  const handleOpenFilter = () => {
-    setFilterOpen(true);
-  };
-  const handleCloseFilter = () => {
-    setFilterOpen(false);
-  };
 
   // The state, as returned by react-async. Data is the query-result, when available.
   const { data, error, isLoading } = useAsync({
@@ -268,75 +208,10 @@ function Graph(): JSX.Element {
   // Build the react-graph-vis graph options.
   const options = buildOptions(containerSize.width, containerSize.height);
 
-  const entityTemplate = (
-    color: string,
-    type: string,
-    boxShadow: string,
-    handleAddNodes: () => void
-  ) => (
-    <div className={classes.entityContainer}>
-      <Box display="flex" p={1}>
-        <EntityFilterElement
-          backgroundColor={color}
-          boxShadow={boxShadow}
-          content={type}
-        />
-        <div>
-          <IconButton component="span">
-            <TuneIcon onClick={handleOpenFilter} />
-          </IconButton>
-          <IconButton component="span">
-            <AddIcon onClick={handleAddNodes} />
-          </IconButton>
-        </div>
-      </Box>
-    </div>
-  );
-
-  const nodeTypes: unknown[] = [];
-  const edgeTypes: unknown[] = [];
-
-  // store entityType-elements.
-  let i = 0;
-  nodeColorsAndTypes.forEach((colorsAndTypes) => {
-    nodeTypes.push(
-      entityTemplate(
-        colorsAndTypes.color,
-        colorsAndTypes.type,
-        boxShadowStates[i].boxShadow,
-        boxShadowStates[i].handleAddEntitiesToView
-      )
-    );
-    i += 1;
-  });
-
-  edgeColorsAndTypes.forEach((colorsAndTypes) => {
-    edgeTypes.push(
-      entityTemplate(
-        colorsAndTypes.color,
-        colorsAndTypes.type,
-        boxShadowStates[i].boxShadow,
-        boxShadowStates[i].handleAddEntitiesToView
-      )
-    );
-    i += 1;
-  });
-
   return (
     <>
       <div className={classes.graphPage}>
-        <div className={classes.margin}>
-          <ListItemText primary="Node Types" />
-          <div>{nodeTypes}</div>
-          <ListItemText primary="Edge Types" />
-          {edgeTypes}
-        </div>
-        <div>
-          <EntityFilterDialog
-            filterOpen={filterOpen}
-            handleCloseFilter={handleCloseFilter}
-          />
-        </div>
+        <Filter />
         <div className={classes.graphContainer}>
           <div
             className={classes.sizeMeasureContainer}
