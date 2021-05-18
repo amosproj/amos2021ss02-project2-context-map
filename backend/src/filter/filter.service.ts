@@ -1,28 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
 import { Property } from '../shared/entities/Property';
+import { FilterServiceBase } from './filter.service.base';
 
-interface NodeTypeFilterModel {
+export interface NodeTypeFilterModel {
   name: string;
   properties: FilterModelEntry[];
 }
 
-interface EdgeTypeFilterModel {
+export interface EdgeTypeFilterModel {
   name: string;
   properties: FilterModelEntry[];
 }
 
-interface FilterModelEntry {
+export interface FilterModelEntry {
   key: string;
   values: Property[];
 }
 
 @Injectable()
-export class FilterService {
+export class FilterService implements FilterServiceBase {
   constructor(private readonly neo4jService: Neo4jService) {}
 
   public async getNodeTypeFilterModel(
-    nodeType: string
+    type: string
   ): Promise<NodeTypeFilterModel> {
     const result = await this.neo4jService.read(
       `
@@ -38,7 +39,7 @@ export class FilterService {
         }
         RETURN key, values
       `,
-      { nodeType }
+      { nodeType: type }
     );
 
     const properties = result.records.map(
@@ -46,13 +47,13 @@ export class FilterService {
     );
 
     return {
-      name: nodeType,
+      name: type,
       properties,
     };
   }
 
   public async getEdgeTypeFilterModel(
-    edgeType: string
+    type: string
   ): Promise<EdgeTypeFilterModel> {
     const result = await this.neo4jService.read(
       `
@@ -68,7 +69,7 @@ export class FilterService {
         }
         RETURN key, values
       `,
-      { edgeType }
+      { edgeType: type }
     );
 
     const properties = result.records.map(
@@ -76,7 +77,7 @@ export class FilterService {
     );
 
     return {
-      name: edgeType,
+      name: type,
       properties,
     };
   }
