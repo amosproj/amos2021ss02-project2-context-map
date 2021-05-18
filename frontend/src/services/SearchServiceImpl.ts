@@ -1,27 +1,26 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { LimitQuery } from '../shared/queries/LimitQuery';
-import { QueryResult } from '../shared/queries/QueryResult';
+import { SearchResult } from '../shared/search/SearchResult';
 import { CancellationToken } from '../utils/CancellationToken';
 import HttpService from './http';
-import QueryService from './QueryService';
+import SearchService from './searchService';
 
 /**
  * The implementation of query service that performs query requests
  * via the backend.
  */
 @injectable()
-export default class QueryServiceImpl extends QueryService {
+export default class SearchServiceImpl extends SearchService {
   @inject(HttpService)
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   private readonly http: HttpService = null!;
 
-  public queryAll(
-    query?: LimitQuery,
+  public fullTextSearch(
+    searchString: string,
     cancellation?: CancellationToken
-  ): Promise<QueryResult> {
-    const url = `/queryAll`;
+  ): Promise<SearchResult> {
+    const url = `/search/all?filter=${searchString}`;
 
-    return this.http.post<QueryResult>(url, query, cancellation);
+    return this.http.get<SearchResult>(url, cancellation);
   }
 }
