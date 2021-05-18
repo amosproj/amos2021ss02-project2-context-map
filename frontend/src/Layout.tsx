@@ -96,6 +96,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: 'auto',
       marginTop: 10,
       marginBottom: 10,
+      width: 350,
     },
   })
 );
@@ -110,7 +111,6 @@ type LayoutProps = {
   tabs?: RenderTab[] | undefined;
   tabIdx?: number | undefined;
   label?: string | undefined;
-  currentPath?: string | undefined;
 };
 
 function isNullOrEmpty(str: string | null | undefined): boolean {
@@ -126,7 +126,7 @@ function isNullOrEmpty(str: string | null | undefined): boolean {
 }
 
 function Layout(props: LayoutProps): JSX.Element {
-  const { children, tabs, tabIdx, label, currentPath } = props;
+  const { children, tabs, tabIdx, label } = props;
   const classes = useStyles();
   const theme = useTheme();
   const history = useHistory();
@@ -180,11 +180,7 @@ function Layout(props: LayoutProps): JSX.Element {
     );
   }
 
-  function RenderSearchbar(): JSX.Element | null {
-    if (currentPath === '/home') {
-      return null;
-    }
-
+  function RenderSearchbar(): JSX.Element {
     return (
       <div className={classes.searchbarWrapper}>
         <Searchbar />
@@ -263,7 +259,6 @@ Layout.defaultProps = {
   tabs: undefined,
   tabIdx: undefined,
   label: undefined,
-  currentPath: undefined,
 };
 
 export default Layout;
