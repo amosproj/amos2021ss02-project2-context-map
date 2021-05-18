@@ -4,44 +4,14 @@ import * as request from 'supertest';
 import { FilterController } from '../../../src/filter/filter.controller';
 import { FilterService } from '../../../src/filter/filter.service';
 import {
-  EdgeTypeFilterModel,
-  NodeTypeFilterModel,
-} from '../../../src/shared/filter';
-import { FilterServiceBase } from '../../../src/filter/filter.service.base';
-import {
   getEdgeTypeFilterModelResult,
   getNodeTypeFilterModelResult,
 } from '../../fixtures/filter/FilterQueryResults';
+import FilterServiceMock from '../../fixtures/filter/FilterServicMock';
 
 describe('FilterController', () => {
   let app: INestApplication;
   const baseUrl = '/filter';
-  const mockSearchService: FilterServiceBase = {
-    getNodeTypeFilterModel: (type) => {
-      let result: NodeTypeFilterModel = {
-        name: type,
-        properties: [],
-      };
-
-      if (type === 'Movie') {
-        result = getNodeTypeFilterModelResult;
-      }
-
-      return Promise.resolve(result);
-    },
-    getEdgeTypeFilterModel: (type) => {
-      let result: EdgeTypeFilterModel = {
-        name: type,
-        properties: [],
-      };
-
-      if (type === 'ACTED_IN') {
-        result = getEdgeTypeFilterModelResult;
-      }
-
-      return Promise.resolve(result);
-    },
-  };
 
   // Global setup
   beforeAll(async () => {
@@ -50,7 +20,7 @@ describe('FilterController', () => {
       providers: [
         {
           provide: FilterService,
-          useValue: mockSearchService,
+          useValue: new FilterServiceMock(),
         },
       ],
     }).compile();
