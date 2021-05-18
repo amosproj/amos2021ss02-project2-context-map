@@ -44,6 +44,17 @@ describe('SchemaService', () => {
       // Assert
       expect(result).toEqual(getNodeTypeFilterModelResult);
     });
+
+    it('should return empty result when type is unknown', async () => {
+      // Arrange
+      const expected = { name: 'Unknown', properties: [] };
+
+      // Act
+      const result = await service.getNodeTypeFilterModel('Unknown');
+
+      // Assert
+      expect(result).toStrictEqual(expected);
+    });
   });
 
   describe('Method getEdgeTypeFilterModel', () => {
@@ -53,6 +64,17 @@ describe('SchemaService', () => {
 
       // Assert
       expect(result).toEqual(getEdgeTypeFilterModelResult);
+    });
+
+    it('should return empty result when type is unknown', async () => {
+      // Arrange
+      const expected = { name: 'Unknown', properties: [] };
+
+      // Act
+      const result = await service.getEdgeTypeFilterModel('Unknown');
+
+      // Assert
+      expect(result).toStrictEqual(expected);
     });
   });
 });
