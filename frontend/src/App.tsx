@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 import './App.scss';
 import Layout, { RenderTab } from './Layout';
-import NotFound from './NotFound';
+import NotFound from './errors/NotFoundError';
 import routes from './routing/routes';
 
 interface RenderRoute {
