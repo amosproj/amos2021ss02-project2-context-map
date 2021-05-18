@@ -3,8 +3,7 @@ import { Node } from './shared/entities/Node';
 import { Edge } from './shared/entities/Edge';
 import { ParseIntArrayPipe } from './pipes/ParseIntArrayPipe';
 import { AppService } from './app.service';
-import { LimitQuery } from './shared/queries/LimitQuery';
-import { QueryResult } from './shared/queries/QueryResult';
+import { LimitQuery, QueryResult } from './shared/queries';
 
 /**
  * Main App Controller.

@@ -1,7 +1,6 @@
 import { injectable } from 'inversify';
 import 'reflect-metadata';
-import { LimitQuery } from '../shared/queries/LimitQuery';
-import { QueryResult } from '../shared/queries/QueryResult';
+import { LimitQuery, QueryResult } from '../shared/queries';
 import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import delay from '../utils/delay';

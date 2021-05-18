@@ -1,7 +1,6 @@
 import { Node } from '../../src/shared/entities/Node';
 import { Edge } from '../../src/shared/entities/Edge';
-import { LimitQuery } from '../../src/shared/queries/LimitQuery';
-import { QueryResult } from '../../src/shared/queries/QueryResult';
+import { LimitQuery, QueryResult } from '../../src/shared/queries';
 
 /**
  * Data that is used for testing in app.service.e2e.spec.ts and app.controller.spec.ts

@@ -3,8 +3,7 @@ import { Neo4jService } from 'nest-neo4j/dist';
 import { Node } from './shared/entities/Node';
 import { EdgeDescriptor } from './shared/entities/EdgeDescriptor';
 import { Edge } from './shared/entities/Edge';
-import { QueryResult } from './shared/queries/QueryResult';
-import { LimitQuery } from './shared/queries/LimitQuery';
+import { LimitQuery, QueryResult } from './shared/queries';
 import { NodeDescriptor } from './shared/entities/NodeDescriptor';
 import consolidateQueryResult from './utils/consolidateQueryResult';
 

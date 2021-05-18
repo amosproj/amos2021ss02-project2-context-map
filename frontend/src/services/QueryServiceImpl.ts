@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { LimitQuery } from '../shared/queries/LimitQuery';
-import { QueryResult } from '../shared/queries/QueryResult';
+import { LimitQuery, QueryResult } from '../shared/queries';
 import { CancellationToken } from '../utils/CancellationToken';
 import HttpService from './http';
 import QueryService from './QueryService';

@@ -13,7 +13,7 @@ import TuneIcon from '@material-ui/icons/Tune';
 import useService from '../dependency-injection/useService';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
-import { QueryResult } from '../shared/queries/QueryResult';
+import { QueryResult } from '../shared/queries';
 import QueryService from '../services/QueryService';
 import {
   CancellationToken,
