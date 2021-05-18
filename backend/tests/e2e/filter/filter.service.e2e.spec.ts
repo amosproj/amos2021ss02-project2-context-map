@@ -10,9 +10,8 @@ import {
 
 /*
 Tests filter.service.ts
-Tests parseNeo4jEntityInfo indirectly
  */
-describe('SchemaService', () => {
+describe('FilterService', () => {
   let service: FilterService;
   let neo4jService: Neo4jService;
 
