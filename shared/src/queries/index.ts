@@ -8,13 +8,11 @@ import FilterQuery, {
 import QueryBase from './QueryBase';
 import QueryResult from './QueryResult';
 
-export type {
-  FilterQuery,
-  FilterCondition,
+export {
   OfTypeCondition,
   MatchPropertyCondition,
   MatchAllCondition,
   MatchAnyCondition,
-  QueryBase,
-  QueryResult,
 };
+
+export type { FilterQuery, FilterCondition, QueryBase, QueryResult };

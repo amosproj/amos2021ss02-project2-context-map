@@ -2,24 +2,20 @@ import { Property } from '../entities/Property';
 import QueryBase from './QueryBase';
 
 export interface FilterCondition {
-  condition: string;
+  rule: string;
 }
 
 export interface OfTypeCondition extends FilterCondition {
-  condition: 'of-type';
-  entity: 'node' | 'edge';
+  rule: 'of-type';
   type: string;
 }
 
-export function OfTypeCondition(
-  entity: 'node' | 'edge',
-  type: string
-): OfTypeCondition {
-  return { condition: 'of-type', entity, type };
+export function OfTypeCondition(type: string): OfTypeCondition {
+  return { rule: 'of-type', type };
 }
 
 export interface MatchPropertyCondition extends FilterCondition {
-  condition: 'match-property';
+  rule: 'match-property';
   property: string;
   value: Property;
 }
@@ -28,31 +24,34 @@ export function MatchPropertyCondition(
   property: string,
   value: Property
 ): MatchPropertyCondition {
-  return { condition: 'match-property', property, value };
+  return { rule: 'match-property', property, value };
 }
 
 export interface MatchAllCondition extends FilterCondition {
-  condition: 'all';
+  rule: 'all';
   filters: FilterCondition[];
 }
 
 export function MatchAllCondition(
   ...filters: FilterCondition[]
 ): MatchAllCondition {
-  return { condition: 'all', filters };
+  return { rule: 'all', filters };
 }
 
 export interface MatchAnyCondition extends FilterCondition {
-  condition: 'any';
+  rule: 'any';
   filters: FilterCondition[];
 }
 
 export function MatchAnyCondition(
   ...filters: FilterCondition[]
 ): MatchAnyCondition {
-  return { condition: 'any', filters };
+  return { rule: 'any', filters };
 }
 
 export default interface FilterQuery extends QueryBase {
-  filter?: FilterCondition;
+  filters?: {
+    nodes?: FilterCondition;
+    edges?: FilterCondition;
+  };
 }
