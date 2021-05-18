@@ -10,7 +10,7 @@ import {
   queryAllDummies,
   queryAllNoLimitDummies,
 } from '../fixtures/testingDumpData';
-import { QueryResult } from '../../src/shared/queries/QueryResult';
+import { QueryResult } from '../../src/shared/queries';
 import { KmapNeo4jModule } from '../../src/config/neo4j/KmapNeo4jModule';
 
 describe('AppService (e2e)', () => {

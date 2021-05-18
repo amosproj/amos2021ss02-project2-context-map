@@ -3,7 +3,7 @@ import * as request from 'supertest';
 import { FactoryProvider, INestApplication } from '@nestjs/common';
 import { AppController } from '../../src/app.controller';
 import { AppService } from '../../src/app.service';
-import { QueryResult } from '../../src/shared/queries/QueryResult';
+import { QueryResult } from '../../src/shared/queries';
 import { Node } from '../../src/shared/entities/Node';
 import { Edge } from '../../src/shared/entities/Edge';
 import {
