@@ -1,16 +1,16 @@
 import { Node } from '../../src/shared/entities/Node';
 import { Edge } from '../../src/shared/entities/Edge';
-import { LimitQuery, QueryResult } from '../../src/shared/queries';
+import { QueryBase, QueryResult } from '../../src/shared/queries';
 
 /**
  * Data that is used for testing in app.service.e2e.spec.ts and app.controller.spec.ts
  */
 
 export const queryAllDummies: {
-  limitQuery: LimitQuery;
+  query: QueryBase;
   queryResult: QueryResult;
 } = {
-  limitQuery: { limit: { nodes: 3, edges: 4 } },
+  query: { limits: { nodes: 3, edges: 4 } },
   queryResult: {
     nodes: [{ id: 0 }, { id: 1 }, { id: 2 }],
     edges: [

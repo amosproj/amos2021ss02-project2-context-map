@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 import 'reflect-metadata';
-import { LimitQuery, QueryResult } from '../shared/queries';
+import { QueryBase, QueryResult } from '../shared/queries';
 import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import delay from '../utils/delay';
@@ -21,13 +21,13 @@ export default class FakeDataQueryService extends QueryService {
   }
 
   public async queryAll(
-    query?: LimitQuery,
+    query?: QueryBase,
     cancellation?: CancellationToken
   ): Promise<QueryResult> {
     await delay(0, cancellation);
 
-    const numNodes = query?.limit?.nodes ?? 100;
-    const numEdges = query?.limit?.edges ?? 150;
+    const numNodes = query?.limits?.nodes ?? 100;
+    const numEdges = query?.limits?.edges ?? 150;
     const nodes: NodeDescriptor[] = [];
     const edges: EdgeDescriptor[] = [];
 

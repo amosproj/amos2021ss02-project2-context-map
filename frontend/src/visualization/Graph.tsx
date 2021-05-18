@@ -133,7 +133,7 @@ function executeQuery(props: AsyncProps<QueryResult>): Promise<QueryResult> {
   const queryService = props.queryService as QueryService;
   const cancellation = props.cancellation as CancellationToken;
   return queryService.queryAll(
-    { limit: { nodes: 200, edges: undefined } },
+    { limits: { nodes: 200, edges: undefined } },
     cancellation
   );
 }

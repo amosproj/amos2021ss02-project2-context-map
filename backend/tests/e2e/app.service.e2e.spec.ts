@@ -40,7 +40,7 @@ describe('AppService (e2e)', () => {
 
       // Act
       const actualResult: QueryResult = await appService.queryAll(
-        queryAllDummies.limitQuery
+        queryAllDummies.query
       );
 
       // Assert
@@ -60,7 +60,7 @@ describe('AppService (e2e)', () => {
 
     it('should return no nodes when called with nodes limited to 0', async () => {
       // Arrange
-      const result = await appService.queryAll({ limit: { nodes: 0 } });
+      const result = await appService.queryAll({ limits: { nodes: 0 } });
 
       // Act & Assert
       expect(result.nodes.length).toEqual(0);
@@ -68,7 +68,7 @@ describe('AppService (e2e)', () => {
 
     it('should return no edges when called with edges limited to 0', async () => {
       // Arrange
-      const result = await appService.queryAll({ limit: { edges: 0 } });
+      const result = await appService.queryAll({ limits: { edges: 0 } });
 
       // Act & Assert
       expect(result.edges.length).toEqual(0);

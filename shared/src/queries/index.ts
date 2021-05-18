@@ -1,4 +1,4 @@
-import LimitQuery from './LimitQuery';
+import QueryBase from './QueryBase';
 import QueryResult from './QueryResult';
 
-export type { LimitQuery, QueryResult };
+export type { QueryBase, QueryResult };

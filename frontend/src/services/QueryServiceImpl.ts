@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { LimitQuery, QueryResult } from '../shared/queries';
+import { QueryBase, QueryResult } from '../shared/queries';
 import { CancellationToken } from '../utils/CancellationToken';
 import HttpService from './http';
 import QueryService from './QueryService';
@@ -16,7 +16,7 @@ export default class QueryServiceImpl extends QueryService {
   private readonly http: HttpService = null!;
 
   public queryAll(
-    query?: LimitQuery,
+    query?: QueryBase,
     cancellation?: CancellationToken
   ): Promise<QueryResult> {
     const url = `/queryAll`;
