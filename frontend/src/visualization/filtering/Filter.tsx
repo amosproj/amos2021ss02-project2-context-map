@@ -4,7 +4,14 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
-import { Box, List, ListItemText } from '@material-ui/core';
+import {
+  AppBar,
+  Box,
+  List,
+  Tab,
+  Tabs,
+  Typography,
+} from '@material-ui/core';
 import React, { useRef } from 'react';
 import entityColors from '../fixtures/GraphData';
 
@@ -46,12 +53,32 @@ const useStyles = makeStyles((theme: Theme) =>
     contentContainer: {
       padding: theme.spacing(3),
     },
-    margin: {
-      margin: theme.spacing(1),
-    },
   })
 );
+interface TabPanelProps {
+  children: React.ReactNode;
+  index: number;
+  value: number;
+}
 
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+    >
+      {value === index && (
+        <Box p={3}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
 /**
  * A function that wraps the call to the schema-service to be usable with react-async.
  * @param props The props that contains our paramter in an untyped way.
@@ -76,6 +103,7 @@ function fetchEdgeTypes(props: AsyncProps<EdgeType[]>): Promise<NodeType[]> {
 
 const Filter = (): JSX.Element => {
   const classes = useStyles();
+  const [value, setValue] = React.useState(0);
   const schemaService = useService(SchemaService, null);
 
   // A React ref to the container that is used to measure the available space for the graph.
@@ -229,13 +257,33 @@ const Filter = (): JSX.Element => {
     );
   });
 
+  const handleChange = (
+    event: React.ChangeEvent<Record<string, unknown>>,
+    newValue: number
+  ) => {
+    setValue(newValue);
+  };
+
   return (
-    <div className={classes.margin}>
-      <List style={{ maxHeight: '100%', width: 300, overflow: 'auto' }}>
-        <ListItemText primary="Node Types" />
-        <div>{nodeTypes}</div>
-        <ListItemText primary="Edge Types" />
-        {edgeTypes}
+    <div>
+      <AppBar position="static" color="default">
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          indicatorColor="primary"
+          textColor="primary"
+        >
+          <Tab label="Node Types" />
+          <Tab label="Edge Types" />
+        </Tabs>
+      </AppBar>
+      <List style={{ maxHeight: '94%', width: 320, overflow: 'auto' }}>
+        <TabPanel value={value} index={0}>
+          <div>{nodeTypes}</div>
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          {edgeTypes}
+        </TabPanel>
       </List>
     </div>
   );
