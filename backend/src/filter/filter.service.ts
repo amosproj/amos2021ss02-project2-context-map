@@ -1,22 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
-import { Property } from '../shared/entities/Property';
 import { FilterServiceBase } from './filter.service.base';
-
-export interface NodeTypeFilterModel {
-  name: string;
-  properties: FilterModelEntry[];
-}
-
-export interface EdgeTypeFilterModel {
-  name: string;
-  properties: FilterModelEntry[];
-}
-
-export interface FilterModelEntry {
-  key: string;
-  values: Property[];
-}
+import {
+  EdgeTypeFilterModel,
+  FilterModelEntry,
+  NodeTypeFilterModel,
+} from '../shared/filter';
 
 @Injectable()
 export class FilterService implements FilterServiceBase {

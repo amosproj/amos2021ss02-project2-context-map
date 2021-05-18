@@ -1,5 +1,6 @@
 import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
-import { FilterService, NodeTypeFilterModel } from './filter.service';
+import { FilterService } from './filter.service';
+import { NodeTypeFilterModel } from '../shared/filter';
 
 @Controller('filter')
 export class FilterController {

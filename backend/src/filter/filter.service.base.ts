@@ -1,4 +1,4 @@
-import { EdgeTypeFilterModel, NodeTypeFilterModel } from './filter.service';
+import { EdgeTypeFilterModel, NodeTypeFilterModel } from '../shared/filter';
 
 export abstract class FilterServiceBase {
   public abstract getNodeTypeFilterModel(
