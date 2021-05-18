@@ -6,6 +6,7 @@ import QueryServiceImpl from './services/QueryServiceImpl';
 import RandomNumberGenerator from './services/RandomNumberGenerator';
 import RandomNumberGeneratorImpl from './services/RandomNumberGeneratorImpl';
 import SchemaService from './services/SchemaService';
+import { FilterService, FilterServiceImpl } from './services/filter';
 
 /**
  * Configures all services in the frontend app.
@@ -24,6 +25,7 @@ export default function configureServices(container: Container): void {
 
   container.bind(QueryService).to(QueryServiceImpl);
   container.bind(SchemaService).to(FakeDataSchemaService);
+  container.bind(FilterService).to(FilterServiceImpl);
 
   // Add your services here...
 }
