@@ -52,12 +52,22 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+/**
+ * A function that wraps the call to the schema-service to be usable with react-async.
+ * @param props The props that contains our paramter in an untyped way.
+ * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the nodeTypes.
+ */
 function fetchNodeTypes(props: AsyncProps<NodeType[]>): Promise<NodeType[]> {
   const schemaService = props.schemaService as SchemaService;
   const cancellation = props.cancellation as CancellationToken;
   return schemaService.getNodeTypes(cancellation);
 }
 
+/**
+ * A function that wraps the call to the schema-service to be usable with react-async.
+ * @param props The props that contains our paramter in an untyped way.
+ * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the edgeTypes.
+ */
 function fetchEdgeTypes(props: AsyncProps<EdgeType[]>): Promise<NodeType[]> {
   const schemaService = props.schemaService as SchemaService;
   const cancellation = props.cancellation as CancellationToken;
@@ -149,14 +159,14 @@ const Filter = (): JSX.Element => {
 
   const nodeColorsAndTypes: {
     color: string;
-    type: string;
+    name: string;
     entityTypePropertyNames: string[];
   }[] = [];
 
   for (let i = 0; i < dataNodeTypes.length; i += 1) {
     nodeColorsAndTypes.push({
       color: entityColors[i % entityColors.length],
-      type: dataNodeTypes[i].name,
+      name: dataNodeTypes[i].name,
       entityTypePropertyNames: dataNodeTypes[i].properties.map(
         (property) => property.name
       ),
@@ -165,14 +175,14 @@ const Filter = (): JSX.Element => {
 
   const edgeColorsAndTypes: {
     color: string;
-    type: string;
+    name: string;
     entityTypePropertyNames: string[];
   }[] = [];
 
   for (let i = 0; i < dataEdgeTypes.length; i += 1) {
     edgeColorsAndTypes.push({
       color: '#a9a9a9',
-      type: dataEdgeTypes[i].name,
+      name: dataEdgeTypes[i].name,
       entityTypePropertyNames: dataEdgeTypes[i].properties.map(
         (property) => property.name
       ),
@@ -203,7 +213,7 @@ const Filter = (): JSX.Element => {
     nodeTypes.push(
       entityTemplate(
         colorsAndTypes.color,
-        colorsAndTypes.type,
+        colorsAndTypes.name,
         colorsAndTypes.entityTypePropertyNames
       )
     );
@@ -213,7 +223,7 @@ const Filter = (): JSX.Element => {
     edgeTypes.push(
       entityTemplate(
         colorsAndTypes.color,
-        colorsAndTypes.type,
+        colorsAndTypes.name,
         colorsAndTypes.entityTypePropertyNames
       )
     );
