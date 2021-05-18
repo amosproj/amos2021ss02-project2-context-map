@@ -7,9 +7,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { Box, IconButton, ListItemText } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
-import TuneIcon from '@material-ui/icons/Tune';
+import { Box, List, ListItemText } from '@material-ui/core';
 import useService from '../dependency-injection/useService';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
@@ -21,7 +19,10 @@ import {
 } from '../utils/CancellationToken';
 import { useSize } from '../utils/useSize';
 import EntityFilterElement from './components/EntityFilterElement';
-import EntityFilterDialog from './components/dialog/EntityFilterDialog';
+import { NodeType } from '../shared/schema/NodeType';
+import SchemaService from '../services/SchemaService';
+import { EdgeType } from '../shared/schema/EdgeType';
+import entityColors from './fixtures/GraphData';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -63,9 +64,6 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
       overflowY: 'hidden',
       overflowX: 'hidden',
-    },
-    entityContainer: {
-      width: 300,
     },
     margin: {
       margin: theme.spacing(1),
@@ -138,6 +136,18 @@ function executeQuery(props: AsyncProps<QueryResult>): Promise<QueryResult> {
   );
 }
 
+function fetchNodeTypes(props: AsyncProps<NodeType[]>): Promise<NodeType[]> {
+  const schemaService = props.schemaService as SchemaService;
+  const cancellation = props.cancellation as CancellationToken;
+  return schemaService.getNodeTypes(cancellation);
+}
+
+function fetchEdgeTypes(props: AsyncProps<EdgeType[]>): Promise<NodeType[]> {
+  const schemaService = props.schemaService as SchemaService;
+  const cancellation = props.cancellation as CancellationToken;
+  return schemaService.getEdgeTypes(cancellation);
+}
+
 function Graph(): JSX.Element {
   const classes = useStyles();
 
@@ -147,69 +157,43 @@ function Graph(): JSX.Element {
   // The size of the container that is used to measure the available space for the graph.
   const containerSize = useSize(sizeMeasureContainerRef);
 
-  // The query service injected from DI.
+  // The query- and schema-service injected from DI.
   const queryService = useService(QueryService, null);
+  const schemaService = useService(SchemaService, null);
 
   // The component state that contains the cancellation token source used to cancel the query operation.
   const [loadingCancellationSource] = React.useState(
     new CancellationTokenSource()
   );
 
-  // TODO: Replace node- and edgeTypes with EntityType.name from query
-  const nodeColorsAndTypes = [
-    { color: '#e6194b', type: 'Node Type 1' },
-    { color: '#3cb44b', type: 'Node Type 2' },
-    { color: '#ffe119', type: 'Node Type 3' },
-    { color: '#4363d8', type: 'Node Type 4' },
-    { color: '#f58231', type: 'Node Type 5' },
-    { color: '#911eb4', type: 'Node Type 6' },
-    { color: '#46f0f0', type: 'Node Type 7' },
-  ];
+  // The state, as returned by react-async. Data are the node-types, when available.
+  const {
+    data: dataNodeTypes,
+    error: errorNodes,
+    isLoading: isLoadingNodes,
+  } = useAsync({
+    promiseFn: fetchNodeTypes,
+    schemaService,
+    cancellation: loadingCancellationSource.token,
+  });
 
-  const edgeColorsAndTypes = [
-    { color: '#a9a9a9', type: 'Edge Type 1' },
-    { color: '#a9a9a9', type: 'Edge Type 2' },
-  ];
-
-  const boxShadowStates: {
-    boxShadow: string;
-    setBoxShadow: React.Dispatch<React.SetStateAction<string>>;
-    handleAddEntitiesToView: () => void;
-  }[] = [];
-
-  // For every EntityFilterElement: Give it a boxShadow boolean that indicates
-  // if entities of the specific type are added to the view.
-  // TODO: Currently I am using useState() for every EntityType. Is there a better way to solve this?
-  for (
-    let i = 0;
-    i < nodeColorsAndTypes.length + edgeColorsAndTypes.length;
-    i += 1
-  ) {
-    const [boxShadow, setBoxShadow] = React.useState('None');
-    const handleAddEntitiesToView = () => {
-      setBoxShadow(
-        boxShadow === 'None' ? '0 0 0 0.2rem rgba(0,123,255,.5)' : 'None'
-      );
-    };
-    boxShadowStates.push({
-      boxShadow,
-      setBoxShadow,
-      handleAddEntitiesToView,
-    });
-  }
-
-  // Indicates if filter-dialog is opened.
-  const [filterOpen, setFilterOpen] = React.useState(false);
-
-  const handleOpenFilter = () => {
-    setFilterOpen(true);
-  };
-  const handleCloseFilter = () => {
-    setFilterOpen(false);
-  };
+  // The state, as returned by react-async. Data are the edge-types, when available.
+  const {
+    data: dataEdgeTypes,
+    error: errorEdges,
+    isLoading: isLoadingEdges,
+  } = useAsync({
+    promiseFn: fetchEdgeTypes,
+    schemaService,
+    cancellation: loadingCancellationSource.token,
+  });
 
   // The state, as returned by react-async. Data is the query-result, when available.
-  const { data, error, isLoading } = useAsync({
+  const {
+    data: dataGraph,
+    error: errorGraph,
+    isLoading: isLoadingGraph,
+  } = useAsync({
     promiseFn: executeQuery,
     queryService,
     cancellation: loadingCancellationSource.token,
@@ -221,7 +205,7 @@ function Graph(): JSX.Element {
   };
 
   // Display a waiting screen with a cancel options, while the query is in progress.
-  if (isLoading) {
+  if (isLoadingGraph || isLoadingNodes || isLoadingEdges) {
     return (
       <>
         <div
@@ -248,22 +232,54 @@ function Graph(): JSX.Element {
 
   // Display the raw error message if an error occurred.
   // See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/77
-  if (error) {
+  if (errorGraph || errorNodes || errorEdges) {
     return (
       <div className={classes.contentContainer}>
-        Something went wrong: {error.message}
+        Something went wrong: {errorGraph?.message}
       </div>
     );
   }
 
   // Display an error message if something went wrong. This should not happen normally.
   // See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/77
-  if (!data) {
+  if (!dataNodeTypes || !dataEdgeTypes || !dataGraph) {
     return <div className={classes.contentContainer}>Something went wrong</div>;
   }
 
   // Convert the query result to an object, react-graph-vis understands.
-  const graphData = convertQueryResult(data);
+  const graphData = convertQueryResult(dataGraph);
+
+  const nodeColorsAndTypes: {
+    color: string;
+    type: string;
+    entityTypePropertyNames: string[];
+  }[] = [];
+
+  for (let i = 0; i < dataNodeTypes.length; i += 1) {
+    nodeColorsAndTypes.push({
+      color: entityColors[i % entityColors.length],
+      type: dataNodeTypes[i].name,
+      entityTypePropertyNames: dataNodeTypes[i].properties.map(
+        (property) => property.name
+      ),
+    });
+  }
+
+  const edgeColorsAndTypes: {
+    color: string;
+    type: string;
+    entityTypePropertyNames: string[];
+  }[] = [];
+
+  for (let i = 0; i < dataEdgeTypes.length; i += 1) {
+    edgeColorsAndTypes.push({
+      color: '#a9a9a9',
+      type: dataEdgeTypes[i].name,
+      entityTypePropertyNames: dataEdgeTypes[i].properties.map(
+        (property) => property.name
+      ),
+    });
+  }
 
   // Build the react-graph-vis graph options.
   const options = buildOptions(containerSize.width, containerSize.height);
@@ -271,24 +287,15 @@ function Graph(): JSX.Element {
   const entityTemplate = (
     color: string,
     type: string,
-    boxShadow: string,
-    handleAddNodes: () => void
+    entityTypePropertyNames: string[]
   ) => (
-    <div className={classes.entityContainer}>
+    <div>
       <Box display="flex" p={1}>
         <EntityFilterElement
           backgroundColor={color}
-          boxShadow={boxShadow}
-          content={type}
+          name={type}
+          entityTypePropertyNames={entityTypePropertyNames}
         />
-        <div>
-          <IconButton component="span">
-            <TuneIcon onClick={handleOpenFilter} />
-          </IconButton>
-          <IconButton component="span">
-            <AddIcon onClick={handleAddNodes} />
-          </IconButton>
-        </div>
       </Box>
     </div>
   );
@@ -297,17 +304,14 @@ function Graph(): JSX.Element {
   const edgeTypes: unknown[] = [];
 
   // store entityType-elements.
-  let i = 0;
   nodeColorsAndTypes.forEach((colorsAndTypes) => {
     nodeTypes.push(
       entityTemplate(
         colorsAndTypes.color,
         colorsAndTypes.type,
-        boxShadowStates[i].boxShadow,
-        boxShadowStates[i].handleAddEntitiesToView
+        colorsAndTypes.entityTypePropertyNames
       )
     );
-    i += 1;
   });
 
   edgeColorsAndTypes.forEach((colorsAndTypes) => {
@@ -315,29 +319,21 @@ function Graph(): JSX.Element {
       entityTemplate(
         colorsAndTypes.color,
         colorsAndTypes.type,
-        boxShadowStates[i].boxShadow,
-        boxShadowStates[i].handleAddEntitiesToView
+        colorsAndTypes.entityTypePropertyNames
       )
     );
-    i += 1;
   });
 
-  const entityTypeProperties: string[] = ['name', 'Peter'];
   return (
     <>
       <div className={classes.graphPage}>
         <div className={classes.margin}>
-          <ListItemText primary="Node Types" />
-          <div>{nodeTypes}</div>
-          <ListItemText primary="Edge Types" />
-          {edgeTypes}
-        </div>
-        <div>
-          <EntityFilterDialog
-            filterOpen={filterOpen}
-            handleCloseFilter={handleCloseFilter}
-            entityTypes={entityTypeProperties}
-          />
+          <List style={{ maxHeight: '100%', width: 300, overflow: 'auto' }}>
+            <ListItemText primary="Node Types" />
+            <div>{nodeTypes}</div>
+            <ListItemText primary="Edge Types" />
+            {edgeTypes}
+          </List>
         </div>
         <div className={classes.graphContainer}>
           <div
