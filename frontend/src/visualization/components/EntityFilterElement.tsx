@@ -37,7 +37,7 @@ const EntityFilterElement = (props: {
   backgroundColor: string;
   name: string;
   entityTypePropertyNames: string[];
-}) => {
+}): JSX.Element => {
   // Indicates if filter-dialog is opened.
   const [filterOpen, setFilterOpen] = React.useState(false);
   const [boxShadow, setBoxShadow] = useState('None');

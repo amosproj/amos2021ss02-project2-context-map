@@ -29,12 +29,11 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-// TODO: Replace content with EntityTypeProperty[] from query in Graph.tsx and add argument to component.
 const EntityFilterDialog = (props: {
   filterOpen: boolean;
   handleCloseFilter: () => void;
   entityTypes: string[];
-}) => {
+}): JSX.Element => {
   const { filterOpen, handleCloseFilter, entityTypes } = props;
 
   const entitySelects: unknown[] = [];

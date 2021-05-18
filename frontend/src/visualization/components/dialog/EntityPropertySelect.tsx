@@ -17,7 +17,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-const EntityPropertySelect = (props: { entityType: string }) => {
+const EntityPropertySelect = (props: { entityType: string }): JSX.Element => {
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
   const MenuProps = {
