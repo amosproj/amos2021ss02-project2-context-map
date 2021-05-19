@@ -7,8 +7,9 @@ import {
 } from 'react-router-dom';
 import './App.scss';
 import Layout, { RenderTab } from './Layout';
-import NotFound from './errors/NotFoundError';
+import NotFoundErrorComponent from './errors/NotFoundError';
 import routes from './routing/routes';
+import CancellationError from './utils/CancellationError';
 
 interface RenderRoute {
   path: string;
@@ -90,7 +91,7 @@ function App(): JSX.Element {
         ))}
         <Route path="*">
           <Layout>
-            <NotFound />
+            <NotFoundErrorComponent />
           </Layout>
         </Route>
       </Switch>
