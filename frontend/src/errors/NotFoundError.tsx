@@ -17,15 +17,19 @@ const useStyles = makeStyles({
   },
 });
 
-function NotFoundError(): JSX.Element {
+function NotFoundErrorComponent(): JSX.Element {
   const classes = useStyles();
   return (
     <Box className={classes.root}>
-      <img src="//placehold.it/5000x3000" className={classes.img} alt="" />
+      <img
+        src="../../errors/notFoundError.png"
+        className={classes.img}
+        alt=""
+      />
       <h1>NotFoundError</h1>
       <p>Page not found</p>
     </Box>
   );
 }
 
-export default NotFoundError;
+export default NotFoundErrorComponent;
