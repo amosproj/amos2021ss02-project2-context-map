@@ -181,47 +181,31 @@ const Filter = (): JSX.Element => {
   const nodeColorsAndTypes: {
     color: string;
     name: string;
-    entityTypePropertyNames: string[];
   }[] = [];
 
   for (let i = 0; i < dataNodeTypes.length; i += 1) {
     nodeColorsAndTypes.push({
       color: entityColors[i % entityColors.length],
       name: dataNodeTypes[i].name,
-      entityTypePropertyNames: dataNodeTypes[i].properties.map(
-        (property) => property.name
-      ),
     });
   }
 
   const edgeColorsAndTypes: {
     color: string;
     name: string;
-    entityTypePropertyNames: string[];
   }[] = [];
 
   for (let i = 0; i < dataEdgeTypes.length; i += 1) {
     edgeColorsAndTypes.push({
       color: '#a9a9a9',
       name: dataEdgeTypes[i].name,
-      entityTypePropertyNames: dataEdgeTypes[i].properties.map(
-        (property) => property.name
-      ),
     });
   }
 
-  const entityTemplate = (
-    color: string,
-    type: string,
-    entityTypePropertyNames: string[]
-  ) => (
+  const entityTemplate = (color: string, type: string) => (
     <div>
       <Box display="flex" p={1}>
-        <EntityFilterElement
-          backgroundColor={color}
-          name={type}
-          entityTypePropertyNames={entityTypePropertyNames}
-        />
+        <EntityFilterElement backgroundColor={color} name={type} />
       </Box>
     </div>
   );
@@ -231,23 +215,11 @@ const Filter = (): JSX.Element => {
 
   // store entityType-elements.
   nodeColorsAndTypes.forEach((colorsAndTypes) => {
-    nodeTypes.push(
-      entityTemplate(
-        colorsAndTypes.color,
-        colorsAndTypes.name,
-        colorsAndTypes.entityTypePropertyNames
-      )
-    );
+    nodeTypes.push(entityTemplate(colorsAndTypes.color, colorsAndTypes.name));
   });
 
   edgeColorsAndTypes.forEach((colorsAndTypes) => {
-    edgeTypes.push(
-      entityTemplate(
-        colorsAndTypes.color,
-        colorsAndTypes.name,
-        colorsAndTypes.entityTypePropertyNames
-      )
-    );
+    edgeTypes.push(entityTemplate(colorsAndTypes.color, colorsAndTypes.name));
   });
 
   const handleChange = (
