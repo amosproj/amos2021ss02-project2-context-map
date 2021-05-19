@@ -25,6 +25,7 @@ const EntityPropertySelect = (props: {
   const { entityType } = props;
   const [personName, setPersonName] = React.useState<string[]>([]);
 
+  // utils from material ui multiselect https://material-ui.com/components/selects/#select
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
   const MenuProps = {
