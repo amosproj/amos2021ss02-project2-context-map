@@ -7,10 +7,7 @@ import {
 } from 'react-router-dom';
 import './App.scss';
 import Layout, { RenderTab } from './Layout';
-import NotFoundErrorComponent from './errors/NotFoundError';
-import GenericErrorComponent from './errors/GenericError';
-import CancellationErrorComponent from './errors/CancellationError';
-import NetworkErrorComponent from './errors/NetworkError';
+import ErrorComponent, { ErrorType } from './errors/ErrorComponent';
 import routes from './routing/routes';
 
 interface RenderRoute {
@@ -91,24 +88,9 @@ function App(): JSX.Element {
             </Layout>
           </Route>
         ))}
-        <Route path="/cancel">
-          <Layout>
-            <CancellationErrorComponent />
-          </Layout>
-        </Route>
-        <Route path="/networkerror">
-          <Layout>
-            <NetworkErrorComponent />
-          </Layout>
-        </Route>
-        <Route path="/error">
-          <Layout>
-            <GenericErrorComponent />
-          </Layout>
-        </Route>
         <Route path="*">
           <Layout>
-            <NotFoundErrorComponent />
+            <ErrorComponent type={ErrorType.NotFoundError} />
           </Layout>
         </Route>
       </Switch>
