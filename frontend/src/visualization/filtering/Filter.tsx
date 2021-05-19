@@ -1,16 +1,16 @@
 import { AsyncProps } from 'react-async';
 import { AppBar, Box, List, Tab, Tabs, Typography } from '@material-ui/core';
 import React from 'react';
-import entityColors from '../data/GraphData';
 
 import useService from '../../dependency-injection/useService';
-import SchemaService from '../../services/SchemaService';
 import { CancellationToken } from '../../utils/CancellationToken';
 import { NodeType } from '../../shared/schema/NodeType';
 import { EdgeType } from '../../shared/schema/EdgeType';
 
 import EntityFilterElement from './components/EntityFilterElement';
 import fetchDataFromService from '../shared-ops/FetchData';
+import entityColors from '../data/GraphData';
+import { SchemaService } from '../../services/schema';
 
 // Tab utils from https://material-ui.com/components/tabs/
 interface TabPanelProps {
