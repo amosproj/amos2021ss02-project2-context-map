@@ -1,6 +1,6 @@
 $scriptRoot = $PSScriptRoot
 $mountDir = $scriptRoot + "\..\backend\docker\mount"
-$databaseDump = "testing-dump"
+$databaseDump = "northwind"
 $dbPassword = "amos"
 $containerName = "neo4j-db"
 
