@@ -8,6 +8,7 @@ import {
   Select,
 } from '@material-ui/core';
 import React from 'react';
+import { FilterModelEntry } from '../../../../shared/filter';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -17,7 +18,13 @@ const useStyles = makeStyles(() =>
   })
 );
 
-const EntityPropertySelect = (props: { entityType: string }): JSX.Element => {
+const EntityPropertySelect = (props: {
+  entityType: FilterModelEntry;
+}): JSX.Element => {
+  const classes = useStyles();
+  const { entityType } = props;
+  const [personName, setPersonName] = React.useState<string[]>([]);
+
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
   const MenuProps = {
@@ -29,33 +36,16 @@ const EntityPropertySelect = (props: { entityType: string }): JSX.Element => {
     },
   };
 
-  const names = [
-    'Oliver Hansen',
-    'Van Henry',
-    'April Tucker',
-    'Ralph Hubbard',
-    'Omar Alexander',
-    'Carlos Abbott',
-    'Miriam Wagner',
-    'Bradley Wilkerson',
-    'Virginia Andrews',
-    'Kelly Snyder',
-  ];
-
-  function getStyles(name: string, personName: string[], theme: Theme) {
+  function getStyles(name: string, pName: string[], theme: Theme) {
     return {
       fontWeight:
-        personName.indexOf(name) === -1
+        pName.indexOf(name) === -1
           ? theme.typography.fontWeightRegular
           : theme.typography.fontWeightMedium,
     };
   }
 
   const theme = useTheme();
-
-  const { entityType } = props;
-  const classes = useStyles();
-  const [personName, setPersonName] = React.useState<string[]>([]);
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setPersonName(event.target.value as string[]);
@@ -64,7 +54,7 @@ const EntityPropertySelect = (props: { entityType: string }): JSX.Element => {
   return (
     <div>
       <FormControl className={classes.select}>
-        <InputLabel>{entityType}</InputLabel>
+        <InputLabel>{entityType.key}</InputLabel>
         <Select
           multiple
           value={personName}
@@ -72,13 +62,17 @@ const EntityPropertySelect = (props: { entityType: string }): JSX.Element => {
           input={<Input />}
           MenuProps={MenuProps}
         >
-          {names.map((name) => (
+          {entityType.values.map((name) => (
             <MenuItem
-              key={name}
-              value={name}
-              style={getStyles(name, personName, theme)}
+              key={typeof name === 'string' ? name : 'Error: No string'}
+              value={typeof name === 'string' ? name : 'Error: No string'}
+              style={getStyles(
+                typeof name === 'string' ? name : 'Error: No string',
+                personName,
+                theme
+              )}
             >
-              {name}
+              {typeof name === 'string' ? name : 'Error: No string'}
             </MenuItem>
           ))}
         </Select>
