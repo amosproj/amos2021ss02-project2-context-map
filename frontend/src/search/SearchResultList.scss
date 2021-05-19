@@ -1,0 +1,11 @@
+.SearchResultsCard {
+  position: absolute;
+
+  & > .MuiCardContent-root, .MuiCardContent-root:last-child {
+    padding: 0;
+  }
+
+  & .SubList {
+    padding-left: 0;
+  }
+}

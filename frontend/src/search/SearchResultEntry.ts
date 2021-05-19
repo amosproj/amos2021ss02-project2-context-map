@@ -5,9 +5,9 @@ export interface SearchResultEntry {
   /**
    * label that is visible to the user on the option item
    */
-  label: string,
+  label: string;
   /**
    * value that corresponds to the option item
    */
-  value: string,
+  value: string;
 }
