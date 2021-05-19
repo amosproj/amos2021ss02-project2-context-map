@@ -1,47 +1,19 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { Backdrop, CircularProgress, IconButton } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { IconButton } from '@material-ui/core';
 import TuneIcon from '@material-ui/icons/Tune';
 import AddIcon from '@material-ui/icons/Add';
-import { AsyncProps, useAsync } from 'react-async';
-import CloseIcon from '@material-ui/icons/Close';
+import { AsyncProps } from 'react-async';
 import EntityFilterDialog from './dialog/EntityFilterDialog';
 import { NodeTypeFilterModel } from '../../../shared/filter';
-import {
-  CancellationToken,
-  CancellationTokenSource,
-} from '../../../utils/CancellationToken';
+import { CancellationToken } from '../../../utils/CancellationToken';
 import useService from '../../../dependency-injection/useService';
 import { FilterService } from '../../../services/filter';
+import fetchDataFromService from '../../shared-ops/FetchData';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
-    backdrop: {
-      zIndex: theme.zIndex.drawer + 1,
-      color: '#fff',
-    },
-    backdropContent: {
-      marginTop: theme.spacing(3),
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-    },
-    sizeMeasureContainer: {
-      position: 'absolute',
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-      visibility: 'hidden',
-      pointerEvents: 'none',
-    },
-    backdropCancel: {
-      marginTop: theme.spacing(3),
-    },
-    contentContainer: {
-      padding: theme.spacing(3),
-    },
     root: {
       maxWidth: 150,
       boxShadow: 'none',
@@ -50,18 +22,6 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: '6px 12px',
       border: '1px solid',
       lineHeight: 1.5,
-      fontFamily: [
-        '-apple-system',
-        'BlinkMacSystemFont',
-        'Segoe UI',
-        'Roboto',
-        'Helvetica Neue',
-        'Arial',
-        'sans-serif',
-        'Apple Color Emoji',
-        'Segoe UI Emoji',
-        'Segoe UI Symbol',
-      ].join(','),
       '&:hover': {
         boxShadow: 'none',
       },
@@ -69,12 +29,18 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+/**
+ * A function that wraps the {@link getNodeTypeFilterModel} call to the filter-service to be usable with react-async.
+ * @param props - The props that contains our parameter in an untyped way.
+ * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the nodeTypeFilterModel.
+ */
 function fetchNodeTypeFilterModel(
-  asyncProps: AsyncProps<NodeTypeFilterModel>
+  props: AsyncProps<NodeTypeFilterModel>
 ): Promise<NodeTypeFilterModel> {
-  const thisFilterService = asyncProps.filterService as FilterService;
-  const cancellation = asyncProps.cancellation as CancellationToken;
-  return thisFilterService.getNodeTypeFilterModel('Person', cancellation);
+  const thisFilterService = props.service as FilterService;
+  const cancellation = props.cancellation as CancellationToken;
+  // TODO: find a way to give useAsync a parameter.
+  return thisFilterService.getNodeTypeFilterModel('Category', cancellation);
 }
 
 const EntityFilterElement = (props: {
@@ -89,65 +55,17 @@ const EntityFilterElement = (props: {
 
   const { backgroundColor, name } = props;
 
-  // The component state that contains the cancellation token source used to cancel the query operation.
-  const [loadingCancellationSource] = React.useState(
-    new CancellationTokenSource()
-  );
-
   const filterService = useService(FilterService, null);
-  // A React ref to the container that is used to measure the available space for the graph.
-  const sizeMeasureContainerRef = useRef<HTMLDivElement>(null);
+  let data = fetchDataFromService(fetchNodeTypeFilterModel, filterService);
 
-  // The state, as returned by react-async. Data are the node-types, when available.
-  const { data, error, isLoading } = useAsync({
-    promiseFn: fetchNodeTypeFilterModel,
-    filterService,
-    cancellation: loadingCancellationSource.token,
-  });
-
-  // Display the raw error message if an error occurred.
-  // See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/77
-  if (error) {
-    return <div>Something went wrong: {error?.message}</div>;
-  }
-  // Display an error message if something went wrong. This should not happen normally.
-  // See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/77
-  if (!data) {
-    return <div>Something went wrong</div>;
+  // check if data is an JSX.Element -> is still loading or error.
+  if (React.isValidElement(data)) {
+    return data;
   }
 
-  const entityTypePropertyNames = data.properties;
+  data = data as NodeTypeFilterModel;
 
-  // A function that must be here (unless you want React to explode) that cancels the query operation.
-  const cancelLoading = () => {
-    loadingCancellationSource.cancel();
-  };
-
-  // Display a waiting screen with a cancel options, while the query is in progress.
-  if (isLoading) {
-    return (
-      <>
-        <div
-          className={classes.sizeMeasureContainer}
-          ref={sizeMeasureContainerRef}
-        />
-        <Backdrop className={classes.backdrop} open>
-          <div className={classes.backdropContent}>
-            <CircularProgress color="inherit" />
-            <Button
-              variant="outlined"
-              color="default"
-              onClick={cancelLoading}
-              className={classes.backdropCancel}
-            >
-              <CloseIcon />
-              Cancel
-            </Button>
-          </div>
-        </Backdrop>
-      </>
-    );
-  }
+  const entityTypeProperties = data.properties;
 
   const handleOpenFilter = () => {
     setFilterOpen(true);
@@ -182,7 +100,7 @@ const EntityFilterElement = (props: {
       <EntityFilterDialog
         filterOpen={filterOpen}
         handleCloseFilter={handleCloseFilter}
-        entityTypes={entityTypePropertyNames}
+        entityTypes={entityTypeProperties}
       />
     </div>
   );
