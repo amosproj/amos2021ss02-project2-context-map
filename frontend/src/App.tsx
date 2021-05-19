@@ -8,8 +8,10 @@ import {
 import './App.scss';
 import Layout, { RenderTab } from './Layout';
 import NotFoundErrorComponent from './errors/NotFoundError';
+import GenericErrorComponent from './errors/GenericError';
+import CancellationErrorComponent from './errors/CancellationError';
+import NetworkErrorComponent from './errors/NetworkError';
 import routes from './routing/routes';
-import CancellationError from './utils/CancellationError';
 
 interface RenderRoute {
   path: string;
@@ -89,6 +91,21 @@ function App(): JSX.Element {
             </Layout>
           </Route>
         ))}
+        <Route path="/cancel">
+          <Layout>
+            <CancellationErrorComponent />
+          </Layout>
+        </Route>
+        <Route path="/networkerror">
+          <Layout>
+            <NetworkErrorComponent />
+          </Layout>
+        </Route>
+        <Route path="/error">
+          <Layout>
+            <GenericErrorComponent />
+          </Layout>
+        </Route>
         <Route path="*">
           <Layout>
             <NotFoundErrorComponent />
