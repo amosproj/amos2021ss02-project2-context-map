@@ -17,7 +17,7 @@ import SearchResultList from './SearchResultList';
 import convertSearchResultToSearchResultList from './SearchEntryConverter';
 
 export default function Searchbar(): JSX.Element {
-  const searchService = useService(SearchService, null);
+  const searchService = useService<SearchService>(SearchService, null);
   /**
    * {
    *   header: Items[]
