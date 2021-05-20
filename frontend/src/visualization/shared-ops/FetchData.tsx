@@ -3,7 +3,7 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { useRef } from 'react';
+import React from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { CancellationTokenSource } from '../../utils/CancellationToken';
 
@@ -53,9 +53,6 @@ function fetchDataFromService<T>(
 ): JSX.Element | T {
   const classes = useStyles();
 
-  // A React ref to the container that is used to measure the available space for the graph.
-  const sizeMeasureContainerRef = useRef<HTMLDivElement>(null);
-
   // The component state that contains the cancellation token source used to cancel the query operation.
   const [loadingCancellationSource] = React.useState(
     new CancellationTokenSource()
@@ -77,10 +74,7 @@ function fetchDataFromService<T>(
   if (isLoading) {
     return (
       <>
-        <div
-          className={classes.sizeMeasureContainer}
-          ref={sizeMeasureContainerRef}
-        />
+        <div className={classes.sizeMeasureContainer} />
         <Backdrop className={classes.backdrop} open>
           <div className={classes.backdropContent}>
             <CircularProgress color="inherit" />
