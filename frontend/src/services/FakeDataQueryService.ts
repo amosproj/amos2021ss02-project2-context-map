@@ -1,8 +1,9 @@
 import { injectable } from 'inversify';
 import 'reflect-metadata';
-import { LimitQuery } from '../shared/queries/LimitQuery';
-import { QueryResult } from '../shared/queries/QueryResult';
+import { QueryBase, QueryResult } from '../shared/queries';
+import { Node } from '../shared/entities/Node';
 import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
+import { Edge } from '../shared/entities/Edge';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import delay from '../utils/delay';
 import QueryService from './QueryService';
@@ -22,13 +23,13 @@ export default class FakeDataQueryService extends QueryService {
   }
 
   public async queryAll(
-    query?: LimitQuery,
+    query?: QueryBase,
     cancellation?: CancellationToken
   ): Promise<QueryResult> {
     await delay(0, cancellation);
 
-    const numNodes = query?.limit?.nodes ?? 100;
-    const numEdges = query?.limit?.edges ?? 150;
+    const numNodes = query?.limits?.nodes ?? 100;
+    const numEdges = query?.limits?.edges ?? 150;
     const nodes: NodeDescriptor[] = [];
     const edges: EdgeDescriptor[] = [];
 
@@ -54,5 +55,19 @@ export default class FakeDataQueryService extends QueryService {
     }
 
     return { nodes, edges };
+  }
+
+  public getEdgesById(
+    idsOrDescriptors: number[] | EdgeDescriptor[],
+    cancellation?: CancellationToken
+  ): Promise<Edge[]> {
+    return Promise.resolve<Edge[]>([]);
+  }
+
+  public getNodesById(
+    idsOrDescriptors: number[] | NodeDescriptor[],
+    cancellation?: CancellationToken
+  ): Promise<Node[]> {
+    return Promise.resolve<Node[]>([]);
   }
 }

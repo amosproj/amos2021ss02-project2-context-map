@@ -3,7 +3,7 @@ import request from 'supertest';
 import { FactoryProvider, INestApplication } from '@nestjs/common';
 import { AppController } from '../../src/app.controller';
 import { AppService } from '../../src/app.service';
-import { QueryResult } from '../../src/shared/queries/QueryResult';
+import { QueryResult } from '../../src/shared/queries';
 import { Node } from '../../src/shared/entities/Node';
 import { Edge } from '../../src/shared/entities/Edge';
 import {
@@ -44,7 +44,7 @@ describe('AppController', () => {
   });
 
   describe('queryAll', () => {
-    it('should return QueryResult with limits from the LimitQuery-Body ', async () => {
+    it('should return QueryResult with limits from the QueryBase-Body ', async () => {
       // Arrange
       const result: QueryResult = queryAllDummies.queryResult;
 
@@ -58,12 +58,12 @@ describe('AppController', () => {
         // Query that address
         .post('/queryAll')
         // Send this in the body
-        .send(queryAllDummies.limitQuery)
+        .send(queryAllDummies.query)
         // Expect this HttpCode and result
         .expect(200, result);
 
       // Mock must have been called with the QueryResult sent in the body
-      expect(queryAll).toBeCalledWith(queryAllDummies.limitQuery);
+      expect(queryAll).toBeCalledWith(queryAllDummies.query);
     });
 
     it('should not fail without body', async () => {

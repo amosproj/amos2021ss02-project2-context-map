@@ -1,13 +1,13 @@
 import { Container } from 'inversify';
 import HttpService from './services/http';
-import FakeDataSchemaService from './services/FakeDataSchemaService';
 import QueryService from './services/QueryService';
 import QueryServiceImpl from './services/QueryServiceImpl';
 import RandomNumberGenerator from './services/RandomNumberGenerator';
 import RandomNumberGeneratorImpl from './services/RandomNumberGeneratorImpl';
-import SchemaService from './services/SchemaService';
 import SearchService from './services/searchService';
 import SearchServiceImpl from './services/SearchServiceImpl';
+import { FilterService, FilterServiceImpl } from './services/filter';
+import { SchemaService, SchemaServiceImpl } from './services/schema';
 
 /**
  * Configures all services in the frontend app.
@@ -25,7 +25,9 @@ export default function configureServices(container: Container): void {
   );
 
   container.bind(QueryService).to(QueryServiceImpl);
-  container.bind(SchemaService).to(FakeDataSchemaService);
   container.bind(SearchService).to(SearchServiceImpl);
+  container.bind(SchemaService).to(SchemaServiceImpl);
+  container.bind(FilterService).to(FilterServiceImpl);
+
   // Add your services here...
 }

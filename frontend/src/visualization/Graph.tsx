@@ -1,46 +1,20 @@
 import React, { useRef } from 'react';
 import VisGraph, { GraphData } from 'react-graph-vis';
 import * as vis from 'vis-network';
-import { AsyncProps, useAsync } from 'react-async';
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Button from '@material-ui/core/Button';
-import CloseIcon from '@material-ui/icons/Close';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import {
-  Accordion,
-  AccordionActions,
-  AccordionDetails,
-  AccordionSummary,
-  Divider,
-} from '@material-ui/core';
+import { AsyncProps } from 'react-async';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import useService from '../dependency-injection/useService';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
-import { QueryResult } from '../shared/queries/QueryResult';
+import { QueryResult } from '../shared/queries';
 import QueryService from '../services/QueryService';
-import {
-  CancellationToken,
-  CancellationTokenSource,
-} from '../utils/CancellationToken';
+import { CancellationToken } from '../utils/CancellationToken';
 import { useSize } from '../utils/useSize';
+import Filter from './filtering/Filter';
+import fetchDataFromService from './shared-ops/FetchData';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
-    backdrop: {
-      zIndex: theme.zIndex.drawer + 1,
-      color: '#fff',
-    },
-    backdropContent: {
-      marginTop: theme.spacing(3),
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-    },
-    backdropCancel: {
-      marginTop: theme.spacing(3),
-    },
     sizeMeasureContainer: {
       position: 'absolute',
       top: 0,
@@ -50,9 +24,6 @@ const useStyles = makeStyles((theme: Theme) =>
       visibility: 'hidden',
       pointerEvents: 'none',
     },
-    contentContainer: {
-      padding: theme.spacing(3),
-    },
     graphPage: {
       position: 'absolute',
       top: 0,
@@ -60,7 +31,6 @@ const useStyles = makeStyles((theme: Theme) =>
       left: 0,
       right: 0,
       display: 'flex',
-      flexDirection: 'column',
     },
     graphContainer: {
       position: 'relative',
@@ -128,10 +98,10 @@ function buildOptions(width: number, height: number) {
  * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the query result.
  */
 function executeQuery(props: AsyncProps<QueryResult>): Promise<QueryResult> {
-  const queryService = props.queryService as QueryService;
+  const queryService = props.service as QueryService;
   const cancellation = props.cancellation as CancellationToken;
   return queryService.queryAll(
-    { limit: { nodes: 200, edges: undefined } },
+    { limits: { nodes: 200, edges: undefined } },
     cancellation
   );
 }
@@ -145,70 +115,18 @@ function Graph(): JSX.Element {
   // The size of the container that is used to measure the available space for the graph.
   const containerSize = useSize(sizeMeasureContainerRef);
 
-  // The query service injected from DI.
+  // The query- and schema-service injected from DI.
   const queryService = useService(QueryService, null);
 
-  // The component state that contains the cancellation token source used to cancel the query operation.
-  const [loadingCancellationSource] = React.useState(
-    new CancellationTokenSource()
-  );
+  const data = fetchDataFromService(executeQuery, queryService);
 
-  // The state, as returned by react-async. Data is the query-result, when available.
-  const { data, error, isLoading } = useAsync({
-    promiseFn: executeQuery,
-    queryService,
-    cancellation: loadingCancellationSource.token,
-  });
-
-  // A function that must be here (unless you want React to explode) that cancels the query operation.
-  const cancelLoading = () => {
-    loadingCancellationSource.cancel();
-  };
-
-  // Display a waiting screen with a cancel options, while the query is in progress.
-  if (isLoading) {
-    return (
-      <>
-        <div
-          className={classes.sizeMeasureContainer}
-          ref={sizeMeasureContainerRef}
-        />
-        <Backdrop className={classes.backdrop} open>
-          <div className={classes.backdropContent}>
-            <CircularProgress color="inherit" />
-            <Button
-              variant="outlined"
-              color="default"
-              onClick={cancelLoading}
-              className={classes.backdropCancel}
-            >
-              <CloseIcon />
-              Cancel
-            </Button>
-          </div>
-        </Backdrop>
-      </>
-    );
-  }
-
-  // Display the raw error message if an error occurred.
-  // See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/77
-  if (error) {
-    return (
-      <div className={classes.contentContainer}>
-        Something went wrong: {error.message}
-      </div>
-    );
-  }
-
-  // Display an error message if something went wrong. This should not happen normally.
-  // See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/77
-  if (!data) {
-    return <div className={classes.contentContainer}>Something went wrong</div>;
+  // check if data is an JSX.Element -> is still loading or error.
+  if (React.isValidElement(data)) {
+    return data;
   }
 
   // Convert the query result to an object, react-graph-vis understands.
-  const graphData = convertQueryResult(data);
+  const graphData = convertQueryResult(data as QueryResult);
 
   // Build the react-graph-vis graph options.
   const options = buildOptions(containerSize.width, containerSize.height);
@@ -216,19 +134,7 @@ function Graph(): JSX.Element {
   return (
     <>
       <div className={classes.graphPage}>
-        <Accordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            Filter
-          </AccordionSummary>
-          <AccordionDetails>TODO</AccordionDetails>
-          <Divider />
-          <AccordionActions>
-            <Button size="small">Reset</Button>
-            <Button size="small" color="primary">
-              Apply
-            </Button>
-          </AccordionActions>
-        </Accordion>
+        <Filter />
         <div className={classes.graphContainer}>
           <div
             className={classes.sizeMeasureContainer}
