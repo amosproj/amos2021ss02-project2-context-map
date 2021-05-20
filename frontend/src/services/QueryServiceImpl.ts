@@ -1,11 +1,10 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
+import { QueryBase, QueryResult } from '../shared/queries';
 import { Edge } from '../shared/entities/Edge';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import { Node } from '../shared/entities/Node';
 import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
-import { LimitQuery } from '../shared/queries/LimitQuery';
-import { QueryResult } from '../shared/queries/QueryResult';
 import { CancellationToken } from '../utils/CancellationToken';
 import HttpService, { HttpGetRequest } from './http';
 import QueryService from './QueryService';
@@ -32,7 +31,7 @@ export default class QueryServiceImpl extends QueryService {
   private readonly http: HttpService = null!;
 
   public queryAll(
-    query?: LimitQuery,
+    query?: QueryBase,
     cancellation?: CancellationToken
   ): Promise<QueryResult> {
     const url = `/queryAll`;

@@ -1,4 +1,4 @@
-import { QueryResult } from '../shared/queries/QueryResult';
+import { QueryResult } from '../shared/queries';
 
 interface HasId {
   id: number;

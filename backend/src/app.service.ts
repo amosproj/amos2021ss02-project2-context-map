@@ -3,8 +3,7 @@ import { Neo4jService } from 'nest-neo4j/dist';
 import { Node } from './shared/entities/Node';
 import { EdgeDescriptor } from './shared/entities/EdgeDescriptor';
 import { Edge } from './shared/entities/Edge';
-import { QueryResult } from './shared/queries/QueryResult';
-import { LimitQuery } from './shared/queries/LimitQuery';
+import { QueryBase, QueryResult } from './shared/queries';
 import { NodeDescriptor } from './shared/entities/NodeDescriptor';
 import consolidateQueryResult from './utils/consolidateQueryResult';
 import {
@@ -19,21 +18,21 @@ export class AppService {
   constructor(private readonly neo4jService: Neo4jService) {}
 
   /**
-   * Queries Node- and EdgeDescriptors for given LimitQuery
+   * Queries Node- and EdgeDescriptors for given QueryBase
    *
    * @param query  sets limits for number of nodes and edges to be queried
-   * @return Node- and EdgeDescriptors for given limitQuery as QueryResult
+   * @return Node- and EdgeDescriptors for given QueryBase as QueryResult
    */
-  async queryAll(query?: LimitQuery): Promise<QueryResult> {
+  async queryAll(query?: QueryBase): Promise<QueryResult> {
     const queryResult = {
       nodes:
-        query?.limit?.nodes === 0
+        query?.limits?.nodes === 0
           ? []
-          : await this.getAllNodes(query?.limit?.nodes),
+          : await this.getAllNodes(query?.limits?.nodes),
       edges:
-        query?.limit?.edges === 0
+        query?.limits?.edges === 0
           ? []
-          : await this.getAllEdges(query?.limit?.edges),
+          : await this.getAllEdges(query?.limits?.edges),
     };
 
     return consolidateQueryResult(queryResult);

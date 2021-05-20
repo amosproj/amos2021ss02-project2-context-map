@@ -6,7 +6,7 @@ import { NodeDescriptor } from '../entities/NodeDescriptor';
  * It is guaranteed that an instance contains all nodes descriptors that are
  * referenced in the edge descriptors via 'to' and 'from' attributes.
  */
-export interface QueryResult {
+export default interface QueryResult {
   /**
    * NodeDescriptors (array of node-ids) as result of the Query
    */

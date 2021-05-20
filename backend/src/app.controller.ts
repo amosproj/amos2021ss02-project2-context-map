@@ -3,8 +3,7 @@ import { Node } from './shared/entities/Node';
 import { Edge } from './shared/entities/Edge';
 import { ParseIntArrayPipe } from './pipes/ParseIntArrayPipe';
 import { AppService } from './app.service';
-import { LimitQuery } from './shared/queries/LimitQuery';
-import { QueryResult } from './shared/queries/QueryResult';
+import { QueryBase, QueryResult } from './shared/queries';
 
 /**
  * Main App Controller.
@@ -15,14 +14,14 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   /**
-   * Returns QueryResult for given LimitQuery from appService
+   * Returns QueryResult for given QueryBase from appService
    *
    * @param query  sets limits for number of nodes and edges to be send to appService
-   * @return QueryResult for given limitQuery
+   * @return QueryResult for given query
    */
   @Post('queryAll')
   @HttpCode(200)
-  async queryAll(@Body() query?: LimitQuery): Promise<QueryResult> {
+  async queryAll(@Body() query?: QueryBase): Promise<QueryResult> {
     return this.appService.queryAll(query);
   }
 

@@ -1,11 +1,10 @@
 import { injectable } from 'inversify';
 import 'reflect-metadata';
+import { QueryBase, QueryResult } from '../shared/queries';
 import { Edge } from '../shared/entities/Edge';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import { Node } from '../shared/entities/Node';
 import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
-import { LimitQuery } from '../shared/queries/LimitQuery';
-import { QueryResult } from '../shared/queries/QueryResult';
 import { CancellationToken } from '../utils/CancellationToken';
 
 /**
@@ -20,7 +19,7 @@ export default abstract class QueryService {
    * @returns A promise that represents the asynchronous operations. When evaluated, the promise result contains the query result of nodes and edges.
    */
   public abstract queryAll(
-    query?: LimitQuery,
+    query?: QueryBase,
     cancellation?: CancellationToken
   ): Promise<QueryResult>;
 

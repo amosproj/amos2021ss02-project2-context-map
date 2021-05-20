@@ -6,7 +6,7 @@ import { makeStyles, createStyles } from '@material-ui/core/styles';
 import useService from '../dependency-injection/useService';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
-import { QueryResult } from '../shared/queries/QueryResult';
+import { QueryResult } from '../shared/queries';
 import QueryService from '../services/QueryService';
 import { CancellationToken } from '../utils/CancellationToken';
 import { useSize } from '../utils/useSize';
@@ -101,7 +101,7 @@ function executeQuery(props: AsyncProps<QueryResult>): Promise<QueryResult> {
   const queryService = props.service as QueryService;
   const cancellation = props.cancellation as CancellationToken;
   return queryService.queryAll(
-    { limit: { nodes: 200, edges: undefined } },
+    { limits: { nodes: 200, edges: undefined } },
     cancellation
   );
 }
