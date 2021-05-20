@@ -1,3 +1,4 @@
+import { EdgeTypeDescriptor } from './EdgeTypeDescriptor';
 import { EntityType } from './EntityType';
 
 /**
@@ -5,4 +6,4 @@ import { EntityType } from './EntityType';
  * (e.g. Person, not Person[name='Peter'])
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface EdgeType extends EntityType {}
+export interface EdgeType extends EntityType, EdgeTypeDescriptor {}

@@ -8,6 +8,8 @@ import { FilterController } from './filter/filter.controller';
 import { FilterService } from './filter/filter.service';
 import { SchemaController } from './schema/schema.controller';
 import { SchemaService } from './schema/schema.service';
+import { SearchController } from './search/search.controller';
+import { SearchService } from './search/search.service';
 
 @Module({
   imports: [
@@ -21,7 +23,12 @@ import { SchemaService } from './schema/schema.service';
       disableLosslessIntegers: true,
     }),
   ],
-  controllers: [AppController, SchemaController, FilterController],
-  providers: [AppService, SchemaService, FilterService],
+  controllers: [
+    AppController,
+    SchemaController,
+    SearchController,
+    FilterController,
+  ],
+  providers: [AppService, SchemaService, SearchService, FilterService],
 })
 export class AppModule {}

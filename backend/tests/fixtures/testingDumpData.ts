@@ -39,17 +39,17 @@ export const getNodesByIdDummies: { ids: number[]; nodes: Node[] } = {
   nodes: [
     {
       id: 1,
-      labels: ['Person'],
+      types: ['Person'],
       properties: { born: 1964, name: 'Keanu Reeves' },
     },
     {
       id: 2,
-      labels: ['Person'],
+      types: ['Person'],
       properties: { born: 1967, name: 'Carrie-Anne Moss' },
     },
     {
       id: 3,
-      labels: ['Person'],
+      types: ['Person'],
       properties: { born: 1965, name: 'Lana Wachowski' },
     },
   ],

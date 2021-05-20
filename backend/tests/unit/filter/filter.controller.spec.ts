@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { FilterController } from '../../../src/filter/filter.controller';
 import { FilterService } from '../../../src/filter/filter.service';
 import {
