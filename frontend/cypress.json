@@ -1,5 +1,7 @@
 {
   "video": false,
   "experimentalFetchPolyfill": true,
-  "componentFolder": "cypress/unit"
+  "componentFolder": "cypress/unit",
+  "execTimeout": 120000,
+  "taskTimeout": 120000
 }
