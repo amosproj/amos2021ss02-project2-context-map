@@ -18,7 +18,7 @@ jobs:
       - run: npm install -g yarn
 
       - name: Cache node_modules
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.0
         with:
           path: frontend/node_modules
           key: ${{ matrix.os }}-${{ matrix.node-version }}-yarn-frontend-${{ hashFiles('frontend/yarn.lock') }}
