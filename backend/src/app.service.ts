@@ -6,6 +6,12 @@ import { Edge } from './shared/entities/Edge';
 import { QueryBase, QueryResult } from './shared/queries';
 import { NodeDescriptor } from './shared/entities/NodeDescriptor';
 import consolidateQueryResult from './utils/consolidateQueryResult';
+import {
+  neo4jReturnEdge,
+  neo4jReturnEdgeDescriptor,
+  neo4jReturnNode,
+  neo4jReturnNodeDescriptor,
+} from './config/commonFunctions';
 
 @Injectable()
 export class AppService {
@@ -43,7 +49,7 @@ export class AppService {
     const result = await this.neo4jService.read(
       `
       MATCH (n) 
-      RETURN ID(n) as id 
+      RETURN ${neo4jReturnNodeDescriptor('n')}
       ${nodeLimit ? 'LIMIT toInteger($limitNodes)' : ''}
     `,
       {
@@ -61,7 +67,7 @@ export class AppService {
    */
   async getNodesById(ids: number[]): Promise<Node[]> {
     const result = await this.neo4jService.read(
-      'MATCH (n) WHERE ID(n) IN $ids RETURN ID(n) as id, labels(n) as labels, properties(n) as properties',
+      `MATCH (n) WHERE ID(n) IN $ids RETURN ${neo4jReturnNode('n')}`,
       { ids }
     );
 
@@ -79,7 +85,7 @@ export class AppService {
     const result = await this.neo4jService.read(
       `
       MATCH (from)-[e]->(to) 
-      RETURN ID(e) as id, ID(from) as from, ID(to) as to
+      RETURN ${neo4jReturnEdgeDescriptor('e', 'from', 'to')}
       ORDER BY id, from
       ${edgeLimit ? 'LIMIT toInteger($limitEdges)' : ''}
     `,
@@ -102,7 +108,7 @@ export class AppService {
       `
       MATCH (from)-[e]->(to) 
       WHERE ID(e) in $ids
-      RETURN ID(e) as id, ID(from) as from, ID(to) as to, properties(e) as properties, type(e) as type
+      RETURN ${neo4jReturnEdge('e', 'from', 'to')}
       ORDER BY id, from
     `,
       { ids }

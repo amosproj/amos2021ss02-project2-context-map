@@ -10,6 +10,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import EntityPropertySelect from './EntityPropertySelect';
+import { FilterModelEntry } from '../../../../shared/filter';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,16 +24,13 @@ const useStyles = makeStyles((theme: Theme) =>
       marginTop: theme.spacing(2),
       minWidth: 300,
     },
-    select: {
-      width: 200,
-    },
   })
 );
 
 const EntityFilterDialog = (props: {
   filterOpen: boolean;
   handleCloseFilter: () => void;
-  entityTypes: string[];
+  entityTypes: FilterModelEntry[];
 }): JSX.Element => {
   const { filterOpen, handleCloseFilter, entityTypes } = props;
 

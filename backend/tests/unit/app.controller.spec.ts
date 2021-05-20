@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
+import request from 'supertest';
 import { FactoryProvider, INestApplication } from '@nestjs/common';
 import { AppController } from '../../src/app.controller';
 import { AppService } from '../../src/app.service';

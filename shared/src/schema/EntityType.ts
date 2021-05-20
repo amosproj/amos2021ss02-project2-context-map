@@ -1,13 +1,10 @@
+import { EntityTypeDescriptor } from './EntityTypeDescriptor';
 import { EntityTypeProperty } from './EntityTypeProperty';
 
 /**
  * Entity type of a graph.
  */
-export interface EntityType {
-  /**
-   * Name of the entity type
-   */
-  name: string;
+export interface EntityType extends EntityTypeDescriptor {
   /**
    * Attributes of the entity type
    */
