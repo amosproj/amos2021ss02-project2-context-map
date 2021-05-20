@@ -53,14 +53,29 @@ const useStyles = makeStyles({
 
 type ErrorComponentProps = {
   type?: ErrorType;
+  jsError?: Error;
 };
 
 function ErrorComponent(props: ErrorComponentProps): JSX.Element {
   let { type } = props;
-  // make sure type can't be undefined in order to use type as index on next line.
+  const { jsError } = props;
+  const classes = useStyles();
+
+  // If a JS Error occured
+  if (jsError !== undefined) {
+    const { imgSrc } = ErrorComponentData[ErrorType.GenericError];
+    return (
+      <Box className={classes.root}>
+        <img src={imgSrc} className={classes.img} alt="" />
+        <h1>jsError.name</h1>
+        <p>jsError.message</p>
+      </Box>
+    );
+  }
+
+  // If no error type specified
   if (type === undefined) type = ErrorType.GenericError;
   const { imgSrc, title, text } = ErrorComponentData[type];
-  const classes = useStyles();
   return (
     <Box className={classes.root}>
       <img src={imgSrc} className={classes.img} alt="" />
@@ -72,6 +87,7 @@ function ErrorComponent(props: ErrorComponentProps): JSX.Element {
 
 ErrorComponent.defaultProps = {
   type: ErrorType.GenericError,
+  jsError: undefined,
 };
 
 export default ErrorComponent;
