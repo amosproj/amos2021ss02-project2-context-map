@@ -103,10 +103,18 @@ const Filter = (): JSX.Element => {
   }
 
   // a JSX.Element template used for rendering
-  const entityTemplate = (color: string, type: string) => (
+  const entityTemplate = (
+    color: string,
+    name: string,
+    entity: 'node' | 'edge'
+  ) => (
     <div>
       <Box display="flex" p={1}>
-        <EntityFilterElement backgroundColor={color} name={type} />
+        <EntityFilterElement
+          backgroundColor={color}
+          name={name}
+          entity={entity}
+        />
       </Box>
     </div>
   );
@@ -116,11 +124,15 @@ const Filter = (): JSX.Element => {
   const edgeTypes: unknown[] = [];
 
   nodeColorsAndTypes.forEach((colorsAndTypes) => {
-    nodeTypes.push(entityTemplate(colorsAndTypes.color, colorsAndTypes.name));
+    nodeTypes.push(
+      entityTemplate(colorsAndTypes.color, colorsAndTypes.name, 'node')
+    );
   });
 
   edgeColorsAndTypes.forEach((colorsAndTypes) => {
-    edgeTypes.push(entityTemplate(colorsAndTypes.color, colorsAndTypes.name));
+    edgeTypes.push(
+      entityTemplate(colorsAndTypes.color, colorsAndTypes.name, 'edge')
+    );
   });
 
   const handleChange = (
