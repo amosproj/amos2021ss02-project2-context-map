@@ -1,7 +1,16 @@
 import { AsyncProps } from 'react-async';
-import { AppBar, Box, List, Tab, Tabs, Typography } from '@material-ui/core';
+import {
+  AppBar,
+  Box,
+  Drawer,
+  List,
+  Tab,
+  Tabs,
+  Typography,
+} from '@material-ui/core';
 import React from 'react';
 
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import useService from '../../dependency-injection/useService';
 import { CancellationToken } from '../../utils/CancellationToken';
 import { NodeType } from '../../shared/schema/NodeType';
@@ -11,6 +20,17 @@ import EntityFilterElement from './components/EntityFilterElement';
 import fetchDataFromService from '../shared-ops/FetchData';
 import entityColors from '../data/GraphData';
 import { SchemaService } from '../../services/schema';
+
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    root: {
+      display: 'flex',
+    },
+    appBar: {
+      zIndex: theme.zIndex.drawer + 1,
+    },
+  })
+);
 
 // Tab utils from https://material-ui.com/components/tabs/
 interface TabPanelProps {
@@ -60,6 +80,7 @@ function fetchEdgeTypes(props: AsyncProps<EdgeType[]>): Promise<NodeType[]> {
 }
 
 const Filter = (): JSX.Element => {
+  const classes = useStyles();
   const [tabIndex, setTabIndex] = React.useState(0);
   const schemaService = useService(SchemaService, null);
 
@@ -144,25 +165,31 @@ const Filter = (): JSX.Element => {
 
   return (
     <div>
-      <AppBar position="static" color="default">
-        <Tabs
-          value={tabIndex}
-          onChange={handleChange}
-          indicatorColor="primary"
-          textColor="primary"
-        >
-          <Tab label="Node Types" />
-          <Tab label="Edge Types" />
-        </Tabs>
-      </AppBar>
-      <List style={{ maxHeight: '94%', width: 320, overflow: 'auto' }}>
-        <TabPanel value={tabIndex} index={0}>
-          <div>{nodeTypes}</div>
-        </TabPanel>
-        <TabPanel value={tabIndex} index={1}>
-          {edgeTypes}
-        </TabPanel>
-      </List>
+      <div className={classes.root}>
+        <AppBar position="static" color="default" className={classes.appBar}>
+          <Tabs
+            value={tabIndex}
+            onChange={handleChange}
+            indicatorColor="primary"
+            textColor="primary"
+          >
+            <Tab label="Node Types" />
+            <Tab label="Edge Types" />
+          </Tabs>
+        </AppBar>
+      </div>
+      <div>
+        <Drawer variant="permanent" anchor="right">
+          <List style={{ maxHeight: '94%', width: 320, overflow: 'auto' }}>
+            <TabPanel value={tabIndex} index={0}>
+              <div>{nodeTypes}</div>
+            </TabPanel>
+            <TabPanel value={tabIndex} index={1}>
+              {edgeTypes}
+            </TabPanel>
+          </List>
+        </Drawer>
+      </div>
     </div>
   );
 };

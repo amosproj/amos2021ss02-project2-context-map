@@ -124,7 +124,6 @@ function Graph(): JSX.Element {
   if (React.isValidElement(data)) {
     return data;
   }
-
   // Convert the query result to an object, react-graph-vis understands.
   const graphData = convertQueryResult(data as QueryResult);
 
@@ -134,14 +133,14 @@ function Graph(): JSX.Element {
   return (
     <>
       <div className={classes.graphPage}>
-        <Filter />
         <div className={classes.graphContainer}>
           <div
             className={classes.sizeMeasureContainer}
             ref={sizeMeasureContainerRef}
           />
-          <VisGraph graph={graphData} options={options} />
+          <VisGraph graph={graphData} />
         </div>
+        <Filter />
       </div>
     </>
   );
