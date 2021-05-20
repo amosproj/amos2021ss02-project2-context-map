@@ -4,7 +4,11 @@ import QueryService from './services/QueryService';
 import QueryServiceImpl from './services/QueryServiceImpl';
 import RandomNumberGenerator from './services/RandomNumberGenerator';
 import RandomNumberGeneratorImpl from './services/RandomNumberGeneratorImpl';
+import { FilterService, FilterServiceImpl } from './services/filter';
 import { SchemaService, SchemaServiceImpl } from './services/schema';
+// <<<<<<< HEAD
+// =======
+// >>>>>>> filter-UI-prop-values
 
 /**
  * Configures all services in the frontend app.
@@ -23,6 +27,7 @@ export default function configureServices(container: Container): void {
 
   container.bind(QueryService).to(QueryServiceImpl);
   container.bind(SchemaService).to(SchemaServiceImpl);
+  container.bind(FilterService).to(FilterServiceImpl);
 
   // Add your services here...
 }

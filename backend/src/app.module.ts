@@ -4,6 +4,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { configuration } from './config/configuration';
 import { KmapNeo4jModule } from './config/neo4j/KmapNeo4jModule';
+import { FilterController } from './filter/filter.controller';
+import { FilterService } from './filter/filter.service';
 import { SchemaController } from './schema/schema.controller';
 import { SchemaService } from './schema/schema.service';
 import { SearchController } from './search/search.controller';
@@ -21,7 +23,12 @@ import { SearchService } from './search/search.service';
       disableLosslessIntegers: true,
     }),
   ],
-  controllers: [AppController, SchemaController, SearchController],
-  providers: [AppService, SchemaService, SearchService],
+  controllers: [
+    AppController,
+    SchemaController,
+    SearchController,
+    FilterController,
+  ],
+  providers: [AppService, SchemaService, SearchService, FilterService],
 })
 export class AppModule {}
