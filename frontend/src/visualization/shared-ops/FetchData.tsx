@@ -45,11 +45,13 @@ const useStyles = makeStyles((theme: Theme) =>
  *
  * @param executeQuery - the query the service executes
  * @param service - the service that executes the query
+ * @param arg - optional, additional argument given to {@link useAsync}
  * @returns if one of the above cases occured, the corresponding {@link JSX.Element}, otherwise the data to be fetched
  */
 function fetchDataFromService<T>(
   executeQuery: (props: AsyncProps<T>) => Promise<T>,
-  service: unknown
+  service: unknown,
+  arg?: string
 ): JSX.Element | T {
   const classes = useStyles();
 
@@ -65,6 +67,7 @@ function fetchDataFromService<T>(
   const { data, error, isLoading } = useAsync({
     promiseFn: executeQuery,
     service,
+    arg,
     cancellation: loadingCancellationSource.token,
   });
 
