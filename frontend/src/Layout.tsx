@@ -29,7 +29,8 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '100vh',
     },
     appBar: {
-      zIndex: theme.zIndex.drawer + 1,
+      // TODO: left drawer needs to be below appBar but right one above.
+      zIndex: 'auto', // theme.zIndex.drawer + 1,
       transition: theme.transitions.create(['width', 'margin'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
