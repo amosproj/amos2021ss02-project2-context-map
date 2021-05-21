@@ -1,10 +1,30 @@
-import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
+import {
+  Body,
+  HttpCode,
+  BadRequestException,
+  Controller,
+  Post,
+  Get,
+  Query,
+} from '@nestjs/common';
 import { FilterService } from './filter.service';
 import { NodeTypeFilterModel } from '../shared/filter';
+import { FilterQuery, QueryResult } from '../shared/queries';
+import { RequiredPipe } from '../pipes/RequiredPipe';
 
 @Controller('filter')
 export class FilterController {
   constructor(private readonly filterService: FilterService) {}
+
+  /**
+   * Returns a specialized filter model that contains the distinct values
+   * of all properties of all nodes of the specified type.
+   */
+  @Post('query')
+  @HttpCode(200)
+  query(@Body(RequiredPipe) query?: FilterQuery): Promise<QueryResult> {
+    return this.filterService.query(query);
+  }
 
   /**
    * Returns a specialized filter model that contains the distinct values
