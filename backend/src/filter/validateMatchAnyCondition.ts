@@ -3,6 +3,11 @@ import { FilterCondition, MatchAnyCondition } from '../shared/queries';
 import { formatErrorMessage } from './formatErrorMessage';
 import { checkValidMatchAllAnyCondition } from './checkValidMatchAllAnyCondition';
 
+/**
+ * Checks the specified filter condition to be a valid MatchAnyCondition and converts it.
+ * @param condition The condition to check.
+ * @returns The converted filter condition.
+ */
 export function validateMatchAnyCondition(
   condition: FilterCondition
 ): MatchAnyCondition {
