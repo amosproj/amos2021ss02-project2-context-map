@@ -74,7 +74,6 @@ function fetchDataFromService<T>(
   if (isLoading) {
     return (
       <>
-        <div className={classes.sizeMeasureContainer} />
         <Backdrop className={classes.backdrop} open>
           <div className={classes.backdropContent}>
             <CircularProgress color="inherit" />
