@@ -33,10 +33,15 @@ const useStyles = makeStyles(() =>
       display: 'flex',
     },
     graphContainer: {
+      zIndex: 1200,
       position: 'relative',
       flexGrow: 1,
       overflowY: 'hidden',
       overflowX: 'hidden',
+    },
+    filter: {
+      // high zIndex so content is in the foreground
+      zIndex: 1500,
     },
   })
 );
@@ -133,7 +138,6 @@ function Graph(): JSX.Element {
       </>
     );
   }
-
   // Convert the query result to an object, react-graph-vis understands.
   const graphData = convertQueryResult(data as QueryResult);
 
@@ -143,13 +147,15 @@ function Graph(): JSX.Element {
   return (
     <>
       <div className={classes.graphPage}>
-        <Filter />
         <div className={classes.graphContainer}>
           <div
             className={classes.sizeMeasureContainer}
             ref={sizeMeasureContainerRef}
           />
           <VisGraph graph={graphData} options={options} />
+        </div>
+        <div className={classes.filter}>
+          <Filter />
         </div>
       </div>
     </>

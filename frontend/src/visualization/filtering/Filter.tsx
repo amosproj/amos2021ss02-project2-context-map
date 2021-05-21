@@ -1,7 +1,19 @@
 import { AsyncProps } from 'react-async';
-import { AppBar, Box, List, Tab, Tabs, Typography } from '@material-ui/core';
+import {
+  AppBar,
+  Box,
+  Drawer,
+  IconButton,
+  List,
+  Tab,
+  Tabs,
+  Typography,
+  Divider,
+} from '@material-ui/core';
 import React from 'react';
-
+import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import useService from '../../dependency-injection/useService';
 import { CancellationToken } from '../../utils/CancellationToken';
 import { NodeType } from '../../shared/schema/NodeType';
@@ -11,6 +23,22 @@ import EntityFilterElement from './components/EntityFilterElement';
 import fetchDataFromService from '../shared-ops/FetchData';
 import entityColors from '../data/GraphData';
 import { SchemaService } from '../../services/schema';
+
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    appBar: {
+      position: 'relative',
+    },
+    drawerHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: theme.spacing(0, 1),
+      // necessary for content to be below app bar
+      ...theme.mixins.toolbar,
+      justifyContent: 'flex-start',
+    },
+  })
+);
 
 // Tab utils from https://material-ui.com/components/tabs/
 interface TabPanelProps {
@@ -60,7 +88,10 @@ function fetchEdgeTypes(props: AsyncProps<EdgeType[]>): Promise<NodeType[]> {
 }
 
 const Filter = (): JSX.Element => {
+  const classes = useStyles();
+  const theme = useTheme();
   const [tabIndex, setTabIndex] = React.useState(0);
+  const [open, setOpen] = React.useState(false);
   const schemaService = useService(SchemaService, null);
 
   let dataNodeTypes = fetchDataFromService(fetchNodeTypes, schemaService);
@@ -103,10 +134,18 @@ const Filter = (): JSX.Element => {
   }
 
   // a JSX.Element template used for rendering
-  const entityTemplate = (color: string, type: string) => (
+  const entityTemplate = (
+    color: string,
+    name: string,
+    entity: 'node' | 'edge'
+  ) => (
     <div>
       <Box display="flex" p={1}>
-        <EntityFilterElement backgroundColor={color} name={type} />
+        <EntityFilterElement
+          backgroundColor={color}
+          name={name}
+          entity={entity}
+        />
       </Box>
     </div>
   );
@@ -116,11 +155,15 @@ const Filter = (): JSX.Element => {
   const edgeTypes: unknown[] = [];
 
   nodeColorsAndTypes.forEach((colorsAndTypes) => {
-    nodeTypes.push(entityTemplate(colorsAndTypes.color, colorsAndTypes.name));
+    nodeTypes.push(
+      entityTemplate(colorsAndTypes.color, colorsAndTypes.name, 'node')
+    );
   });
 
   edgeColorsAndTypes.forEach((colorsAndTypes) => {
-    edgeTypes.push(entityTemplate(colorsAndTypes.color, colorsAndTypes.name));
+    edgeTypes.push(
+      entityTemplate(colorsAndTypes.color, colorsAndTypes.name, 'edge')
+    );
   });
 
   const handleChange = (
@@ -130,27 +173,52 @@ const Filter = (): JSX.Element => {
     setTabIndex(newValue);
   };
 
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
   return (
     <div>
-      <AppBar position="static" color="default">
-        <Tabs
-          value={tabIndex}
-          onChange={handleChange}
-          indicatorColor="primary"
-          textColor="primary"
-        >
-          <Tab label="Node Types" />
-          <Tab label="Edge Types" />
-        </Tabs>
+      <AppBar color="default" className={classes.appBar}>
+        <IconButton color="inherit" onClick={handleDrawerOpen}>
+          <ChevronLeftIcon />
+        </IconButton>
       </AppBar>
-      <List style={{ maxHeight: '94%', width: 320, overflow: 'auto' }}>
-        <TabPanel value={tabIndex} index={0}>
-          <div>{nodeTypes}</div>
-        </TabPanel>
-        <TabPanel value={tabIndex} index={1}>
-          {edgeTypes}
-        </TabPanel>
-      </List>
+      <Drawer variant="persistent" anchor="right" open={open}>
+        <div className={classes.drawerHeader}>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === 'rtl' ? (
+              <ChevronLeftIcon />
+            ) : (
+              <ChevronRightIcon />
+            )}
+          </IconButton>
+        </div>
+        <Divider />
+        <AppBar color="default" className={classes.appBar}>
+          <Tabs
+            value={tabIndex}
+            onChange={handleChange}
+            indicatorColor="primary"
+            textColor="primary"
+          >
+            <Tab label="Node Types" />
+            <Tab label="Edge Types" />
+          </Tabs>
+        </AppBar>
+        <List style={{ maxHeight: '94%', width: 320, overflow: 'auto' }}>
+          <TabPanel value={tabIndex} index={0}>
+            <div>{nodeTypes}</div>
+          </TabPanel>
+          <TabPanel value={tabIndex} index={1}>
+            {edgeTypes}
+          </TabPanel>
+        </List>
+      </Drawer>
     </div>
   );
 };

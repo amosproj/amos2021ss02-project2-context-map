@@ -37,15 +37,30 @@ const useStyles = makeStyles(() =>
 function fetchNodeTypeFilterModel(
   props: AsyncProps<NodeTypeFilterModel>
 ): Promise<NodeTypeFilterModel> {
-  const thisFilterService = props.service as FilterService;
+  const filterService = props.service as FilterService;
+  const nodeName = props.arg as string;
   const cancellation = props.cancellation as CancellationToken;
-  // TODO: find a way to give useAsync a parameter.
-  return thisFilterService.getNodeTypeFilterModel('Category', cancellation);
+  return filterService.getNodeTypeFilterModel(nodeName, cancellation);
+}
+
+/**
+ * A function that wraps the {@link getEdgeTypeFilterModel} call to the filter-service to be usable with react-async.
+ * @param props - The props that contains our parameter in an untyped way.
+ * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the edgeTypeFilterModel.
+ */
+function fetchEdgeTypeFilterModel(
+  props: AsyncProps<NodeTypeFilterModel>
+): Promise<NodeTypeFilterModel> {
+  const filterService = props.service as FilterService;
+  const edgeName = props.arg as string;
+  const cancellation = props.cancellation as CancellationToken;
+  return filterService.getEdgeTypeFilterModel(edgeName, cancellation);
 }
 
 const EntityFilterElement = (props: {
   backgroundColor: string;
   name: string;
+  entity: 'node' | 'edge';
 }): JSX.Element => {
   const classes = useStyles();
 
@@ -53,11 +68,14 @@ const EntityFilterElement = (props: {
   const [filterOpen, setFilterOpen] = React.useState(false);
   const [boxShadow, setBoxShadow] = useState('None');
 
-  const { backgroundColor, name } = props;
+  const { backgroundColor, name, entity } = props;
 
   const filterService = useService(FilterService, null);
-  let data = fetchDataFromService(fetchNodeTypeFilterModel, filterService);
-
+  let data = fetchDataFromService(
+    entity === 'node' ? fetchNodeTypeFilterModel : fetchEdgeTypeFilterModel,
+    filterService,
+    name
+  );
   // check if data is an JSX.Element -> is still loading or error.
   if (React.isValidElement(data)) {
     return data;
