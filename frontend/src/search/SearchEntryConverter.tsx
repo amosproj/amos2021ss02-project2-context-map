@@ -1,10 +1,11 @@
 import React from 'react';
-import { Chip } from '@material-ui/core';
-import { SearchResult } from '../shared/search/SearchResult';
 import SearchResultList from './SearchResultList';
+import { ExpandedSearchResult } from '../shared/search/ExpandedSearchResult';
+import NodeTypeComponent from './helper/NodeTypeComponent';
+import EdgeTypeComponent from './helper/EdgeTypeComponent';
 
 export default function convertSearchResultToSearchResultList(
-  result: SearchResult | undefined
+  result: ExpandedSearchResult | undefined
 ): SearchResultList[] {
   if (result === undefined) {
     return [];
@@ -16,7 +17,15 @@ export default function convertSearchResultToSearchResultList(
       header: 'Nodes',
       elements: result.nodes.map((n) => ({
         key: n.id,
-        element: <div>{n.id}</div>,
+        element: (
+          <div>
+            {n.types.map((t) => (
+              <NodeTypeComponent name={t} />
+            ))}
+            &nbsp;
+            {n.id}
+          </div>
+        ),
       })),
     },
     {
@@ -24,7 +33,12 @@ export default function convertSearchResultToSearchResultList(
       header: 'Edges',
       elements: result.edges.map((n) => ({
         key: n.id,
-        element: <div>{n.id}</div>,
+        element: (
+          <div>
+            <EdgeTypeComponent type={n.type} />
+            &nbsp;{n.id}
+          </div>
+        ),
       })),
     },
     {
@@ -32,7 +46,7 @@ export default function convertSearchResultToSearchResultList(
       header: 'Node Types',
       elements: result.nodeTypes.map((n) => ({
         key: n.name,
-        element: <Chip label={n.name} />,
+        element: <NodeTypeComponent name={n.name} />,
       })),
     },
     {
@@ -40,7 +54,7 @@ export default function convertSearchResultToSearchResultList(
       header: 'Edge Types',
       elements: result.edgeTypes.map((n) => ({
         key: n.name,
-        element: <Chip label={n.name} />,
+        element: <EdgeTypeComponent type={n.name} />,
       })),
     },
   ].filter((e) => e.elements.length > 0);

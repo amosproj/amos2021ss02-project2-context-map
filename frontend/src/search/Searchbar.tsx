@@ -18,9 +18,11 @@ import convertSearchResultToSearchResultList from './SearchEntryConverter';
 
 import './Searchbar.scss';
 import LimitListSizeComponent from './helper/LimitListSizeComponent';
+import QueryService from '../services/QueryService';
 
 export default function Searchbar(): JSX.Element {
-  const searchService = useService<SearchService>(SearchService, null);
+  const searchService = useService(SearchService);
+  const queryService = useService(QueryService);
   /**
    * {
    *   header: Items[]
@@ -37,7 +39,14 @@ export default function Searchbar(): JSX.Element {
     if (newValue?.length > 0) {
       searchService
         .fullTextSearch(newValue)
-        .then(async (result) => convertSearchResultToSearchResultList(result))
+        .then(async (result) =>
+          convertSearchResultToSearchResultList({
+            edges: await queryService.getEdgesById(result.edges),
+            nodes: await queryService.getNodesById(result.nodes),
+            edgeTypes: result.edgeTypes,
+            nodeTypes: result.nodeTypes,
+          })
+        )
         .then((result) => setSearchResults(result))
         .catch((error) => {
           // eslint-disable-next-line no-console -- TODO what can we really do with the error here?

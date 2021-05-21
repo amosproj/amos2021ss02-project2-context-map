@@ -3,10 +3,10 @@
     overflow: auto;
     max-height: 80vh;
 
-    transition: max-height 0.8s;
+    transition: max-height 0.2s;
 
     .listSection {
-      :first-child {
+      & > :first-child {
         background-color: white;
       }
     }
