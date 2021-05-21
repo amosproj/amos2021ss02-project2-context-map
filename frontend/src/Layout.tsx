@@ -86,8 +86,6 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
       // The position is set to relative, to allow views to display themselves in full-height.
       position: 'relative',
-      // high zIndex so content is in the foreground
-      zIndex: 1500,
     },
     tabToolbar: {
       height: 48,

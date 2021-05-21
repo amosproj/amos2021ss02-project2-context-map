@@ -33,10 +33,15 @@ const useStyles = makeStyles(() =>
       display: 'flex',
     },
     graphContainer: {
+      zIndex: 1200,
       position: 'relative',
       flexGrow: 1,
       overflowY: 'hidden',
       overflowX: 'hidden',
+    },
+    filter: {
+      // high zIndex so content is in the foreground
+      zIndex: 1500,
     },
   })
 );
@@ -149,7 +154,9 @@ function Graph(): JSX.Element {
           />
           <VisGraph graph={graphData} options={options} />
         </div>
-        <Filter />
+        <div className={classes.filter}>
+          <Filter />
+        </div>
       </div>
     </>
   );
