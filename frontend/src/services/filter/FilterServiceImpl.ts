@@ -20,7 +20,7 @@ export default class FilterServiceImpl implements FilterService {
     cancellation?: CancellationToken
   ): Promise<NodeTypeFilterModel> {
     return this.http.get<NodeTypeFilterModel>(
-      '/filter/node-type',
+      '/api/filter/node-type',
       buildRequest(type),
       cancellation
     );
@@ -31,7 +31,7 @@ export default class FilterServiceImpl implements FilterService {
     cancellation?: CancellationToken
   ): Promise<EdgeTypeFilterModel> {
     return this.http.get<NodeTypeFilterModel>(
-      '/filter/edge-type',
+      '/api/filter/edge-type',
       buildRequest(type),
       cancellation
     );
