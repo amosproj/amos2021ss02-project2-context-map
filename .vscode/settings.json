@@ -1,0 +1,8 @@
+{
+    "files.eol": "\n",
+    "typescript.preferences.quoteStyle": "single",
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "[typescript]": {
+        "editor.tabSize": 2,
+    }
+}
