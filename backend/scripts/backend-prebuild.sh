@@ -4,11 +4,16 @@
 # This can be done by running "git update-index --chmod=+x .\backend-prebuild.sh" in the build directory
 
 # Goto the backend dir
-cd ../backend
+parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+cd "$parent_path"
 
-# Copy shared files
-cp -a ../shared/src/. ./src/shared/
+if ![ -f /.dockerenv ]
+then
 
-# Execute linter
-rimraf dist
-yarn lint
+    # Copy shared files
+    cp -a ../shared/src/. ./src/shared/
+
+    # Execute linter
+    rimraf dist
+    yarn lint
+fi
