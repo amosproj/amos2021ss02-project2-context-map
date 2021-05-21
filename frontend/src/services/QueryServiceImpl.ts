@@ -34,7 +34,7 @@ export default class QueryServiceImpl extends QueryService {
     query?: QueryBase,
     cancellation?: CancellationToken
   ): Promise<QueryResult> {
-    const url = `/queryAll`;
+    const url = `/api/queryAll`;
 
     return this.http.post<QueryResult>(url, query, cancellation);
   }
@@ -46,7 +46,7 @@ export default class QueryServiceImpl extends QueryService {
     cancellation?: CancellationToken
   ): Promise<Edge[]> {
     return this.http.get<Edge[]>(
-      '/getEdgesById',
+      '/api/getEdgesById',
       buildDetailsRequest(idsOrDescriptors),
       cancellation
     );
@@ -57,7 +57,7 @@ export default class QueryServiceImpl extends QueryService {
     cancellation?: CancellationToken
   ): Promise<Node[]> {
     return this.http.get<Node[]>(
-      '/getNodesById',
+      '/api/getNodesById',
       buildDetailsRequest(idsOrDescriptors),
       cancellation
     );
