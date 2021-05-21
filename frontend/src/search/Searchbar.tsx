@@ -40,9 +40,15 @@ export default function Searchbar(): JSX.Element {
       searchService
         .fullTextSearch(newValue)
         .then(async (result) =>
-          convertSearchResultToSearchResultList({
-            edges: await queryService.getEdgesById(result.edges),
-            nodes: await queryService.getNodesById(result.nodes),
+          convertSearchResultToSearchResultList(newValue, {
+            edges:
+              result.edges.length > 0
+                ? await queryService.getEdgesById(result.edges)
+                : [],
+            nodes:
+              result.nodes.length > 0
+                ? await queryService.getNodesById(result.nodes)
+                : [],
             edgeTypes: result.edgeTypes,
             nodeTypes: result.nodeTypes,
           })
