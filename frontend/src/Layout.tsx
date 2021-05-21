@@ -29,8 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '100vh',
     },
     appBar: {
-      // TODO: left drawer needs to be below appBar but right one above.
-      zIndex: 'auto', // theme.zIndex.drawer + 1,
+      zIndex: theme.zIndex.drawer + 1,
       transition: theme.transitions.create(['width', 'margin'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
@@ -87,6 +86,8 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
       // The position is set to relative, to allow views to display themselves in full-height.
       position: 'relative',
+      // high zIndex so content is in the foreground
+      zIndex: 1500,
     },
     tabToolbar: {
       height: 48,
