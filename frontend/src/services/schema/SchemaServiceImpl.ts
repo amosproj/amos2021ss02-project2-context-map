@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
 import { EdgeType } from '../../shared/schema/EdgeType';
 import { NodeType } from '../../shared/schema/NodeType';
-import AsyncLazy from '../../utils/AsyncLazy';
+import { AsyncLazy } from '../../shared/utils';
 import { CancellationToken } from '../../utils/CancellationToken';
 import withCancellation from '../../utils/withCancellation';
 import HttpService from '../http';
