@@ -1,6 +1,7 @@
 import { injectable, inject } from 'inversify';
 import 'reflect-metadata';
 import { EdgeTypeFilterModel, NodeTypeFilterModel } from '../../shared/filter';
+import { FilterQuery, QueryResult } from '../../shared/queries';
 import { CancellationToken } from '../../utils/CancellationToken';
 import HttpService, { HttpGetRequest } from '../http';
 import FilterService from './FilterService';
@@ -14,6 +15,13 @@ export default class FilterServiceImpl implements FilterService {
   @inject(HttpService)
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   private readonly http: HttpService = null!;
+
+  public query(
+    query?: FilterQuery,
+    cancellation?: CancellationToken
+  ): Promise<QueryResult> {
+    return this.http.post<QueryResult>('/filter/query', query, cancellation);
+  }
 
   public getNodeTypeFilterModel(
     type: string,
