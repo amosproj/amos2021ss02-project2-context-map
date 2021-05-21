@@ -48,6 +48,7 @@ function deduplicateEntities<T extends HasId>(
  * Consolidates the specified query result, such that it contains only edges
  * that's to and from nodes are included in the query-result.
  * @param queryResult The query-result to filter
+ * @param includeSubsidiary A boolean value that indicated whether nodes that are not part of the result but references by edges that are part of the results shall be added or the referencing edges deleted.
  */
 export default function consolidateQueryResult(
   queryResult: QueryResult,
