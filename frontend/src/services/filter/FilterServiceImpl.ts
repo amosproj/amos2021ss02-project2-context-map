@@ -20,7 +20,11 @@ export default class FilterServiceImpl implements FilterService {
     query?: FilterQuery,
     cancellation?: CancellationToken
   ): Promise<QueryResult> {
-    return this.http.post<QueryResult>('/filter/query', query, cancellation);
+    return this.http.post<QueryResult>(
+      '/api/filter/query',
+      query,
+      cancellation
+    );
   }
 
   public getNodeTypeFilterModel(
