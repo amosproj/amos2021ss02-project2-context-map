@@ -122,7 +122,16 @@ function Graph(): JSX.Element {
 
   // check if data is an JSX.Element -> is still loading or error.
   if (React.isValidElement(data)) {
-    return data;
+    return (
+      <>
+        <div
+          // ref sizeMeasureContainerRef to classes.sizeMeasureContainer to compute containerSize.width and containerSize.height
+          className={classes.sizeMeasureContainer}
+          ref={sizeMeasureContainerRef}
+        />
+        {data}
+      </>
+    );
   }
   // Convert the query result to an object, react-graph-vis understands.
   const graphData = convertQueryResult(data as QueryResult);
@@ -138,7 +147,7 @@ function Graph(): JSX.Element {
             className={classes.sizeMeasureContainer}
             ref={sizeMeasureContainerRef}
           />
-          <VisGraph graph={graphData} />
+          <VisGraph graph={graphData} options={options} />
         </div>
         <Filter />
       </div>
