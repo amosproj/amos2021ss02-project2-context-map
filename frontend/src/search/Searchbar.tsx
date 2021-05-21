@@ -16,6 +16,9 @@ import './SearchResultList.scss';
 import SearchResultList from './SearchResultList';
 import convertSearchResultToSearchResultList from './SearchEntryConverter';
 
+import './Searchbar.scss';
+import LimitListSizeComponent from './helper/LimitListSizeComponent';
+
 export default function Searchbar(): JSX.Element {
   const searchService = useService<SearchService>(SearchService, null);
   /**
@@ -44,7 +47,7 @@ export default function Searchbar(): JSX.Element {
   };
 
   return (
-    <>
+    <div className="SearchBar">
       <ClickAwayListener onClickAway={() => setMenuOpen(false)}>
         <div>
           <Input
@@ -67,16 +70,18 @@ export default function Searchbar(): JSX.Element {
               style={{ width: `${inputRef.current?.clientWidth ?? 0}px` }}
             >
               <CardContent>
-                <List subheader={<li />}>
+                <List className="list" subheader={<li />}>
                   {searchResults.map((searchResult) => (
-                    <li key={searchResult.key}>
+                    <li className="listSection" key={searchResult.key}>
                       <ul className="SubList">
                         <ListSubheader>{searchResult.header}</ListSubheader>
-                        {searchResult.elements.map((element) => (
-                          <ListItem key={element.key}>
-                            {element.element}
-                          </ListItem>
-                        ))}
+                        <LimitListSizeComponent
+                          list={searchResult.elements.map((element) => (
+                            <ListItem key={element.key}>
+                              {element.element}
+                            </ListItem>
+                          ))}
+                        />
                       </ul>
                     </li>
                   ))}
@@ -86,6 +91,6 @@ export default function Searchbar(): JSX.Element {
           ) : null}
         </div>
       </ClickAwayListener>
-    </>
+    </div>
   );
 }

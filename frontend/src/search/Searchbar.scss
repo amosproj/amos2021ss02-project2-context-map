@@ -1,0 +1,14 @@
+.SearchResultsCard {
+  .list {
+    overflow: auto;
+    max-height: 80vh;
+
+    transition: max-height 0.8s;
+
+    .listSection {
+      :first-child {
+        background-color: white;
+      }
+    }
+  }
+}
