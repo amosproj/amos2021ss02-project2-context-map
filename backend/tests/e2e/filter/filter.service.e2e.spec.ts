@@ -7,6 +7,11 @@ import {
   getEdgeTypeFilterModelResult,
   getNodeTypeFilterModelResult,
 } from '../../fixtures/filter/FilterQueryResults';
+import {
+  FilterQuery,
+  OfTypeCondition,
+  QueryResult,
+} from '../../../src/shared/queries';
 
 /*
 Tests filter.service.ts
@@ -33,6 +38,29 @@ describe('FilterService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('Method query', () => {
+    it('returns all nodes including subsidiary ones', async () => {
+      // Arrange
+      const query: FilterQuery = {
+        filters: {
+          nodes: OfTypeCondition('Movie'),
+          edges: OfTypeCondition('DIRECTED'),
+        },
+      };
+
+      const expectedQueryResult: QueryResult = {
+        nodes: [{ id: 0 }, { id: 3, subsidiary: true }],
+        edges: [{ id: 2, from: 3, to: 0 }],
+      };
+
+      // Act
+      const result = await service.query(query);
+
+      // Assert
+      expect(result).toEqual(expectedQueryResult);
+    });
   });
 
   describe('Method getNodeTypeFilterModel', () => {
