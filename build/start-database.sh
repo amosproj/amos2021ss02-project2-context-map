@@ -1,6 +1,6 @@
 #!/bin/sh
 
-mountDir="$PWD/../backend/docker/mount/"
+mountDir="$PWD/../database/mount/"
 databaseDump="testing-dump"
 dbPassword="amos"
 containerName="neo4j-db"
