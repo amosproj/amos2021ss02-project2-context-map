@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -10,6 +10,8 @@ import {
   ListSubheader,
 } from '@material-ui/core';
 import { Search } from '@material-ui/icons';
+import { BehaviorSubject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import useService from '../dependency-injection/useService';
 import SearchService from '../services/searchService';
 import './SearchResultList.scss';
@@ -23,24 +25,25 @@ import QueryService from '../services/QueryService';
 export default function Searchbar(): JSX.Element {
   const searchService = useService(SearchService);
   const queryService = useService(QueryService);
+
   /**
-   * {
-   *   header: Items[]
-   * }
+   * Fires, when the search input is changes
    */
+  const searchInput$ = useRef(new BehaviorSubject(''));
+
+  // List that contains the search results
   const [searchResults, setSearchResults] = useState<SearchResultList[]>([]);
+
   const [menuOpen, setMenuOpen] = useState(false);
+
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const onInputChanged = (event: SyntheticEvent) => {
-    const newValue = (event.target as HTMLInputElement).value;
-    setMenuOpen(newValue?.length > 0);
-
-    if (newValue?.length > 0) {
+  function loadSearchResults(searchString: string) {
+    if (searchString?.length > 0) {
       searchService
-        .fullTextSearch(newValue)
+        .fullTextSearch(searchString)
         .then(async (result) =>
-          convertSearchResultToSearchResultList(newValue, {
+          convertSearchResultToSearchResultList(searchString, {
             edges:
               result.edges.length > 0
                 ? await queryService.getEdgesById(result.edges)
@@ -59,6 +62,18 @@ export default function Searchbar(): JSX.Element {
           console.error(error);
         });
     }
+  }
+
+  useEffect(() => {
+    const sub = searchInput$.current.pipe(debounceTime(300)).subscribe({
+      next: loadSearchResults,
+    });
+
+    return () => sub.unsubscribe();
+  }, []);
+
+  const onInputChanged = (event: ChangeEvent<HTMLInputElement>) => {
+    searchInput$.current.next(event.target.value);
   };
 
   return (
