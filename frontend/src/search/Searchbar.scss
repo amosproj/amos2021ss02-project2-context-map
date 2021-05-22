@@ -1,22 +1,29 @@
 
 .SearchBar {
+
   .LoadingIcon {
-    @keyframes infinite-rotate {
-      0% { -webkit-transform: rotate(0deg); }
-      100% { -webkit-transform: rotate(360deg); }
-    }
 
     animation: infinite-rotate 1.5s linear infinite;
+
+    @keyframes infinite-rotate {
+
+      0% { -webkit-transform: rotate(0deg); }
+
+      100% { -webkit-transform: rotate(360deg); }
+    }
   }
 }
+
 .SearchResultsCard {
+
   .list {
     overflow: auto;
     max-height: 80vh;
 
-    transition: max-height 0.2s;
+    transition: max-height .2s;
 
     .listSection {
+
       & > :first-child {
         background-color: white;
       }
