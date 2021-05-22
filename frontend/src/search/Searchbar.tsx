@@ -21,9 +21,16 @@ import convertSearchResultToSearchResultList from './SearchEntryConverter';
 import './Searchbar.scss';
 import LimitListSizeComponent from './helper/LimitListSizeComponent';
 import QueryService from '../services/QueryService';
+import { CancellationTokenSource } from '../utils/CancellationToken';
+import CancellationError from '../utils/CancellationError';
 
 export default function Searchbar(): JSX.Element {
   const searchService = useService(SearchService);
+  /**
+   * Contains all the active cancel tokens.
+   */
+  const searchServiceCancelTokens = useRef<CancellationTokenSource[]>([]);
+
   const queryService = useService(QueryService);
 
   /**
@@ -40,8 +47,10 @@ export default function Searchbar(): JSX.Element {
 
   function loadSearchResults(searchString: string) {
     if (searchString?.length > 0) {
+      const cancelToken = new CancellationTokenSource();
+      searchServiceCancelTokens.current.push(cancelToken);
       searchService
-        .fullTextSearch(searchString)
+        .fullTextSearch(searchString, cancelToken.token)
         .then(async (result) =>
           convertSearchResultToSearchResultList(searchString, {
             edges:
@@ -58,6 +67,7 @@ export default function Searchbar(): JSX.Element {
         )
         .then((result) => setSearchResults(result))
         .catch((error) => {
+          if (error instanceof CancellationError) return;
           // eslint-disable-next-line no-console -- TODO what can we really do with the error here?
           console.error(error);
         });
@@ -66,7 +76,10 @@ export default function Searchbar(): JSX.Element {
 
   useEffect(() => {
     const sub = searchInput$.current.pipe(debounceTime(300)).subscribe({
-      next: loadSearchResults,
+      next: (nextSearchString) => {
+        searchServiceCancelTokens.current.forEach((q) => q.cancel());
+        loadSearchResults(nextSearchString);
+      },
     });
 
     return () => sub.unsubscribe();
