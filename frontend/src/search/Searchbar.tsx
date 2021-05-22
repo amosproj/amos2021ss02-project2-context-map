@@ -9,7 +9,7 @@ import {
   ListItem,
   ListSubheader,
 } from '@material-ui/core';
-import { Search } from '@material-ui/icons';
+import { Autorenew, Search } from '@material-ui/icons';
 import { BehaviorSubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import useService from '../dependency-injection/useService';
@@ -43,12 +43,15 @@ export default function Searchbar(): JSX.Element {
 
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const [searchOngoing, setSearchOngoing] = useState(false);
+
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   function loadSearchResults(searchString: string) {
     if (searchString?.length > 0) {
       const cancelToken = new CancellationTokenSource();
       searchServiceCancelTokens.current.push(cancelToken);
+      setSearchOngoing(true);
       searchService
         .fullTextSearch(searchString, cancelToken.token)
         .then(async (result) =>
@@ -65,12 +68,18 @@ export default function Searchbar(): JSX.Element {
             nodeTypes: result.nodeTypes,
           })
         )
-        .then((result) => setSearchResults(result))
+        .then((result) => {
+          setSearchOngoing(false);
+          setSearchResults(result);
+        })
         .catch((error) => {
           if (error instanceof CancellationError) return;
+          setSearchOngoing(false);
           // eslint-disable-next-line no-console -- TODO what can we really do with the error here?
           console.error(error);
         });
+    } else {
+      setSearchResults([]);
     }
   }
 
@@ -78,6 +87,8 @@ export default function Searchbar(): JSX.Element {
     const sub = searchInput$.current.pipe(debounceTime(300)).subscribe({
       next: (nextSearchString) => {
         searchServiceCancelTokens.current.forEach((q) => q.cancel());
+        // noinspection StatementWithEmptyBodyJS -- Clear list
+        while (searchServiceCancelTokens.current.pop());
         loadSearchResults(nextSearchString);
       },
     });
@@ -105,6 +116,13 @@ export default function Searchbar(): JSX.Element {
               <InputAdornment position="start">
                 <Search />
               </InputAdornment>
+            }
+            endAdornment={
+              searchOngoing ? (
+                <InputAdornment className="LoadingIcon" position="end">
+                  <Autorenew />
+                </InputAdornment>
+              ) : undefined
             }
           />
           {menuOpen && searchResults.length > 0 ? (
