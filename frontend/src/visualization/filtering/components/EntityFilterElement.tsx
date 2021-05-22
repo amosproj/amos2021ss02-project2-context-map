@@ -6,11 +6,15 @@ import TuneIcon from '@material-ui/icons/Tune';
 import AddIcon from '@material-ui/icons/Add';
 import { AsyncProps } from 'react-async';
 import EntityFilterDialog from './dialog/EntityFilterDialog';
-import { NodeTypeFilterModel } from '../../../shared/filter';
+import {
+  EdgeTypeFilterModel,
+  NodeTypeFilterModel,
+} from '../../../shared/filter';
 import { CancellationToken } from '../../../utils/CancellationToken';
 import useService from '../../../dependency-injection/useService';
 import { FilterService } from '../../../services/filter';
 import fetchDataFromService from '../../shared-ops/FetchData';
+import { FilterQuery, QueryResult } from '../../../shared/queries';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -57,18 +61,44 @@ function fetchEdgeTypeFilterModel(
   return filterService.getEdgeTypeFilterModel(edgeName, cancellation);
 }
 
+/**
+ * A function that wraps the call to the filter-service to be usable with react-async.
+ * @param props The props that contains our parameter in an untyped way.
+ * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the query result.
+ */
+function executeFilterQuery(
+  props: AsyncProps<QueryResult>
+): Promise<QueryResult> {
+  const filterService = props.service as FilterService;
+  const filterQuery = props.arg as FilterQuery;
+  const cancellation = props.cancellation as CancellationToken;
+  return filterService.query(filterQuery, cancellation);
+}
+
 const EntityFilterElement = (props: {
   backgroundColor: string;
   name: string;
   entity: 'node' | 'edge';
+  filteredQueryResult: QueryResult;
+  setFilteredQueryResult: React.Dispatch<React.SetStateAction<QueryResult>>;
 }): JSX.Element => {
   const classes = useStyles();
+
+  // the filterQuery from child-component Filter
+  const emptyFilterQuery: FilterQuery = {};
+  const [filterQuery, setFilterQuery] = useState(emptyFilterQuery);
 
   // Indicates if filter-dialog is opened.
   const [filterOpen, setFilterOpen] = React.useState(false);
   const [boxShadow, setBoxShadow] = useState('None');
 
-  const { backgroundColor, name, entity } = props;
+  const {
+    backgroundColor,
+    name,
+    entity,
+    filteredQueryResult,
+    setFilteredQueryResult,
+  } = props;
 
   const filterService = useService(FilterService, null);
   let data = fetchDataFromService(
@@ -81,7 +111,10 @@ const EntityFilterElement = (props: {
     return data;
   }
 
-  data = data as NodeTypeFilterModel;
+  data =
+    entity === 'node'
+      ? (data as NodeTypeFilterModel)
+      : (data as EdgeTypeFilterModel);
 
   const entityTypeProperties = data.properties;
 
@@ -96,6 +129,7 @@ const EntityFilterElement = (props: {
     setBoxShadow(
       boxShadow === 'None' ? '0 0 0 0.2rem rgba(0,123,255,.5)' : 'None'
     );
+    // trigger convert filteredQueryResult to GraphData in Graph.txs here
   };
 
   return (
@@ -119,6 +153,8 @@ const EntityFilterElement = (props: {
         filterOpen={filterOpen}
         handleCloseFilter={handleCloseFilter}
         entityTypes={entityTypeProperties}
+        filterQuery={filterQuery}
+        setFilterQuery={setFilterQuery}
       />
     </div>
   );
