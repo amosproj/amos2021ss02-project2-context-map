@@ -18,6 +18,7 @@ jobs:
             browser: edge
     env:
       working-directory: ./frontend
+      cache-frontend: true
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}

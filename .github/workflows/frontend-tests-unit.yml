@@ -10,6 +10,7 @@ jobs:
         node-version: [ 12.x, 14.x ]
     env:
       working-directory: ./frontend
+      cache-frontend: true
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -58,6 +59,7 @@ jobs:
       
 
       - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
+        working-directory: ${{ env.working-directory }}
       - name: Cypress run
         run: yarn run cy:run:unit
         working-directory: ${{ env.working-directory }}
