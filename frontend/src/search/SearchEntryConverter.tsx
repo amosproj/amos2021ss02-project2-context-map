@@ -133,5 +133,11 @@ export default function convertSearchResultToSearchResultList(
         element: <EdgeTypeComponent type={n.name} />,
       })),
     },
-  ].filter((e) => e.elements.length > 0);
+  ]
+    .filter((e) => e.elements.length > 0)
+    .map((x) => ({
+      ...x,
+      // Modify the key so that for new search string, new lists are returned
+      key: searchString + x.key,
+    }));
 }
