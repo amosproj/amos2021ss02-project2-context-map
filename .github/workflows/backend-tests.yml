@@ -29,7 +29,7 @@ jobs:
       # kmap.import-action.cache #
       # Cypress
       - name: Get cypress version from yarn.lock
-        if: ${{ inputs.frontend }}
+        if: ${{ env.cache-frontend == 'true' }}
         id: cypress-version-frontend
         run: echo "::set-output name=version::$(node .\build\getCypressVersion)"
       
