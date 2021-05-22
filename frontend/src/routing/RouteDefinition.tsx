@@ -1,4 +1,3 @@
-import React from 'react';
 import TabDefinition from './TabDefinition';
 
 export default interface RouteDefinition {

@@ -4,9 +4,24 @@
  */
 
 declare module 'react-graph-vis' {
-  import { Network, NetworkEvents, Options, Node, Edge, DataSet } from 'vis-network';
+  import {
+    Network,
+    NetworkEvents,
+    Options,
+    Node,
+    Edge,
+    DataSet,
+  } from 'vis-network';
   import { Component } from 'react';
-  export { Network, NetworkEvents, Options, Node, Edge, DataSet } from 'vis-network';
+
+  export {
+    Network,
+    NetworkEvents,
+    Options,
+    Node,
+    Edge,
+    DataSet,
+  } from 'vis-network';
 
   /**
    * An object that has event name as keys and their callback as values that can be passed to the NetworkGraph component.
