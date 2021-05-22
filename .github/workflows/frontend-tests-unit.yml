@@ -1,7 +1,7 @@
 name: Frontend unit tests
 on: [ push ]
 jobs:
-  test:
+  unit-test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -17,15 +17,11 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install -g yarn
 
-      - name: Cache node_modules
-        uses: actions/cache@v2
+      - uses: ./.github/actions/cache-ubuntu
         with:
-          path: frontend/node_modules
-          key: ${{ matrix.os }}-${{ matrix.node-version }}-yarn-frontend-${{ hashFiles('frontend/yarn.lock') }}
+          frontend: true
 
+      - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
       - name: Cypress run
-        uses: cypress-io/github-action@v2
-        with:
-          install-command: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
-          command: yarn run cy:run:unit
-          working-directory: ${{ env.working-directory }}
+        run: yarn run cy:run:unit
+        working-directory: ${{ env.working-directory }}
