@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import VisGraph, { GraphData } from 'react-graph-vis';
 import * as vis from 'vis-network';
 import { AsyncProps } from 'react-async';
@@ -114,6 +114,11 @@ function executeQuery(props: AsyncProps<QueryResult>): Promise<QueryResult> {
 function Graph(): JSX.Element {
   const classes = useStyles();
 
+  // the filtered QueryResult from child-component EntityFilterElement
+  const emptyQueryResult: QueryResult = { nodes: [], edges: [] };
+  const [filteredQueryResult, setFilteredQueryResult] =
+    useState(emptyQueryResult);
+
   // A React ref to the container that is used to measure the available space for the graph.
   const sizeMeasureContainerRef = useRef<HTMLDivElement>(null);
 
@@ -155,7 +160,10 @@ function Graph(): JSX.Element {
           <VisGraph graph={graphData} options={options} />
         </div>
         <div className={classes.filter}>
-          <Filter />
+          <Filter
+            filteredQueryResult={filteredQueryResult}
+            setFilteredQueryResult={setFilteredQueryResult}
+          />
         </div>
       </div>
     </>

@@ -23,6 +23,7 @@ import EntityFilterElement from './components/EntityFilterElement';
 import fetchDataFromService from '../shared-ops/FetchData';
 import entityColors from '../data/GraphData';
 import { SchemaService } from '../../services/schema';
+import { QueryResult } from '../../shared/queries';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -87,11 +88,17 @@ function fetchEdgeTypes(props: AsyncProps<EdgeType[]>): Promise<NodeType[]> {
   return schemaService.getEdgeTypes(cancellation);
 }
 
-const Filter = (): JSX.Element => {
+const Filter = (props: {
+  filteredQueryResult: QueryResult;
+  setFilteredQueryResult: React.Dispatch<React.SetStateAction<QueryResult>>;
+}): JSX.Element => {
+  // hooks
   const classes = useStyles();
   const theme = useTheme();
   const [tabIndex, setTabIndex] = React.useState(0);
   const [open, setOpen] = React.useState(false);
+
+  const { filteredQueryResult, setFilteredQueryResult } = props;
   const schemaService = useService(SchemaService, null);
 
   let dataNodeTypes = fetchDataFromService(fetchNodeTypes, schemaService);
@@ -145,6 +152,8 @@ const Filter = (): JSX.Element => {
           backgroundColor={color}
           name={name}
           entity={entity}
+          filteredQueryResult={filteredQueryResult}
+          setFilteredQueryResult={setFilteredQueryResult}
         />
       </Box>
     </div>
