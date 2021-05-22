@@ -1,11 +1,13 @@
-import { AsyncProps, useAsync } from 'react-async';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { CancellationTokenSource } from '../../utils/CancellationToken';
+import {
+  CancellationToken,
+  CancellationTokenSource,
+} from '../../utils/CancellationToken';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,22 +30,29 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+type RenderFunction<T> = (t: T) => JSX.Element;
+
+type QueryFunction<
+  TArgs extends [...Array<unknown>, CancellationToken],
+  TResult
+> = (...args: TArgs) => Promise<TResult>;
+
 /**
  * Fetches data from service using {@link useAsync} with {@link promiseFn} executeQuery.
  * If the screen is still loading a {@link JSX.Element}, showing a loading screen, is returned.
  * if an error occurs a {@link JSX.Element}, showing an error screen, is returned.
  * If the data to be fetched is undefined a {@link JSX.Element}, showing an error message, is returned.
  *
- * @param executeQuery - the query the service executes
+ * @param queryFn - the query the service executes
  * @param service - the service that executes the query
  * @param arg - optional, additional argument given to {@link useAsync}
  * @returns if one of the above cases occured, the corresponding {@link JSX.Element}, otherwise the data to be fetched
  */
-function fetchDataFromService<T>(
-  executeQuery: (props: AsyncProps<T>) => Promise<T>,
-  service: unknown,
-  arg?: string
-): JSX.Element | T {
+function fetchDataFromService<TArgs extends Array<unknown>, TData>(
+  queryFn: QueryFunction<[...TArgs, CancellationToken], TData>,
+  content: RenderFunction<TData>,
+  ...args: TArgs
+): JSX.Element {
   const classes = useStyles();
 
   // The component state that contains the cancellation token source used to cancel the query operation.
@@ -51,13 +60,35 @@ function fetchDataFromService<T>(
     new CancellationTokenSource()
   );
 
-  // The state, as returned by react-async. Data is the query-result, when available.
-  const { data, error, isLoading } = useAsync({
-    promiseFn: executeQuery,
-    service,
-    arg,
-    cancellation: loadingCancellationSource.token,
-  });
+  const [data, setData] = useState<TData | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    const argsWithCancellation = [...args, loadingCancellationSource.token] as [
+      ...TArgs,
+      CancellationToken
+    ];
+    setIsLoading(true);
+    queryFn(...argsWithCancellation)
+      .then((result) => {
+        if (mounted) {
+          setData(result);
+          setIsLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (mounted) {
+          setError(err);
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // A function that must be here (unless you want React to explode) that cancels the query operation.
   const cancelLoading = () => {
@@ -102,7 +133,7 @@ function fetchDataFromService<T>(
     return <div className={classes.contentContainer}>Something went wrong</div>;
   }
 
-  return data;
+  return content(data);
 }
 
 export default fetchDataFromService;
