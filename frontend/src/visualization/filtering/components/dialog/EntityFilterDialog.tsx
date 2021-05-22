@@ -1,5 +1,5 @@
 import Button from '@material-ui/core/Button';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   createStyles,
   Dialog,
@@ -11,6 +11,7 @@ import {
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import EntityPropertySelect from './EntityPropertySelect';
 import { FilterModelEntry } from '../../../../shared/filter';
+import { FilterQuery } from '../../../../shared/queries';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,15 +32,49 @@ const EntityFilterDialog = (props: {
   filterOpen: boolean;
   handleCloseFilter: () => void;
   entityTypes: FilterModelEntry[];
+  filterQuery: FilterQuery;
+  setFilterQuery: React.Dispatch<React.SetStateAction<FilterQuery>>;
 }): JSX.Element => {
-  const { filterOpen, handleCloseFilter, entityTypes } = props;
+  const classes = useStyles();
 
-  const entitySelects: unknown[] = [];
+  const {
+    filterOpen,
+    handleCloseFilter,
+    entityTypes,
+    filterQuery,
+    setFilterQuery,
+  } = props;
+
+  // the filtered FilterModelEntries filled from the children EntityPropertySelects
+  const filteredFilterModelEntries: FilterModelEntry[] = [];
+  const setFilteredFilterModelEntries: React.Dispatch<
+    React.SetStateAction<FilterModelEntry>
+  >[] = [];
   entityTypes.forEach((type) => {
-    entitySelects.push(<EntityPropertySelect entityType={type} />);
+    const [filteredFilterModelEntry, setFilteredFilterModelEntry] =
+      useState<FilterModelEntry>({
+        key: type.key,
+        values: [],
+      });
+    filteredFilterModelEntries.push(filteredFilterModelEntry);
+    setFilteredFilterModelEntries.push(setFilteredFilterModelEntry);
   });
 
-  const classes = useStyles();
+  const entitySelects: unknown[] = [];
+  entityTypes.forEach((type, index) => {
+    entitySelects.push(
+      <EntityPropertySelect
+        entityType={type}
+        filterModelEntry={filteredFilterModelEntries[index]}
+        setFilterModelEntry={setFilteredFilterModelEntries[index]}
+      />
+    );
+  });
+
+  const printEntries = () => {
+    console.log(filteredFilterModelEntries);
+  };
+
   return (
     <div>
       <Dialog open={filterOpen} onClose={handleCloseFilter} scroll="paper">
@@ -53,6 +88,9 @@ const EntityFilterDialog = (props: {
               </Button>
               <Button onClick={handleCloseFilter} color="primary">
                 Apply Filter
+              </Button>
+              <Button onClick={printEntries} color="primary">
+                Test
               </Button>
             </DialogActions>
           </FormControl>

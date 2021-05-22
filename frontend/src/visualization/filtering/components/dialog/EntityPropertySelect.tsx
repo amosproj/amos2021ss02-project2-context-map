@@ -20,10 +20,11 @@ const useStyles = makeStyles(() =>
 
 const EntityPropertySelect = (props: {
   entityType: FilterModelEntry;
+  filterModelEntry: FilterModelEntry;
+  setFilterModelEntry: React.Dispatch<React.SetStateAction<FilterModelEntry>>;
 }): JSX.Element => {
   const classes = useStyles();
-  const { entityType } = props;
-  const [personName, setPersonName] = React.useState<string[]>([]);
+  const { entityType, filterModelEntry, setFilterModelEntry } = props;
 
   // utils from material ui multiselect https://material-ui.com/components/selects/#select
   const ITEM_HEIGHT = 48;
@@ -49,7 +50,11 @@ const EntityPropertySelect = (props: {
   const theme = useTheme();
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setPersonName(event.target.value as string[]);
+    const updatedFilterModelEntry: FilterModelEntry = {
+      key: entityType.key,
+      values: event.target.value as string[],
+    };
+    setFilterModelEntry(updatedFilterModelEntry);
   };
 
   return (
@@ -58,7 +63,7 @@ const EntityPropertySelect = (props: {
         <InputLabel>{entityType.key}</InputLabel>
         <Select
           multiple
-          value={personName}
+          value={filterModelEntry.values as string[]}
           onChange={handleChange}
           input={<Input />}
           MenuProps={MenuProps}
@@ -69,7 +74,7 @@ const EntityPropertySelect = (props: {
               value={typeof name === 'string' ? name : 'Error: No string'}
               style={getStyles(
                 typeof name === 'string' ? name : 'Error: No string',
-                personName,
+                filterModelEntry.values as string[],
                 theme
               )}
             >
