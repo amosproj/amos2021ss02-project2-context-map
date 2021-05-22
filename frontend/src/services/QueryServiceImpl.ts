@@ -9,6 +9,16 @@ import { CancellationToken } from '../utils/CancellationToken';
 import HttpService, { HttpGetRequest } from './http';
 import QueryService from './QueryService';
 
+const MAX_BATCH_SIZE = 90;
+
+function createBatches(array: number[] | NodeDescriptor[]) {
+  const batches = [];
+  for (let i = 0; i < array.length; i += MAX_BATCH_SIZE) {
+    batches.push(array.slice(i, i + MAX_BATCH_SIZE));
+  }
+  return batches;
+}
+
 function buildDetailsRequest(
   idsOrDescriptors: number[] | { id: number }[]
 ): HttpGetRequest {
@@ -41,25 +51,41 @@ export default class QueryServiceImpl extends QueryService {
 
   // TODO: Cache entity details: https://github.com/amosproj/amos-ss2021-project2-context-map/issues/62
 
-  public getEdgesById(
+  public async getEdgesById(
     idsOrDescriptors: number[] | EdgeDescriptor[],
     cancellation?: CancellationToken
   ): Promise<Edge[]> {
-    return this.http.get<Edge[]>(
-      '/getEdgesById',
-      buildDetailsRequest(idsOrDescriptors),
-      cancellation
-    );
+    const batches = createBatches(idsOrDescriptors);
+
+    return (
+      await Promise.all(
+        batches.map((batch) =>
+          this.http.get<Edge[]>(
+            '/getEdgesById',
+            buildDetailsRequest(batch),
+            cancellation
+          )
+        )
+      )
+    ).flat();
   }
 
-  public getNodesById(
+  public async getNodesById(
     idsOrDescriptors: number[] | NodeDescriptor[],
     cancellation?: CancellationToken
   ): Promise<Node[]> {
-    return this.http.get<Node[]>(
-      '/getNodesById',
-      buildDetailsRequest(idsOrDescriptors),
-      cancellation
-    );
+    const batches = createBatches(idsOrDescriptors);
+
+    return (
+      await Promise.all(
+        batches.map((batch) =>
+          this.http.get<Node[]>(
+            '/getNodesById',
+            buildDetailsRequest(batch),
+            cancellation
+          )
+        )
+      )
+    ).flat();
   }
 }
