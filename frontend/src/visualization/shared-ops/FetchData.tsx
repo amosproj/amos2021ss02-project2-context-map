@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
 function fetchDataFromService<T>(
   executeQuery: (props: AsyncProps<T>) => Promise<T>,
   service: unknown,
-  arg?: string
+  arg?: unknown
 ): JSX.Element | T {
   const classes = useStyles();
 
