@@ -18,7 +18,7 @@ jobs:
       - run: npm install -g yarn
       - name: Increase file watches
         run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
-        if: ${{ matrix.os == "ubuntu-lastest" }}
+        if: ${{ matrix.os == 'ubuntu-lastest' }}
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
