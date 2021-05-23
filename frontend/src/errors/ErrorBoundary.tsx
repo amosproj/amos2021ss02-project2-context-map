@@ -6,22 +6,20 @@ interface Props {
 }
 
 interface State {
-  error: Error | undefined;
-  hasError: boolean;
+  error: Error | null;
 }
 
-class ErrorBoundary extends Component<Props, State> {
+class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      error: undefined,
-      hasError: false,
+      error: null,
     };
   }
 
-  public static getDerivedStateFromError(e: Error): State {
+  public static getDerivedStateFromError(error: Error): State {
     // Update state so the next render will show the error component.
-    return { error: e, hasError: true };
+    return { error };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
@@ -30,12 +28,11 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   public render(): ReactNode {
-    const { hasError, error } = this.state;
+    const { error } = this.state;
     const { children } = this.props;
-    if (hasError) {
+    if (error) {
       return <ErrorComponent jsError={error} />;
     }
-
     return children;
   }
 }
