@@ -48,6 +48,7 @@ const EntityFilterDialog = (props: {
     filterOpen,
     handleCloseFilter,
     entityTypes,
+    filterQuery,
     setFilterQuery,
   } = props;
 
