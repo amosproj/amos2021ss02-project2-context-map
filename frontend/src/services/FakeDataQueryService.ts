@@ -57,17 +57,11 @@ export default class FakeDataQueryService extends QueryService {
     return { nodes, edges };
   }
 
-  public getEdgesById(
-    idsOrDescriptors: number[] | EdgeDescriptor[],
-    cancellation?: CancellationToken
-  ): Promise<Edge[]> {
+  public getEdgesById(): Promise<Edge[]> {
     return Promise.resolve<Edge[]>([]);
   }
 
-  public getNodesById(
-    idsOrDescriptors: number[] | NodeDescriptor[],
-    cancellation?: CancellationToken
-  ): Promise<Node[]> {
+  public getNodesById(): Promise<Node[]> {
     return Promise.resolve<Node[]>([]);
   }
 }

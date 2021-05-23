@@ -28,7 +28,7 @@ declare module 'react-graph-vis' {
    * For the events available, see: https://visjs.github.io/vis-network/docs/network/#Events
    */
   export interface GraphEvents {
-    [event: NetworkEvents]: (params?: any) => void;
+    [event: NetworkEvents]: (params?: unknown) => void;
   }
 
   /**
@@ -91,10 +91,12 @@ declare module 'react-graph-vis' {
   /**
    * A component that renders graphs via the vis-network library.
    */
+  // eslint-disable-next-line react/prefer-stateless-function
   export default class NetworkGraph extends Component<
     NetworkGraphProps,
     NetworkGraphState
   > {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     render();
   }
 }
