@@ -1,17 +1,17 @@
 import React, { useRef, useState } from 'react';
 import VisGraph, { GraphData } from 'react-graph-vis';
 import * as vis from 'vis-network';
-import { AsyncProps } from 'react-async';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import useService from '../dependency-injection/useService';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
-import { QueryResult } from '../shared/queries';
+import { FilterQuery, QueryResult } from '../shared/queries';
 import QueryService from '../services/QueryService';
 import { CancellationToken } from '../utils/CancellationToken';
 import { useSize } from '../utils/useSize';
 import Filter from './filtering/Filter';
-import fetchDataFromService from './shared-ops/FetchData';
+import fetchDataFromService from './shared-ops/fetchDataFromService';
+import { FilterService } from '../services/filter';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -102,22 +102,34 @@ function buildOptions(width: number, height: number) {
  * @param props The props that contains our paramter in an untyped way.
  * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the query result.
  */
-function executeQuery(props: AsyncProps<QueryResult>): Promise<QueryResult> {
-  const queryService = props.service as QueryService;
-  const cancellation = props.cancellation as CancellationToken;
+function executeQuery(
+  queryService: QueryService,
+  cancellation: CancellationToken
+): Promise<QueryResult> {
   return queryService.queryAll(
     { limits: { nodes: 200, edges: undefined } },
     cancellation
   );
 }
 
+/**
+ * A function that wraps the call to the filter-service to be usable with react-async.
+ * @param props The props that contains our parameter in an untyped way.
+ * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the query result.
+ */
+function executeFilterQuery(
+  filterService: FilterService,
+  filterQuery: FilterQuery,
+  cancellation: CancellationToken
+): Promise<QueryResult> {
+  return filterService.query(filterQuery, cancellation);
+}
+
 function Graph(): JSX.Element {
   const classes = useStyles();
 
   // the filtered QueryResult from child-component EntityFilterElement
-  const emptyQueryResult: QueryResult = { nodes: [], edges: [] };
-  const [filteredQueryResult, setFilteredQueryResult] =
-    useState(emptyQueryResult);
+  const [filterQuery, setFilterQuery] = useState<FilterQuery>({});
 
   // A React ref to the container that is used to measure the available space for the graph.
   const sizeMeasureContainerRef = useRef<HTMLDivElement>(null);
@@ -126,46 +138,51 @@ function Graph(): JSX.Element {
   const containerSize = useSize(sizeMeasureContainerRef);
 
   // The query- and schema-service injected from DI.
-  const queryService = useService(QueryService, null);
+  const filterService = useService(FilterService, null);
 
-  const data = fetchDataFromService(executeQuery, queryService);
+  function renderContent(
+    queryResult: QueryResult,
+    update: () => void
+  ): JSX.Element {
+    // Convert the query result to an object, react-graph-vis understands.
+    const graphData = convertQueryResult(queryResult);
 
-  // check if data is an JSX.Element -> is still loading or error.
-  if (React.isValidElement(data)) {
+    // Build the react-graph-vis graph options.
+    const options = buildOptions(containerSize.width, containerSize.height);
+
     return (
       <>
-        <div
-          // ref sizeMeasureContainerRef to classes.sizeMeasureContainer to compute containerSize.width and containerSize.height
-          className={classes.sizeMeasureContainer}
-          ref={sizeMeasureContainerRef}
-        />
-        {data}
+        <div className={classes.graphPage}>
+          <div className={classes.graphContainer}>
+            <VisGraph graph={graphData} options={options} />
+          </div>
+          <div className={classes.filter}>
+            <Filter
+              filterQuery={filterQuery}
+              setFilterQuery={setFilterQuery}
+              updateGraph={update}
+            />
+          </div>
+        </div>
       </>
     );
   }
-  // Convert the query result to an object, react-graph-vis understands.
-  const graphData = convertQueryResult(data as QueryResult);
 
-  // Build the react-graph-vis graph options.
-  const options = buildOptions(containerSize.width, containerSize.height);
+  const data = fetchDataFromService(
+    executeFilterQuery,
+    renderContent,
+    filterService,
+    filterQuery
+  );
 
   return (
     <>
-      <div className={classes.graphPage}>
-        <div className={classes.graphContainer}>
-          <div
-            className={classes.sizeMeasureContainer}
-            ref={sizeMeasureContainerRef}
-          />
-          <VisGraph graph={graphData} options={options} />
-        </div>
-        <div className={classes.filter}>
-          <Filter
-            filteredQueryResult={filteredQueryResult}
-            setFilteredQueryResult={setFilteredQueryResult}
-          />
-        </div>
-      </div>
+      <div
+        // ref sizeMeasureContainerRef to classes.sizeMeasureContainer to compute containerSize.width and containerSize.height
+        className={classes.sizeMeasureContainer}
+        ref={sizeMeasureContainerRef}
+      />
+      {data}
     </>
   );
 }
