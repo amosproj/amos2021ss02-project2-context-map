@@ -67,8 +67,8 @@ function ErrorComponent(props: ErrorComponentProps): JSX.Element {
     return (
       <Box className={classes.root}>
         <img src={imgSrc} className={classes.img} alt="" />
-        <h1>jsError.name</h1>
-        <p>jsError.message</p>
+        <h1>{jsError.name}</h1>
+        <p>{jsError.message}</p>
       </Box>
     );
   }
