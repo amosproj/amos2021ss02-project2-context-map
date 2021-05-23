@@ -20,8 +20,8 @@
     "lint:scss": "stylelint 'src/**/*.scss'",
     "cy:open:e2e": "cypress open",
     "cy:open:unit": "cypress open-ct",
-    "cy:run:e2e": "cypress run",
-    "cy:run:unit": "cypress run-ct"
+    "cy:run:e2e": "cypress run --config watchForFileChanges=false",
+    "cy:run:unit": "cypress run-ct --config watchForFileChanges=false"
   },
   "dependencies": {
     "@cypress/react": "^5.4.0",
