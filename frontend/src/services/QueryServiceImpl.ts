@@ -44,7 +44,7 @@ export default class QueryServiceImpl extends QueryService {
     query?: QueryBase,
     cancellation?: CancellationToken
   ): Promise<QueryResult> {
-    const url = `/queryAll`;
+    const url = `/api/queryAll`;
 
     return this.http.post<QueryResult>(url, query, cancellation);
   }
@@ -61,7 +61,7 @@ export default class QueryServiceImpl extends QueryService {
       await Promise.all(
         batches.map((batch) =>
           this.http.get<Edge[]>(
-            '/getEdgesById',
+            '/api/getEdgesById',
             buildDetailsRequest(batch),
             cancellation
           )
@@ -80,7 +80,7 @@ export default class QueryServiceImpl extends QueryService {
       await Promise.all(
         batches.map((batch) =>
           this.http.get<Node[]>(
-            '/getNodesById',
+            '/api/getNodesById',
             buildDetailsRequest(batch),
             cancellation
           )
