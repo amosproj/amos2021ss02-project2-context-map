@@ -16,9 +16,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install -g yarn
+      - name: Increase file watches
+        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+        if: ${{ matrix.os == "ubuntu-lastest" }}
       - name: Cypress run
         uses: cypress-io/github-action@v2
-        with: 
+        with:
           install-command: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
           command: yarn run cy:run:unit
           working-directory: ${{ env.working-directory }}
