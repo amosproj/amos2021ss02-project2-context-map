@@ -20,7 +20,10 @@ module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires,global-require
-  require('@cypress/react/plugins/react-scripts')(on, config);
+  if (config.testingType === 'component') {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires,global-require
+    require('@cypress/react/plugins/react-scripts')(on, config);
+  }
+
   return config;
 };
