@@ -4,7 +4,6 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
 import TuneIcon from '@material-ui/icons/Tune';
 import AddIcon from '@material-ui/icons/Add';
-import { AsyncProps } from 'react-async';
 import EntityFilterDialog from './dialog/EntityFilterDialog';
 import {
   EdgeTypeFilterModel,
@@ -13,8 +12,10 @@ import {
 import { CancellationToken } from '../../../utils/CancellationToken';
 import useService from '../../../dependency-injection/useService';
 import { FilterService } from '../../../services/filter';
-import fetchDataFromService from '../../shared-ops/FetchData';
 import { FilterQuery, QueryResult } from '../../../shared/queries';
+import fetchDataFromService from '../../shared-ops/fetchDataFromService';
+
+type EntityTypeFilterModel = NodeTypeFilterModel | EdgeTypeFilterModel;
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -39,11 +40,10 @@ const useStyles = makeStyles(() =>
  * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the nodeTypeFilterModel.
  */
 function fetchNodeTypeFilterModel(
-  props: AsyncProps<NodeTypeFilterModel>
+  filterService: FilterService,
+  nodeName: string,
+  cancellation: CancellationToken
 ): Promise<NodeTypeFilterModel> {
-  const filterService = props.service as FilterService;
-  const nodeName = props.arg as string;
-  const cancellation = props.cancellation as CancellationToken;
   return filterService.getNodeTypeFilterModel(nodeName, cancellation);
 }
 
@@ -53,39 +53,22 @@ function fetchNodeTypeFilterModel(
  * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the edgeTypeFilterModel.
  */
 function fetchEdgeTypeFilterModel(
-  props: AsyncProps<NodeTypeFilterModel>
+  filterService: FilterService,
+  edgeName: string,
+  cancellation: CancellationToken
 ): Promise<NodeTypeFilterModel> {
-  const filterService = props.service as FilterService;
-  const edgeName = props.arg as string;
-  const cancellation = props.cancellation as CancellationToken;
   return filterService.getEdgeTypeFilterModel(edgeName, cancellation);
-}
-
-/**
- * A function that wraps the call to the filter-service to be usable with react-async.
- * @param props The props that contains our parameter in an untyped way.
- * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the query result.
- */
-function executeFilterQuery(
-  props: AsyncProps<QueryResult>
-): Promise<QueryResult> {
-  const filterService = props.service as FilterService;
-  const filterQuery = props.arg as FilterQuery;
-  const cancellation = props.cancellation as CancellationToken;
-  return filterService.query(filterQuery, cancellation);
 }
 
 const EntityFilterElement = (props: {
   backgroundColor: string;
   name: string;
   entity: 'node' | 'edge';
-  filteredQueryResult: QueryResult;
-  setFilteredQueryResult: React.Dispatch<React.SetStateAction<QueryResult>>;
+  filterQuery: FilterQuery;
+  setFilterQuery: React.Dispatch<React.SetStateAction<FilterQuery>>;
+  updateGraph: () => void;
 }): JSX.Element => {
   const classes = useStyles();
-
-  // the filterQuery from child-component Filter
-  const [filterQuery, setFilterQuery] = useState<FilterQuery>({});
 
   // Indicates if filter-dialog is opened.
   const [filterOpen, setFilterOpen] = React.useState(false);
@@ -95,80 +78,67 @@ const EntityFilterElement = (props: {
     backgroundColor,
     name,
     entity,
-    filteredQueryResult,
-    setFilteredQueryResult,
+    filterQuery,
+    setFilterQuery,
+    updateGraph,
   } = props;
 
   const filterService = useService(FilterService, null);
-  let data = fetchDataFromService(
+
+  function renderContent(model: EntityTypeFilterModel): JSX.Element {
+    const handleOpenFilter = () => {
+      setFilterOpen(true);
+    };
+    const handleCloseFilter = () => {
+      setFilterOpen(false);
+    };
+
+    const handleAddEntity = () => {
+      setBoxShadow(
+        boxShadow === 'None' ? '0 0 0 0.2rem rgba(0,123,255,.5)' : 'None'
+      );
+      updateGraph();
+    };
+
+    const entityTypeProperties = model.properties;
+
+    return (
+      <div>
+        <Button
+          style={{ backgroundColor, boxShadow }}
+          variant="contained"
+          color="primary"
+          disableRipple
+          className={classes.root}
+        >
+          {name}
+        </Button>
+        <IconButton component="span">
+          <TuneIcon onClick={handleOpenFilter} />
+        </IconButton>
+        <IconButton component="span">
+          <AddIcon onClick={handleAddEntity} />
+        </IconButton>
+        <EntityFilterDialog
+          filterOpen={filterOpen}
+          handleCloseFilter={handleCloseFilter}
+          entity={entity}
+          entityTypes={entityTypeProperties}
+          filterQuery={filterQuery}
+          setFilterQuery={setFilterQuery}
+        />
+      </div>
+    );
+  }
+
+  const data = fetchDataFromService(
     entity === 'node' ? fetchNodeTypeFilterModel : fetchEdgeTypeFilterModel,
+    renderContent,
     filterService,
     name
   );
 
-  // check if data is an JSX.Element -> is still loading or error.
-  if (React.isValidElement(data)) {
-    return data;
-  }
-
-  data =
-    entity === 'node'
-      ? (data as NodeTypeFilterModel)
-      : (data as EdgeTypeFilterModel);
-
-  const entityTypeProperties = data.properties;
-
-  const handleOpenFilter = () => {
-    setFilterOpen(true);
-  };
-  const handleCloseFilter = () => {
-    setFilterOpen(false);
-  };
-
-  const handleAddEntity = () => {
-    setBoxShadow(
-      boxShadow === 'None' ? '0 0 0 0.2rem rgba(0,123,255,.5)' : 'None'
-    );
-    // trigger convert filteredQueryResult to GraphData in Graph.txs here
-    // const dataFilter = fetchDataFromService(
-    //   executeFilterQuery,
-    //   filterService,
-    //   filterQuery
-    // );
-    //
-    // // check if data is an JSX.Element -> is still loading or error.
-    // if (React.isValidElement(dataFilter)) {
-    //   return dataFilter;
-    // }
-    // setFilteredQueryResult(dataFilter as QueryResult);
-  };
-
-  return (
-    <div>
-      <Button
-        style={{ backgroundColor, boxShadow }}
-        variant="contained"
-        color="primary"
-        disableRipple
-        className={classes.root}
-      >
-        {name}
-      </Button>
-      <IconButton component="span">
-        <TuneIcon onClick={handleOpenFilter} />
-      </IconButton>
-      <IconButton component="span">
-        <AddIcon onClick={handleAddEntity} />
-      </IconButton>
-      <EntityFilterDialog
-        filterOpen={filterOpen}
-        handleCloseFilter={handleCloseFilter}
-        entityTypes={entityTypeProperties}
-        filterQuery={filterQuery}
-        setFilterQuery={setFilterQuery}
-      />
-    </div>
-  );
+  return data;
 };
 
 export default EntityFilterElement;
