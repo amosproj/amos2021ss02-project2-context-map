@@ -11,7 +11,14 @@ import {
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import EntityPropertySelect from './EntityPropertySelect';
 import { FilterModelEntry } from '../../../../shared/filter';
-import { FilterQuery } from '../../../../shared/queries';
+import {
+  FilterCondition,
+  FilterQuery,
+  MatchAllCondition,
+  MatchAnyCondition,
+  MatchPropertyCondition,
+  OfTypeCondition,
+} from '../../../../shared/queries';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,7 +48,6 @@ const EntityFilterDialog = (props: {
     filterOpen,
     handleCloseFilter,
     entityTypes,
-    filterQuery,
     setFilterQuery,
   } = props;
 
@@ -75,6 +81,31 @@ const EntityFilterDialog = (props: {
     console.log(filteredFilterModelEntries);
   };
 
+  const handleApplyFilter = () => {
+    // put filterQuery together
+    const inFilterConditions: FilterCondition[] = [];
+    filteredFilterModelEntries.forEach((entry) => {
+      const inInFilterConditions: FilterCondition[] = [];
+      entry.values.forEach((value) => {
+        inInFilterConditions.push(MatchPropertyCondition(entry.key, value));
+      });
+      inFilterConditions.push(
+        MatchAllCondition(
+          OfTypeCondition(entry.key),
+          MatchAnyCondition(...inInFilterConditions)
+        )
+      );
+    });
+
+    setFilterQuery({
+      filters: {
+        nodes: MatchAnyCondition(...inFilterConditions),
+        edges: MatchAnyCondition(...inFilterConditions),
+      },
+    });
+    handleCloseFilter();
+  };
+
   return (
     <div>
       <Dialog open={filterOpen} onClose={handleCloseFilter} scroll="paper">
@@ -86,7 +117,7 @@ const EntityFilterDialog = (props: {
               <Button onClick={handleCloseFilter} color="primary">
                 Cancel
               </Button>
-              <Button onClick={handleCloseFilter} color="primary">
+              <Button onClick={handleApplyFilter} color="primary">
                 Apply Filter
               </Button>
               <Button onClick={printEntries} color="primary">

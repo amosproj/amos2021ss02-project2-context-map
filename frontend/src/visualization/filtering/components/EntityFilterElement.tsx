@@ -85,8 +85,7 @@ const EntityFilterElement = (props: {
   const classes = useStyles();
 
   // the filterQuery from child-component Filter
-  const emptyFilterQuery: FilterQuery = {};
-  const [filterQuery, setFilterQuery] = useState(emptyFilterQuery);
+  const [filterQuery, setFilterQuery] = useState<FilterQuery>({});
 
   // Indicates if filter-dialog is opened.
   const [filterOpen, setFilterOpen] = React.useState(false);
@@ -106,6 +105,7 @@ const EntityFilterElement = (props: {
     filterService,
     name
   );
+
   // check if data is an JSX.Element -> is still loading or error.
   if (React.isValidElement(data)) {
     return data;
@@ -130,6 +130,17 @@ const EntityFilterElement = (props: {
       boxShadow === 'None' ? '0 0 0 0.2rem rgba(0,123,255,.5)' : 'None'
     );
     // trigger convert filteredQueryResult to GraphData in Graph.txs here
+    // const dataFilter = fetchDataFromService(
+    //   executeFilterQuery,
+    //   filterService,
+    //   filterQuery
+    // );
+    //
+    // // check if data is an JSX.Element -> is still loading or error.
+    // if (React.isValidElement(dataFilter)) {
+    //   return dataFilter;
+    // }
+    // setFilteredQueryResult(dataFilter as QueryResult);
   };
 
   return (
