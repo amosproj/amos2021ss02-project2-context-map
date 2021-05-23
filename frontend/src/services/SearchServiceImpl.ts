@@ -19,7 +19,7 @@ export default class SearchServiceImpl extends SearchService {
     searchString: string,
     cancellation?: CancellationToken
   ): Promise<SearchResult> {
-    const url = `/search/all?filter=${searchString}`;
+    const url = `/api/search/all?filter=${searchString}`;
 
     return this.http.get<SearchResult>(url, cancellation);
   }

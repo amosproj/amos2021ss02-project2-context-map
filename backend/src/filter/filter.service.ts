@@ -43,7 +43,7 @@ export class FilterService implements FilterServiceBase {
 
     const queryResult = { nodes, edges };
 
-    return consolidateQueryResult(queryResult);
+    return consolidateQueryResult(queryResult, true);
   }
 
   private async getNodes(
