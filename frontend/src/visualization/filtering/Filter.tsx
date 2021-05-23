@@ -22,7 +22,7 @@ import EntityFilterElement from './components/EntityFilterElement';
 import fetchDataFromService from '../shared-ops/fetchDataFromService';
 import entityColors from '../data/GraphData';
 import { SchemaService } from '../../services/schema';
-import { QueryResult } from '../../shared/queries';
+import { FilterQuery } from '../../shared/queries';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -90,8 +90,9 @@ function fetchEdgeTypes(
 }
 
 const Filter = (props: {
-  filteredQueryResult: QueryResult;
-  setFilteredQueryResult: React.Dispatch<React.SetStateAction<QueryResult>>;
+  filterQuery: FilterQuery;
+  setFilterQuery: React.Dispatch<React.SetStateAction<FilterQuery>>;
+  updateGraph: () => void;
 }): JSX.Element => {
   // hooks
   const classes = useStyles();
@@ -99,7 +100,7 @@ const Filter = (props: {
   const [tabIndex, setTabIndex] = React.useState(0);
   const [open, setOpen] = React.useState(false);
 
-  const { filteredQueryResult, setFilteredQueryResult } = props;
+  const { filterQuery, setFilterQuery, updateGraph } = props;
   const schemaService = useService(SchemaService, null);
 
   // a JSX.Element template used for rendering
@@ -114,8 +115,9 @@ const Filter = (props: {
           backgroundColor={color}
           name={name}
           entity={entity}
-          filteredQueryResult={filteredQueryResult}
-          setFilteredQueryResult={setFilteredQueryResult}
+          filterQuery={filterQuery}
+          setFilterQuery={setFilterQuery}
+          updateGraph={updateGraph}
         />
       </Box>
     </div>
