@@ -11,7 +11,7 @@ import Searchbar from '../../src/search/Searchbar';
 
 context('Searchbar', () => {
   // Global setup
-  const apiBaseUrl = 'http://localhost:8080';
+  const apiBaseUrl = 'http://localhost:8080/api';
   beforeEach(() => {
     mount(<Searchbar />);
   });

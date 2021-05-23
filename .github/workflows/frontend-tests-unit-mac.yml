@@ -1,5 +1,5 @@
 name: Frontend unit tests mac
-on: 
+on:
   push:
     branches:
       - main
@@ -18,9 +18,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install -g yarn
+
+      - name: Copy .env file
+        run: cp .env.example .env
+        working-directory: ${{ env.working-directory }}
+
       - name: Cypress run
         uses: cypress-io/github-action@v2
-        with: 
+        with:
           install-command: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
           command: yarn run cy:run:unit
           working-directory: ${{ env.working-directory }}

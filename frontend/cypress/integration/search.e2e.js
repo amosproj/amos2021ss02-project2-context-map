@@ -7,7 +7,7 @@ import {
 // TODO: Remove interception when real e2e tests are done
 context('Searchbar', () => {
   // Global setup
-  const apiBaseUrl = 'http://localhost:8080';
+  const apiBaseUrl = 'http://localhost:8080/api';
   beforeEach(() => {
     cy.visit('http://localhost:3000');
   });
