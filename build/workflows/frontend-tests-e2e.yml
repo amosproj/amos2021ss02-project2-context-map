@@ -1,0 +1,58 @@
+name: Frontend e2e tests
+on: [ push ]
+jobs:
+  e2e-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest, ubuntu-latest ]
+        node-version: [ 12.x, 14.x ]
+        browser: [ chrome, firefox ]
+        include:
+          - os: windows-latest
+            node-version: 12.x
+            browser: edge
+          - os: windows-latest
+            node-version: 14.x
+            browser: edge
+    env:
+      working-directory: ./frontend
+      cache-frontend: true
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - run: npm install -g yarn
+      - run: npm install -g wait-on
+      - name: npm install -g pm2 # used to start server in parallel
+        run: npm install -g pm2
+
+      # kmap.import-action.cache #
+
+      - name: Copy .env file
+        run: cp .env.example .env
+        working-directory: ${{ env.working-directory }}
+
+      - name: Increase file watches
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
+      - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
+        working-directory: ${{ env.working-directory }}
+
+      - name: Start Dev Server (detached)
+        run: pm2 start ./build/start-frontend-detached.js
+
+      - name: Wait on Dev Server
+        run: wait-on http://localhost:3000
+        timeout-minutes: 3
+
+      - name: Cypress run
+        run: yarn run cy:run:e2e --browser ${{ matrix.browser }} --headless
+        working-directory: ${{ env.working-directory }}
+
+      - name: Stop Dev Server
+        run: pm2 delete all

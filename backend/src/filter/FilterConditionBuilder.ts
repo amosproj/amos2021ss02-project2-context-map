@@ -38,7 +38,7 @@ export default class FilterConditionBuilder extends FilterConditionVisitor {
     if (this.entity === 'node') {
       this.resultCondition = `$${paramName} in labels(${this.name})`;
     } else {
-      this.resultCondition = `$${paramName} == type(${this.name})`;
+      this.resultCondition = `$${paramName} = type(${this.name})`;
     }
 
     this.queryParams[paramName] = type;
@@ -56,7 +56,7 @@ export default class FilterConditionBuilder extends FilterConditionVisitor {
       `${property}_value`
     );
 
-    this.resultCondition = `${this.name}.$${propertyParamName} == $${valueParamName}`;
+    this.resultCondition = `${this.name}.$${propertyParamName} = $${valueParamName}`;
 
     this.queryParams[propertyParamName] = property;
     this.queryParams[valueParamName] = value;

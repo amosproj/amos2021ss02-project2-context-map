@@ -1,7 +1,7 @@
 import { Edge } from '../entities/Edge';
 import { Node } from '../entities/Node';
-import { NodeType } from '../schema/NodeType';
-import { EdgeType } from '../schema/EdgeType';
+import { NodeTypeDescriptor } from '../schema/NodeTypeDescriptor';
+import { EdgeTypeDescriptor } from '../schema/EdgeTypeDescriptor';
 
 /**
  * Represents the result of a search request.
@@ -22,10 +22,10 @@ export interface ExpandedSearchResult {
   /**
    * NodeType (array of node type names) as result of the search operation
    */
-  nodeTypes: NodeType[];
+  nodeTypes: NodeTypeDescriptor[];
 
   /**
    * EdgeType (array of edge type names) as result of the search operation
    */
-  edgeTypes: EdgeType[];
+  edgeTypes: EdgeTypeDescriptor[];
 }
