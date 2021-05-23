@@ -38,6 +38,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const EntityFilterDialog = (props: {
   filterOpen: boolean;
   handleCloseFilter: () => void;
+  entity: 'node' | 'edge';
   entityTypes: FilterModelEntry[];
   filterQuery: FilterQuery;
   setFilterQuery: React.Dispatch<React.SetStateAction<FilterQuery>>;
@@ -48,6 +49,7 @@ const EntityFilterDialog = (props: {
     filterOpen,
     handleCloseFilter,
     entityTypes,
+    entity,
     filterQuery,
     setFilterQuery,
   } = props;
@@ -78,10 +80,6 @@ const EntityFilterDialog = (props: {
     );
   });
 
-  const printEntries = () => {
-    console.log(filteredFilterModelEntries);
-  };
-
   const handleApplyFilter = () => {
     // put filterQuery together
     const inFilterConditions: FilterCondition[] = [];
@@ -90,18 +88,13 @@ const EntityFilterDialog = (props: {
       entry.values.forEach((value) => {
         inInFilterConditions.push(MatchPropertyCondition(entry.key, value));
       });
-      inFilterConditions.push(
-        MatchAllCondition(
-          OfTypeCondition(entry.key),
-          MatchAnyCondition(...inInFilterConditions)
-        )
-      );
+      inFilterConditions.push(MatchAnyCondition(...inInFilterConditions));
     });
 
     setFilterQuery({
       filters: {
-        nodes: MatchAnyCondition(...inFilterConditions),
-        edges: MatchAnyCondition(...inFilterConditions),
+        nodes: MatchAllCondition(OfTypeCondition('Movie')), // MatchAnyCondition(...inFilterConditions),
+        edges: OfTypeCondition('None'),
       },
     });
     handleCloseFilter();
@@ -120,9 +113,6 @@ const EntityFilterDialog = (props: {
               </Button>
               <Button onClick={handleApplyFilter} color="primary">
                 Apply Filter
-              </Button>
-              <Button onClick={printEntries} color="primary">
-                Test
               </Button>
             </DialogActions>
           </FormControl>
