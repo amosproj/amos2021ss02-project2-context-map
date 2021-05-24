@@ -67,7 +67,7 @@ jobs:
       - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
         working-directory: ${{ env.working-directory }}
       - run: npx wait-on http://localhost:7474
-      - run: yarn run test
+      - run: yarn run test:cov
         working-directory: ${{ env.working-directory }}
         env:
           NEO4J_SCHEME: neo4j
