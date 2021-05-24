@@ -102,6 +102,7 @@ export default function convertSearchResultToSearchResultList(
             {findSearchStringInProperties(searchString, n)}
           </div>
         ),
+        href: `/data/node/${n.id}`,
       })),
     },
     {
@@ -115,6 +116,7 @@ export default function convertSearchResultToSearchResultList(
             &nbsp;{findSearchStringInProperties(searchString, n)}
           </div>
         ),
+        href: `/data/edge/${n.id}`,
       })),
     },
     {
@@ -123,6 +125,7 @@ export default function convertSearchResultToSearchResultList(
       elements: result.nodeTypes.map((n) => ({
         key: n.name,
         element: <NodeTypeComponent name={n.name} />,
+        href: `/data/node-type/${n.name}`,
       })),
     },
     {
@@ -131,6 +134,7 @@ export default function convertSearchResultToSearchResultList(
       elements: result.edgeTypes.map((n) => ({
         key: n.name,
         element: <EdgeTypeComponent type={n.name} />,
+        href: `/data/edge-type/${n.name}`,
       })),
     },
   ]
