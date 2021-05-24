@@ -36,21 +36,21 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const EntityFilterDialog = (props: {
+  name: string;
   filterOpen: boolean;
   handleCloseFilter: () => void;
   entity: 'node' | 'edge';
-  entityTypes: FilterModelEntry[];
-  filterQuery: FilterQuery;
+  filterModelEntries: FilterModelEntry[];
   setFilterQuery: React.Dispatch<React.SetStateAction<FilterQuery>>;
 }): JSX.Element => {
   const classes = useStyles();
 
   const {
+    name,
     filterOpen,
     handleCloseFilter,
-    entityTypes,
+    filterModelEntries,
     entity,
-    filterQuery,
     setFilterQuery,
   } = props;
 
@@ -59,7 +59,7 @@ const EntityFilterDialog = (props: {
   const setFilteredFilterModelEntries: React.Dispatch<
     React.SetStateAction<FilterModelEntry>
   >[] = [];
-  entityTypes.forEach((type) => {
+  filterModelEntries.forEach((type) => {
     const [filteredFilterModelEntry, setFilteredFilterModelEntry] =
       useState<FilterModelEntry>({
         key: type.key,
@@ -70,7 +70,7 @@ const EntityFilterDialog = (props: {
   });
 
   const entitySelects: unknown[] = [];
-  entityTypes.forEach((type, index) => {
+  filterModelEntries.forEach((type, index) => {
     entitySelects.push(
       <EntityPropertySelect
         entityType={type}
@@ -82,20 +82,30 @@ const EntityFilterDialog = (props: {
 
   const handleApplyFilter = () => {
     // put filterQuery together
-    const inFilterConditions: FilterCondition[] = [];
+    const anyFilterConditions: FilterCondition[] = [];
     filteredFilterModelEntries.forEach((entry) => {
-      const inInFilterConditions: FilterCondition[] = [];
+      const propertyFilterConditions: FilterCondition[] = [];
       entry.values.forEach((value) => {
-        inInFilterConditions.push(MatchPropertyCondition(entry.key, value));
+        propertyFilterConditions.push(MatchPropertyCondition(entry.key, value));
       });
-      inFilterConditions.push(MatchAnyCondition(...inInFilterConditions));
+      anyFilterConditions.push(MatchAnyCondition(...propertyFilterConditions));
     });
 
     setFilterQuery({
-      filters: {
-        nodes: MatchAllCondition(OfTypeCondition('Movie')), // MatchAnyCondition(...inFilterConditions),
-        edges: OfTypeCondition('None'),
-      },
+      filters:
+        entity === 'node'
+          ? {
+              nodes: MatchAllCondition(
+                OfTypeCondition(name),
+                MatchAnyCondition(...anyFilterConditions)
+              ),
+            }
+          : {
+              edges: MatchAllCondition(
+                OfTypeCondition(name),
+                MatchAnyCondition(...anyFilterConditions)
+              ),
+            },
     });
     handleCloseFilter();
   };
