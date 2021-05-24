@@ -12,7 +12,6 @@ import {
 import { Autorenew, Search } from '@material-ui/icons';
 import { BehaviorSubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { Link } from 'react-router-dom';
 import useService from '../dependency-injection/useService';
 import SearchService from '../services/searchService';
 import './SearchResultList.scss';
@@ -148,8 +147,8 @@ export default function Searchbar(): JSX.Element {
                               <ListItem
                                 key={element.key}
                                 button
-                                component={Link}
-                                to={element.href}
+                                component="a"
+                                href={element.href}
                               >
                                 {element.element}
                               </ListItem>
