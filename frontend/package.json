@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "react-scripts start",
+    "start:forTests": "react-scripts -r @cypress/instrument-cra start",
     "postinstall": "run-script-os",
     "postinstall:windows": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ..\\build\\frontend-prebuild.ps1",
     "postinstall:default": "../build/frontend-prebuild.sh",
@@ -21,9 +22,12 @@
     "cy:open:e2e": "cypress open",
     "cy:open:unit": "cypress open-ct",
     "cy:run:e2e": "cypress run",
-    "cy:run:unit": "cypress run-ct"
+    "cy:run:unit": "cypress run-ct",
+    "coverage:print": "nyc check-coverage",
+    "coverage:check": "nyc check-coverage"
   },
   "dependencies": {
+    "@cypress/code-coverage": "^3.9.5",
     "@cypress/react": "^5.4.0",
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
@@ -36,7 +40,7 @@
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
     "clsx": "^1.1.1",
-    "cypress": "^7.2.0",
+    "cypress": "^7.3.0",
     "inversify": "^5.1.1",
     "react": "^17.0.2",
     "react-async": "^10.0.1",
@@ -53,6 +57,7 @@
     "web-vitals": "^1.1.1"
   },
   "devDependencies": {
+    "@cypress/instrument-cra": "^1.4.0",
     "@cypress/webpack-dev-server": "^1.1.3",
     "@types/react-router-dom": "^5.1.7",
     "@types/react-select": "^4.0.15",

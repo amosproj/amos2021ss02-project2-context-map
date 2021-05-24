@@ -12,6 +12,8 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
+/* eslint-disable @typescript-eslint/no-var-requires,global-require -- for the inline require statements */
+
 /**
  * @type {Cypress.PluginConfig}
  */
@@ -21,9 +23,11 @@ module.exports = (on, config) => {
   // `config` is the resolved Cypress config
 
   if (config.testingType === 'component') {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires,global-require
     require('@cypress/react/plugins/react-scripts')(on, config);
   }
 
+  require('@cypress/code-coverage/task')(on, config);
+
+  /* eslint-enable */
   return config;
 };
