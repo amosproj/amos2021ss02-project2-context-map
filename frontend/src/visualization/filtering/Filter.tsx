@@ -65,10 +65,12 @@ function TabPanel(props: TabPanelProps) {
     </div>
   );
 }
+
 /**
- * A function that wraps the {@link getNodeTypes} call to the schema-service to be usable with react-async.
- * @param props - The props that contains our parameter in an untyped way.
- * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the nodeTypes.
+ * Fetches nodeTypes from the schemaService.
+ *
+ * @param schemaService - the schemaService the data is fetched from
+ * @param cancellation - the cancellation token
  */
 function fetchNodeTypes(
   schemaService: SchemaService,
@@ -78,9 +80,10 @@ function fetchNodeTypes(
 }
 
 /**
- * A function that wraps the {@link getEdgeTypes} call to the schema-service to be usable with react-async.
- * @param props - The props that contains our parameter in an untyped way.
- * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the edgeTypes.
+ * Fetches edgeTypes from the schemaService.
+ *
+ * @param schemaService - the schemaService the data is fetched from
+ * @param cancellation - the cancellation token
  */
 function fetchEdgeTypes(
   schemaService: SchemaService,
@@ -90,7 +93,6 @@ function fetchEdgeTypes(
 }
 
 const Filter = (props: {
-  filterQuery: FilterQuery;
   setFilterQuery: React.Dispatch<React.SetStateAction<FilterQuery>>;
   updateGraph: () => void;
 }): JSX.Element => {
@@ -100,7 +102,7 @@ const Filter = (props: {
   const [tabIndex, setTabIndex] = React.useState(0);
   const [open, setOpen] = React.useState(false);
 
-  const { filterQuery, setFilterQuery, updateGraph } = props;
+  const { setFilterQuery, updateGraph } = props;
   const schemaService = useService(SchemaService, null);
 
   // a JSX.Element template used for rendering
@@ -115,7 +117,6 @@ const Filter = (props: {
           backgroundColor={color}
           name={name}
           entity={entity}
-          filterQuery={filterQuery}
           setFilterQuery={setFilterQuery}
           updateGraph={updateGraph}
         />

@@ -12,7 +12,7 @@ import {
 import { CancellationToken } from '../../../utils/CancellationToken';
 import useService from '../../../dependency-injection/useService';
 import { FilterService } from '../../../services/filter';
-import { FilterQuery, QueryResult } from '../../../shared/queries';
+import { FilterQuery } from '../../../shared/queries';
 import fetchDataFromService from '../../shared-ops/fetchDataFromService';
 
 type EntityTypeFilterModel = NodeTypeFilterModel | EdgeTypeFilterModel;
@@ -35,9 +35,12 @@ const useStyles = makeStyles(() =>
 );
 
 /**
- * A function that wraps the {@link getNodeTypeFilterModel} call to the filter-service to be usable with react-async.
- * @param props - The props that contains our parameter in an untyped way.
- * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the nodeTypeFilterModel.
+ * fetches a nodeTypeFilterModel with the filterService
+ *
+ * @param filterService - the filterService the data is fetched from
+ * @param nodeName - the name of the node of the nodeTypeFilterModel
+ * @param cancellation - the cancellation token
+ * @returns the nodeTypeFilterModel
  */
 function fetchNodeTypeFilterModel(
   filterService: FilterService,
@@ -48,9 +51,12 @@ function fetchNodeTypeFilterModel(
 }
 
 /**
- * A function that wraps the {@link getEdgeTypeFilterModel} call to the filter-service to be usable with react-async.
- * @param props - The props that contains our parameter in an untyped way.
- * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the edgeTypeFilterModel.
+ * fetches a edgeTypeFilterModel with the filterService
+ *
+ * @param filterService - the filterService the data is fetched from
+ * @param edgeName - the name of the edge of the edgeTypeFilterModel
+ * @param cancellation - the cancellation token
+ * @returns the edgeTypeFilterModel
  */
 function fetchEdgeTypeFilterModel(
   filterService: FilterService,
@@ -64,7 +70,6 @@ const EntityFilterElement = (props: {
   backgroundColor: string;
   name: string;
   entity: 'node' | 'edge';
-  filterQuery: FilterQuery;
   setFilterQuery: React.Dispatch<React.SetStateAction<FilterQuery>>;
   updateGraph: () => void;
 }): JSX.Element => {
@@ -74,14 +79,7 @@ const EntityFilterElement = (props: {
   const [filterOpen, setFilterOpen] = React.useState(false);
   const [boxShadow, setBoxShadow] = useState('None');
 
-  const {
-    backgroundColor,
-    name,
-    entity,
-    filterQuery,
-    setFilterQuery,
-    updateGraph,
-  } = props;
+  const { backgroundColor, name, entity, setFilterQuery, updateGraph } = props;
 
   const filterService = useService(FilterService, null);
 
@@ -100,7 +98,7 @@ const EntityFilterElement = (props: {
       updateGraph();
     };
 
-    const entityTypeProperties = model.properties;
+    const filterModelEntries = model.properties;
 
     return (
       <div>
@@ -120,25 +118,23 @@ const EntityFilterElement = (props: {
           <AddIcon onClick={handleAddEntity} />
         </IconButton>
         <EntityFilterDialog
+          name={name}
           filterOpen={filterOpen}
           handleCloseFilter={handleCloseFilter}
           entity={entity}
-          entityTypes={entityTypeProperties}
-          filterQuery={filterQuery}
+          filterModelEntries={filterModelEntries}
           setFilterQuery={setFilterQuery}
         />
       </div>
     );
   }
 
-  const data = fetchDataFromService(
+  return fetchDataFromService(
     entity === 'node' ? fetchNodeTypeFilterModel : fetchEdgeTypeFilterModel,
     renderContent,
     filterService,
     name
   );
-
-  return data;
 };
 
 export default EntityFilterElement;

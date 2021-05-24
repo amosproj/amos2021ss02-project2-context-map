@@ -6,7 +6,6 @@ import useService from '../dependency-injection/useService';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
 import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
 import { FilterQuery, QueryResult } from '../shared/queries';
-import QueryService from '../services/QueryService';
 import { CancellationToken } from '../utils/CancellationToken';
 import { useSize } from '../utils/useSize';
 import Filter from './filtering/Filter';
@@ -98,24 +97,11 @@ function buildOptions(width: number, height: number) {
 }
 
 /**
- * A function that wraps the call to the query-service to be usable with react-async.
- * @param props The props that contains our paramter in an untyped way.
- * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the query result.
- */
-function executeQuery(
-  queryService: QueryService,
-  cancellation: CancellationToken
-): Promise<QueryResult> {
-  return queryService.queryAll(
-    { limits: { nodes: 200, edges: undefined } },
-    cancellation
-  );
-}
-
-/**
- * A function that wraps the call to the filter-service to be usable with react-async.
- * @param props The props that contains our parameter in an untyped way.
- * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the query result.
+ * Fetches a filtered QueryResult from the filterService.
+ *
+ * @param filterService - the filterService the data is fetched from
+ * @param filterQuery - the filterQuery that is applied for filtering
+ * @param cancellation - the cancellation token
  */
 function executeFilterQuery(
   filterService: FilterService,
@@ -128,7 +114,7 @@ function executeFilterQuery(
 function Graph(): JSX.Element {
   const classes = useStyles();
 
-  // the filtered QueryResult from child-component EntityFilterElement
+  // the filtered QueryResult from child-component EntityFilterDialog
   const [filterQuery, setFilterQuery] = useState<FilterQuery>({});
 
   // A React ref to the container that is used to measure the available space for the graph.
@@ -157,11 +143,7 @@ function Graph(): JSX.Element {
             <VisGraph graph={graphData} options={options} />
           </div>
           <div className={classes.filter}>
-            <Filter
-              filterQuery={filterQuery}
-              setFilterQuery={setFilterQuery}
-              updateGraph={update}
-            />
+            <Filter setFilterQuery={setFilterQuery} updateGraph={update} />
           </div>
         </div>
       </>
