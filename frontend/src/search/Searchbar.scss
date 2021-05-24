@@ -28,5 +28,9 @@
         background-color: white;
       }
     }
+
+    .SubList * {
+      cursor: pointer;
+    }
   }
 }
