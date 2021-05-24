@@ -7,6 +7,8 @@ import Graph from '../visualization/Graph';
 import Schema from '../visualization/Schema';
 import Visualization from '../visualization/Visualization';
 import RouteDefinition from './RouteDefinition';
+import { LoadingBoundary } from '../utils/loading';
+import { LoadingBoundaryObservables } from '../utils/loading/observables';
 
 const routes: Record<string, RouteDefinition> = {
   Home: {
@@ -35,12 +37,20 @@ const routes: Record<string, RouteDefinition> = {
   Exploration: {
     path: '/exploration',
     label: 'Exploration',
-    content: () => <Exploration />,
+    content: () => (
+      <LoadingBoundary>
+        <Exploration />
+      </LoadingBoundary>
+    ),
   },
   Data: {
     path: '/data',
     label: 'Data',
-    content: () => <Data />,
+    content: () => (
+      <LoadingBoundaryObservables>
+        <Data />
+      </LoadingBoundaryObservables>
+    ),
   },
   Archetypes: {
     path: '/archetypes',
