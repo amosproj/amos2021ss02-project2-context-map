@@ -23,7 +23,7 @@
     "cy:open:unit": "cypress open-ct",
     "cy:run:e2e": "cypress run",
     "cy:run:unit": "cypress run-ct",
-    "coverage:print": "nyc check-coverage",
+    "coverage:print": "nyc report",
     "coverage:check": "nyc check-coverage"
   },
   "dependencies": {

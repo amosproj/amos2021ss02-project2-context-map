@@ -2,7 +2,8 @@
 - name: Get cypress version from yarn.lock
   if: ${{ env.cache-frontend == 'true' }}
   id: cypress-version-frontend
-  run: echo "::set-output name=version::$(node .\build\getCypressVersion)"
+  run: echo "::set-output name=version::$(node getCypressVersion)"
+  working-directory: ./build
 
 - name: Setup cypress cache (windows)
   id: cypress-cache-windows
