@@ -1,5 +1,7 @@
 {
-  "all": true,
+  "include": ["src/**"],
+  "exclude": ["src/@types/**", "src/react-app-env.d.ts", "src/reportWebVitals.ts"],
+  "require": ["ts-node/register/transpile-only"],
   "branches": 80,
   "lines": 0,
   "functions": 0,

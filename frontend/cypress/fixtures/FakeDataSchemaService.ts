@@ -1,15 +1,15 @@
 import { injectable } from 'inversify';
 import 'reflect-metadata';
-import { EdgeType } from '../../shared/schema/EdgeType';
-import { EntityType } from '../../shared/schema/EntityType';
-import { EntityTypeProperty } from '../../shared/schema/EntityTypeProperty';
-import { NodeType } from '../../shared/schema/NodeType';
-import { CancellationToken } from '../../utils/CancellationToken';
-import delay from '../../utils/delay';
-import nouns from '../../utils/nouns';
-import withCancellation from '../../utils/withCancellation';
-import getRandomInteger from '../../utils/getRandomInteger';
-import SchemaService from './SchemaService';
+import { EdgeType } from '../../src/shared/schema/EdgeType';
+import { EntityType } from '../../src/shared/schema/EntityType';
+import { EntityTypeProperty } from '../../src/shared/schema/EntityTypeProperty';
+import { NodeType } from '../../src/shared/schema/NodeType';
+import { CancellationToken } from '../../src/utils/CancellationToken';
+import delay from '../../src/utils/delay';
+import nouns from '../../src/utils/nouns';
+import withCancellation from '../../src/utils/withCancellation';
+import getRandomInteger from '../../src/utils/getRandomInteger';
+import SchemaService from '../../src/services/schema/SchemaService';
 
 // TODO: What else is possible?
 export const possiblePropertyTypes: string[] = [

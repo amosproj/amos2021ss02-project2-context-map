@@ -1,14 +1,14 @@
 import { injectable } from 'inversify';
 import 'reflect-metadata';
-import { QueryBase, QueryResult } from '../shared/queries';
-import { Node } from '../shared/entities/Node';
-import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
-import { Edge } from '../shared/entities/Edge';
-import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
-import delay from '../utils/delay';
-import QueryService from './QueryService';
-import { CancellationToken } from '../utils/CancellationToken';
-import getRandomInteger from '../utils/getRandomInteger';
+import { QueryBase, QueryResult } from '../../src/shared/queries';
+import { Node } from '../../src/shared/entities/Node';
+import { NodeDescriptor } from '../../src/shared/entities/NodeDescriptor';
+import { Edge } from '../../src/shared/entities/Edge';
+import { EdgeDescriptor } from '../../src/shared/entities/EdgeDescriptor';
+import delay from '../../src/utils/delay';
+import QueryService from '../../src/services/QueryService';
+import { CancellationToken } from '../../src/utils/CancellationToken';
+import getRandomInteger from '../../src/utils/getRandomInteger';
 
 /**
  * A fake implementation that delivers random data.
@@ -57,17 +57,11 @@ export default class FakeDataQueryService extends QueryService {
     return { nodes, edges };
   }
 
-  public getEdgesById(
-    idsOrDescriptors: number[] | EdgeDescriptor[],
-    cancellation?: CancellationToken
-  ): Promise<Edge[]> {
+  public getEdgesById(): Promise<Edge[]> {
     return Promise.resolve<Edge[]>([]);
   }
 
-  public getNodesById(
-    idsOrDescriptors: number[] | NodeDescriptor[],
-    cancellation?: CancellationToken
-  ): Promise<Node[]> {
+  public getNodesById(): Promise<Node[]> {
     return Promise.resolve<Node[]>([]);
   }
 }
