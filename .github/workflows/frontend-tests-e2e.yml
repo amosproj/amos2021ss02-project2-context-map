@@ -38,7 +38,7 @@ jobs:
         id: cypress-version-frontend
         run: echo "::set-output name=version::$(node getCypressVersion)"
         working-directory: ./build
-      
+
       - name: Setup cypress cache (windows)
         id: cypress-cache-windows
         if: ${{ env.cache-frontend == 'true' && matrix.os == 'windows-latest' }}
@@ -53,7 +53,7 @@ jobs:
         with:
           path: ~/.cache/Cypress/${{ steps.cypress-version-frontend.outputs.version }}
           key: cypress-cache-ubuntu-${{ matrix.node-version }}-${{ steps.cypress-version-frontend.outputs.version }}
-      
+
       # FE node_modules
       - name: Cache node_modules (frontend)
         if: ${{ env.cache-frontend == 'true' && (steps.cypress-cache-ubuntu.outputs.cache-hit == 'true' || steps.cypress-cache-windows.outputs.cache-hit == 'true') }}
@@ -61,7 +61,7 @@ jobs:
         with:
           path: frontend/node_modules
           key: ${{ matrix.os }}-${{ matrix.node-version }}-yarn-frontend-${{ hashFiles('frontend/yarn.lock') }}
-      
+
       # BE node_modules
       - name: Cache node_modules (backend)
         if: ${{ env.cache-backend == 'true' }}
@@ -69,24 +69,49 @@ jobs:
         with:
           path: backend/node_modules
           key: ${{ matrix.os }}-${{ matrix.node-version }}-yarn-backend-${{ hashFiles('frontend/yarn.lock') }}
-      
 
-      - name: Copy .env file
+
+      - name: Copy .env file (frontend)
         run: cp .env.example .env
         working-directory: ${{ env.working-directory }}
+      - name: Copy .env file (backend)
+        run: cp .env.test .env
+        working-directory: ${{ ./backend }}
 
       - name: Increase file watches
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 
+      # kmap.import-action.start-db #
+      - run: |
+          docker run -d -p 7474:7474 -p 7687:7687 \
+          	-v ${GITHUB_WORKSPACE}/backend/docker/mount:/mnt/amos \
+          	--env NEO4J_ACCEPT_LICENSE_AGREEMENT=yes \
+          	--env DB_PASSWORD=amos \
+          	--env DB_PATH=/mnt/amos/dumps/testing-dump.dump \
+          	--name neo4j-DB neo4j:enterprise \
+          	/mnt/amos/load-dump.sh
+
+
       - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
         working-directory: ${{ env.working-directory }}
+      - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
+        working-directory: ./backend
 
-      - name: Start Dev Server (detached)
+      - name: Wait on DB Server
+        run: wait-on tcp:7687
+        timeout-minutes: 3
+
+      - name: Start Frontend Dev Server (detached)
         run: pm2 start ./build/start-frontend-detached.js
+      - name: Start Backend Dev Server (detached)
+        run: pm2 start ./build/start-backend-detached.js
 
-      - name: Wait on Dev Server
-        run: wait-on http://localhost:3000
+      - name: Wait on Frontend Dev Server
+        run: wait-on tcp:3000
+        timeout-minutes: 3
+      - name: Wait on Backend Dev Server
+        run: wait-on tcp:8080
         timeout-minutes: 3
 
       - name: Cypress run
