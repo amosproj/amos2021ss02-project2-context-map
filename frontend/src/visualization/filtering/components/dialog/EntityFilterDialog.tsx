@@ -46,25 +46,23 @@ const EntityFilterDialog = (props: {
   const { filterOpen, handleCloseFilter, filterModelEntries, setFilterQuery } =
     props;
 
-  const [selectedEntries, setSelectedEntries] =
-    useArrayState<FilterPropertyModel>(
-      filterModelEntries.map(
-        (entry) => ({ ...entry, selectedValues: null } as FilterPropertyModel)
-      )
-    );
+  const [properties, setProperties] = useArrayState<FilterPropertyModel>(
+    filterModelEntries.map(
+      (entry) => ({ ...entry, selectedValues: null } as FilterPropertyModel)
+    )
+  );
 
-  const entitySelects = filterModelEntries.map((type, index) => (
+  const entitySelects = properties.map((property, index) => (
     <EntityPropertySelect
-      entityType={type}
-      filterModelEntry={selectedEntries[index]}
-      setFilterModelEntry={setSelectedEntries[index]}
+      property={property}
+      setProperty={setProperties[index]}
     />
   ));
 
   const handleApplyFilter = () => {
     const filterConditions: FilterCondition[] = [];
 
-    for (const entry of selectedEntries) {
+    for (const entry of properties) {
       // There is a filter specified for the property
       if (entry.selectedValues !== null && entry.selectedValues.length > 0) {
         // If only a single value is specified in the filter, add this directly
