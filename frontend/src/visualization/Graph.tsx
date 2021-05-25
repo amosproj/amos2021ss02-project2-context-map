@@ -2,10 +2,14 @@ import React from 'react';
 import VisGraph, { GraphData } from 'react-graph-vis';
 import * as vis from 'vis-network';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { uuid } from 'uuidv4';
 import useService from '../dependency-injection/useService';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
-import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
-import { FilterQuery, QueryResult } from '../shared/queries';
+import {
+  FilterQuery,
+  NodeResultDescriptor,
+  QueryResult,
+} from '../shared/queries';
 import { CancellationToken } from '../utils/CancellationToken';
 import { useSize } from '../utils/useSize';
 import Filter from './filtering/Filter';
@@ -45,15 +49,21 @@ const useStyles = makeStyles(() =>
   })
 );
 
-function convertNode(node: NodeDescriptor): vis.Node {
-  return {
+function convertNode(node: NodeResultDescriptor): vis.Node {
+  const result: vis.Node = {
     id: node.id,
     label: node.id.toString(),
     // Advanced stuff, like styling nodes with different types differently...
   };
+
+  if (node.subsidiary) {
+    result.color = 'yellow';
+  }
+
+  return result;
 }
 
-function convertNodes(nodes: NodeDescriptor[]): vis.Node[] {
+function convertNodes(nodes: NodeResultDescriptor[]): vis.Node[] {
   return nodes.map((node) => convertNode(node));
 }
 
@@ -150,7 +160,7 @@ function Graph(): JSX.Element {
     return (
       <>
         <div className={classes.graphContainer}>
-          <VisGraph graph={graphData} options={options} />
+          <VisGraph graph={graphData} options={options} key={uuid()} />
         </div>
       </>
     );
