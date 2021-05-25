@@ -55,7 +55,7 @@ context('Filter', () => {
       cy.contains('Keanu Reeves').click();
       cy.contains('Carrie-Anne Moss').click();
       cy.contains('Lana Wachowski').click();
-      // eslint-disable-next-line
+      // eslint-disable-next-line cypress/no-force
       cy.get('.ApplyFilter').focus().click({ force: true });
     });
 
@@ -70,7 +70,7 @@ context('Filter', () => {
       cy.contains('Keanu Reeves').click();
       cy.contains('Carrie-Anne Moss').click();
       cy.contains('Lana Wachowski').click();
-      // eslint-disable-next-line
+      // eslint-disable-next-line cypress/no-force
       cy.get('.ApplyFilter').focus().click({ force: true });
 
       cy.get('.AddButton:first').click();
@@ -112,7 +112,7 @@ context('Filter', () => {
 
       // Assert
       cy.contains('Error: No string').click();
-      // eslint-disable-next-line
+      // eslint-disable-next-line cypress/no-force
       cy.get('.ApplyFilter').focus().click({ force: true });
     });
 
@@ -126,7 +126,7 @@ context('Filter', () => {
 
       // Assert
       cy.contains('Error: No string').click();
-      // eslint-disable-next-line
+      // eslint-disable-next-line cypress/no-force
       cy.get('.ApplyFilter').focus().click({ force: true });
 
       cy.get('.AddButton').eq(2).click();

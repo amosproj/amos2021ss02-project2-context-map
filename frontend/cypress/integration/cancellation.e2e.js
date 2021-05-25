@@ -10,6 +10,7 @@ context('Filter', () => {
 
     cy.visit('http://localhost:3000/visualization/graph');
 
+    // eslint-disable-next-line cypress/no-force
     cy.contains('Cancel')
       .click({ force: true })
       .then(() => {
