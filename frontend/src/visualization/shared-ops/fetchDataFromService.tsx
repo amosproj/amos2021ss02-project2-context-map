@@ -2,7 +2,7 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import {
   CancellationToken,
@@ -42,15 +42,15 @@ export interface FetchDataOptions<TArgs extends unknown[], TData> {
 }
 
 /**
- * Fetches data from service using {@link useAsync} with {@link promiseFn} executeQuery.
- * If the screen is still loading a {@link JSX.Element}, showing a loading screen, is returned.
- * if an error occurs a {@link JSX.Element}, showing an error screen, is returned.
- * If the data to be fetched is undefined a {@link JSX.Element}, showing an error message, is returned.
+ * Fetches data asynchronously and displays them with the specified render function.
+ * While the screen is loading a {@link JSX.Element}, showing a loading screen, is returned.
+ * When an error occurs a {@link JSX.Element}, showing an error screen, is returned.
+ * When the data to be fetched is undefined a {@link JSX.Element}, showing an error message, is returned.
  *
- * @param queryFn - the query the service executes
- * @param service - the service that executes the query
- * @param arg - optional, additional argument given to {@link useAsync}
- * @returns if one of the above cases occured, the corresponding {@link JSX.Element}, otherwise the data to be fetched
+ * @param queryFn - The function that executed the query.
+ * @param content - The function that renders the fetched data to a view described via a {@link JSX.Element}.
+ * @param args - Arguments that are passed to {@link queryFn} when it is invoked.
+ * @returns A view of the current state of the loading operation described via a {@link JSX.Element}.
  */
 function fetchDataFromService<TArgs extends unknown[], TData>(
   queryFn: QueryFunction<TArgs, TData>,
@@ -58,6 +58,17 @@ function fetchDataFromService<TArgs extends unknown[], TData>(
   ...args: TArgs
 ): JSX.Element;
 
+/**
+ * Fetches data asynchronously and displays them with the specified render function.
+ * While the screen is loading a {@link JSX.Element}, showing a loading screen, is returned.
+ * When an error occurs a {@link JSX.Element}, showing an error screen, is returned.
+ * When the data to be fetched is undefined a {@link JSX.Element}, showing an error message, is returned.
+ *
+ * @param options - An instance of {@link FetchDataOptions<TArgs, TData>} that contain the options of the query operation.
+ * @param content - The function that renders the fetched data to a view described via a {@link JSX.Element}.
+ * @param args - Arguments that are passed to {@link queryFn} when it is invoked.
+ * @returns A view of the current state of the loading operation described via a {@link JSX.Element}.
+ */
 function fetchDataFromService<TArgs extends unknown[], TData>(
   options: FetchDataOptions<TArgs, TData>,
   content: RenderFunction<TData>,
