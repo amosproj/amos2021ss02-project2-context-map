@@ -222,7 +222,7 @@ const Filter = (props: {
   };
 
   return (
-    <div>
+    <div className="Filter">
       <AppBar color="default" className={classes.appBar}>
         <IconButton color="inherit" onClick={handleDrawerOpen}>
           <ChevronLeftIcon />
@@ -230,12 +230,8 @@ const Filter = (props: {
       </AppBar>
       <Drawer variant="persistent" anchor="right" open={open}>
         <div className={classes.drawerHeader}>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'rtl' ? (
-              <ChevronLeftIcon />
-            ) : (
-              <ChevronRightIcon />
-            )}
+          <IconButton onClick={handleDrawerClose} className="closeFilter">
+            <ChevronRightIcon />
           </IconButton>
         </div>
         <Divider />
@@ -246,8 +242,8 @@ const Filter = (props: {
             indicatorColor="primary"
             textColor="primary"
           >
-            <Tab label="Node Types" />
-            <Tab label="Edge Types" />
+            <Tab label="Node Types" className="NodeTypes" />
+            <Tab label="Edge Types" className="EdgeTypes" />
           </Tabs>
         </AppBar>
         <List style={{ maxHeight: '94%', width: 320, overflow: 'auto' }}>

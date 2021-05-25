@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { injectable } from 'inversify';
 import 'reflect-metadata';
 import { QueryBase, QueryResult } from '../shared/queries';

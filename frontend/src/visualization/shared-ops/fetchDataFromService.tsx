@@ -207,10 +207,12 @@ function fetchDataFromService<TArgs extends unknown[], TData>(
       );
     }
 
+    /* istanbul ignore if */
     if (error instanceof HttpError && error.status === 404) {
       return <ErrorComponent type={ErrorType.NotFoundError} jsError={error} />;
     }
 
+    /* istanbul ignore if */
     if (error instanceof NetworkError) {
       return <ErrorComponent type={ErrorType.NetworkError} jsError={error} />;
     }
@@ -219,6 +221,7 @@ function fetchDataFromService<TArgs extends unknown[], TData>(
   }
 
   // Display an error message if something went wrong. This should not happen normally.
+  /* istanbul ignore if */
   if (!data) {
     return <ErrorComponent />;
   }

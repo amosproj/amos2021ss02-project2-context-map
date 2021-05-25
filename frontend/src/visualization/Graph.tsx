@@ -42,7 +42,7 @@ const useStyles = makeStyles(() =>
       overflowY: 'hidden',
       overflowX: 'hidden',
     },
-    filter: {
+    Filter: {
       // high zIndex so content is in the foreground
       zIndex: 1500,
     },
@@ -193,7 +193,7 @@ function Graph(): JSX.Element {
       />
       <div className={classes.graphPage}>
         {graphView}
-        <div className={classes.filter}>
+        <div className={classes.Filter}>
           <Filter executeQuery={executeQuery} />
         </div>
       </div>

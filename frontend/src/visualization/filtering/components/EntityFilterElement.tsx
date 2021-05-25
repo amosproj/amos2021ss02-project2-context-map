@@ -150,10 +150,10 @@ const EntityFilterElement = (props: {
         >
           {name}
         </Button>
-        <IconButton component="span">
+        <IconButton component="span" className="FilterButton">
           <TuneIcon onClick={handleOpenFilter} />
         </IconButton>
-        <IconButton component="span">
+        <IconButton component="span" className="AddButton">
           <AddIcon onClick={handleAddEntity} />
         </IconButton>
         <EntityFilterDialog

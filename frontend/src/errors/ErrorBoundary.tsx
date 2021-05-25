@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import React, { ErrorInfo, ReactNode } from 'react';
 import ErrorComponent from './ErrorComponent';
 
