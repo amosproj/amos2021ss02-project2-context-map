@@ -108,7 +108,7 @@ jobs:
         run: pm2 start ./build/start-backend-detached.js
 
       - name: Wait on Frontend Dev Server
-        run: wait-on tcp:3000
+        run: wait-on http://localhost:3000
         timeout-minutes: 3
       - name: Wait on Backend Dev Server
         run: wait-on tcp:8080
