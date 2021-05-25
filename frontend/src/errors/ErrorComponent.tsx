@@ -1,16 +1,18 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
+import CancellationError from '../utils/CancellationError';
+import { HttpError, NetworkError } from '../services/http';
 
 /**
  * Defines a set of known Errors plus a generic one.
  */
 // eslint-disable-next-line no-shadow
 export enum ErrorType {
-  NotFoundError = 'NotFoundError',
-  CancellationError = 'CancellationError',
-  NetworkError = 'NetworkError',
-  GenericError = 'GenericError',
+  NotFound = 'NotFoundError',
+  Cancellation = 'CancellationError',
+  Network = 'NetworkError',
+  Generic = 'GenericError',
 }
 
 const ErrorComponentData = {
@@ -63,7 +65,19 @@ function ErrorComponent(props: ErrorComponentProps): JSX.Element {
 
   // If a JS Error occurred
   if (jsError !== undefined) {
-    const { imgSrc } = ErrorComponentData[ErrorType.GenericError];
+    if (jsError instanceof CancellationError) {
+      return <ErrorComponent type={ErrorType.Cancellation} />;
+    }
+
+    if (jsError instanceof HttpError && jsError.status === 404) {
+      return <ErrorComponent type={ErrorType.NotFound} />;
+    }
+
+    if (jsError instanceof NetworkError) {
+      return <ErrorComponent type={ErrorType.Network} />;
+    }
+
+    const { imgSrc } = ErrorComponentData[ErrorType.Generic];
     return (
       <Box className={classes.root}>
         <img src={imgSrc} className={classes.img} alt="" />
@@ -74,7 +88,7 @@ function ErrorComponent(props: ErrorComponentProps): JSX.Element {
   }
 
   // If no error type specified
-  if (type === undefined) type = ErrorType.GenericError;
+  if (type === undefined) type = ErrorType.Generic;
   const { imgSrc, title, text } = ErrorComponentData[type];
   return (
     <Box className={classes.root}>
@@ -86,7 +100,7 @@ function ErrorComponent(props: ErrorComponentProps): JSX.Element {
 }
 
 ErrorComponent.defaultProps = {
-  type: ErrorType.GenericError,
+  type: ErrorType.Generic,
   jsError: undefined,
 };
 
