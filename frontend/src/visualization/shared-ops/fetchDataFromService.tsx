@@ -30,14 +30,32 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+/**
+ * A function that describe the render operation of fetched data to a view described via a {@link JSX.Element}.
+ * The function receives the fetched data. And optional a function that can be invoked to update the data.
+ */
 type RenderFunction<T> = (t: T, update: () => void) => JSX.Element;
 
+/**
+ * A function that asynchronously performs the query operation and returns a promise describing the asynchronous operation.
+ */
 type QueryFunction<TArgs extends unknown[], TResult> = (
   ...args: [...TArgs, CancellationToken]
 ) => Promise<TResult>;
 
+/**
+ * Describes the options of a data fetch operation.
+ */
 export interface FetchDataOptions<TArgs extends unknown[], TData> {
+  /**
+   * The query function used to fetch the data asynchronously.
+   */
   queryFn: QueryFunction<TArgs, TData>;
+
+  /**
+   * The default value of the data that will be rendered when no data is fetched (yet)
+   * OR undefined if no default data shall be rendered.
+   */
   defaultData?: TData;
 }
 
