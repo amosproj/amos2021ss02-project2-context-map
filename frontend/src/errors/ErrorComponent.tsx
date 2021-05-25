@@ -61,7 +61,7 @@ function ErrorComponent(props: ErrorComponentProps): JSX.Element {
   const { jsError } = props;
   const classes = useStyles();
 
-  // If a JS Error occured
+  // If a JS Error occurred
   if (jsError !== undefined) {
     const { imgSrc } = ErrorComponentData[ErrorType.GenericError];
     return (

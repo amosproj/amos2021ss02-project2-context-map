@@ -1,4 +1,3 @@
-import { AsyncProps } from 'react-async';
 import {
   AppBar,
   Box,
@@ -20,7 +19,7 @@ import { NodeType } from '../../shared/schema/NodeType';
 import { EdgeType } from '../../shared/schema/EdgeType';
 
 import EntityFilterElement from './components/EntityFilterElement';
-import fetchDataFromService from '../shared-ops/FetchData';
+import fetchDataFromService from '../shared-ops/fetchDataFromService';
 import entityColors from '../data/GraphData';
 import { SchemaService } from '../../services/schema';
 
@@ -70,9 +69,10 @@ function TabPanel(props: TabPanelProps) {
  * @param props - The props that contains our parameter in an untyped way.
  * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the nodeTypes.
  */
-function fetchNodeTypes(props: AsyncProps<NodeType[]>): Promise<NodeType[]> {
-  const schemaService = props.service as SchemaService;
-  const cancellation = props.cancellation as CancellationToken;
+function fetchNodeTypes(
+  schemaService: SchemaService,
+  cancellation: CancellationToken
+): Promise<NodeType[]> {
   return schemaService.getNodeTypes(cancellation);
 }
 
@@ -81,9 +81,10 @@ function fetchNodeTypes(props: AsyncProps<NodeType[]>): Promise<NodeType[]> {
  * @param props - The props that contains our parameter in an untyped way.
  * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the edgeTypes.
  */
-function fetchEdgeTypes(props: AsyncProps<EdgeType[]>): Promise<NodeType[]> {
-  const schemaService = props.service as SchemaService;
-  const cancellation = props.cancellation as CancellationToken;
+function fetchEdgeTypes(
+  schemaService: SchemaService,
+  cancellation: CancellationToken
+): Promise<NodeType[]> {
   return schemaService.getEdgeTypes(cancellation);
 }
 
@@ -93,45 +94,6 @@ const Filter = (): JSX.Element => {
   const [tabIndex, setTabIndex] = React.useState(0);
   const [open, setOpen] = React.useState(false);
   const schemaService = useService(SchemaService, null);
-
-  let dataNodeTypes = fetchDataFromService(fetchNodeTypes, schemaService);
-  let dataEdgeTypes = fetchDataFromService(fetchEdgeTypes, schemaService);
-
-  // check if data is an JSX.Element -> is still loading or error.
-  if (React.isValidElement(dataNodeTypes)) {
-    return dataNodeTypes;
-  }
-  if (React.isValidElement(dataEdgeTypes)) {
-    return dataEdgeTypes;
-  }
-
-  // collect entityType names and colors.
-  dataNodeTypes = dataNodeTypes as NodeType[];
-  dataEdgeTypes = dataEdgeTypes as EdgeType[];
-
-  const nodeColorsAndTypes: {
-    color: string;
-    name: string;
-  }[] = [];
-
-  for (let i = 0; i < dataNodeTypes.length; i += 1) {
-    nodeColorsAndTypes.push({
-      color: entityColors[i % entityColors.length],
-      name: dataNodeTypes[i].name,
-    });
-  }
-
-  const edgeColorsAndTypes: {
-    color: string;
-    name: string;
-  }[] = [];
-
-  for (let i = 0; i < dataEdgeTypes.length; i += 1) {
-    edgeColorsAndTypes.push({
-      color: '#a9a9a9',
-      name: dataEdgeTypes[i].name,
-    });
-  }
 
   // a JSX.Element template used for rendering
   const entityTemplate = (
@@ -150,21 +112,39 @@ const Filter = (): JSX.Element => {
     </div>
   );
 
-  // put nodeColorsAndTypes and edgeColorsAndTypes into the entityTemplate
-  const nodeTypes: unknown[] = [];
-  const edgeTypes: unknown[] = [];
-
-  nodeColorsAndTypes.forEach((colorsAndTypes) => {
-    nodeTypes.push(
-      entityTemplate(colorsAndTypes.color, colorsAndTypes.name, 'node')
+  function renderNodes(nodeTypes: NodeType[]): JSX.Element {
+    return (
+      <>
+        {nodeTypes.map((type, i) =>
+          entityTemplate(
+            entityColors[i % entityColors.length],
+            type.name,
+            'node'
+          )
+        )}
+      </>
     );
-  });
+  }
 
-  edgeColorsAndTypes.forEach((colorsAndTypes) => {
-    edgeTypes.push(
-      entityTemplate(colorsAndTypes.color, colorsAndTypes.name, 'edge')
+  function renderEdges(edgeTypes: EdgeType[]): JSX.Element {
+    return (
+      <>
+        {edgeTypes.map((type) => entityTemplate('#a9a9a9', type.name, 'edge'))}
+      </>
     );
-  });
+  }
+
+  const nodes = fetchDataFromService(
+    fetchNodeTypes,
+    renderNodes,
+    schemaService
+  );
+
+  const edges = fetchDataFromService(
+    fetchEdgeTypes,
+    renderEdges,
+    schemaService
+  );
 
   const handleChange = (
     event: React.ChangeEvent<Record<string, unknown>>,
@@ -212,10 +192,10 @@ const Filter = (): JSX.Element => {
         </AppBar>
         <List style={{ maxHeight: '94%', width: 320, overflow: 'auto' }}>
           <TabPanel value={tabIndex} index={0}>
-            <div>{nodeTypes}</div>
+            {nodes}
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
-            {edgeTypes}
+            {edges}
           </TabPanel>
         </List>
       </Drawer>
