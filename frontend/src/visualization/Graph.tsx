@@ -125,7 +125,9 @@ function Graph(): JSX.Element {
   const classes = useStyles();
 
   // the filtered QueryResult from child-component EntityFilterDialog
-  const filterQueryRef = React.useRef<FilterQuery>({});
+  const filterQueryRef = React.useRef<FilterQuery>({
+    limits: { edges: 150, nodes: 200 },
+  });
 
   // A React ref to the container that is used to measure the available space for the graph.
   const sizeMeasureContainerRef = React.useRef<HTMLDivElement>(null);
