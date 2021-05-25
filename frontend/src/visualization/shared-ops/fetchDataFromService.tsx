@@ -32,13 +32,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type RenderFunction<T> = (t: T, update: () => void) => JSX.Element;
 
-type QueryFunction<
-  TArgs extends [...Array<unknown>, CancellationToken],
-  TResult
-> = (...args: TArgs) => Promise<TResult>;
+type QueryFunction<TArgs extends unknown[], TResult> = (
+  ...args: [...TArgs, CancellationToken]
+) => Promise<TResult>;
 
-export interface FetchDataOptions<TArgs extends Array<unknown>, TData> {
-  queryFn: QueryFunction<[...TArgs, CancellationToken], TData>;
+export interface FetchDataOptions<TArgs extends unknown[], TData> {
+  queryFn: QueryFunction<TArgs, TData>;
   defaultData?: TData;
 }
 
@@ -53,21 +52,21 @@ export interface FetchDataOptions<TArgs extends Array<unknown>, TData> {
  * @param arg - optional, additional argument given to {@link useAsync}
  * @returns if one of the above cases occured, the corresponding {@link JSX.Element}, otherwise the data to be fetched
  */
-function fetchDataFromService<TArgs extends Array<unknown>, TData>(
-  queryFn: QueryFunction<[...TArgs, CancellationToken], TData>,
+function fetchDataFromService<TArgs extends unknown[], TData>(
+  queryFn: QueryFunction<TArgs, TData>,
   content: RenderFunction<TData>,
   ...args: TArgs
 ): JSX.Element;
 
-function fetchDataFromService<TArgs extends Array<unknown>, TData>(
+function fetchDataFromService<TArgs extends unknown[], TData>(
   options: FetchDataOptions<TArgs, TData>,
   content: RenderFunction<TData>,
   ...args: TArgs
 ): JSX.Element;
 
-function fetchDataFromService<TArgs extends Array<unknown>, TData>(
+function fetchDataFromService<TArgs extends unknown[], TData>(
   queryFnOrOptions:
-    | QueryFunction<[...TArgs, CancellationToken], TData>
+    | QueryFunction<TArgs, TData>
     | FetchDataOptions<TArgs, TData>,
   content: RenderFunction<TData>,
   ...args: TArgs
