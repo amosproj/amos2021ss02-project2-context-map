@@ -92,7 +92,7 @@ function fetchNodeTypes(
 function fetchEdgeTypes(
   schemaService: SchemaService,
   cancellation: CancellationToken
-): Promise<NodeType[]> {
+): Promise<EdgeType[]> {
   return schemaService.getEdgeTypes(cancellation);
 }
 

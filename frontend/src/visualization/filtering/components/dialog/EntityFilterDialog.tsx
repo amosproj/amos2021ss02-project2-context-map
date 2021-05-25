@@ -1,5 +1,5 @@
 import Button from '@material-ui/core/Button';
-import React, { useState } from 'react';
+import React from 'react';
 import {
   createStyles,
   Dialog,
@@ -12,10 +12,13 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import EntityPropertySelect from './EntityPropertySelect';
 import { FilterModelEntry } from '../../../../shared/filter';
 import {
+  FilterCondition,
   MatchAllCondition,
   MatchAnyCondition,
   MatchPropertyCondition,
 } from '../../../../shared/queries';
+import useArrayState from '../useArrayState';
+import FilterPropertyModel from '../../FilterPropertyModel';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -43,54 +46,54 @@ const EntityFilterDialog = (props: {
   const { filterOpen, handleCloseFilter, filterModelEntries, setFilterQuery } =
     props;
 
-  // the filtered FilterModelEntries filled from the children EntityPropertySelects
-  const filteredFilterModelEntries: FilterModelEntry[] = [];
-  const setFilteredFilterModelEntries: React.Dispatch<
-    React.SetStateAction<FilterModelEntry>
-  >[] = [];
-  filterModelEntries.forEach((type) => {
-    const [filteredFilterModelEntry, setFilteredFilterModelEntry] =
-      useState<FilterModelEntry>({
-        key: type.key,
-        values: [],
-      });
-    filteredFilterModelEntries.push(filteredFilterModelEntry);
-    setFilteredFilterModelEntries.push(setFilteredFilterModelEntry);
-  });
-
-  const entitySelects: JSX.Element[] = [];
-  filterModelEntries.forEach((type, index) => {
-    entitySelects.push(
-      <EntityPropertySelect
-        entityType={type}
-        filterModelEntry={filteredFilterModelEntries[index]}
-        setFilterModelEntry={setFilteredFilterModelEntries[index]}
-      />
+  const [selectedEntries, setSelectedEntries] =
+    useArrayState<FilterPropertyModel>(
+      filterModelEntries.map(
+        (entry) => ({ ...entry, selectedValues: null } as FilterPropertyModel)
+      )
     );
-  });
+
+  const entitySelects = filterModelEntries.map((type, index) => (
+    <EntityPropertySelect
+      entityType={type}
+      filterModelEntry={selectedEntries[index]}
+      setFilterModelEntry={setSelectedEntries[index]}
+    />
+  ));
 
   const handleApplyFilter = () => {
-    const anyFilterConditions: MatchAnyCondition[] = [];
+    const filterConditions: FilterCondition[] = [];
 
-    for (const entry of filteredFilterModelEntries) {
-      const propertyFilterConditions: MatchPropertyCondition[] = [];
-
-      for (const value of entry.values) {
-        propertyFilterConditions.push(MatchPropertyCondition(entry.key, value));
-      }
-
-      if (propertyFilterConditions.length > 0) {
-        anyFilterConditions.push(
-          MatchAnyCondition(...propertyFilterConditions)
-        );
+    for (const entry of selectedEntries) {
+      // There is a filter specified for the property
+      if (entry.selectedValues !== null && entry.selectedValues.length > 0) {
+        // If only a single value is specified in the filter, add this directly
+        // Example: name=Peter
+        if (entry.selectedValues.length === 1) {
+          filterConditions.push(
+            MatchPropertyCondition(entry.key, entry.selectedValues[0])
+          );
+        } else {
+          // There are multiple alternative filters specified for the property
+          // Example: name=Peter|William|Chris
+          // Combine these via MatchAny conditions.
+          filterConditions.push(
+            MatchAnyCondition(
+              ...entry.selectedValues.map((value) =>
+                MatchPropertyCondition(entry.key, value)
+              )
+            )
+          );
+        }
       }
     }
 
-    if (anyFilterConditions.length > 0) {
-      setFilterQuery(MatchAllCondition(...anyFilterConditions));
+    if (filterConditions.length > 0) {
+      setFilterQuery(MatchAllCondition(...filterConditions));
     } else {
       setFilterQuery(null);
     }
+
     handleCloseFilter();
   };
 

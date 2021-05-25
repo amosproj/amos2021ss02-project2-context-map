@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { FilterModelEntry } from '../../../../shared/filter';
+import FilterPropertyModel from '../../FilterPropertyModel';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -20,8 +21,10 @@ const useStyles = makeStyles(() =>
 
 const EntityPropertySelect = (props: {
   entityType: FilterModelEntry;
-  filterModelEntry: FilterModelEntry;
-  setFilterModelEntry: React.Dispatch<React.SetStateAction<FilterModelEntry>>;
+  filterModelEntry: FilterPropertyModel;
+  setFilterModelEntry: React.Dispatch<
+    React.SetStateAction<FilterPropertyModel>
+  >;
 }): JSX.Element => {
   const classes = useStyles();
   const { entityType, filterModelEntry, setFilterModelEntry } = props;
@@ -50,11 +53,10 @@ const EntityPropertySelect = (props: {
   const theme = useTheme();
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    const updatedFilterModelEntry: FilterModelEntry = {
-      key: entityType.key,
-      values: event.target.value as string[],
-    };
-    setFilterModelEntry(updatedFilterModelEntry);
+    setFilterModelEntry({
+      ...filterModelEntry,
+      selectedValues: event.target.value as string[],
+    });
   };
 
   return (
@@ -63,7 +65,7 @@ const EntityPropertySelect = (props: {
         <InputLabel>{entityType.key}</InputLabel>
         <Select
           multiple
-          value={filterModelEntry.values as string[]}
+          value={(filterModelEntry.selectedValues ?? []) as string[]}
           onChange={handleChange}
           input={<Input />}
           MenuProps={MenuProps}
