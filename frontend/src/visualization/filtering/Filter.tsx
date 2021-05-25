@@ -9,7 +9,7 @@ import {
   Typography,
   Divider,
 } from '@material-ui/core';
-import React from 'react';
+import React, { useRef } from 'react';
 import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -22,7 +22,11 @@ import EntityFilterElement from './components/EntityFilterElement';
 import fetchDataFromService from '../shared-ops/fetchDataFromService';
 import entityColors from '../data/GraphData';
 import { SchemaService } from '../../services/schema';
-import { FilterQuery } from '../../shared/queries';
+import {
+  FilterCondition,
+  FilterQuery,
+  MatchAnyCondition,
+} from '../../shared/queries';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -93,8 +97,7 @@ function fetchEdgeTypes(
 }
 
 const Filter = (props: {
-  setFilterQuery: React.Dispatch<React.SetStateAction<FilterQuery>>;
-  updateGraph: () => void;
+  executeQuery: (query: FilterQuery) => void;
 }): JSX.Element => {
   // hooks
   const classes = useStyles();
@@ -102,27 +105,71 @@ const Filter = (props: {
   const [tabIndex, setTabIndex] = React.useState(0);
   const [open, setOpen] = React.useState(false);
 
-  const { setFilterQuery, updateGraph } = props;
+  const { executeQuery } = props;
   const schemaService = useService(SchemaService, null);
+
+  const nodeConditionsRef = useRef<(FilterCondition | null)[]>([]);
+  const edgeConditionsRef = useRef<(FilterCondition | null)[]>([]);
+
+  function updateQuery() {
+    const nodeConditions = nodeConditionsRef.current.filter(
+      (condition) => condition !== null
+    ) as FilterCondition[];
+
+    const edgeConditions = edgeConditionsRef.current.filter(
+      (condition) => condition !== null
+    ) as FilterCondition[];
+
+    const filters: { nodes?: FilterCondition; edges?: FilterCondition } = {};
+
+    if (nodeConditions.length > 0) {
+      filters.nodes = MatchAnyCondition(...nodeConditions);
+    }
+
+    if (edgeConditions.length > 0) {
+      filters.edges = MatchAnyCondition(...edgeConditions);
+    }
+
+    // TODO: Make limits configurable
+    executeQuery({ filters, limits: { edges: 250 } });
+  }
 
   // a JSX.Element template used for rendering
   const entityTemplate = (
     color: string,
     name: string,
-    entity: 'node' | 'edge'
-  ) => (
-    <div>
-      <Box display="flex" p={1}>
-        <EntityFilterElement
-          backgroundColor={color}
-          name={name}
-          entity={entity}
-          setFilterQuery={setFilterQuery}
-          updateGraph={updateGraph}
-        />
-      </Box>
-    </div>
-  );
+    entity: 'node' | 'edge',
+    i: number
+  ) => {
+    const setEntryFilterCondition = (
+      condition: FilterCondition | null
+    ): void => {
+      const conditionsRef =
+        entity === 'node' ? nodeConditionsRef : edgeConditionsRef;
+      const conditions = conditionsRef.current;
+
+      while (conditions.length - 1 < i) {
+        conditions.push(null);
+      }
+
+      conditions[i] = condition;
+      conditionsRef.current = conditions;
+      updateQuery();
+    };
+
+    return (
+      <div>
+        <Box display="flex" p={1}>
+          <EntityFilterElement
+            backgroundColor={color}
+            name={name}
+            entity={entity}
+            setFilterQuery={setEntryFilterCondition}
+          />
+        </Box>
+      </div>
+    );
+  };
 
   function renderNodes(nodeTypes: NodeType[]): JSX.Element {
     return (
@@ -131,7 +178,8 @@ const Filter = (props: {
           entityTemplate(
             entityColors[i % entityColors.length],
             type.name,
-            'node'
+            'node',
+            i
           )
         )}
       </>
@@ -141,7 +189,9 @@ const Filter = (props: {
   function renderEdges(edgeTypes: EdgeType[]): JSX.Element {
     return (
       <>
-        {edgeTypes.map((type) => entityTemplate('#a9a9a9', type.name, 'edge'))}
+        {edgeTypes.map((type, i) =>
+          entityTemplate('#a9a9a9', type.name, 'edge', i)
+        )}
       </>
     );
   }

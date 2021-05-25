@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
@@ -12,7 +12,7 @@ import {
 import { CancellationToken } from '../../../utils/CancellationToken';
 import useService from '../../../dependency-injection/useService';
 import { FilterService } from '../../../services/filter';
-import { FilterQuery } from '../../../shared/queries';
+import { MatchAllCondition, OfTypeCondition } from '../../../shared/queries';
 import fetchDataFromService from '../../shared-ops/fetchDataFromService';
 
 type EntityTypeFilterModel = NodeTypeFilterModel | EdgeTypeFilterModel;
@@ -70,18 +70,49 @@ const EntityFilterElement = (props: {
   backgroundColor: string;
   name: string;
   entity: 'node' | 'edge';
-  setFilterQuery: React.Dispatch<React.SetStateAction<FilterQuery>>;
-  updateGraph: () => void;
+  setFilterQuery: (
+    condition: MatchAllCondition | OfTypeCondition | null
+  ) => void; // TODO: Rename
 }): JSX.Element => {
   const classes = useStyles();
 
   // Indicates if filter-dialog is opened.
   const [filterOpen, setFilterOpen] = React.useState(false);
-  const [boxShadow, setBoxShadow] = useState('None');
+  const [boxShadow, setBoxShadow] = React.useState('None');
+  const isActive = React.useRef(false);
 
-  const { backgroundColor, name, entity, setFilterQuery, updateGraph } = props;
+  // TODO: Rename
+  const dialogConditionRef = React.useRef<MatchAllCondition | null>(null);
+
+  const { backgroundColor, name, entity, setFilterQuery } = props;
 
   const filterService = useService(FilterService, null);
+
+  // TODO: Rename
+  function updateFilterQuery(): void {
+    const propertiesCondition = dialogConditionRef.current;
+
+    if (!isActive.current) {
+      setFilterQuery(null);
+      return;
+    }
+
+    const ofTypeCondition = OfTypeCondition(name);
+
+    if (propertiesCondition === null) {
+      setFilterQuery(ofTypeCondition);
+    } else {
+      setFilterQuery(MatchAllCondition(ofTypeCondition, propertiesCondition));
+    }
+  }
+
+  function updateBoxShadow() {
+    if (isActive.current) {
+      setBoxShadow('0 0 0 0.2rem rgba(0,123,255,.5)');
+    } else {
+      setBoxShadow('None');
+    }
+  }
 
   function renderContent(model: EntityTypeFilterModel): JSX.Element {
     const handleOpenFilter = () => {
@@ -92,13 +123,21 @@ const EntityFilterElement = (props: {
     };
 
     const handleAddEntity = () => {
-      setBoxShadow(
-        boxShadow === 'None' ? '0 0 0 0.2rem rgba(0,123,255,.5)' : 'None'
-      );
-      updateGraph();
+      isActive.current = !isActive.current;
+
+      updateFilterQuery();
+      updateBoxShadow();
     };
 
     const filterModelEntries = model.properties;
+
+    // TODO: Rename
+    const dialogSetFilterQuery = (
+      condition: MatchAllCondition | null
+    ): void => {
+      dialogConditionRef.current = condition;
+      updateFilterQuery();
+    };
 
     return (
       <div>
@@ -118,12 +157,10 @@ const EntityFilterElement = (props: {
           <AddIcon onClick={handleAddEntity} />
         </IconButton>
         <EntityFilterDialog
-          name={name}
           filterOpen={filterOpen}
           handleCloseFilter={handleCloseFilter}
-          entity={entity}
           filterModelEntries={filterModelEntries}
-          setFilterQuery={setFilterQuery}
+          setFilterQuery={dialogSetFilterQuery}
         />
       </div>
     );

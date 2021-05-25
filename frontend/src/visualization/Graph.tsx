@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import VisGraph, { GraphData } from 'react-graph-vis';
 import * as vis from 'vis-network';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
@@ -105,20 +105,20 @@ function buildOptions(width: number, height: number) {
  */
 function executeFilterQuery(
   filterService: FilterService,
-  filterQuery: FilterQuery,
+  filterQuery: React.MutableRefObject<FilterQuery>,
   cancellation: CancellationToken
 ): Promise<QueryResult> {
-  return filterService.query(filterQuery, cancellation);
+  return filterService.query(filterQuery.current, cancellation);
 }
 
 function Graph(): JSX.Element {
   const classes = useStyles();
 
   // the filtered QueryResult from child-component EntityFilterDialog
-  const [filterQuery, setFilterQuery] = useState<FilterQuery>({});
+  const filterQueryRef = React.useRef<FilterQuery>({});
 
   // A React ref to the container that is used to measure the available space for the graph.
-  const sizeMeasureContainerRef = useRef<HTMLDivElement>(null);
+  const sizeMeasureContainerRef = React.useRef<HTMLDivElement>(null);
 
   // The size of the container that is used to measure the available space for the graph.
   const containerSize = useSize(sizeMeasureContainerRef);
@@ -136,6 +136,11 @@ function Graph(): JSX.Element {
     // Build the react-graph-vis graph options.
     const options = buildOptions(containerSize.width, containerSize.height);
 
+    const executeQuery = (query: FilterQuery): void => {
+      filterQueryRef.current = query;
+      update();
+    };
+
     return (
       <>
         <div className={classes.graphPage}>
@@ -143,7 +148,7 @@ function Graph(): JSX.Element {
             <VisGraph graph={graphData} options={options} />
           </div>
           <div className={classes.filter}>
-            <Filter setFilterQuery={setFilterQuery} updateGraph={update} />
+            <Filter executeQuery={executeQuery} />
           </div>
         </div>
       </>
@@ -154,7 +159,7 @@ function Graph(): JSX.Element {
     executeFilterQuery,
     renderContent,
     filterService,
-    filterQuery
+    filterQueryRef
   );
 
   return (

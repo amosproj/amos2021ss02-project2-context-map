@@ -12,12 +12,9 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import EntityPropertySelect from './EntityPropertySelect';
 import { FilterModelEntry } from '../../../../shared/filter';
 import {
-  FilterCondition,
-  FilterQuery,
   MatchAllCondition,
   MatchAnyCondition,
   MatchPropertyCondition,
-  OfTypeCondition,
 } from '../../../../shared/queries';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -36,23 +33,15 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const EntityFilterDialog = (props: {
-  name: string;
   filterOpen: boolean;
   handleCloseFilter: () => void;
-  entity: 'node' | 'edge';
   filterModelEntries: FilterModelEntry[];
-  setFilterQuery: React.Dispatch<React.SetStateAction<FilterQuery>>;
+  setFilterQuery: (condition: MatchAllCondition | null) => void; // TODO: Please rename me!
 }): JSX.Element => {
   const classes = useStyles();
 
-  const {
-    name,
-    filterOpen,
-    handleCloseFilter,
-    filterModelEntries,
-    entity,
-    setFilterQuery,
-  } = props;
+  const { filterOpen, handleCloseFilter, filterModelEntries, setFilterQuery } =
+    props;
 
   // the filtered FilterModelEntries filled from the children EntityPropertySelects
   const filteredFilterModelEntries: FilterModelEntry[] = [];
@@ -69,7 +58,7 @@ const EntityFilterDialog = (props: {
     setFilteredFilterModelEntries.push(setFilteredFilterModelEntry);
   });
 
-  const entitySelects: unknown[] = [];
+  const entitySelects: JSX.Element[] = [];
   filterModelEntries.forEach((type, index) => {
     entitySelects.push(
       <EntityPropertySelect
@@ -81,32 +70,27 @@ const EntityFilterDialog = (props: {
   });
 
   const handleApplyFilter = () => {
-    // put filterQuery together
-    const anyFilterConditions: FilterCondition[] = [];
-    filteredFilterModelEntries.forEach((entry) => {
-      const propertyFilterConditions: FilterCondition[] = [];
-      entry.values.forEach((value) => {
-        propertyFilterConditions.push(MatchPropertyCondition(entry.key, value));
-      });
-      anyFilterConditions.push(MatchAnyCondition(...propertyFilterConditions));
-    });
+    const anyFilterConditions: MatchAnyCondition[] = [];
 
-    setFilterQuery({
-      filters:
-        entity === 'node'
-          ? {
-              nodes: MatchAllCondition(
-                OfTypeCondition(name),
-                MatchAnyCondition(...anyFilterConditions)
-              ),
-            }
-          : {
-              edges: MatchAllCondition(
-                OfTypeCondition(name),
-                MatchAnyCondition(...anyFilterConditions)
-              ),
-            },
-    });
+    for (const entry of filteredFilterModelEntries) {
+      const propertyFilterConditions: MatchPropertyCondition[] = [];
+
+      for (const value of entry.values) {
+        propertyFilterConditions.push(MatchPropertyCondition(entry.key, value));
+      }
+
+      if (propertyFilterConditions.length > 0) {
+        anyFilterConditions.push(
+          MatchAnyCondition(...propertyFilterConditions)
+        );
+      }
+    }
+
+    if (anyFilterConditions.length > 0) {
+      setFilterQuery(MatchAllCondition(...anyFilterConditions));
+    } else {
+      setFilterQuery(null);
+    }
     handleCloseFilter();
   };
 
