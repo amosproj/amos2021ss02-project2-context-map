@@ -93,8 +93,6 @@ function fetchDataFromService<TArgs extends unknown[], TData>(
   const [isLoading, setIsLoading] = useState(true);
   const [needsUpdate, setNeedsUpdate] = useState(false);
 
-  const lastUpdateRef = useRef<number | null>(null);
-
   useEffect(() => {
     let mounted = true;
 
@@ -106,7 +104,6 @@ function fetchDataFromService<TArgs extends unknown[], TData>(
     queryFn(...argsWithCancellation)
       .then((result) => {
         if (mounted) {
-          lastUpdateRef.current = Date.now();
           setData(result);
           setIsLoading(false);
           setNeedsUpdate(false);
