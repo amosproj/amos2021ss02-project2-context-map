@@ -86,6 +86,7 @@ const EntityFilterDialog = (props: {
       }
     }
 
+    /* istanbul ignore else */
     if (filterConditions.length > 0) {
       setFilterQuery(MatchAllCondition(...filterConditions));
     } else {
@@ -97,7 +98,12 @@ const EntityFilterDialog = (props: {
 
   return (
     <div>
-      <Dialog open={filterOpen} onClose={handleCloseFilter} scroll="paper">
+      <Dialog
+        open={filterOpen}
+        onClose={handleCloseFilter}
+        scroll="paper"
+        className="FilterDialog"
+      >
         <form className={classes.form}>
           <FormControl className={classes.dialog}>
             <DialogTitle>Filter Entity</DialogTitle>
@@ -106,7 +112,11 @@ const EntityFilterDialog = (props: {
               <Button onClick={handleCloseFilter} color="primary">
                 Cancel
               </Button>
-              <Button onClick={handleApplyFilter} color="primary">
+              <Button
+                onClick={handleApplyFilter}
+                color="primary"
+                className="ApplyFilter"
+              >
                 Apply Filter
               </Button>
             </DialogActions>

@@ -11,12 +11,14 @@ export default function appendQuery(url: URL, query: URLQuery): URL {
     if (Array.isArray(value)) {
       for (let j = 0; j < value.length; j += 1) {
         const arrayValue = value[j];
+        /* istanbul ignore if */
         if (i > 0 || j > 0) {
           queryString += '&';
         }
         queryString += `${key}=${arrayValue.toString()}`;
       }
     } else {
+      /* istanbul ignore if */
       if (i > 0) {
         queryString += '&';
       }

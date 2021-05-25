@@ -1,3 +1,5 @@
+/* istanbul ignore file -- will be refactored so we ignore coverage */
+
 type FactoryFunction<T> = () => Promise<T>;
 
 export interface AsyncLazyOptions {

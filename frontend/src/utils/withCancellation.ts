@@ -25,6 +25,7 @@ export default function withCancellation<T>(
 
     promise.catch((reason) => {
       cancellationUnsubscribe();
+      /* istanbul ignore file */
       if (!promiseCanceled) {
         reject(reason);
       }

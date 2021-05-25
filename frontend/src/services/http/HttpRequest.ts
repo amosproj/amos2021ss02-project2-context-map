@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import HttpHeaderCollection from './HttpHeaderCollection';
 import URLQuery from './URLQuery';
 

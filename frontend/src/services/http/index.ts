@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import HttpError from './HttpError';
 import HttpGetRequest from './HttpGetRequest';
 import HttpHeaderCollection from './HttpHeaderCollection';

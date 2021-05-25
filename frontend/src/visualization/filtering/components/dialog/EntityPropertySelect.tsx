@@ -56,7 +56,7 @@ const EntityPropertySelect = (props: {
   };
 
   return (
-    <div>
+    <div className="FilterSelect">
       <FormControl className={classes.select}>
         <InputLabel>{property.key}</InputLabel>
         <Select

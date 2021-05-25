@@ -51,6 +51,7 @@ function findSearchStringInProperties(
         return format(propName, foundValue);
       }
 
+      /* istanbul ignore if */
       if (Array.isArray(propValue)) {
         const foundValues = propValue
           .map((x) => findInPrimitive(x)) // Returns string if found
@@ -65,6 +66,7 @@ function findSearchStringInProperties(
         }
       }
 
+      /* istanbul ignore if */
       if (typeof propValue === 'object' && propValue != null) {
         foundValue = findInProperties(propValue as Record<string, unknown>);
         if (foundValue) {
@@ -83,6 +85,7 @@ export default function convertSearchResultToSearchResultList(
   searchString: string,
   result: ExpandedSearchResult | undefined
 ): SearchResultList[] {
+  /* istanbul ignore if */
   if (result === undefined) {
     return [];
   }
