@@ -8,6 +8,9 @@ import {
   CancellationToken,
   CancellationTokenSource,
 } from '../../utils/CancellationToken';
+import ErrorComponent, { ErrorType } from '../../errors/ErrorComponent';
+import CancellationError from '../../utils/CancellationError';
+import { HttpError, NetworkError } from '../../services/http';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -195,19 +198,29 @@ function fetchDataFromService<TArgs extends unknown[], TData>(
   }
 
   // Display the raw error message if an error occurred.
-  // See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/77
+  // TODO: This logic should not be here but in the ErrorComponent type
+  //       See also: https://github.com/amosproj/amos-ss2021-project2-context-map/issues/144
   if (error) {
-    return (
-      <div className={classes.contentContainer}>
-        Something went wrong: {error.message}
-      </div>
-    );
+    if (error instanceof CancellationError) {
+      return (
+        <ErrorComponent type={ErrorType.CancellationError} jsError={error} />
+      );
+    }
+
+    if (error instanceof HttpError && error.status === 404) {
+      return <ErrorComponent type={ErrorType.NotFoundError} jsError={error} />;
+    }
+
+    if (error instanceof NetworkError) {
+      return <ErrorComponent type={ErrorType.NetworkError} jsError={error} />;
+    }
+
+    return <ErrorComponent jsError={error} />;
   }
 
   // Display an error message if something went wrong. This should not happen normally.
-  // See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/77
   if (!data) {
-    return <div className={classes.contentContainer}>Something went wrong</div>;
+    return <ErrorComponent />;
   }
 
   return renderContent(data);
