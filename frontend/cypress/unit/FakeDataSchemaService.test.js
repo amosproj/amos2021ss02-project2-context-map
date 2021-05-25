@@ -1,5 +1,4 @@
-import FakeDataSchemaService from '../../src/services/schema/FakeDataSchemaService';
-import CancellationError from '../../src/utils/CancellationError';
+import FakeDataSchemaService from '../fixtures/FakeDataSchemaService';
 import { CancellationTokenSource } from '../../src/utils/CancellationToken';
 
 describe('FakeDataSchemaService', () => {
@@ -35,7 +34,7 @@ describe('FakeDataSchemaService', () => {
       const types = await service.getEdgeTypes();
 
       // Assert
-      for(const type of types) {
+      for (const type of types) {
         assert.equal(type.name, type.name.trim());
       }
     });
@@ -48,7 +47,7 @@ describe('FakeDataSchemaService', () => {
       const types = await service.getEdgeTypes();
 
       // Assert
-      for(const type of types) {
+      for (const type of types) {
         assert.isAbove(type.name.length, 0);
       }
     });
@@ -62,12 +61,11 @@ describe('FakeDataSchemaService', () => {
 
       // Assert
       const takenNames = new Set();
-      for(const type of types) {
+      for (const type of types) {
         assert.isFalse(takenNames.has(type.name));
         takenNames.add(type.name);
       }
     });
-
 
     it('returns entries with correct number of properties', async () => {
       // Arrange
@@ -77,7 +75,7 @@ describe('FakeDataSchemaService', () => {
       const types = await service.getEdgeTypes();
 
       // Assert
-      for(const type of types) {
+      for (const type of types) {
         assert.isAtLeast(type.properties.length, 0);
         assert.isAtMost(type.properties.length, 20);
       }
@@ -91,8 +89,8 @@ describe('FakeDataSchemaService', () => {
       const types = await service.getEdgeTypes();
 
       // Assert
-      for(const type of types) {
-        for(const prop of type.properties) {
+      for (const type of types) {
+        for (const prop of type.properties) {
           assert.equal(prop.name, prop.name.trim());
         }
       }
@@ -106,8 +104,8 @@ describe('FakeDataSchemaService', () => {
       const types = await service.getEdgeTypes();
 
       // Assert
-      for(const type of types) {
-        for(const prop of type.properties) {
+      for (const type of types) {
+        for (const prop of type.properties) {
           assert.isAbove(prop.name.length, 0);
         }
       }
@@ -122,8 +120,8 @@ describe('FakeDataSchemaService', () => {
 
       // Assert
       const takenNames = new Set();
-      for(const type of types) {
-        for(const prop of type.properties) {
+      for (const type of types) {
+        for (const prop of type.properties) {
           assert.isFalse(takenNames.has(prop.name));
           takenNames.add(prop.name);
         }
@@ -141,7 +139,7 @@ describe('FakeDataSchemaService', () => {
       try {
         await service.getEdgeTypes(cancellation);
         assert.isNotOk(true);
-      } catch(CancellationError) {
+      } catch (CancellationError) {
         assert.isOk(true);
       }
     });
@@ -179,7 +177,7 @@ describe('FakeDataSchemaService', () => {
       const types = await service.getNodeTypes();
 
       // Assert
-      for(const type of types) {
+      for (const type of types) {
         assert.equal(type.name, type.name.trim());
       }
     });
@@ -192,7 +190,7 @@ describe('FakeDataSchemaService', () => {
       const types = await service.getNodeTypes();
 
       // Assert
-      for(const type of types) {
+      for (const type of types) {
         assert.isAbove(type.name.length, 0);
       }
     });
@@ -206,12 +204,11 @@ describe('FakeDataSchemaService', () => {
 
       // Assert
       const takenNames = new Set();
-      for(const type of types) {
+      for (const type of types) {
         assert.isFalse(takenNames.has(type.name));
         takenNames.add(type.name);
       }
     });
-
 
     it('returns entries with correct number of properties', async () => {
       // Arrange
@@ -221,7 +218,7 @@ describe('FakeDataSchemaService', () => {
       const types = await service.getNodeTypes();
 
       // Assert
-      for(const type of types) {
+      for (const type of types) {
         assert.isAtLeast(type.properties.length, 0);
         assert.isAtMost(type.properties.length, 20);
       }
@@ -235,8 +232,8 @@ describe('FakeDataSchemaService', () => {
       const types = await service.getNodeTypes();
 
       // Assert
-      for(const type of types) {
-        for(const prop of type.properties) {
+      for (const type of types) {
+        for (const prop of type.properties) {
           assert.equal(prop.name, prop.name.trim());
         }
       }
@@ -250,8 +247,8 @@ describe('FakeDataSchemaService', () => {
       const types = await service.getNodeTypes();
 
       // Assert
-      for(const type of types) {
-        for(const prop of type.properties) {
+      for (const type of types) {
+        for (const prop of type.properties) {
           assert.isAbove(prop.name.length, 0);
         }
       }
@@ -266,8 +263,8 @@ describe('FakeDataSchemaService', () => {
 
       // Assert
       const takenNames = new Set();
-      for(const type of types) {
-        for(const prop of type.properties) {
+      for (const type of types) {
+        for (const prop of type.properties) {
           assert.isFalse(takenNames.has(prop.name));
           takenNames.add(prop.name);
         }
@@ -285,7 +282,7 @@ describe('FakeDataSchemaService', () => {
       try {
         await service.getNodeTypes(cancellation);
         assert.isNotOk(true);
-      } catch(CancellationError) {
+      } catch (CancellationError) {
         assert.isOk(true);
       }
     });
