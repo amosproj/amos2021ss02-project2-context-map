@@ -1,8 +1,4 @@
-import {
-  customSearch,
-  emptySearch,
-  keanuSearch,
-} from '../fixtures/search/search';
+import { customSearch, emptySearch } from '../fixtures/search/search';
 
 // TODO: Remove interception when real e2e tests are done
 context('Searchbar', () => {
@@ -13,13 +9,6 @@ context('Searchbar', () => {
   });
 
   it('Shows results', () => {
-    // Arrage
-    cy.intercept(`${apiBaseUrl}/search/all*`, keanuSearch.search).as(
-      'searchQuery'
-    );
-    cy.intercept(`${apiBaseUrl}/getNodesById*`, keanuSearch.getNodesById).as(
-      'getNodesQuery'
-    );
     // Act
     cy.get('.SearchBar').type('keanu');
     // Assert
@@ -30,10 +19,8 @@ context('Searchbar', () => {
   it('Does not search on every keydown', () => {
     // Arrange
     /* eslint-disable no-unused-expressions -- expect(..).to.Be.Called return can be ignored */
-    const spySearch = cy.spy((req) => req.reply(keanuSearch.search));
-    const spyGetNodesById = cy.spy((req) =>
-      req.reply(keanuSearch.getNodesById)
-    );
+    const spySearch = cy.spy((req) => req.continue());
+    const spyGetNodesById = cy.spy((req) => req.continue());
 
     cy.intercept(`${apiBaseUrl}/search/all*`, spySearch).as('searchQuery');
     cy.intercept(`${apiBaseUrl}/getNodesById*`, spyGetNodesById).as(
