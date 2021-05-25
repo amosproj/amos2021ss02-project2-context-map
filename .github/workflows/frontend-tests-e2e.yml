@@ -38,7 +38,7 @@ jobs:
         id: cypress-version-frontend
         run: echo "::set-output name=version::$(node getCypressVersion)"
         working-directory: ./build
-
+      
       - name: Setup cypress cache (windows)
         id: cypress-cache-windows
         if: ${{ env.cache-frontend == 'true' && matrix.os == 'windows-latest' }}
@@ -53,7 +53,7 @@ jobs:
         with:
           path: ~/.cache/Cypress/${{ steps.cypress-version-frontend.outputs.version }}
           key: cypress-cache-ubuntu-${{ matrix.node-version }}-${{ steps.cypress-version-frontend.outputs.version }}
-
+      
       # FE node_modules
       - name: Cache node_modules (frontend)
         if: ${{ env.cache-frontend == 'true' && (steps.cypress-cache-ubuntu.outputs.cache-hit == 'true' || steps.cypress-cache-windows.outputs.cache-hit == 'true') }}
@@ -61,7 +61,7 @@ jobs:
         with:
           path: frontend/node_modules
           key: ${{ matrix.os }}-${{ matrix.node-version }}-yarn-frontend-${{ hashFiles('frontend/yarn.lock') }}
-
+      
       # BE node_modules
       - name: Cache node_modules (backend)
         if: ${{ env.cache-backend == 'true' }}
@@ -69,14 +69,14 @@ jobs:
         with:
           path: backend/node_modules
           key: ${{ matrix.os }}-${{ matrix.node-version }}-yarn-backend-${{ hashFiles('frontend/yarn.lock') }}
-
+      
 
       - name: Copy .env file (frontend)
         run: cp .env.example .env
         working-directory: ${{ env.working-directory }}
       - name: Copy .env file (backend)
         run: cp .env.test .env
-        working-directory: ${{ ./backend }}
+        working-directory: ./backend
 
       - name: Increase file watches
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -91,7 +91,7 @@ jobs:
           	--env DB_PATH=/mnt/amos/dumps/testing-dump.dump \
           	--name neo4j-DB neo4j:enterprise \
           	/mnt/amos/load-dump.sh
-
+      
 
       - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
         working-directory: ${{ env.working-directory }}

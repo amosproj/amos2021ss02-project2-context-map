@@ -37,7 +37,7 @@ jobs:
         working-directory: ${{ env.working-directory }}
       - name: Copy .env file (backend)
         run: cp .env.test .env
-        working-directory: ${{ ./backend }}
+        working-directory: ./backend
 
       - name: Increase file watches
         if: ${{ matrix.os == 'ubuntu-latest' }}
