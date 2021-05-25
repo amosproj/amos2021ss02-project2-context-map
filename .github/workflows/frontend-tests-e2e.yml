@@ -6,16 +6,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-latest, ubuntu-latest ]
+        os: [ ubuntu-latest ]
         node-version: [ 12.x, 14.x ]
         browser: [ chrome, firefox ]
-        include:
-          - os: windows-latest
-            node-version: 12.x
-            browser: edge
-          - os: windows-latest
-            node-version: 14.x
-            browser: edge
     env:
       working-directory: ./frontend
       cache-frontend: true
