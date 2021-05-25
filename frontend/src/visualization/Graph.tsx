@@ -126,6 +126,15 @@ function Graph(): JSX.Element {
   // The query- and schema-service injected from DI.
   const filterService = useService(FilterService, null);
 
+  // Dirty hack to get to to instance of the update function for components that are not part of
+  // the the render content function. This is a workaround for
+  // https://github.com/amosproj/amos-ss2021-project2-context-map/issues/187 and for
+  // https://github.com/amosproj/amos-ss2021-project2-context-map/issues/186
+  // that causes the filter to be use-less, as the filter conditions are reset on every load.
+  // This workaround moves the filter out of the renderContent method, so it does not get re-rendered.
+  // TODO: Fix #187 and #186 and remove this workaround.
+  const updateRef = React.useRef<(() => void) | null>(null);
+
   function renderContent(
     queryResult: QueryResult,
     update: () => void
@@ -136,31 +145,32 @@ function Graph(): JSX.Element {
     // Build the react-graph-vis graph options.
     const options = buildOptions(containerSize.width, containerSize.height);
 
-    const executeQuery = (query: FilterQuery): void => {
-      filterQueryRef.current = query;
-      update();
-    };
+    updateRef.current = update;
 
     return (
       <>
-        <div className={classes.graphPage}>
-          <div className={classes.graphContainer}>
-            <VisGraph graph={graphData} options={options} />
-          </div>
-          <div className={classes.filter}>
-            <Filter executeQuery={executeQuery} />
-          </div>
+        <div className={classes.graphContainer}>
+          <VisGraph graph={graphData} options={options} />
         </div>
       </>
     );
   }
 
-  const data = fetchDataFromService(
+  const graphView = fetchDataFromService(
     executeFilterQuery,
     renderContent,
     filterService,
     filterQueryRef
   );
+
+  const executeQuery = (query: FilterQuery): void => {
+    filterQueryRef.current = query;
+    const update = updateRef.current;
+
+    if (typeof update === 'function') {
+      update();
+    }
+  };
 
   return (
     <>
@@ -169,7 +179,12 @@ function Graph(): JSX.Element {
         className={classes.sizeMeasureContainer}
         ref={sizeMeasureContainerRef}
       />
-      {data}
+      <div className={classes.graphPage}>
+        {graphView}
+        <div className={classes.filter}>
+          <Filter executeQuery={executeQuery} />
+        </div>
+      </div>
     </>
   );
 }
