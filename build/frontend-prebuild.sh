@@ -8,3 +8,6 @@ cd ../frontend
 
 # Copy shared files
 cp -a ../shared/src/. ./src/shared/
+
+# Execute linter
+yarn lint

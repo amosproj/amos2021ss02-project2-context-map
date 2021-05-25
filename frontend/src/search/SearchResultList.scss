@@ -1,7 +1,8 @@
 .SearchResultsCard {
   position: absolute;
 
-  & > .MuiCardContent-root, .MuiCardContent-root:last-child {
+  & > .MuiCardContent-root,
+  .MuiCardContent-root:last-child {
     padding: 0;
   }
 

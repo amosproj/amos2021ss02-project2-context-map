@@ -2,12 +2,15 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import {
   CancellationToken,
   CancellationTokenSource,
 } from '../../utils/CancellationToken';
+import ErrorComponent, { ErrorType } from '../../errors/ErrorComponent';
+import CancellationError from '../../utils/CancellationError';
+import { HttpError, NetworkError } from '../../services/http';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -30,44 +33,72 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+/**
+ * A function that describe the render operation of fetched data to a view described via a {@link JSX.Element}.
+ * The function receives the fetched data. And optional a function that can be invoked to update the data.
+ */
 type RenderFunction<T> = (t: T, update: () => void) => JSX.Element;
 
-type QueryFunction<
-  TArgs extends [...Array<unknown>, CancellationToken],
-  TResult
-> = (...args: TArgs) => Promise<TResult>;
+/**
+ * A function that asynchronously performs the query operation and returns a promise describing the asynchronous operation.
+ */
+type QueryFunction<TArgs extends unknown[], TResult> = (
+  ...args: [...TArgs, CancellationToken]
+) => Promise<TResult>;
 
-export interface FetchDataOptions<TArgs extends Array<unknown>, TData> {
-  queryFn: QueryFunction<[...TArgs, CancellationToken], TData>;
+/**
+ * Describes the options of a data fetch operation.
+ */
+export interface FetchDataOptions<TArgs extends unknown[], TData> {
+  /**
+   * The query function used to fetch the data asynchronously.
+   */
+  queryFn: QueryFunction<TArgs, TData>;
+
+  /**
+   * The default value of the data that will be rendered when no data is fetched (yet)
+   * OR undefined if no default data shall be rendered.
+   */
   defaultData?: TData;
 }
 
 /**
- * Fetches data from service using {@link useAsync} with {@link promiseFn} executeQuery.
- * If the screen is still loading a {@link JSX.Element}, showing a loading screen, is returned.
- * if an error occurs a {@link JSX.Element}, showing an error screen, is returned.
- * If the data to be fetched is undefined a {@link JSX.Element}, showing an error message, is returned.
+ * Fetches data asynchronously and displays them with the specified render function.
+ * While the screen is loading a {@link JSX.Element}, showing a loading screen, is returned.
+ * When an error occurs a {@link JSX.Element}, showing an error screen, is returned.
+ * When the data to be fetched is undefined a {@link JSX.Element}, showing an error message, is returned.
  *
- * @param queryFn - the query the service executes
- * @param service - the service that executes the query
- * @param arg - optional, additional argument given to {@link useAsync}
- * @returns if one of the above cases occured, the corresponding {@link JSX.Element}, otherwise the data to be fetched
+ * @param queryFn - The function that executed the query.
+ * @param content - The function that renders the fetched data to a view described via a {@link JSX.Element}.
+ * @param args - Arguments that are passed to {@link queryFn} when it is invoked.
+ * @returns A view of the current state of the loading operation described via a {@link JSX.Element}.
  */
-function fetchDataFromService<TArgs extends Array<unknown>, TData>(
-  queryFn: QueryFunction<[...TArgs, CancellationToken], TData>,
+function fetchDataFromService<TArgs extends unknown[], TData>(
+  queryFn: QueryFunction<TArgs, TData>,
   content: RenderFunction<TData>,
   ...args: TArgs
 ): JSX.Element;
 
-function fetchDataFromService<TArgs extends Array<unknown>, TData>(
+/**
+ * Fetches data asynchronously and displays them with the specified render function.
+ * While the screen is loading a {@link JSX.Element}, showing a loading screen, is returned.
+ * When an error occurs a {@link JSX.Element}, showing an error screen, is returned.
+ * When the data to be fetched is undefined a {@link JSX.Element}, showing an error message, is returned.
+ *
+ * @param options - An instance of {@link FetchDataOptions<TArgs, TData>} that contain the options of the query operation.
+ * @param content - The function that renders the fetched data to a view described via a {@link JSX.Element}.
+ * @param args - Arguments that are passed to {@link queryFn} when it is invoked.
+ * @returns A view of the current state of the loading operation described via a {@link JSX.Element}.
+ */
+function fetchDataFromService<TArgs extends unknown[], TData>(
   options: FetchDataOptions<TArgs, TData>,
   content: RenderFunction<TData>,
   ...args: TArgs
 ): JSX.Element;
 
-function fetchDataFromService<TArgs extends Array<unknown>, TData>(
+function fetchDataFromService<TArgs extends unknown[], TData>(
   queryFnOrOptions:
-    | QueryFunction<[...TArgs, CancellationToken], TData>
+    | QueryFunction<TArgs, TData>
     | FetchDataOptions<TArgs, TData>,
   content: RenderFunction<TData>,
   ...args: TArgs
@@ -94,8 +125,6 @@ function fetchDataFromService<TArgs extends Array<unknown>, TData>(
   const [isLoading, setIsLoading] = useState(true);
   const [needsUpdate, setNeedsUpdate] = useState(false);
 
-  const lastUpdateRef = useRef<number | null>(null);
-
   useEffect(() => {
     let mounted = true;
 
@@ -107,7 +136,6 @@ function fetchDataFromService<TArgs extends Array<unknown>, TData>(
     queryFn(...argsWithCancellation)
       .then((result) => {
         if (mounted) {
-          lastUpdateRef.current = Date.now();
           setData(result);
           setIsLoading(false);
           setNeedsUpdate(false);
@@ -170,19 +198,29 @@ function fetchDataFromService<TArgs extends Array<unknown>, TData>(
   }
 
   // Display the raw error message if an error occurred.
-  // See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/77
+  // TODO: This logic should not be here but in the ErrorComponent type
+  //       See also: https://github.com/amosproj/amos-ss2021-project2-context-map/issues/144
   if (error) {
-    return (
-      <div className={classes.contentContainer}>
-        Something went wrong: {error.message}
-      </div>
-    );
+    if (error instanceof CancellationError) {
+      return (
+        <ErrorComponent type={ErrorType.CancellationError} jsError={error} />
+      );
+    }
+
+    if (error instanceof HttpError && error.status === 404) {
+      return <ErrorComponent type={ErrorType.NotFoundError} jsError={error} />;
+    }
+
+    if (error instanceof NetworkError) {
+      return <ErrorComponent type={ErrorType.NetworkError} jsError={error} />;
+    }
+
+    return <ErrorComponent jsError={error} />;
   }
 
   // Display an error message if something went wrong. This should not happen normally.
-  // See https://github.com/amosproj/amos-ss2021-project2-context-map/issues/77
   if (!data) {
-    return <div className={classes.contentContainer}>Something went wrong</div>;
+    return <ErrorComponent />;
   }
 
   return renderContent(data);
