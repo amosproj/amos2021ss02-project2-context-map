@@ -20,7 +20,7 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,tests}/**/*.ts\"",
     "lint-fix": "yarn run lint --fix",
-    "test": "jest --rootDir=.",
+    "test": "jest",
     "test:watch": "yarn test --watch",
     "test:cov": "yarn test --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
@@ -75,7 +75,12 @@
     "collectCoverageFrom": [
       "src/**/*.(t|j)s"
     ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node",
+    "coverageThreshold": {
+      "global": {
+        "branches": 80
+      }
+    }
   }
 }

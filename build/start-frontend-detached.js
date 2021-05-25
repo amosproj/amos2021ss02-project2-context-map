@@ -4,4 +4,4 @@ const { join } = require("path");
 
 process.chdir(join(__dirname, "..", "frontend"));
 
-exec("yarn start")
+exec("yarn run start:forTests")

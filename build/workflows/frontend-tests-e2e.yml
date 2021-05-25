@@ -54,5 +54,12 @@ jobs:
         run: yarn run cy:run:e2e --browser ${{ matrix.browser }} --headless
         working-directory: ${{ env.working-directory }}
 
+      - name: Print coverage
+        run: yarn run coverage:print
+        working-directory: ${{ env.working-directory }}
+      - name: Check coverage
+        run: yarn run coverage:check
+        working-directory: ${{ env.working-directory }}
+
       - name: Stop Dev Server
         run: pm2 delete all
