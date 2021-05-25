@@ -23,6 +23,7 @@ import LimitListSizeComponent from './helper/LimitListSizeComponent';
 import QueryService from '../services/QueryService';
 import { CancellationTokenSource } from '../utils/CancellationToken';
 import CancellationError from '../utils/CancellationError';
+import ErrorComponent from '../errors/ErrorComponent';
 
 export default function Searchbar(): JSX.Element {
   const searchService = useService(SearchService);
@@ -40,6 +41,8 @@ export default function Searchbar(): JSX.Element {
 
   // List that contains the search results
   const [searchResults, setSearchResults] = useState<SearchResultList[]>([]);
+
+  const [error, setError] = useState<Error | undefined>(undefined);
 
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -71,12 +74,12 @@ export default function Searchbar(): JSX.Element {
         .then((result) => {
           setSearchOngoing(false);
           setSearchResults(result);
+          setError(undefined);
         })
-        .catch((error) => {
-          if (error instanceof CancellationError) return;
+        .catch((err) => {
+          if (err instanceof CancellationError) return;
           setSearchOngoing(false);
-          // eslint-disable-next-line no-console -- TODO what can we really do with the error here?
-          console.error(error);
+          setError(err);
         });
     } else {
       setSearchResults([]);
@@ -125,28 +128,37 @@ export default function Searchbar(): JSX.Element {
               ) : undefined
             }
           />
-          {menuOpen && searchResults.length > 0 ? (
+          {(menuOpen && searchResults.length > 0) || error ? (
             <Card
               className="SearchResultsCard"
               style={{ width: `${inputRef.current?.clientWidth ?? 0}px` }}
             >
               <CardContent>
-                <List className="list" subheader={<li />}>
-                  {searchResults.map((searchResult) => (
-                    <li className="listSection" key={searchResult.key}>
-                      <ul className="SubList">
-                        <ListSubheader>{searchResult.header}</ListSubheader>
-                        <LimitListSizeComponent
-                          list={searchResult.elements.map((element) => (
-                            <ListItem key={element.key}>
-                              {element.element}
-                            </ListItem>
-                          ))}
-                        />
-                      </ul>
-                    </li>
-                  ))}
-                </List>
+                {error ? (
+                  <ErrorComponent jsError={error} />
+                ) : (
+                  <List className="list" subheader={<li />}>
+                    {searchResults.map((searchResult) => (
+                      <li className="listSection" key={searchResult.key}>
+                        <ul className="SubList">
+                          <ListSubheader>{searchResult.header}</ListSubheader>
+                          <LimitListSizeComponent
+                            list={searchResult.elements.map((element) => (
+                              <ListItem
+                                key={element.key}
+                                button
+                                component="a"
+                                href={element.href}
+                              >
+                                {element.element}
+                              </ListItem>
+                            ))}
+                          />
+                        </ul>
+                      </li>
+                    ))}
+                  </List>
+                )}
               </CardContent>
             </Card>
           ) : null}
