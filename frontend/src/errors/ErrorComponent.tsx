@@ -66,30 +66,26 @@ function ErrorComponent(props: ErrorComponentProps): JSX.Element {
   // If a JS Error occurred
   if (jsError !== undefined) {
     if (jsError instanceof CancellationError) {
-      return <ErrorComponent type={ErrorType.Cancellation} />;
+      type = ErrorType.Cancellation;
+    } else if (jsError instanceof HttpError && jsError.status === 404) {
+      type = ErrorType.NotFound;
+    } else if (jsError instanceof NetworkError) {
+      type = ErrorType.Network;
     }
-
-    if (jsError instanceof HttpError && jsError.status === 404) {
-      return <ErrorComponent type={ErrorType.NotFound} />;
-    }
-
-    if (jsError instanceof NetworkError) {
-      return <ErrorComponent type={ErrorType.Network} />;
-    }
-
-    const { imgSrc } = ErrorComponentData[ErrorType.Generic];
-    return (
-      <Box className={classes.root}>
-        <img src={imgSrc} className={classes.img} alt="" />
-        <h1>{jsError.name}</h1>
-        <p>{jsError.message}</p>
-      </Box>
-    );
   }
 
   // If no error type specified
   if (type === undefined) type = ErrorType.Generic;
-  const { imgSrc, title, text } = ErrorComponentData[type];
+
+  let { imgSrc, title, text } = ErrorComponentData[type];
+
+  // If jsError, use its error.name and error.message
+  if (jsError !== undefined && type === ErrorType.Generic) {
+    imgSrc = ErrorComponentData[ErrorType.Generic].imgSrc;
+    title = jsError.name;
+    text = jsError.message;
+  }
+
   return (
     <Box className={classes.root}>
       <img src={imgSrc} className={classes.img} alt="" />
