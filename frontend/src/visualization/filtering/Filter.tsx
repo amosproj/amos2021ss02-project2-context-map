@@ -10,7 +10,7 @@ import {
   Divider,
 } from '@material-ui/core';
 import React, { useRef } from 'react';
-import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import useService from '../../dependency-injection/useService';
@@ -99,7 +99,6 @@ const Filter = (props: {
 }): JSX.Element => {
   // hooks
   const classes = useStyles();
-  const theme = useTheme();
   const [tabIndex, setTabIndex] = React.useState(0);
   const [open, setOpen] = React.useState(false);
 
