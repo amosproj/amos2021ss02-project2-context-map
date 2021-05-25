@@ -56,7 +56,7 @@ export default class FilterConditionBuilder extends FilterConditionVisitor {
       `${property}_value`
     );
 
-    this.resultCondition = `${this.name}.$${propertyParamName} = $${valueParamName}`;
+    this.resultCondition = `${this.name}[$${propertyParamName}] = $${valueParamName}`;
 
     this.queryParams[propertyParamName] = property;
     this.queryParams[valueParamName] = value;
