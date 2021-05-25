@@ -198,8 +198,6 @@ function fetchDataFromService<TArgs extends unknown[], TData>(
   }
 
   // Display the raw error message if an error occurred.
-  // TODO: This logic should not be here but in the ErrorComponent type
-  //       See also: https://github.com/amosproj/amos-ss2021-project2-context-map/issues/144
   if (error) {
     return <ErrorComponent jsError={error} />;
   }
