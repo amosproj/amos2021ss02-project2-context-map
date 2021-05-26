@@ -8,9 +8,7 @@ import {
   CancellationToken,
   CancellationTokenSource,
 } from '../../utils/CancellationToken';
-import ErrorComponent, { ErrorType } from '../../errors/ErrorComponent';
-import CancellationError from '../../utils/CancellationError';
-import { HttpError, NetworkError } from '../../services/http';
+import ErrorComponent from '../../errors/ErrorComponent';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -198,25 +196,8 @@ function fetchDataFromService<TArgs extends unknown[], TData>(
   }
 
   // Display the raw error message if an error occurred.
-  // TODO: This logic should not be here but in the ErrorComponent type
-  //       See also: https://github.com/amosproj/amos-ss2021-project2-context-map/issues/144
+  /* istanbul ignore if */
   if (error) {
-    if (error instanceof CancellationError) {
-      return (
-        <ErrorComponent type={ErrorType.CancellationError} jsError={error} />
-      );
-    }
-
-    /* istanbul ignore if */
-    if (error instanceof HttpError && error.status === 404) {
-      return <ErrorComponent type={ErrorType.NotFoundError} jsError={error} />;
-    }
-
-    /* istanbul ignore if */
-    if (error instanceof NetworkError) {
-      return <ErrorComponent type={ErrorType.NetworkError} jsError={error} />;
-    }
-
     return <ErrorComponent jsError={error} />;
   }
 

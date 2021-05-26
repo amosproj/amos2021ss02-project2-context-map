@@ -17,6 +17,6 @@ context('Filter', () => {
         loadingIconFound.resolve();
       });
 
-    cy.contains('The operation was cancelled.');
+    cy.contains('Cancellation Error');
   });
 });
