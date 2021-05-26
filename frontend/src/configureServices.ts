@@ -1,11 +1,11 @@
 import { Container } from 'inversify';
 import HttpService from './services/http';
-import QueryService from './services/QueryService';
-import QueryServiceImpl from './services/QueryServiceImpl';
-import RandomNumberGenerator from './services/RandomNumberGenerator';
-import RandomNumberGeneratorImpl from './services/RandomNumberGeneratorImpl';
-import SearchService from './services/searchService';
-import SearchServiceImpl from './services/SearchServiceImpl';
+import { QueryService, QueryServiceImpl } from './services/query';
+import {
+  RandomNumberGenerator,
+  RandomNumberGeneratorImpl,
+} from './services/random-number';
+import { SearchService, SearchServiceImpl } from './services/search';
 import { FilterService, FilterServiceImpl } from './services/filter';
 import { SchemaService, SchemaServiceImpl } from './services/schema';
 

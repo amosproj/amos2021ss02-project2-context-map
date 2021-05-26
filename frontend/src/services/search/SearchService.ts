@@ -2,8 +2,8 @@
 
 import { injectable } from 'inversify';
 import 'reflect-metadata';
-import { SearchResult } from '../shared/search/SearchResult';
-import { CancellationToken } from '../utils/CancellationToken';
+import { SearchResult } from '../../shared/search/SearchResult';
+import { CancellationToken } from '../../utils/CancellationToken';
 
 /**
  * A service that can be used to perform full text database searches.

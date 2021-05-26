@@ -2,7 +2,7 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import logo from '../logo.svg';
 import './Home.css';
-import RandomNumberGenerator from '../services/RandomNumberGenerator';
+import { RandomNumberGenerator } from '../services/random-number';
 import useService from '../dependency-injection/useService';
 
 function Home(): JSX.Element {

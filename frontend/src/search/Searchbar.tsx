@@ -13,14 +13,14 @@ import { Autorenew, Search } from '@material-ui/icons';
 import { BehaviorSubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import useService from '../dependency-injection/useService';
-import SearchService from '../services/searchService';
+import { SearchService } from '../services/search';
 import './SearchResultList.scss';
 import SearchResultList from './SearchResultList';
 import convertSearchResultToSearchResultList from './SearchEntryConverter';
 
 import './Searchbar.scss';
 import LimitListSizeComponent from './helper/LimitListSizeComponent';
-import QueryService from '../services/QueryService';
+import { QueryService } from '../services/query';
 import { CancellationTokenSource } from '../utils/CancellationToken';
 import CancellationError from '../utils/CancellationError';
 import ErrorComponent from '../errors/ErrorComponent';

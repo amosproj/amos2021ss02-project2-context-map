@@ -1,9 +1,9 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { SearchResult } from '../shared/search/SearchResult';
-import { CancellationToken } from '../utils/CancellationToken';
-import HttpService from './http';
-import SearchService from './searchService';
+import { SearchResult } from '../../shared/search/SearchResult';
+import { CancellationToken } from '../../utils/CancellationToken';
+import HttpService from '../http';
+import SearchService from './SearchService';
 
 /**
  * The implementation of query service that performs query requests

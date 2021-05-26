@@ -6,7 +6,7 @@ import { NodeDescriptor } from '../../src/shared/entities/NodeDescriptor';
 import { Edge } from '../../src/shared/entities/Edge';
 import { EdgeDescriptor } from '../../src/shared/entities/EdgeDescriptor';
 import delay from '../../src/utils/delay';
-import QueryService from '../../src/services/QueryService';
+import { QueryService } from '../../src/services/query';
 import { CancellationToken } from '../../src/utils/CancellationToken';
 import getRandomInteger from '../../src/utils/getRandomInteger';
 
