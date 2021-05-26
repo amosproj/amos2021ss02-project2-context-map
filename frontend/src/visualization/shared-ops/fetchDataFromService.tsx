@@ -8,6 +8,7 @@ import {
   CancellationToken,
   CancellationTokenSource,
 } from '../../utils/CancellationToken';
+import ErrorComponent from '../../errors/ErrorComponent';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
