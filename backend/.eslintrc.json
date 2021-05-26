@@ -31,7 +31,8 @@
     // Supports constructors with only paramerter properties
     "no-useless-constructor": "off",
     "@typescript-eslint/no-useless-constructor": ["error"],
-    "class-methods-use-this": "off"
+    "class-methods-use-this": "off",
+    "lines-between-class-members": "off"
   },
   "settings": {
     "import/resolver": {

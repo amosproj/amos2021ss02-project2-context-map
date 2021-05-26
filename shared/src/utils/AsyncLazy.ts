@@ -13,12 +13,10 @@ function buildOptions(options: Partial<AsyncLazyOptions>): AsyncLazyOptions {
 }
 
 export default class AsyncLazy<T> {
-  /* eslint-disable lines-between-class-members */
   private readonly options: AsyncLazyOptions;
   private readonly factory: FactoryFunction<T>;
   private promise: Promise<T> | null = null;
   private rejected = false;
-  /* eslint-enable lines-between-class-members */
 
   public constructor(
     factory: FactoryFunction<T>,
