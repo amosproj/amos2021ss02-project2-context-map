@@ -196,11 +196,13 @@ function fetchDataFromService<TArgs extends unknown[], TData>(
   }
 
   // Display the raw error message if an error occurred.
+  /* istanbul ignore if */
   if (error) {
     return <ErrorComponent jsError={error} />;
   }
 
   // Display an error message if something went wrong. This should not happen normally.
+  /* istanbul ignore if */
   if (!data) {
     return <ErrorComponent />;
   }

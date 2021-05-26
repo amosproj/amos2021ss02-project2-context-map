@@ -11,6 +11,7 @@ export default class RandomNumberGeneratorImpl
     max = max ?? 1.0;
     const min = minOrMax ?? 0.0;
 
+    /* istanbul ignore next */
     if (min > max) {
       return NaN;
     }

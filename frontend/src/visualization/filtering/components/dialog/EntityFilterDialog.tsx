@@ -11,6 +11,14 @@ import {
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import EntityPropertySelect from './EntityPropertySelect';
 import { FilterModelEntry } from '../../../../shared/filter';
+import {
+  FilterCondition,
+  MatchAllCondition,
+  MatchAnyCondition,
+  MatchPropertyCondition,
+} from '../../../../shared/queries';
+import useArrayState from '../useArrayState';
+import FilterPropertyModel from '../../FilterPropertyModel';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -30,19 +38,72 @@ const useStyles = makeStyles((theme: Theme) =>
 const EntityFilterDialog = (props: {
   filterOpen: boolean;
   handleCloseFilter: () => void;
-  entityTypes: FilterModelEntry[];
+  filterModelEntries: FilterModelEntry[];
+  setFilterQuery: (condition: MatchAllCondition | null) => void; // TODO: Please rename me!
 }): JSX.Element => {
-  const { filterOpen, handleCloseFilter, entityTypes } = props;
-
-  const entitySelects: unknown[] = [];
-  entityTypes.forEach((type) => {
-    entitySelects.push(<EntityPropertySelect entityType={type} />);
-  });
-
   const classes = useStyles();
+
+  const { filterOpen, handleCloseFilter, filterModelEntries, setFilterQuery } =
+    props;
+
+  const [properties, setProperties] = useArrayState<FilterPropertyModel>(
+    filterModelEntries.map(
+      (entry) => ({ ...entry, selectedValues: null } as FilterPropertyModel)
+    )
+  );
+
+  const entitySelects = properties.map((property, index) => (
+    <EntityPropertySelect
+      property={property}
+      setProperty={setProperties[index]}
+    />
+  ));
+
+  const handleApplyFilter = () => {
+    const filterConditions: FilterCondition[] = [];
+
+    for (const entry of properties) {
+      // There is a filter specified for the property
+      if (entry.selectedValues !== null && entry.selectedValues.length > 0) {
+        // If only a single value is specified in the filter, add this directly
+        // Example: name=Peter
+        if (entry.selectedValues.length === 1) {
+          filterConditions.push(
+            MatchPropertyCondition(entry.key, entry.selectedValues[0])
+          );
+        } else {
+          // There are multiple alternative filters specified for the property
+          // Example: name=Peter|William|Chris
+          // Combine these via MatchAny conditions.
+          filterConditions.push(
+            MatchAnyCondition(
+              ...entry.selectedValues.map((value) =>
+                MatchPropertyCondition(entry.key, value)
+              )
+            )
+          );
+        }
+      }
+    }
+
+    /* istanbul ignore else */
+    if (filterConditions.length > 0) {
+      setFilterQuery(MatchAllCondition(...filterConditions));
+    } else {
+      setFilterQuery(null);
+    }
+
+    handleCloseFilter();
+  };
+
   return (
     <div>
-      <Dialog open={filterOpen} onClose={handleCloseFilter} scroll="paper">
+      <Dialog
+        open={filterOpen}
+        onClose={handleCloseFilter}
+        scroll="paper"
+        className="FilterDialog"
+      >
         <form className={classes.form}>
           <FormControl className={classes.dialog}>
             <DialogTitle>Filter Entity</DialogTitle>
@@ -51,7 +112,11 @@ const EntityFilterDialog = (props: {
               <Button onClick={handleCloseFilter} color="primary">
                 Cancel
               </Button>
-              <Button onClick={handleCloseFilter} color="primary">
+              <Button
+                onClick={handleApplyFilter}
+                color="primary"
+                className="ApplyFilter"
+              >
                 Apply Filter
               </Button>
             </DialogActions>

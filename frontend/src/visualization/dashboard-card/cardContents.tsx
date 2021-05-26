@@ -34,6 +34,7 @@ const createCard = function createCardBasedOnTab(
 ): CardDefinition {
   const card = cardContents.find((content) => content.label === tab.label);
 
+  /* istanbul ignore if */
   if (card === undefined) {
     throw new Error(`No card content found to tab label ${tab.label}`);
   }

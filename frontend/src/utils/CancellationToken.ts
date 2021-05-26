@@ -23,6 +23,7 @@ export abstract class CancellationToken {
    * Throws a {@link CancellationError} if cancellation is requested.
    */
   public throwIfCancellationRequested(): void {
+    /* istanbul ignore if */
     if (this.isCancellationRequested) {
       throw new CancellationError();
     }
@@ -100,6 +101,7 @@ export class CancellationTokenSource {
   public subscribe(
     subscriber: CancellationTokenSubscriber
   ): CancellationTokenUnsubscribe {
+    /* istanbul ignore if */
     if (this.internalIsCancellationRequested) {
       subscriber();
       return nop;

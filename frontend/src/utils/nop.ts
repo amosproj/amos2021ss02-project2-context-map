@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /**
  * A function that does nothing.
  */

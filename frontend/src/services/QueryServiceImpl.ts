@@ -26,8 +26,7 @@ function buildDetailsRequest(
     typeof idOrDescriptor === 'number' ? idOrDescriptor : idOrDescriptor.id
   );
 
-  const request = new HttpGetRequest({}, { ids });
-  return request;
+  return new HttpGetRequest({}, { ids });
 }
 
 /**
@@ -40,6 +39,7 @@ export default class QueryServiceImpl extends QueryService {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   private readonly http: HttpService = null!;
 
+  /* istanbul ignore next */
   public queryAll(
     query?: QueryBase,
     cancellation?: CancellationToken
