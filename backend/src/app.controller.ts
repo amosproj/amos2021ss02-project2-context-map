@@ -1,6 +1,5 @@
 import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
-import { Node } from './shared/entities/Node';
-import { Edge } from './shared/entities/Edge';
+import { Node, Edge } from './shared/entities';
 import { ParseIntArrayPipe } from './pipes/ParseIntArrayPipe';
 import { AppService } from './app.service';
 import { QueryBase, QueryResult } from './shared/queries';

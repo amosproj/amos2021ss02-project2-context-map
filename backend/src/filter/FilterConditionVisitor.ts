@@ -1,10 +1,10 @@
 import { ArgumentError } from '../shared/errors';
 import {
   FilterCondition,
-  OfTypeCondition,
-  MatchPropertyCondition,
-  MatchAnyCondition,
   MatchAllCondition,
+  MatchAnyCondition,
+  MatchPropertyCondition,
+  OfTypeCondition,
 } from '../shared/queries';
 import { validateMatchAllCondition } from './validateMatchAllCondition';
 import { validateMatchAnyCondition } from './validateMatchAnyCondition';

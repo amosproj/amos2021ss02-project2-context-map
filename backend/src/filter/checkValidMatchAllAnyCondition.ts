@@ -1,4 +1,4 @@
-import { MatchAnyCondition, MatchAllCondition } from '../shared/queries';
+import { MatchAllCondition, MatchAnyCondition } from '../shared/queries';
 import { FilterConditionValidationResult } from './FilterConditionValidationResult';
 
 /**

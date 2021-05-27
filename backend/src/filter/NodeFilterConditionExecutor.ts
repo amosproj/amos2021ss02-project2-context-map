@@ -1,6 +1,5 @@
 import any from '../utils/any';
-import { Node } from '../shared/entities/Node';
-import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
+import { Node, NodeDescriptor } from '../shared/entities';
 import {
   FilterCondition,
   MatchAnyCondition,
