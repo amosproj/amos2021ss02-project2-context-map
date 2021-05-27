@@ -42,26 +42,22 @@ export default abstract class FilterConditionVisitor {
     return condition;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   protected visitOfTypeCondition(condition: OfTypeCondition): FilterCondition {
     return condition;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   protected visitMatchPropertyCondition(
     condition: MatchPropertyCondition
   ): FilterCondition {
     return condition;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   protected visitMatchAllCondition(
     condition: MatchAllCondition
   ): FilterCondition {
     return MatchAllCondition(...condition.filters.map((c) => this.visit(c)));
   }
 
-  // eslint-disable-next-line class-methods-use-this
   protected visitMatchAnyCondition(
     condition: MatchAnyCondition
   ): FilterCondition {

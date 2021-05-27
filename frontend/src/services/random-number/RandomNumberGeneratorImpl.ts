@@ -5,7 +5,6 @@ import RandomNumberGenerator from './RandomNumberGenerator';
 export default class RandomNumberGeneratorImpl
   implements RandomNumberGenerator
 {
-  // eslint-disable-next-line class-methods-use-this
   public next(minOrMax?: number, max?: number): number {
     // eslint-disable-next-line no-param-reassign
     max = max ?? 1.0;

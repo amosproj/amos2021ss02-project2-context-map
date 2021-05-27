@@ -5,7 +5,7 @@ import {
   createContainer,
   DependencyInjectionContext,
 } from '../../../src/dependency-injection/DependencyInjectionContext';
-import RandomNumberGenerator from '../../../src/services/RandomNumberGenerator';
+import { RandomNumberGenerator } from '../../../src/services/random-number';
 import RandomNumberGeneratorFake from '../../fixtures/RandomNumberGeneratorFake';
 
 describe('Home', () => {

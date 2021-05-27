@@ -2,16 +2,11 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import logo from '../logo.svg';
 import './Home.css';
-import RandomNumberGenerator from '../services/RandomNumberGenerator';
+import { RandomNumberGenerator } from '../services/random-number';
 import useService from '../dependency-injection/useService';
-import SharedClass from '../shared/SharedClass';
 
 function Home(): JSX.Element {
   const rnd = useService(RandomNumberGenerator);
-
-  // This is here to test code sharing. Remove me when everything is working pls...
-  const sharedThing = new SharedClass();
-  sharedThing.doNothing();
 
   return (
     <div className="Home">

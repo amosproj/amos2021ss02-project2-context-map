@@ -15,12 +15,10 @@ import SchemaService from './SchemaService';
 @injectable()
 export default class SchemaServiceImpl extends SchemaService {
   @inject(HttpService)
-  /* eslint-disable lines-between-class-members */
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   private readonly http: HttpService = null!;
   private readonly edgeTypesLazy: AsyncLazy<EdgeType[]>;
   private readonly nodeTypesLazy: AsyncLazy<NodeType[]>;
-  /* eslint-enable lines-between-class-members */
 
   public constructor() {
     super();
