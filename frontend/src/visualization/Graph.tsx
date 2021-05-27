@@ -4,7 +4,7 @@ import * as vis from 'vis-network';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import { uuid } from 'uuidv4';
 import useService from '../dependency-injection/useService';
-import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
+import { EdgeDescriptor } from '../shared/entities';
 import {
   FilterQuery,
   NodeResultDescriptor,

@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { EdgeType } from '../../shared/schema/EdgeType';
-import { NodeType } from '../../shared/schema/NodeType';
+import { EdgeType, NodeType } from '../../shared/schema';
 import { AsyncLazy } from '../../shared/utils';
 import { CancellationToken } from '../../utils/CancellationToken';
 import withCancellation from '../../utils/withCancellation';

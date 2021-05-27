@@ -1,11 +1,9 @@
 import React from 'react';
 import SearchResultList from './SearchResultList';
-import { ExpandedSearchResult } from '../shared/search/ExpandedSearchResult';
+import { ExpandedSearchResult } from '../shared/search';
 import NodeTypeComponent from './helper/NodeTypeComponent';
 import EdgeTypeComponent from './helper/EdgeTypeComponent';
-import { Node } from '../shared/entities/Node';
-import { Edge } from '../shared/entities/Edge';
-import { Property } from '../shared/entities/Property';
+import { Node, Edge, Property } from '../shared/entities';
 
 /**
  * This is an first approach to find the attribute that contains `searchString`.
