@@ -5,6 +5,9 @@
 FROM node:14-alpine AS dev
 RUN apk update && apk add --no-cache python g++ make bash
 
+# Set environment variables
+ENV DOCKER=DOCKER
+
 # Set our working directory
 WORKDIR /usr/src/kmap/backend
 
@@ -25,9 +28,10 @@ FROM node:14.17-alpine as prod
 # Install bash
 RUN apk update && apk add --no-cache bash
 
-# Set node environment variables
+# Set environment variables
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
+ENV DOCKER=DOCKER
 
 # Set our working directory
 WORKDIR /usr/src/kmap/backend
