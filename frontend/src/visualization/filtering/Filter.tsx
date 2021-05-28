@@ -15,9 +15,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import useService from '../../dependency-injection/useService';
 import { CancellationToken } from '../../utils/CancellationToken';
-import { NodeType } from '../../shared/schema/NodeType';
-import { EdgeType } from '../../shared/schema/EdgeType';
-
+import { NodeType, EdgeType } from '../../shared/schema';
 import EntityFilterElement from './components/EntityFilterElement';
 import fetchDataFromService from '../shared-ops/fetchDataFromService';
 import entityColors from '../data/GraphData';
