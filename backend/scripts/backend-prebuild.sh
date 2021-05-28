@@ -7,8 +7,9 @@
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 cd "$parent_path"
 
-if ![ -f /.dockerenv ]
-then
+# Only execute if not running inside a docker container
+grep -sq 'docker\|lxc' /proc/1/cgroup
+if [ $? -ne 0 ]; then
 
     # Copy shared files
     cp -a ../shared/src/. ./src/shared/
