@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
 import MiniSearch from 'minisearch';
 import { SearchResult } from '../shared/search/SearchResult';
-import AsyncLazy from '../utils/AsyncLazy';
+import { AsyncLazy } from '../shared/utils';
 import { Node } from '../shared/entities/Node';
 import { Edge } from '../shared/entities/Edge';
 import { Property } from '../shared/entities/Property';

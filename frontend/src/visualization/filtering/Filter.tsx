@@ -1,4 +1,3 @@
-import { AsyncProps } from 'react-async';
 import {
   AppBar,
   Box,
@@ -10,8 +9,8 @@ import {
   Typography,
   Divider,
 } from '@material-ui/core';
-import React from 'react';
-import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
+import React, { useRef } from 'react';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import useService from '../../dependency-injection/useService';
@@ -20,9 +19,14 @@ import { NodeType } from '../../shared/schema/NodeType';
 import { EdgeType } from '../../shared/schema/EdgeType';
 
 import EntityFilterElement from './components/EntityFilterElement';
-import fetchDataFromService from '../shared-ops/FetchData';
+import fetchDataFromService from '../shared-ops/fetchDataFromService';
 import entityColors from '../data/GraphData';
 import { SchemaService } from '../../services/schema';
+import {
+  FilterCondition,
+  FilterQuery,
+  MatchAnyCondition,
+} from '../../shared/queries';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -57,114 +61,149 @@ function TabPanel(props: TabPanelProps) {
       id={`full-width-tabpanel-${index}`}
       aria-labelledby={`full-width-tab-${index}`}
     >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      <Box p={3}>
+        <Typography>{children}</Typography>
+      </Box>
     </div>
   );
 }
+
 /**
- * A function that wraps the {@link getNodeTypes} call to the schema-service to be usable with react-async.
- * @param props - The props that contains our parameter in an untyped way.
- * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the nodeTypes.
+ * Fetches nodeTypes from the schemaService.
+ *
+ * @param schemaService - the schemaService the data is fetched from
+ * @param cancellation - the cancellation token
  */
-function fetchNodeTypes(props: AsyncProps<NodeType[]>): Promise<NodeType[]> {
-  const schemaService = props.service as SchemaService;
-  const cancellation = props.cancellation as CancellationToken;
+function fetchNodeTypes(
+  schemaService: SchemaService,
+  cancellation: CancellationToken
+): Promise<NodeType[]> {
   return schemaService.getNodeTypes(cancellation);
 }
 
 /**
- * A function that wraps the {@link getEdgeTypes} call to the schema-service to be usable with react-async.
- * @param props - The props that contains our parameter in an untyped way.
- * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the edgeTypes.
+ * Fetches edgeTypes from the schemaService.
+ *
+ * @param schemaService - the schemaService the data is fetched from
+ * @param cancellation - the cancellation token
  */
-function fetchEdgeTypes(props: AsyncProps<EdgeType[]>): Promise<NodeType[]> {
-  const schemaService = props.service as SchemaService;
-  const cancellation = props.cancellation as CancellationToken;
+function fetchEdgeTypes(
+  schemaService: SchemaService,
+  cancellation: CancellationToken
+): Promise<EdgeType[]> {
   return schemaService.getEdgeTypes(cancellation);
 }
 
-const Filter = (): JSX.Element => {
+const Filter = (props: {
+  executeQuery: (query: FilterQuery) => void;
+}): JSX.Element => {
+  // hooks
   const classes = useStyles();
-  const theme = useTheme();
   const [tabIndex, setTabIndex] = React.useState(0);
   const [open, setOpen] = React.useState(false);
+
+  const { executeQuery } = props;
   const schemaService = useService(SchemaService, null);
 
-  let dataNodeTypes = fetchDataFromService(fetchNodeTypes, schemaService);
-  let dataEdgeTypes = fetchDataFromService(fetchEdgeTypes, schemaService);
+  const nodeConditionsRef = useRef<(FilterCondition | null)[]>([]);
+  const edgeConditionsRef = useRef<(FilterCondition | null)[]>([]);
 
-  // check if data is an JSX.Element -> is still loading or error.
-  if (React.isValidElement(dataNodeTypes)) {
-    return dataNodeTypes;
-  }
-  if (React.isValidElement(dataEdgeTypes)) {
-    return dataEdgeTypes;
-  }
+  function updateQuery() {
+    const nodeConditions = nodeConditionsRef.current.filter(
+      (condition) => condition !== null
+    ) as FilterCondition[];
 
-  // collect entityType names and colors.
-  dataNodeTypes = dataNodeTypes as NodeType[];
-  dataEdgeTypes = dataEdgeTypes as EdgeType[];
+    const edgeConditions = edgeConditionsRef.current.filter(
+      (condition) => condition !== null
+    ) as FilterCondition[];
 
-  const nodeColorsAndTypes: {
-    color: string;
-    name: string;
-  }[] = [];
+    const filters: { nodes?: FilterCondition; edges?: FilterCondition } = {};
 
-  for (let i = 0; i < dataNodeTypes.length; i += 1) {
-    nodeColorsAndTypes.push({
-      color: entityColors[i % entityColors.length],
-      name: dataNodeTypes[i].name,
-    });
-  }
+    if (nodeConditions.length > 0) {
+      filters.nodes = MatchAnyCondition(...nodeConditions);
+    }
 
-  const edgeColorsAndTypes: {
-    color: string;
-    name: string;
-  }[] = [];
+    if (edgeConditions.length > 0) {
+      filters.edges = MatchAnyCondition(...edgeConditions);
+    }
 
-  for (let i = 0; i < dataEdgeTypes.length; i += 1) {
-    edgeColorsAndTypes.push({
-      color: '#a9a9a9',
-      name: dataEdgeTypes[i].name,
-    });
+    // TODO: Make limits configurable
+    executeQuery({ filters, limits: { edges: 250 } });
   }
 
   // a JSX.Element template used for rendering
   const entityTemplate = (
     color: string,
     name: string,
-    entity: 'node' | 'edge'
-  ) => (
-    <div>
-      <Box display="flex" p={1}>
-        <EntityFilterElement
-          backgroundColor={color}
-          name={name}
-          entity={entity}
-        />
-      </Box>
-    </div>
+    entity: 'node' | 'edge',
+    i: number
+  ) => {
+    const setEntryFilterCondition = (
+      condition: FilterCondition | null
+    ): void => {
+      const conditionsRef =
+        entity === 'node' ? nodeConditionsRef : edgeConditionsRef;
+      const conditions = conditionsRef.current;
+
+      while (conditions.length - 1 < i) {
+        conditions.push(null);
+      }
+
+      conditions[i] = condition;
+      conditionsRef.current = conditions;
+      updateQuery();
+    };
+
+    return (
+      <div>
+        <Box display="flex" p={1}>
+          <EntityFilterElement
+            backgroundColor={color}
+            name={name}
+            entity={entity}
+            setFilterQuery={setEntryFilterCondition}
+          />
+        </Box>
+      </div>
+    );
+  };
+
+  function renderNodes(nodeTypes: NodeType[]): JSX.Element {
+    return (
+      <>
+        {nodeTypes.map((type, i) =>
+          entityTemplate(
+            entityColors[i % entityColors.length],
+            type.name,
+            'node',
+            i
+          )
+        )}
+      </>
+    );
+  }
+
+  function renderEdges(edgeTypes: EdgeType[]): JSX.Element {
+    return (
+      <>
+        {edgeTypes.map((type, i) =>
+          entityTemplate('#a9a9a9', type.name, 'edge', i)
+        )}
+      </>
+    );
+  }
+
+  const nodes = fetchDataFromService(
+    fetchNodeTypes,
+    renderNodes,
+    schemaService
   );
 
-  // put nodeColorsAndTypes and edgeColorsAndTypes into the entityTemplate
-  const nodeTypes: unknown[] = [];
-  const edgeTypes: unknown[] = [];
-
-  nodeColorsAndTypes.forEach((colorsAndTypes) => {
-    nodeTypes.push(
-      entityTemplate(colorsAndTypes.color, colorsAndTypes.name, 'node')
-    );
-  });
-
-  edgeColorsAndTypes.forEach((colorsAndTypes) => {
-    edgeTypes.push(
-      entityTemplate(colorsAndTypes.color, colorsAndTypes.name, 'edge')
-    );
-  });
+  const edges = fetchDataFromService(
+    fetchEdgeTypes,
+    renderEdges,
+    schemaService
+  );
 
   const handleChange = (
     event: React.ChangeEvent<Record<string, unknown>>,
@@ -182,7 +221,7 @@ const Filter = (): JSX.Element => {
   };
 
   return (
-    <div>
+    <div className="Filter">
       <AppBar color="default" className={classes.appBar}>
         <IconButton color="inherit" onClick={handleDrawerOpen}>
           <ChevronLeftIcon />
@@ -190,12 +229,8 @@ const Filter = (): JSX.Element => {
       </AppBar>
       <Drawer variant="persistent" anchor="right" open={open}>
         <div className={classes.drawerHeader}>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'rtl' ? (
-              <ChevronLeftIcon />
-            ) : (
-              <ChevronRightIcon />
-            )}
+          <IconButton onClick={handleDrawerClose} className="closeFilter">
+            <ChevronRightIcon />
           </IconButton>
         </div>
         <Divider />
@@ -206,16 +241,16 @@ const Filter = (): JSX.Element => {
             indicatorColor="primary"
             textColor="primary"
           >
-            <Tab label="Node Types" />
-            <Tab label="Edge Types" />
+            <Tab label="Node Types" className="NodeTypes" />
+            <Tab label="Edge Types" className="EdgeTypes" />
           </Tabs>
         </AppBar>
         <List style={{ maxHeight: '94%', width: 320, overflow: 'auto' }}>
           <TabPanel value={tabIndex} index={0}>
-            <div>{nodeTypes}</div>
+            {nodes}
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
-            {edgeTypes}
+            {edges}
           </TabPanel>
         </List>
       </Drawer>

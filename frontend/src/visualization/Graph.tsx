@@ -1,17 +1,20 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import VisGraph, { GraphData } from 'react-graph-vis';
 import * as vis from 'vis-network';
-import { AsyncProps } from 'react-async';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { uuid } from 'uuidv4';
 import useService from '../dependency-injection/useService';
 import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
-import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
-import { QueryResult } from '../shared/queries';
-import QueryService from '../services/QueryService';
+import {
+  FilterQuery,
+  NodeResultDescriptor,
+  QueryResult,
+} from '../shared/queries';
 import { CancellationToken } from '../utils/CancellationToken';
 import { useSize } from '../utils/useSize';
 import Filter from './filtering/Filter';
-import fetchDataFromService from './shared-ops/FetchData';
+import fetchDataFromService from './shared-ops/fetchDataFromService';
+import { FilterService } from '../services/filter';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -39,22 +42,28 @@ const useStyles = makeStyles(() =>
       overflowY: 'hidden',
       overflowX: 'hidden',
     },
-    filter: {
+    Filter: {
       // high zIndex so content is in the foreground
       zIndex: 1500,
     },
   })
 );
 
-function convertNode(node: NodeDescriptor): vis.Node {
-  return {
+function convertNode(node: NodeResultDescriptor): vis.Node {
+  const result: vis.Node = {
     id: node.id,
     label: node.id.toString(),
     // Advanced stuff, like styling nodes with different types differently...
   };
+
+  if (node.subsidiary) {
+    result.color = 'yellow';
+  }
+
+  return result;
 }
 
-function convertNodes(nodes: NodeDescriptor[]): vis.Node[] {
+function convertNodes(nodes: NodeResultDescriptor[]): vis.Node[] {
   return nodes.map((node) => convertNode(node));
 }
 
@@ -98,64 +107,94 @@ function buildOptions(width: number, height: number) {
 }
 
 /**
- * A function that wraps the call to the query-service to be usable with react-async.
- * @param props The props that contains our paramter in an untyped way.
- * @returns A {@link Promise} representing the asynchronous operation. When evaluated, the promise result contains the query result.
+ * Fetches a filtered QueryResult from the filterService.
+ *
+ * @param filterService - the filterService the data is fetched from
+ * @param filterQuery - the filterQuery that is applied for filtering
+ * @param cancellation - the cancellation token
  */
-function executeQuery(props: AsyncProps<QueryResult>): Promise<QueryResult> {
-  const queryService = props.service as QueryService;
-  const cancellation = props.cancellation as CancellationToken;
-  return queryService.queryAll(
-    { limits: { nodes: 200, edges: undefined } },
-    cancellation
-  );
+function executeFilterQuery(
+  filterService: FilterService,
+  filterQuery: React.MutableRefObject<FilterQuery>,
+  cancellation: CancellationToken
+): Promise<QueryResult> {
+  return filterService.query(filterQuery.current, cancellation);
 }
 
 function Graph(): JSX.Element {
   const classes = useStyles();
 
+  // the filtered QueryResult from child-component EntityFilterDialog
+  const filterQueryRef = React.useRef<FilterQuery>({
+    limits: { edges: 150, nodes: 200 },
+  });
+
   // A React ref to the container that is used to measure the available space for the graph.
-  const sizeMeasureContainerRef = useRef<HTMLDivElement>(null);
+  const sizeMeasureContainerRef = React.useRef<HTMLDivElement>(null);
 
   // The size of the container that is used to measure the available space for the graph.
   const containerSize = useSize(sizeMeasureContainerRef);
 
   // The query- and schema-service injected from DI.
-  const queryService = useService(QueryService, null);
+  const filterService = useService(FilterService, null);
 
-  const data = fetchDataFromService(executeQuery, queryService);
+  // Dirty hack to get to to instance of the update function for components that are not part of
+  // the the render content function. This is a workaround for
+  // https://github.com/amosproj/amos-ss2021-project2-context-map/issues/187 and for
+  // https://github.com/amosproj/amos-ss2021-project2-context-map/issues/186
+  // that causes the filter to be use-less, as the filter conditions are reset on every load.
+  // This workaround moves the filter out of the renderContent method, so it does not get re-rendered.
+  // TODO: Fix #187 and #186 and remove this workaround.
+  const updateRef = React.useRef<(() => void) | null>(null);
 
-  // check if data is an JSX.Element -> is still loading or error.
-  if (React.isValidElement(data)) {
+  function renderContent(
+    queryResult: QueryResult,
+    update: () => void
+  ): JSX.Element {
+    // Convert the query result to an object, react-graph-vis understands.
+    const graphData = convertQueryResult(queryResult);
+
+    // Build the react-graph-vis graph options.
+    const options = buildOptions(containerSize.width, containerSize.height);
+
+    updateRef.current = update;
+
     return (
       <>
-        <div
-          // ref sizeMeasureContainerRef to classes.sizeMeasureContainer to compute containerSize.width and containerSize.height
-          className={classes.sizeMeasureContainer}
-          ref={sizeMeasureContainerRef}
-        />
-        {data}
+        <div className={classes.graphContainer}>
+          <VisGraph graph={graphData} options={options} key={uuid()} />
+        </div>
       </>
     );
   }
-  // Convert the query result to an object, react-graph-vis understands.
-  const graphData = convertQueryResult(data as QueryResult);
 
-  // Build the react-graph-vis graph options.
-  const options = buildOptions(containerSize.width, containerSize.height);
+  const graphView = fetchDataFromService(
+    executeFilterQuery,
+    renderContent,
+    filterService,
+    filterQueryRef
+  );
+
+  const executeQuery = (query: FilterQuery): void => {
+    filterQueryRef.current = query;
+    const update = updateRef.current;
+
+    if (typeof update === 'function') {
+      update();
+    }
+  };
 
   return (
     <>
+      <div
+        // ref sizeMeasureContainerRef to classes.sizeMeasureContainer to compute containerSize.width and containerSize.height
+        className={classes.sizeMeasureContainer}
+        ref={sizeMeasureContainerRef}
+      />
       <div className={classes.graphPage}>
-        <div className={classes.graphContainer}>
-          <div
-            className={classes.sizeMeasureContainer}
-            ref={sizeMeasureContainerRef}
-          />
-          <VisGraph graph={graphData} options={options} />
-        </div>
-        <div className={classes.filter}>
-          <Filter />
+        {graphView}
+        <div className={classes.Filter}>
+          <Filter executeQuery={executeQuery} />
         </div>
       </div>
     </>

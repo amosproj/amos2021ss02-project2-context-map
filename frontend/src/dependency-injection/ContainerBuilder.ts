@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { Container, interfaces } from 'inversify';
 import configureServices from '../configureServices';
 

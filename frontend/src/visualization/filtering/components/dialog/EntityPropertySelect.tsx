@@ -8,7 +8,7 @@ import {
   Select,
 } from '@material-ui/core';
 import React from 'react';
-import { FilterModelEntry } from '../../../../shared/filter';
+import FilterPropertyModel from '../../FilterPropertyModel';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -19,11 +19,11 @@ const useStyles = makeStyles(() =>
 );
 
 const EntityPropertySelect = (props: {
-  entityType: FilterModelEntry;
+  property: FilterPropertyModel;
+  setProperty: React.Dispatch<React.SetStateAction<FilterPropertyModel>>;
 }): JSX.Element => {
   const classes = useStyles();
-  const { entityType } = props;
-  const [personName, setPersonName] = React.useState<string[]>([]);
+  const { property, setProperty } = props;
 
   // utils from material ui multiselect https://material-ui.com/components/selects/#select
   const ITEM_HEIGHT = 48;
@@ -49,27 +49,30 @@ const EntityPropertySelect = (props: {
   const theme = useTheme();
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setPersonName(event.target.value as string[]);
+    setProperty({
+      ...property,
+      selectedValues: event.target.value as string[],
+    });
   };
 
   return (
-    <div>
+    <div className="FilterSelect">
       <FormControl className={classes.select}>
-        <InputLabel>{entityType.key}</InputLabel>
+        <InputLabel>{property.key}</InputLabel>
         <Select
           multiple
-          value={personName}
+          value={(property.selectedValues ?? []) as string[]}
           onChange={handleChange}
           input={<Input />}
           MenuProps={MenuProps}
         >
-          {entityType.values.map((name) => (
+          {property.values.map((name) => (
             <MenuItem
               key={typeof name === 'string' ? name : 'Error: No string'}
               value={typeof name === 'string' ? name : 'Error: No string'}
               style={getStyles(
                 typeof name === 'string' ? name : 'Error: No string',
-                personName,
+                property.values as string[],
                 theme
               )}
             >

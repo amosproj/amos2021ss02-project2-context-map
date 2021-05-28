@@ -43,7 +43,7 @@ export class FilterService implements FilterServiceBase {
 
     const queryResult = { nodes, edges };
 
-    return consolidateQueryResult(queryResult);
+    return consolidateQueryResult(queryResult, true);
   }
 
   private async getNodes(
@@ -62,7 +62,7 @@ export class FilterService implements FilterServiceBase {
     if (limit !== undefined) {
       const limitParamKey = allocateParamKey(params, 'limit');
       // toInteger required, since apparently it converts int to double.
-      query = `${query}LIMIT toInteger($${limitParamKey})`;
+      query = `${query} LIMIT toInteger($${limitParamKey})`;
       params[limitParamKey] = limit;
     }
 
@@ -86,7 +86,7 @@ export class FilterService implements FilterServiceBase {
     if (limit !== undefined) {
       const limitParamKey = allocateParamKey(params, 'limit');
       // toInteger required, since apparently it converts int to double.
-      query = `${query}LIMIT toInteger($${limitParamKey})`;
+      query = `${query} LIMIT toInteger($${limitParamKey})`;
       params[limitParamKey] = limit;
     }
 

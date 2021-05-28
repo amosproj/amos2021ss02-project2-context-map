@@ -90,7 +90,7 @@ function App(): JSX.Element {
         ))}
         <Route path="*">
           <Layout>
-            <ErrorComponent type={ErrorType.NotFoundError} />
+            <ErrorComponent type={ErrorType.NotFound} />
           </Layout>
         </Route>
       </Switch>

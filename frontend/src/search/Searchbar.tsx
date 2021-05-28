@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -9,42 +9,102 @@ import {
   ListItem,
   ListSubheader,
 } from '@material-ui/core';
-import { Search } from '@material-ui/icons';
+import { Autorenew, Search } from '@material-ui/icons';
+import { BehaviorSubject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import useService from '../dependency-injection/useService';
-import SearchService from '../services/searchService';
+import { SearchService } from '../services/search';
 import './SearchResultList.scss';
 import SearchResultList from './SearchResultList';
 import convertSearchResultToSearchResultList from './SearchEntryConverter';
 
+import './Searchbar.scss';
+import LimitListSizeComponent from './helper/LimitListSizeComponent';
+import { QueryService } from '../services/query';
+import { CancellationTokenSource } from '../utils/CancellationToken';
+import CancellationError from '../utils/CancellationError';
+import ErrorComponent from '../errors/ErrorComponent';
+
 export default function Searchbar(): JSX.Element {
-  const searchService = useService<SearchService>(SearchService, null);
+  const searchService = useService(SearchService);
   /**
-   * {
-   *   header: Items[]
-   * }
+   * Contains all the active cancel tokens.
    */
+  const searchServiceCancelTokens = useRef<CancellationTokenSource[]>([]);
+
+  const queryService = useService(QueryService);
+
+  /**
+   * Fires, when the search input is changes
+   */
+  const searchInput$ = useRef(new BehaviorSubject(''));
+
+  // List that contains the search results
   const [searchResults, setSearchResults] = useState<SearchResultList[]>([]);
+
+  const [error, setError] = useState<Error | undefined>(undefined);
+
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const [searchOngoing, setSearchOngoing] = useState(false);
+
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const onInputChanged = (event: SyntheticEvent) => {
-    const newValue = (event.target as HTMLInputElement).value;
-    setMenuOpen(newValue?.length > 0);
-
-    if (newValue?.length > 0) {
+  function loadSearchResults(searchString: string) {
+    if (searchString?.length > 0) {
+      const cancelToken = new CancellationTokenSource();
+      searchServiceCancelTokens.current.push(cancelToken);
+      setSearchOngoing(true);
       searchService
-        .fullTextSearch(newValue)
-        .then(async (result) => convertSearchResultToSearchResultList(result))
-        .then((result) => setSearchResults(result))
-        .catch((error) => {
-          // eslint-disable-next-line no-console -- TODO what can we really do with the error here?
-          console.error(error);
+        .fullTextSearch(searchString, cancelToken.token)
+        .then(async (result) =>
+          convertSearchResultToSearchResultList(searchString, {
+            edges:
+              result.edges.length > 0
+                ? await queryService.getEdgesById(result.edges)
+                : [],
+            nodes:
+              result.nodes.length > 0
+                ? await queryService.getNodesById(result.nodes)
+                : [],
+            edgeTypes: result.edgeTypes,
+            nodeTypes: result.nodeTypes,
+          })
+        )
+        .then((result) => {
+          setSearchOngoing(false);
+          setSearchResults(result);
+          setError(undefined);
+        })
+        .catch((err) => {
+          if (err instanceof CancellationError) return;
+          setSearchOngoing(false);
+          setError(err);
         });
+    } else {
+      setSearchResults([]);
     }
+  }
+
+  useEffect(() => {
+    const sub = searchInput$.current.pipe(debounceTime(300)).subscribe({
+      next: (nextSearchString) => {
+        searchServiceCancelTokens.current.forEach((q) => q.cancel());
+        // noinspection StatementWithEmptyBodyJS -- Clear list
+        while (searchServiceCancelTokens.current.pop());
+        loadSearchResults(nextSearchString);
+      },
+    });
+
+    return () => sub.unsubscribe();
+  }, []);
+
+  const onInputChanged = (event: ChangeEvent<HTMLInputElement>) => {
+    searchInput$.current.next(event.target.value);
   };
 
   return (
-    <>
+    <div className="SearchBar">
       <ClickAwayListener onClickAway={() => setMenuOpen(false)}>
         <div>
           <Input
@@ -60,32 +120,50 @@ export default function Searchbar(): JSX.Element {
                 <Search />
               </InputAdornment>
             }
+            endAdornment={
+              searchOngoing ? (
+                <InputAdornment className="LoadingIcon" position="end">
+                  <Autorenew />
+                </InputAdornment>
+              ) : undefined
+            }
           />
-          {menuOpen && searchResults.length > 0 ? (
+          {(menuOpen && searchResults.length > 0) || error ? (
             <Card
               className="SearchResultsCard"
               style={{ width: `${inputRef.current?.clientWidth ?? 0}px` }}
             >
               <CardContent>
-                <List subheader={<li />}>
-                  {searchResults.map((searchResult) => (
-                    <li key={searchResult.key}>
-                      <ul className="SubList">
-                        <ListSubheader>{searchResult.header}</ListSubheader>
-                        {searchResult.elements.map((element) => (
-                          <ListItem key={element.key}>
-                            {element.element}
-                          </ListItem>
-                        ))}
-                      </ul>
-                    </li>
-                  ))}
-                </List>
+                {error ? (
+                  <ErrorComponent jsError={error} />
+                ) : (
+                  <List className="list" subheader={<li />}>
+                    {searchResults.map((searchResult) => (
+                      <li className="listSection" key={searchResult.key}>
+                        <ul className="SubList">
+                          <ListSubheader>{searchResult.header}</ListSubheader>
+                          <LimitListSizeComponent
+                            list={searchResult.elements.map((element) => (
+                              <ListItem
+                                key={element.key}
+                                button
+                                component="a"
+                                href={element.href}
+                              >
+                                {element.element}
+                              </ListItem>
+                            ))}
+                          />
+                        </ul>
+                      </li>
+                    ))}
+                  </List>
+                )}
               </CardContent>
             </Card>
           ) : null}
         </div>
       </ClickAwayListener>
-    </>
+    </div>
   );
 }

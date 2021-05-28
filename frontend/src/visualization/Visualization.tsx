@@ -8,6 +8,7 @@ import CardDefinition from './dashboard-card/CardDefinition';
 function Visualization(): JSX.Element {
   const { tabs } = routes.Visualization;
 
+  /* istanbul ignore if */
   if (tabs === undefined) {
     return <></>;
   }

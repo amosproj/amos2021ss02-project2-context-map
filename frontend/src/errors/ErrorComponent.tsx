@@ -1,16 +1,20 @@
+/* istanbul ignore file */
+
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
+import CancellationError from '../utils/CancellationError';
+import { HttpError, NetworkError } from '../services/http';
 
 /**
  * Defines a set of known Errors plus a generic one.
  */
 // eslint-disable-next-line no-shadow
 export enum ErrorType {
-  NotFoundError = 'NotFoundError',
-  CancellationError = 'CancellationError',
-  NetworkError = 'NetworkError',
-  GenericError = 'GenericError',
+  NotFound = 'NotFoundError',
+  Cancellation = 'CancellationError',
+  Network = 'NetworkError',
+  Generic = 'GenericError',
 }
 
 const ErrorComponentData = {
@@ -39,6 +43,7 @@ const ErrorComponentData = {
 const useStyles = makeStyles({
   root: {
     width: '100%',
+    height: '100%',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -61,21 +66,29 @@ function ErrorComponent(props: ErrorComponentProps): JSX.Element {
   const { jsError } = props;
   const classes = useStyles();
 
-  // If a JS Error occured
+  // If a JS Error occurred
   if (jsError !== undefined) {
-    const { imgSrc } = ErrorComponentData[ErrorType.GenericError];
-    return (
-      <Box className={classes.root}>
-        <img src={imgSrc} className={classes.img} alt="" />
-        <h1>jsError.name</h1>
-        <p>jsError.message</p>
-      </Box>
-    );
+    if (jsError instanceof CancellationError) {
+      type = ErrorType.Cancellation;
+    } else if (jsError instanceof HttpError && jsError.status === 404) {
+      type = ErrorType.NotFound;
+    } else if (jsError instanceof NetworkError) {
+      type = ErrorType.Network;
+    }
   }
 
   // If no error type specified
-  if (type === undefined) type = ErrorType.GenericError;
-  const { imgSrc, title, text } = ErrorComponentData[type];
+  if (type === undefined) type = ErrorType.Generic;
+
+  let { imgSrc, title, text } = ErrorComponentData[type];
+
+  // If jsError, use its error.name and error.message
+  if (jsError !== undefined && type === ErrorType.Generic) {
+    imgSrc = ErrorComponentData[ErrorType.Generic].imgSrc;
+    title = jsError.name;
+    text = jsError.message;
+  }
+
   return (
     <Box className={classes.root}>
       <img src={imgSrc} className={classes.img} alt="" />
@@ -86,7 +99,7 @@ function ErrorComponent(props: ErrorComponentProps): JSX.Element {
 }
 
 ErrorComponent.defaultProps = {
-  type: ErrorType.GenericError,
+  type: ErrorType.Generic,
   jsError: undefined,
 };
 

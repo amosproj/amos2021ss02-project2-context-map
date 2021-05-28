@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import FilterQuery, {
   FilterCondition,
   OfTypeCondition,
@@ -5,6 +7,7 @@ import FilterQuery, {
   MatchAllCondition,
   MatchAnyCondition,
 } from './FilterQuery';
+import NodeResultDescriptor from './NodeResultDescriptor';
 import QueryBase from './QueryBase';
 import QueryResult from './QueryResult';
 
@@ -15,4 +18,10 @@ export {
   MatchAnyCondition,
 };
 
-export type { FilterQuery, FilterCondition, QueryBase, QueryResult };
+export type {
+  FilterQuery,
+  FilterCondition,
+  NodeResultDescriptor,
+  QueryBase,
+  QueryResult,
+};

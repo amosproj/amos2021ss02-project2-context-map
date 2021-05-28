@@ -1,4 +1,4 @@
-import { QueryResult } from '../shared/queries';
+import { NodeResultDescriptor, QueryResult } from '../shared/queries';
 
 interface HasId {
   id: number;
@@ -48,9 +48,11 @@ function deduplicateEntities<T extends HasId>(
  * Consolidates the specified query result, such that it contains only edges
  * that's to and from nodes are included in the query-result.
  * @param queryResult The query-result to filter
+ * @param includeSubsidiary A boolean value that indicated whether nodes that are not part of the result but references by edges that are part of the results shall be added or the referencing edges deleted.
  */
 export default function consolidateQueryResult(
-  queryResult: QueryResult
+  queryResult: QueryResult,
+  includeSubsidiary = false
 ): QueryResult {
   const { nodes, edges } = queryResult;
   const dedupNodes = deduplicateEntities(nodes, false);
@@ -58,16 +60,34 @@ export default function consolidateQueryResult(
   const nodeIds = new Set<number>(
     dedupNodes.map((descriptor) => descriptor.id)
   );
+  const subsidiary: NodeResultDescriptor[] = [];
 
   for (let i = dedupEdges.length - 1; i >= 0; i -= 1) {
     const edge = dedupEdges[i];
-    if (!nodeIds.has(edge.from) || !nodeIds.has(edge.to)) {
+
+    if (includeSubsidiary) {
+      if (!nodeIds.has(edge.from)) {
+        nodeIds.add(edge.from);
+        subsidiary.push({
+          id: edge.from,
+          subsidiary: true,
+        });
+      }
+
+      if (!nodeIds.has(edge.to)) {
+        nodeIds.add(edge.to);
+        subsidiary.push({
+          id: edge.to,
+          subsidiary: true,
+        });
+      }
+    } else if (!nodeIds.has(edge.from) || !nodeIds.has(edge.to)) {
       dedupEdges.splice(i, 1);
     }
   }
 
   return {
-    nodes: dedupNodes,
+    nodes: [...dedupNodes, ...subsidiary],
     edges: dedupEdges,
   };
 }

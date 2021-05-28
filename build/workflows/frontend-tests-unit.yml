@@ -1,0 +1,35 @@
+name: Frontend unit tests
+on: [ push ]
+jobs:
+  unit-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest, ubuntu-latest ]
+        node-version: [ 12.x, 14.x ]
+    env:
+      working-directory: ./frontend
+      cache-frontend: true
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install -g yarn
+
+      # kmap.import-action.cache #
+
+      - name: Copy .env file
+        run: cp .env.example .env
+        working-directory: ${{ env.working-directory }}
+
+      - name: Increase file watches
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
+      - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
+        working-directory: ${{ env.working-directory }}
+      - name: Cypress run
+        run: yarn run cy:run:unit
+        working-directory: ${{ env.working-directory }}

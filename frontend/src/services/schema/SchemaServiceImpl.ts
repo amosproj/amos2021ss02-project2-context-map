@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
 import { EdgeType } from '../../shared/schema/EdgeType';
 import { NodeType } from '../../shared/schema/NodeType';
-import AsyncLazy from '../../utils/AsyncLazy';
+import { AsyncLazy } from '../../shared/utils';
 import { CancellationToken } from '../../utils/CancellationToken';
 import withCancellation from '../../utils/withCancellation';
 import HttpService from '../http';
@@ -15,12 +15,10 @@ import SchemaService from './SchemaService';
 @injectable()
 export default class SchemaServiceImpl extends SchemaService {
   @inject(HttpService)
-  /* eslint-disable lines-between-class-members */
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   private readonly http: HttpService = null!;
   private readonly edgeTypesLazy: AsyncLazy<EdgeType[]>;
   private readonly nodeTypesLazy: AsyncLazy<NodeType[]>;
-  /* eslint-enable lines-between-class-members */
 
   public constructor() {
     super();
@@ -37,11 +35,11 @@ export default class SchemaServiceImpl extends SchemaService {
   }
 
   private requestEdgeTypes(): Promise<EdgeType[]> {
-    return this.http.get<EdgeType[]>('schema/edge-types');
+    return this.http.get<EdgeType[]>('/api/schema/edge-types');
   }
 
   private requestNodeTypes(): Promise<NodeType[]> {
-    return this.http.get<NodeType[]>('schema/node-types');
+    return this.http.get<NodeType[]>('/api/schema/node-types');
   }
 
   public getEdgeTypes(cancellation?: CancellationToken): Promise<EdgeType[]> {
