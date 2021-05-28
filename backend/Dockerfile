@@ -40,9 +40,11 @@ RUN chmod +x scripts/backend-prebuild.sh
 RUN yarn install --production
 
 # Copy the dist folder from the dev container
-# TODO: Why do we need this?? : COPY . .
-COPY . .
-COPY --from=dev /usr/src/kmap/backend/dist ./dist
+COPY --from=dev /usr/src/kmap/backend/dist dist
+
+# Copy the docker specific scripts and files
+COPY docker docker
 
 # Start
-CMD ["node", "dist/main"]
+RUN chmod +x docker/run.sh
+CMD ["docker/run.sh"]
