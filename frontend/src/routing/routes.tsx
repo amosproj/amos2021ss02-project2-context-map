@@ -5,6 +5,7 @@ import ErrorBoundary from '../errors/ErrorBoundary';
 import Exploration from '../exploration/Exploration';
 import Home from '../home/Home';
 import Graph from '../visualization/Graph';
+import Hierarchies from '../visualization/Hierarchies';
 import Schema from '../visualization/Schema';
 import Visualization from '../visualization/Visualization';
 import RouteDefinition from './RouteDefinition';
