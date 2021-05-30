@@ -86,7 +86,6 @@ const EntityFilterDialog = (props: {
       }
     }
 
-    /* istanbul ignore else */
     if (filterConditions.length > 0) {
       setFilterQuery(MatchAllCondition(...filterConditions));
     } else {
