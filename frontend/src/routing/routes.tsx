@@ -47,6 +47,15 @@ const routes: Record<string, RouteDefinition> = {
           </ErrorBoundary>
         ),
       },
+      {
+        path: '/visualization/hierarchical',
+        label: 'Hierarchies',
+        content: () => (
+          <ErrorBoundary>
+            <Schema />
+          </ErrorBoundary>
+        ),
+      },
     ],
   },
   Exploration: {
