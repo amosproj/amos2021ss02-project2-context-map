@@ -58,6 +58,24 @@ describe('AppService (e2e)', () => {
       expect(actualResult).toEqual(expectedResult);
     });
 
+    describe('Method queryAll for no limit', () => {
+      it('should return expected node length for no limit', async () => {
+        // Act
+        const actualResult: QueryResult = await appService.queryAll();
+
+        // Assert
+        expect(actualResult.nodes.length).toEqual(4);
+      });
+
+      it('should return expected edge length for no limit', async () => {
+        // Act
+        const actualResult: QueryResult = await appService.queryAll();
+
+        // Assert
+        expect(actualResult.edges.length).toEqual(3);
+      });
+    });
+
     it('should return no nodes when called with nodes limited to 0', async () => {
       // Arrange
       const result = await appService.queryAll({ limits: { nodes: 0 } });
