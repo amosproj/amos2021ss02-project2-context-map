@@ -52,7 +52,7 @@ const routes: Record<string, RouteDefinition> = {
         label: 'Hierarchies',
         content: () => (
           <ErrorBoundary>
-            <Schema />
+            <Hierarchies />
           </ErrorBoundary>
         ),
       },
