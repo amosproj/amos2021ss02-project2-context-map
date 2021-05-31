@@ -1,18 +1,24 @@
 import { injectable } from 'inversify';
 import 'reflect-metadata';
+import { from } from 'rxjs';
 import { QueryResult } from '../shared/queries';
 import SimpleStore from './SimpleStore';
 import FilterStore from './FilterStore';
 import { FilterService } from '../services/filter';
 import { CancellationTokenSource } from '../utils/CancellationToken';
+import withErrorHandler from '../utils/withErrorHandler';
+import ErrorStore from './ErrorStore';
+import LoadingStore from './LoadingStore';
+import withLoadingBar from '../utils/withLoadingBar';
 
 @injectable()
 export default class GraphDataStore extends SimpleStore<QueryResult> {
   private filterQueryCancelToken?: CancellationTokenSource;
-
   constructor(
     private readonly filterStore: FilterStore,
-    private readonly filterService: FilterService
+    private readonly filterService: FilterService,
+    private readonly errorStore: ErrorStore,
+    private readonly loadingStore: LoadingStore
   ) {
     super();
     // If the filter changes, the graph state will be updated automatically
@@ -20,11 +26,25 @@ export default class GraphDataStore extends SimpleStore<QueryResult> {
       next: (filter) => {
         this.filterQueryCancelToken?.cancel();
         this.filterQueryCancelToken = new CancellationTokenSource();
-        this.filterService
-          .query(filter, this.filterQueryCancelToken.token)
-          .then((res) => this.setState(res))
-          // eslint-disable-next-line no-console -- TODO proper error handling
-          .catch((err) => console.error(err));
+        from(
+          this.filterService.query(filter, this.filterQueryCancelToken.token)
+        )
+          .pipe(
+            withLoadingBar({ loadingStore }),
+            withErrorHandler({ rethrow: true, errorStore })
+          )
+          .subscribe({
+            next: (res) => {
+              if (res) {
+                this.setState(res);
+              }
+            },
+            error: () => {
+              // This error is already caught by withErrorHandler.
+              // Now the state has to be reset so no old graph is provided if an error happens.
+              this.setState(this.getInitialValue());
+            },
+          });
       },
     });
   }
