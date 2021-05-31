@@ -1,19 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
 import MiniSearch from 'minisearch';
-import { SearchResult } from '../shared/search/SearchResult';
+import { SearchResult } from '../shared/search';
 import { AsyncLazy } from '../shared/utils';
-import { Node } from '../shared/entities/Node';
-import { Edge } from '../shared/entities/Edge';
-import { Property } from '../shared/entities/Property';
-import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
-import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
+import {
+  Node,
+  Edge,
+  Property,
+  NodeDescriptor,
+  EdgeDescriptor,
+} from '../shared/entities';
 import { parseNeo4jEntityInfo } from '../schema/parseNeo4jEntityInfo';
-import { EdgeType } from '../shared/schema/EdgeType';
-import { NodeType } from '../shared/schema/NodeType';
-import { EntityType } from '../shared/schema/EntityType';
-import { NodeTypeDescriptor } from '../shared/schema/NodeTypeDescriptor';
-import { EdgeTypeDescriptor } from '../shared/schema/EdgeTypeDescriptor';
+import {
+  EdgeType,
+  NodeType,
+  EntityType,
+  NodeTypeDescriptor,
+  EdgeTypeDescriptor,
+} from '../shared/schema';
 import { SearchServiceBase } from './search.service.base';
 import { neo4jReturnEdge, neo4jReturnNode } from '../config/commonFunctions';
 

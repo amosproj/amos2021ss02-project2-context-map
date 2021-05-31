@@ -1,8 +1,8 @@
 import { Neo4jConfig } from 'nest-neo4j/src/interfaces/neo4j-config.interface';
 import {
+  auth,
   Config as OriginalNeo4jConfig,
   driver as neo4jDriver,
-  auth,
   Driver,
 } from 'neo4j-driver';
 

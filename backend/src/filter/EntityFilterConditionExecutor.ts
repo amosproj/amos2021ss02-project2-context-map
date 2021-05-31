@@ -1,5 +1,4 @@
-import { Edge } from '../shared/entities/Edge';
-import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
+import { Edge, EdgeDescriptor } from '../shared/entities';
 import {
   FilterCondition,
   MatchAnyCondition,

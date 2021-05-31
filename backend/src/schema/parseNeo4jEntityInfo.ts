@@ -1,6 +1,5 @@
 import { Record as Neo4jRecord } from 'neo4j-driver';
-import { EntityType } from '../shared/schema/EntityType';
-import { EntityTypeProperty } from '../shared/schema/EntityTypeProperty';
+import { EntityType, EntityTypeProperty } from '../shared/schema';
 
 /**
  * Converts result from neo4j-query 'CALL db.schema.nodeTypeProperties'

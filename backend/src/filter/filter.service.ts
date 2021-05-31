@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
-import { EdgeDescriptor } from '../shared/entities/EdgeDescriptor';
-import { NodeDescriptor } from '../shared/entities/NodeDescriptor';
+import { EdgeDescriptor, NodeDescriptor } from '../shared/entities';
 import consolidateQueryResult from '../utils/consolidateQueryResult';
 import { FilterCondition, FilterQuery, QueryResult } from '../shared/queries';
 import FilterConditionBuilder, { QueryParams } from './FilterConditionBuilder';

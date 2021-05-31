@@ -3,10 +3,13 @@
 import { injectable } from 'inversify';
 import 'reflect-metadata';
 import { QueryBase, QueryResult } from '../../shared/queries';
-import { Edge } from '../../shared/entities/Edge';
-import { EdgeDescriptor } from '../../shared/entities/EdgeDescriptor';
-import { Node } from '../../shared/entities/Node';
-import { NodeDescriptor } from '../../shared/entities/NodeDescriptor';
+import {
+  Edge,
+  EdgeDescriptor,
+  Node,
+  NodeDescriptor,
+} from '../../shared/entities';
+
 import { CancellationToken } from '../../utils/CancellationToken';
 
 /**
