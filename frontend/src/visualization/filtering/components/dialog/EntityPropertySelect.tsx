@@ -37,12 +37,12 @@ const EntityPropertySelect = (props: {
     },
   };
 
-  function getStyles(name: string, pName: string[], theme: Theme) {
+  function getStyles(name: string, pName: string[], styles: Theme) {
     return {
       fontWeight:
         pName.indexOf(name) === -1
-          ? theme.typography.fontWeightRegular
-          : theme.typography.fontWeightMedium,
+          ? styles.typography.fontWeightRegular
+          : styles.typography.fontWeightMedium,
     };
   }
 
