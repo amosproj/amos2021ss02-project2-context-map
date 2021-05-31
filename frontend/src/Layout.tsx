@@ -108,9 +108,9 @@ export interface RenderTab {
 
 type LayoutProps = {
   children: React.ReactNode;
-  tabs?: RenderTab[] | undefined;
-  tabIdx?: number | undefined;
-  label?: string | undefined;
+  tabs?: RenderTab[];
+  tabIdx?: number;
+  label?: string;
 };
 
 function isNullOrEmpty(str: string | null | undefined): boolean {
