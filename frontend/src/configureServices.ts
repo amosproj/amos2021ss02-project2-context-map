@@ -32,6 +32,13 @@ export default function configureServices(container: Container): void {
   container.bind(FilterService).to(FilterServiceImpl);
 
   // stores
-  container.bind(FilterStore).to(FilterStore);
-  container.bind(GraphDataStore).to(GraphDataStore);
+  const filterStore = new FilterStore();
+  container.bind(FilterStore).toConstantValue(filterStore);
+  // if filterStore is injected like FilterService, then the injected filterStore
+  // differs from all other FilterStores obtained in other parts of the app.
+  container
+    .bind(GraphDataStore)
+    .toConstantValue(
+      new GraphDataStore(filterStore, container.get(FilterService))
+    );
 }

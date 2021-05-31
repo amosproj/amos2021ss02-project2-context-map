@@ -1,5 +1,8 @@
 import { BehaviorSubject, Observable } from 'rxjs';
+import 'reflect-metadata';
+import { injectable } from 'inversify';
 
+@injectable()
 export default abstract class SimpleStore<T> {
   protected readonly storeSubject = new BehaviorSubject<T>(
     this.getInitialValue()
@@ -19,6 +22,13 @@ export default abstract class SimpleStore<T> {
   }
 
   /**
+   * Returns the current value of the stored value.
+   */
+  public getValue(): T {
+    return this.storeSubject.value;
+  }
+
+  /**
    * Updates the current filter by replacing it completely.
    */
   public setState(newState: T): void {
@@ -29,6 +39,6 @@ export default abstract class SimpleStore<T> {
    * Updates the current filter by merging it with the current value.
    */
   public mergeState(newState: Partial<T>): void {
-    this.storeSubject.next({ ...this.storeSubject.value, ...newState });
+    this.setState({ ...this.getValue(), ...newState });
   }
 }
