@@ -26,12 +26,12 @@ const ErrorComponentData = {
   CancellationError: {
     imgSrc: '../../errors/cancellationError.png',
     title: 'Cancellation Error',
-    text: 'A cancellation error occured.',
+    text: 'A cancellation error occurred.',
   },
   NetworkError: {
     imgSrc: '../../errors/networkError.png',
     title: 'Network Error',
-    text: 'A network error occured, please try again.',
+    text: 'A network error occurred, please try again.',
   },
   GenericError: {
     imgSrc: '../../errors/genericError.png',
