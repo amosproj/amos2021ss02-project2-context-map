@@ -155,7 +155,10 @@ function Layout(props: LayoutProps): JSX.Element {
     }
   };
 
-  const title = `KMAP${!isNullOrEmpty(label) ? ` - ${label}` : ''}`;
+  let title = `KMAP`;
+  if (!isNullOrEmpty(label)) {
+    title += ` - ${label}`;
+  }
 
   function RenderTabs(): JSX.Element | null {
     if (!tabs || tabs.length === 0) {
