@@ -1,6 +1,6 @@
 import { DynamicModule, FactoryProvider } from '@nestjs/common';
 import { Neo4jConfig, Neo4jModule } from 'nest-neo4j/dist';
-import { NEO4J_DRIVER } from 'nest-neo4j/dist/neo4j.constants';
+import { NEO4J_DRIVER, NEO4J_OPTIONS } from 'nest-neo4j/dist/neo4j.constants';
 import { Config as Neo4jDriverOptions } from 'neo4j-driver';
 import { createNeo4jDriver } from './createNeo4jDriver';
 
@@ -10,13 +10,14 @@ import { createNeo4jDriver } from './createNeo4jDriver';
  */
 export class KmapNeo4jModule {
   /**
-   * Overrides the driver factory from the {@link Neo4jModule} so additional
-   * additional {@link Neo4jDriverOptions} are possible.
+   * Overrides the driver factory from the {@link Neo4jModule} so
+   * additional {@link Neo4jDriverOptions} and custom {@link Neo4jConfig}s are possible.
    * @private
    */
   private static replaceDriverWithCustomDriver(
     module: DynamicModule,
-    options: Neo4jDriverOptions
+    options: Neo4jDriverOptions,
+    customConfig?: Neo4jConfig
   ): DynamicModule {
     const driverProvider = module.providers?.find(
       // eslint-disable-next-line dot-notation
@@ -32,6 +33,21 @@ export class KmapNeo4jModule {
     driverProvider.useFactory = async (config: Neo4jConfig) =>
       createNeo4jDriver(config, options);
 
+    if (customConfig) {
+      const optionsProvider = module.providers?.find(
+        // eslint-disable-next-line dot-notation
+        (provider) =>
+          typeof provider === 'object' && provider.provide === NEO4J_OPTIONS
+      ) as FactoryProvider;
+
+      if (optionsProvider == null) {
+        /* istanbul ignore next */
+        throw Error('Neo4j driver provider not found.');
+      }
+
+      optionsProvider.useFactory = (): Neo4jConfig => customConfig;
+    }
+
     return module;
   }
 
@@ -40,7 +56,14 @@ export class KmapNeo4jModule {
    * Uses environment variables to retrieve connection details.
    * Uses {@link Neo4jModule.fromEnv}.
    */
-  static fromEnv(options: Neo4jDriverOptions): DynamicModule {
-    return this.replaceDriverWithCustomDriver(Neo4jModule.fromEnv(), options);
+  static fromEnv(
+    options: Neo4jDriverOptions,
+    customConfig?: Neo4jConfig
+  ): DynamicModule {
+    return this.replaceDriverWithCustomDriver(
+      Neo4jModule.fromEnv(),
+      options,
+      customConfig
+    );
   }
 }

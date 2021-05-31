@@ -20,7 +20,19 @@ describe('AppService (e2e)', () => {
   beforeAll(async () => {
     // Global setup
     const mockAppModule: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, KmapNeo4jModule],
+      imports: [
+        AppModule,
+        KmapNeo4jModule.fromEnv(
+          {},
+          {
+            scheme: 'neo4j',
+            host: 'localhost',
+            port: 7687,
+            username: 'neo4j',
+            password: 'amos',
+          }
+        ),
+      ],
       providers: [AppService],
     }).compile();
 
