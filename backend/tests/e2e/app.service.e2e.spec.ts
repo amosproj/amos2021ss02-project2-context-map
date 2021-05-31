@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Neo4jService } from 'nest-neo4j/dist';
-import { AppModule } from '../../src/app.module';
 import { AppService } from '../../src/app.service';
 import { Node } from '../../src/shared/entities/Node';
 import { Edge } from '../../src/shared/entities/Edge';
@@ -21,9 +20,8 @@ describe('AppService (e2e)', () => {
     // Global setup
     const mockAppModule: TestingModule = await Test.createTestingModule({
       imports: [
-        AppModule,
         KmapNeo4jModule.fromEnv(
-          {},
+          { disableLosslessIntegers: true },
           {
             scheme: 'neo4j',
             host: 'localhost',
