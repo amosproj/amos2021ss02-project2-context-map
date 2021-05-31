@@ -15,8 +15,8 @@ interface RenderRoute {
   exact: boolean;
   label: string;
   content: () => JSX.Element;
-  tabs?: RenderTab[] | undefined;
-  tabIdx?: number | undefined;
+  tabs?: RenderTab[];
+  tabIdx?: number;
 }
 
 function buildRenderRoutes(): RenderRoute[] {
