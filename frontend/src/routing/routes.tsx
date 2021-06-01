@@ -4,7 +4,6 @@ import Data from '../data/Data';
 import Exploration from '../exploration/Exploration';
 import Home from '../home/Home';
 import Graph from '../visualization/Graph';
-import Hierarchies from '../visualization/Hierarchies';
 import Schema from '../visualization/Schema';
 import Visualization from '../visualization/Visualization';
 import RouteDefinition from './RouteDefinition';
@@ -34,7 +33,7 @@ const routes: Record<string, RouteDefinition> = {
       {
         path: '/visualization/hierarchical',
         label: 'Hierarchies',
-        content: () => <Hierarchies />,
+        content: () => <Graph layout="hierarchical" />,
       },
     ],
   },

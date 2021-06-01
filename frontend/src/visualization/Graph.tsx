@@ -49,10 +49,10 @@ const useStyles = makeStyles(() =>
  * @param height The height of the graph.
  * @returns The react-graph-vis options.
  */
-function buildOptions(width: number, height: number) {
+function buildOptions(width: number, height: number, layout?: string) {
   return {
     layout: {
-      hierarchical: false,
+      hierarchical: layout === 'hierarchical',
     },
     edges: {
       color: '#000000',
@@ -62,7 +62,12 @@ function buildOptions(width: number, height: number) {
   };
 }
 
-function Graph(): JSX.Element {
+type GraphProps = {
+  layout?: string;
+};
+
+function Graph(props: GraphProps): JSX.Element {
+  const { layout } = props;
   const classes = useStyles();
 
   // A React ref to the container that is used to measure the available space for the graph.
@@ -98,7 +103,11 @@ function Graph(): JSX.Element {
         <div className={classes.graphContainer}>
           <VisGraph
             graph={graphData}
-            options={buildOptions(containerSize.width, containerSize.height)}
+            options={buildOptions(
+              containerSize.width,
+              containerSize.height,
+              layout
+            )}
             key={uuid()}
           />
         </div>
@@ -109,5 +118,9 @@ function Graph(): JSX.Element {
     </>
   );
 }
+
+Graph.defaultProps = {
+  layout: undefined,
+};
 
 export default Graph;
