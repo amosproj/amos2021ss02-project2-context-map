@@ -2,8 +2,6 @@ import MiniSearch from 'minisearch';
 import { AsyncLazy } from '../shared/utils';
 import { SearchResult } from '../shared/search';
 import { RestoredIndexEntry } from './SearchIndexBuilder';
-import { NodeTypeDescriptor, EdgeTypeDescriptor } from '../shared/schema';
-import { NodeDescriptor, EdgeDescriptor } from '../shared/entities';
 
 /**
  * Represents a search index that can be used to perform search operations and auto suggestions.
@@ -34,52 +32,73 @@ export class SearchIndex {
     //       Where
     //        ! means 'exact match' and
     //        ~ means 'does not include'
-    const searchResults = index
+    const entries = index
       .search(searchString, { prefix: true })
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .map((result) => (result as any) as RestoredIndexEntry);
+      .map((result) => (result as unknown) as RestoredIndexEntry);
 
-    const nodes: NodeDescriptor[] = [];
-    const edges: EdgeDescriptor[] = [];
-    const nodeTypes: NodeTypeDescriptor[] = [];
-    const edgeTypes: EdgeTypeDescriptor[] = [];
+    const result = this.createEmptySearchResult();
 
     // eslint-disable-next-line no-restricted-syntax
-    for (const searchResult of searchResults) {
-      if (
-        searchResult.entityType === 'node' &&
-        typeof searchResult.id === 'number'
-      ) {
-        nodes.push({ id: searchResult.id });
-      } else if (
-        searchResult.entityType === 'edge' &&
-        typeof searchResult.id === 'number' &&
-        typeof searchResult.from === 'number' &&
-        typeof searchResult.to === 'number'
-      ) {
-        edges.push({
-          id: searchResult.id,
-          from: searchResult.from,
-          to: searchResult.to,
-        });
-      } else if (
-        searchResult.entityType === 'node-type' &&
-        typeof searchResult.id === 'string'
-      ) {
-        nodeTypes.push({
-          name: searchResult.id,
-        });
-      } else if (
-        searchResult.entityType === 'edge-type' &&
-        typeof searchResult.id === 'string'
-      ) {
-        edgeTypes.push({
-          name: searchResult.id,
-        });
-      }
+    for (const entry of entries) {
+      this.processSearchResultEntry(entry, result);
     }
 
-    return { nodes, edges, nodeTypes, edgeTypes };
+    return result;
+  }
+
+  private createEmptySearchResult(): SearchResult {
+    return {
+      nodes: [],
+      edges: [],
+      nodeTypes: [],
+      edgeTypes: [],
+    };
+  }
+
+  /**
+   * Processes a single entry that was returned from the search index and adds it to the aggregate search result.
+   * @param entry The entry, as returned from the search index.
+   * @param result The search result that contains the aggregated result.
+   */
+  private processSearchResultEntry(
+    entry: RestoredIndexEntry,
+    result: SearchResult
+  ): void {
+    // The entry describes a node.
+    if (entry.entityType === 'node' && typeof entry.id === 'number') {
+      result.nodes.push({ id: entry.id });
+      return;
+    }
+
+    // The entry described an edge.
+    if (
+      entry.entityType === 'edge' &&
+      typeof entry.id === 'number' &&
+      typeof entry.from === 'number' &&
+      typeof entry.to === 'number'
+    ) {
+      result.edges.push({
+        id: entry.id,
+        from: entry.from,
+        to: entry.to,
+      });
+      return;
+    }
+
+    // The entry describes a node-type.
+    if (entry.entityType === 'node-type' && typeof entry.id === 'string') {
+      result.nodeTypes.push({
+        name: entry.id,
+      });
+      return;
+    }
+
+    // The entry describes an edge-type.
+    if (entry.entityType === 'edge-type' && typeof entry.id === 'string') {
+      result.edgeTypes.push({
+        name: entry.id,
+      });
+    }
   }
 
   public async getAutoSuggestions(searchString: string): Promise<string[]> {
