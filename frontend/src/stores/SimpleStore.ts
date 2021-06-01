@@ -2,8 +2,18 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import 'reflect-metadata';
 import { injectable } from 'inversify';
 
+/**
+ * A simple store contains a single state.
+ * The current state can be retrieved with {@link getValue} (just once)
+ * and with {@link getState} (until unsubscribed).
+ */
 @injectable()
 export default abstract class SimpleStore<T> {
+  /**
+   * Contains the state.
+   * Returns the current state immediately after subscribing.
+   * @protected
+   */
   protected readonly storeSubject = new BehaviorSubject<T>(
     this.getInitialValue()
   );

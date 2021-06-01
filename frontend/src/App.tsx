@@ -9,6 +9,10 @@ import './App.scss';
 import Layout, { RenderTab } from './Layout';
 import ErrorComponent, { ErrorType } from './errors/ErrorComponent';
 import routes from './routing/routes';
+import ErrorBoundary from './errors/ErrorBoundary';
+import LoadingBoundary from './loading/LoadingBoundary';
+import useService from './dependency-injection/useService';
+import ErrorStore from './stores/ErrorStore';
 
 interface RenderRoute {
   path: string;
@@ -72,6 +76,7 @@ function buildRenderRoutes(): RenderRoute[] {
 
 function App(): JSX.Element {
   const renderRoutes = buildRenderRoutes();
+  const errorStore = useService(ErrorStore);
 
   return (
     <Router>
@@ -84,7 +89,11 @@ function App(): JSX.Element {
         {renderRoutes.map((route) => (
           <Route key={route.path} path={route.path} exact={route.exact}>
             <Layout tabs={route.tabs} label={route.label} tabIdx={route.tabIdx}>
-              <route.content />
+              <ErrorBoundary errorStore={errorStore}>
+                <LoadingBoundary>
+                  <route.content />
+                </LoadingBoundary>
+              </ErrorBoundary>
             </Layout>
           </Route>
         ))}

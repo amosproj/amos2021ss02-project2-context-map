@@ -21,7 +21,7 @@ import fetchDataFromService from '../shared-ops/fetchDataFromService';
 import entityColors from '../data/GraphData';
 import { SchemaService } from '../../services/schema';
 import { FilterCondition, MatchAnyCondition } from '../../shared/queries';
-import FilterStore from '../../stores/FilterStore';
+import FilterQueryStore from '../../stores/FilterQueryStore';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -97,7 +97,7 @@ const Filter = (): JSX.Element => {
 
   const schemaService = useService(SchemaService, null);
 
-  const filterStore = useService(FilterStore);
+  const filterStore = useService(FilterQueryStore);
 
   const nodeConditionsRef = useRef<(FilterCondition | null)[]>([]);
   const edgeConditionsRef = useRef<(FilterCondition | null)[]>([]);

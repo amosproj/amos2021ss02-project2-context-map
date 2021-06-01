@@ -8,8 +8,10 @@ import {
 import { SearchService, SearchServiceImpl } from './services/search';
 import { FilterService, FilterServiceImpl } from './services/filter';
 import { SchemaService, SchemaServiceImpl } from './services/schema';
-import GraphDataStore from './stores/GraphDataStore';
-import FilterStore from './stores/FilterStore';
+import QueryResultStore from './stores/QueryResultStore';
+import FilterQueryStore from './stores/FilterQueryStore';
+import ErrorStore from './stores/ErrorStore';
+import LoadingStore from './stores/LoadingStore';
 
 /**
  * Configures all services in the frontend app.
@@ -31,14 +33,9 @@ export default function configureServices(container: Container): void {
   container.bind(SchemaService).to(SchemaServiceImpl);
   container.bind(FilterService).to(FilterServiceImpl);
 
-  // stores
-  const filterStore = new FilterStore();
-  container.bind(FilterStore).toConstantValue(filterStore);
-  // if filterStore is injected like FilterService, then the injected filterStore
-  // differs from all other FilterStores obtained in other parts of the app.
-  container
-    .bind(GraphDataStore)
-    .toConstantValue(
-      new GraphDataStore(filterStore, container.get(FilterService))
-    );
+  // stores: use inSingletonScope so only one instance of each store exists
+  container.bind(ErrorStore).to(ErrorStore).inSingletonScope();
+  container.bind(LoadingStore).to(LoadingStore).inSingletonScope();
+  container.bind(FilterQueryStore).to(FilterQueryStore).inSingletonScope();
+  container.bind(QueryResultStore).to(QueryResultStore).inSingletonScope();
 }
