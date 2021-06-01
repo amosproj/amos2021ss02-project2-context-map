@@ -175,7 +175,7 @@ const Filter = (props: {
     schemaService
   );
 
-  const handleChange = (
+  const handleSwitchTab = (
     event: React.ChangeEvent<Record<string, unknown>>,
     newValue: number
   ) => {
@@ -207,7 +207,7 @@ const Filter = (props: {
         <AppBar color="default" className={classes.appBar}>
           <Tabs
             value={tabIndex}
-            onChange={handleChange}
+            onChange={handleSwitchTab}
             indicatorColor="primary"
             textColor="primary"
           >
