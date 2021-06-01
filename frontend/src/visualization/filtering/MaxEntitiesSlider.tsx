@@ -79,6 +79,7 @@ export default function MaxEntitiesSlider({ entities }: Props): JSX.Element {
         valueLabelDisplay="auto"
         valueLabelFormat={getLabel}
         onChangeCommitted={(_, val) => update(val as number)}
+        className={`${entities}-slider`}
       />
     </>
   );

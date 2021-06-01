@@ -1,4 +1,3 @@
-
 /**
  * Result of the count entities query.
  */
