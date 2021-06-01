@@ -6,10 +6,7 @@ import {
   MatchPropertyCondition,
   OfTypeCondition,
 } from '../shared/queries';
-import { castToMatchAllCondition } from './castToMatchAllCondition';
-import { castToMatchAnyCondition } from './castToMatchAnyCondition';
-import { castToMatchPropertyCondition } from './castToMatchPropertyCondition';
-import { castToOfTypeCondition } from './castToOfTypeCondition';
+import { formatErrorMessage } from './formatErrorMessage';
 
 /**
  * A base type for filter condition visitors, that allow a deep traversal through filter condition trees.
@@ -26,31 +23,55 @@ export default abstract class FilterConditionVisitor {
       );
     }
 
+    // Check for the condition type and branch accordingly. For the specific types, check whether they are
+    // well-formed and throw an exception if they are not. This is done in the dedicated visit methods
+    // with `Checked` postfix.
     if (condition.rule === 'of-type') {
-      const ofTypeCondition = castToOfTypeCondition(condition);
-      return this.visitOfTypeCondition(ofTypeCondition);
+      const ofTypeCondition = <OfTypeCondition>condition;
+      return this.visitOfTypeConditionChecked(ofTypeCondition);
     }
 
     if (condition.rule === 'match-property') {
-      const matchPropertyCondition = castToMatchPropertyCondition(condition);
-      return this.visitMatchPropertyCondition(matchPropertyCondition);
+      const matchPropertyCondition = <MatchPropertyCondition>condition;
+      return this.visitMatchPropertyConditionChecked(matchPropertyCondition);
     }
 
     if (condition.rule === 'all') {
-      const matchAllCondition = castToMatchAllCondition(condition);
-      return this.visitMatchAllCondition(matchAllCondition);
+      const matchAllCondition = <MatchAllCondition>condition;
+      return this.visitMatchAllConditionChecked(matchAllCondition);
     }
 
     if (condition.rule === 'any') {
-      const matchAnyCondition = castToMatchAnyCondition(condition);
-      return this.visitMatchAnyCondition(matchAnyCondition);
+      const matchAnyCondition = <MatchAnyCondition>condition;
+      return this.visitMatchAnyConditionChecked(matchAnyCondition);
     }
 
-    return condition;
+    // The condition specified is unknown.
+    throw new ArgumentError(
+      `Malformed filter condition. A filter condition with rule '${condition.rule}' is unknown.`
+    );
   }
 
   /**
-   * Visits the specified of-type condition and return the transformed condition.
+   * Checks the specified match-any condition to be well-formed, visits it and returns the transformed condition.
+   * @param condition The of-type condition to visit.
+   * @returns The transformed condition.
+   */
+  private visitOfTypeConditionChecked(
+    condition: OfTypeCondition
+  ): FilterCondition {
+    // An of-type condition needs to have a string-typed `type` property.
+    if (condition.type === undefined || typeof condition.type !== 'string') {
+      throw new ArgumentError(
+        formatErrorMessage('OfTypeCondition', 'type', 'string')
+      );
+    }
+
+    return this.visitOfTypeCondition(condition);
+  }
+
+  /**
+   * Visits the specified of-type condition and returns the transformed condition.
    * @param condition The of-type condition to visit.
    * @returns The transformed condition.
    */
@@ -59,7 +80,35 @@ export default abstract class FilterConditionVisitor {
   }
 
   /**
-   * Visits the specified match-property condition and return the transformed condition.
+   * Checks the specified match-any condition to be well-formed, visits it and returns the transformed condition.
+   * @param condition The match-property condition to visit.
+   * @returns The transformed condition.
+   */
+  private visitMatchPropertyConditionChecked(
+    condition: MatchPropertyCondition
+  ): FilterCondition {
+    // A match-property condition must have a string-typed `property` property.
+    if (
+      condition.property === undefined ||
+      typeof condition.property !== 'string'
+    ) {
+      throw new ArgumentError(
+        formatErrorMessage('MatchPropertyCondition', 'property', 'string')
+      );
+    }
+
+    // // A match-property condition must `value` property.
+    if (condition.value === undefined) {
+      throw new ArgumentError(
+        formatErrorMessage('MatchPropertyCondition', 'value')
+      );
+    }
+
+    return this.visitMatchPropertyCondition(condition);
+  }
+
+  /**
+   * Visits the specified match-property condition and returns the transformed condition.
    * @param condition The match-property condition to visit.
    * @returns The transformed condition.
    */
@@ -70,7 +119,25 @@ export default abstract class FilterConditionVisitor {
   }
 
   /**
-   * Visits the specified match-all condition and return the transformed condition.
+   * Checks the specified match-any condition to be well-formed, visits it and returns the transformed condition.
+   * @param condition The match-all condition to visit.
+   * @returns The transformed condition.
+   */
+  private visitMatchAllConditionChecked(
+    condition: MatchAllCondition
+  ): FilterCondition {
+    // A match-all condition must have a property `filters` that is an array of strings.
+    if (condition.filters === undefined || !Array.isArray(condition.filters)) {
+      throw new ArgumentError(
+        formatErrorMessage('MatchAllCondition', 'filters', 'string[]')
+      );
+    }
+
+    return this.visitMatchAllCondition(condition);
+  }
+
+  /**
+   * Visits the specified match-all condition and returns the transformed condition.
    * @param condition The match-all condition to visit.
    * @returns The transformed condition.
    */
@@ -81,7 +148,25 @@ export default abstract class FilterConditionVisitor {
   }
 
   /**
-   * Visits the specified match-any condition and return the transformed condition.
+   * Checks the specified match-any condition to be well-formed, visits it and returns the transformed condition.
+   * @param condition The match-any condition to visit.
+   * @returns The transformed condition.
+   */
+  private visitMatchAnyConditionChecked(
+    condition: MatchAnyCondition
+  ): FilterCondition {
+    // A match-any condition must have a property `filters` that is an array of strings.
+    if (condition.filters === undefined || !Array.isArray(condition.filters)) {
+      throw new ArgumentError(
+        formatErrorMessage('MatchAnyCondition', 'filters', 'string[]')
+      );
+    }
+
+    return this.visitMatchAnyCondition(condition);
+  }
+
+  /**
+   * Visits the specified match-any condition and returns the transformed condition.
    * @param condition The match-any condition to visit.
    * @returns The transformed condition.
    */
