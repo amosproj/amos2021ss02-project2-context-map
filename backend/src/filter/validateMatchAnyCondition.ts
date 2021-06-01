@@ -1,7 +1,6 @@
 import { ArgumentError } from '../shared/errors';
 import { FilterCondition, MatchAnyCondition } from '../shared/queries';
 import { formatErrorMessage } from './formatErrorMessage';
-import { checkValidMatchAllAnyCondition } from './checkValidMatchAllAnyCondition';
 
 /**
  * Checks the specified filter condition to be a valid MatchAnyCondition and converts it.
@@ -12,15 +11,10 @@ export function validateMatchAnyCondition(
   condition: FilterCondition
 ): MatchAnyCondition {
   const result = <MatchAnyCondition>condition;
-  const validationResult = checkValidMatchAllAnyCondition(result);
 
-  if (validationResult.invalidProperty !== undefined) {
+  if (result.filters === undefined || !Array.isArray(result.filters)) {
     throw new ArgumentError(
-      formatErrorMessage(
-        'MatchAnyCondition',
-        validationResult.invalidProperty,
-        validationResult.type
-      )
+      formatErrorMessage('MatchAnyCondition', 'filters', 'string[]')
     );
   }
 
