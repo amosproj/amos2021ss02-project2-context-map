@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import VisGraph, { GraphData } from 'react-graph-vis';
-import * as vis from 'vis-network';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { uuid } from 'uuidv4';
 import { tap } from 'rxjs/operators';
 import useService from '../dependency-injection/useService';
-import { EdgeDescriptor } from '../shared/entities';
-import { NodeResultDescriptor, QueryResult } from '../shared/queries';
 import { useSize } from '../utils/useSize';
 import Filter from './filtering/Filter';
 import useObservable from '../utils/useObservable';
 import QueryResultStore from '../stores/QueryResultStore';
+import convertQueryResult from './shared-ops/convertQueryResult';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -44,44 +42,6 @@ const useStyles = makeStyles(() =>
     },
   })
 );
-
-function convertNode(node: NodeResultDescriptor): vis.Node {
-  const result: vis.Node = {
-    id: node.id,
-    label: node.id.toString(),
-    // Advanced stuff, like styling nodes with different types differently...
-  };
-
-  if (node.subsidiary) {
-    result.color = 'yellow';
-  }
-
-  return result;
-}
-
-function convertNodes(nodes: NodeResultDescriptor[]): vis.Node[] {
-  return nodes.map((node) => convertNode(node));
-}
-
-function convertEdge(edge: EdgeDescriptor): vis.Edge {
-  return {
-    id: edge.id,
-    from: edge.from,
-    to: edge.to,
-    // Advanced stuff, like styling edges with different types differently...
-  };
-}
-
-function convertEdges(edges: EdgeDescriptor[]): vis.Edge[] {
-  return edges.map((edge) => convertEdge(edge));
-}
-
-function convertQueryResult(queryResult: QueryResult): GraphData {
-  return {
-    nodes: convertNodes(queryResult.nodes),
-    edges: convertEdges(queryResult.edges),
-  };
-}
 
 /**
  * Builds the graph options passed to react-graph-vis.
