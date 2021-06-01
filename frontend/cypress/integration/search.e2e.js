@@ -20,28 +20,22 @@ context('Searchbar', () => {
     // Arrange
     /* eslint-disable no-unused-expressions -- expect(..).to.Be.Called return can be ignored */
     const spySearch = cy.spy((req) => req.continue());
-    const spyGetNodesById = cy.spy((req) => req.continue());
 
     cy.intercept(`${apiBaseUrl}/search/all*`, spySearch).as('searchQuery');
-    cy.intercept(`${apiBaseUrl}/getNodesById*`, spyGetNodesById).as(
-      'getNodesQuery'
-    );
 
     // Act 1
     cy.get('.SearchBar').type('keanu');
 
     // Assert 1
-    cy.wait(['@searchQuery', '@getNodesQuery']).then(() => {
+    cy.wait(['@searchQuery']).then(() => {
       expect(spySearch).to.be.calledOnce;
-      expect(spyGetNodesById).to.be.calledOnce;
     });
 
     // Act 2
     cy.get('.SearchBar').type(' reeves');
     // Assert 2
-    cy.wait(['@searchQuery', '@getNodesQuery']).then(() => {
+    cy.wait(['@searchQuery']).then(() => {
       expect(spySearch).to.be.calledTwice;
-      expect(spyGetNodesById).to.be.calledTwice;
     });
     /* eslint-enable */
   });
@@ -49,8 +43,6 @@ context('Searchbar', () => {
   it('Shows Nodes, NodeTypes, Edges, EdgeTypes', () => {
     // Arrange
     cy.intercept(`${apiBaseUrl}/search/all*`, customSearch.search);
-    cy.intercept(`${apiBaseUrl}/getNodesById*`, customSearch.getNodesById);
-    cy.intercept(`${apiBaseUrl}/getEdgesById*`, customSearch.getEdgesById);
 
     // Act
     cy.get('.SearchBar').type('Hello');
