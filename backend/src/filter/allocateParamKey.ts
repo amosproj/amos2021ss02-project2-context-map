@@ -1,4 +1,4 @@
-import { QueryParams } from './FilterConditionBuilder';
+import { QueryParams } from './QueryParams';
 
 export function allocateParamKey(
   queryParams: QueryParams,

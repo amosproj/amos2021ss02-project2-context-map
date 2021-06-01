@@ -7,10 +7,7 @@ import {
 } from '../shared/queries';
 import { allocateParamKey } from './allocateParamKey';
 import FilterConditionVisitor from './FilterConditionVisitor';
-
-export interface QueryParams {
-  [key: string]: unknown | undefined;
-}
+import { QueryParams } from './QueryParams';
 
 export interface FilterConditionBuildResult {
   condition: string | null;

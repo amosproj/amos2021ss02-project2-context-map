@@ -3,9 +3,7 @@ import { Neo4jService } from 'nest-neo4j/dist';
 import { EdgeDescriptor, NodeDescriptor } from '../shared/entities';
 import consolidateQueryResult from '../utils/consolidateQueryResult';
 import { FilterCondition, FilterQuery, QueryResult } from '../shared/queries';
-import FilterConditionBuilder, {
-  FilterConditionBuildResult,
-} from './FilterConditionBuilder';
+import FilterConditionBuilder from './FilterConditionBuilder';
 import { allocateParamKey } from './allocateParamKey';
 import { FilterServiceBase } from './filter.service.base';
 import {
