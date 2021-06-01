@@ -24,7 +24,7 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-const apiBaseUrl = 'http://localhost:8080/api';
+import { apiBaseUrl } from './constants';
 
 Cypress.Commands.add('switchBackendPort', (port) => {
   cy.intercept({ url: `${apiBaseUrl}/**`, middleware: true }, (req) => {
