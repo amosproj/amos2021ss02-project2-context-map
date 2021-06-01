@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { from } from 'rxjs';
 import { QueryResult } from '../shared/queries';
 import SimpleStore from './SimpleStore';
-import FilterStore from './FilterStore';
+import FilterQueryStore from './FilterQueryStore';
 import { FilterService } from '../services/filter';
 import { CancellationTokenSource } from '../utils/CancellationToken';
 import withErrorHandler from '../utils/withErrorHandler';
@@ -11,11 +11,15 @@ import ErrorStore from './ErrorStore';
 import LoadingStore from './LoadingStore';
 import withLoadingBar from '../utils/withLoadingBar';
 
+/**
+ * Contains the current state of the fetched query.
+ * Updates it's state automatically if the state of {@link FilterQueryStore} changes.
+ */
 @injectable()
-export default class GraphDataStore extends SimpleStore<QueryResult> {
+export default class QueryResultStore extends SimpleStore<QueryResult> {
   private filterQueryCancelToken?: CancellationTokenSource;
   constructor(
-    private readonly filterStore: FilterStore,
+    private readonly filterStore: FilterQueryStore,
     private readonly filterService: FilterService,
     private readonly errorStore: ErrorStore,
     private readonly loadingStore: LoadingStore

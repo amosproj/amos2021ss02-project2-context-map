@@ -8,8 +8,8 @@ import {
 import { SearchService, SearchServiceImpl } from './services/search';
 import { FilterService, FilterServiceImpl } from './services/filter';
 import { SchemaService, SchemaServiceImpl } from './services/schema';
-import GraphDataStore from './stores/GraphDataStore';
-import FilterStore from './stores/FilterStore';
+import QueryResultStore from './stores/QueryResultStore';
+import FilterQueryStore from './stores/FilterQueryStore';
 import ErrorStore from './stores/ErrorStore';
 import LoadingStore from './stores/LoadingStore';
 
@@ -35,18 +35,18 @@ export default function configureServices(container: Container): void {
 
   // stores
   const errorStore = new ErrorStore();
-  const filterStore = new FilterStore();
+  const filterStore = new FilterQueryStore();
   const loadingStore = new LoadingStore();
 
   container.bind(ErrorStore).toConstantValue(errorStore);
-  container.bind(FilterStore).toConstantValue(filterStore);
+  container.bind(FilterQueryStore).toConstantValue(filterStore);
   container.bind(LoadingStore).toConstantValue(loadingStore);
   // if filterStore is injected like FilterService, then the injected filterStore
   // differs from all other FilterStores obtained in other parts of the app.
   container
-    .bind(GraphDataStore)
+    .bind(QueryResultStore)
     .toConstantValue(
-      new GraphDataStore(
+      new QueryResultStore(
         filterStore,
         container.get(FilterService),
         errorStore,

@@ -10,7 +10,7 @@ import { NodeResultDescriptor, QueryResult } from '../shared/queries';
 import { useSize } from '../utils/useSize';
 import Filter from './filtering/Filter';
 import useObservable from '../utils/useObservable';
-import GraphDataStore from '../stores/GraphDataStore';
+import QueryResultStore from '../stores/QueryResultStore';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -111,7 +111,7 @@ function Graph(): JSX.Element {
   // The size of the container that is used to measure the available space for the graph.
   const containerSize = useSize(sizeMeasureContainerRef);
 
-  const graphDataStore = useService(GraphDataStore);
+  const graphDataStore = useService(QueryResultStore);
 
   const [graphData, setGraphData] = useState<GraphData>({
     edges: [],
