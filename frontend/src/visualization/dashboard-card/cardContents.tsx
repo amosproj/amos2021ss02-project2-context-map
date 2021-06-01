@@ -24,10 +24,9 @@ const cardContents: Array<CardPresentationContent> = [
 ];
 
 /**
- * Creates a new card definition with icon, description and subtitle
- * for the dashboard from a TabDefinition.
- * @param {TabDefinition} tab TabDefinition (based on the routes)
- * @return {CardDefinition} the created card definition.
+ * Creates a new card definition with icon, description and subtitle for the dashboard from a TabDefinition.
+ * @param tab A {@link TabDefinition} (based on the routes)
+ * @returns the created card definition.
  */
 const createCard = function createCardBasedOnTab(
   tab: TabDefinition

@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
-import { Node } from './shared/entities/Node';
-import { EdgeDescriptor } from './shared/entities/EdgeDescriptor';
-import { Edge } from './shared/entities/Edge';
+import { Node, EdgeDescriptor, Edge, NodeDescriptor } from './shared/entities';
 import { QueryBase, QueryResult } from './shared/queries';
-import { NodeDescriptor } from './shared/entities/NodeDescriptor';
 import consolidateQueryResult from './utils/consolidateQueryResult';
 import {
   neo4jReturnEdge,

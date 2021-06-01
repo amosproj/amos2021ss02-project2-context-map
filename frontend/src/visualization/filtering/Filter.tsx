@@ -1,13 +1,13 @@
 import {
   AppBar,
   Box,
+  Divider,
   Drawer,
   IconButton,
   List,
   Tab,
   Tabs,
   Typography,
-  Divider,
 } from '@material-ui/core';
 import React, { useRef } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -15,18 +15,13 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import useService from '../../dependency-injection/useService';
 import { CancellationToken } from '../../utils/CancellationToken';
-import { NodeType } from '../../shared/schema/NodeType';
-import { EdgeType } from '../../shared/schema/EdgeType';
-
+import { EdgeType, NodeType } from '../../shared/schema';
 import EntityFilterElement from './components/EntityFilterElement';
 import fetchDataFromService from '../shared-ops/fetchDataFromService';
 import entityColors from '../data/GraphData';
 import { SchemaService } from '../../services/schema';
-import {
-  FilterCondition,
-  FilterQuery,
-  MatchAnyCondition,
-} from '../../shared/queries';
+import { FilterCondition, MatchAnyCondition } from '../../shared/queries';
+import FilterQueryStore from '../../stores/FilterQueryStore';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -94,16 +89,15 @@ function fetchEdgeTypes(
   return schemaService.getEdgeTypes(cancellation);
 }
 
-const Filter = (props: {
-  executeQuery: (query: FilterQuery) => void;
-}): JSX.Element => {
+const Filter = (): JSX.Element => {
   // hooks
   const classes = useStyles();
   const [tabIndex, setTabIndex] = React.useState(0);
   const [open, setOpen] = React.useState(false);
 
-  const { executeQuery } = props;
   const schemaService = useService(SchemaService, null);
+
+  const filterStore = useService(FilterQueryStore);
 
   const nodeConditionsRef = useRef<(FilterCondition | null)[]>([]);
   const edgeConditionsRef = useRef<(FilterCondition | null)[]>([]);
@@ -128,7 +122,7 @@ const Filter = (props: {
     }
 
     // TODO: Make limits configurable
-    executeQuery({ filters, limits: { edges: 250 } });
+    filterStore.mergeState({ filters });
   }
 
   // a JSX.Element template used for rendering
