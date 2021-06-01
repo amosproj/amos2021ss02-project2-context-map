@@ -33,7 +33,7 @@ export class NodeFilterConditionExecutor extends FilterConditionVisitor {
    * Processes an of-type filter condition.
    */
   protected visitOfTypeCondition(condition: OfTypeCondition): FilterCondition {
-    // Filter the nodes such that any of the node types matched the type of the filter
+    // Filter the nodes such that any of the node types matches the type of the filter
     // and replace the current filtered nodes.
     this.nodes = this.nodes.filter((node) =>
       any(node.types, (type) => type === condition.type)
