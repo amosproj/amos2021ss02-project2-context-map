@@ -1,7 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { SchemaService } from './schema.service';
-import { NodeType } from '../shared/schema/NodeType';
-import { EdgeType } from '../shared/schema/EdgeType';
+import { NodeType, EdgeType } from '../shared/schema';
 
 @Controller('schema')
 export class SchemaController {

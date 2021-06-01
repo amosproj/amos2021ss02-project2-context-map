@@ -114,6 +114,6 @@ context('Searchbar', () => {
     cy.get('.SearchBar').type('keanu');
 
     // Assert
-    cy.contains('error occured');
+    cy.contains('error occurred');
   });
 });

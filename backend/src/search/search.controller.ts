@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { SearchService } from './search.service';
 import { RequiredPipe } from '../pipes/RequiredPipe';
-import { SearchResult } from '../shared/search/SearchResult';
+import { SearchResult } from '../shared/search';
 
 @Controller('search')
 export class SearchController {

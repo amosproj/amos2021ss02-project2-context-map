@@ -1,7 +1,6 @@
-import { Edge } from '../entities/Edge';
-import { Node } from '../entities/Node';
-import { NodeTypeDescriptor } from '../schema/NodeTypeDescriptor';
-import { EdgeTypeDescriptor } from '../schema/EdgeTypeDescriptor';
+import { Edge, Node } from '../entities';
+
+import { NodeTypeDescriptor, EdgeTypeDescriptor } from '../schema';
 
 /**
  * Represents the result of a search request.

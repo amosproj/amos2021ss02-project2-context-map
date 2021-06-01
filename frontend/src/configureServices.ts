@@ -8,6 +8,10 @@ import {
 import { SearchService, SearchServiceImpl } from './services/search';
 import { FilterService, FilterServiceImpl } from './services/filter';
 import { SchemaService, SchemaServiceImpl } from './services/schema';
+import QueryResultStore from './stores/QueryResultStore';
+import FilterQueryStore from './stores/FilterQueryStore';
+import ErrorStore from './stores/ErrorStore';
+import LoadingStore from './stores/LoadingStore';
 
 /**
  * Configures all services in the frontend app.
@@ -29,5 +33,9 @@ export default function configureServices(container: Container): void {
   container.bind(SchemaService).to(SchemaServiceImpl);
   container.bind(FilterService).to(FilterServiceImpl);
 
-  // Add your services here...
+  // stores: use inSingletonScope so only one instance of each store exists
+  container.bind(ErrorStore).to(ErrorStore).inSingletonScope();
+  container.bind(LoadingStore).to(LoadingStore).inSingletonScope();
+  container.bind(FilterQueryStore).to(FilterQueryStore).inSingletonScope();
+  container.bind(QueryResultStore).to(QueryResultStore).inSingletonScope();
 }

@@ -1,0 +1,9 @@
+{
+  "name": "amos-kmap",
+  "scripts": {
+    "sync:shared": "node build/sync.js"
+  },
+  "devDependencies": {
+    "chokidar": "^3.5.1"
+  }
+}

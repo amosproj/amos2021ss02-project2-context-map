@@ -1,10 +1,13 @@
 import { injectable } from 'inversify';
 import 'reflect-metadata';
 import { QueryBase, QueryResult } from '../../src/shared/queries';
-import { Node } from '../../src/shared/entities/Node';
-import { NodeDescriptor } from '../../src/shared/entities/NodeDescriptor';
-import { Edge } from '../../src/shared/entities/Edge';
-import { EdgeDescriptor } from '../../src/shared/entities/EdgeDescriptor';
+import {
+  Node,
+  NodeDescriptor,
+  Edge,
+  EdgeDescriptor,
+} from '../../src/shared/entities';
+
 import delay from '../../src/utils/delay';
 import { QueryService } from '../../src/services/query';
 import { CancellationToken } from '../../src/utils/CancellationToken';
