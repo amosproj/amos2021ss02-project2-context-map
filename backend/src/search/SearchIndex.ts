@@ -1,6 +1,10 @@
 import MiniSearch from 'minisearch';
 import { AsyncLazy } from '../shared/utils';
-import { SearchResult } from '../shared/search';
+import {
+  SearchEdgeResult,
+  SearchNodeResult,
+  SearchResult,
+} from '../shared/search';
 import { IndexEntry } from './IndexEntry';
 
 /**
@@ -55,6 +59,23 @@ export class SearchIndex {
     };
   }
 
+  private appendProperty(
+    entry: IndexEntry,
+    resultEntry: SearchNodeResult | SearchEdgeResult
+  ) {
+    if (entry.indexKey && entry.indexKey.startsWith('properties.')) {
+      const propKey = entry.indexKey.slice('properties.'.length);
+      const propValue = entry.indexValue;
+
+      // This normally is bad, but we explicitly want to modify it here!
+      // eslint-disable-next-line no-param-reassign
+      resultEntry.properties = {
+        ...resultEntry.properties,
+        [propKey]: propValue,
+      };
+    }
+  }
+
   /**
    * Processes a single entry that was returned from the search index and adds it to the aggregate search result.
    * @param entry The entry, as returned from the search index.
@@ -70,6 +91,16 @@ export class SearchIndex {
         result.nodes.push({ id: entry.id });
       }
 
+      let resultEntry = result.nodes.find((node) => node.id === entry.id);
+
+      if (!resultEntry) {
+        resultEntry = { id: entry.id };
+
+        result.nodes.push(resultEntry);
+      }
+
+      this.appendProperty(entry, resultEntry);
+
       return;
     }
 
@@ -80,13 +111,20 @@ export class SearchIndex {
       typeof entry.from === 'number' &&
       typeof entry.to === 'number'
     ) {
-      if (!result.edges.some((edge) => edge.id === entry.id)) {
-        result.edges.push({
+      let resultEntry = result.edges.find((edge) => edge.id === entry.id);
+
+      if (!resultEntry) {
+        resultEntry = {
           id: entry.id,
           from: entry.from,
           to: entry.to,
-        });
+        };
+
+        result.edges.push(resultEntry);
       }
+
+      this.appendProperty(entry, resultEntry);
+
       return;
     }
 

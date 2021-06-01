@@ -39,7 +39,7 @@ describe('SearchService', () => {
       // Arrange
       const expected = {
         edges: [],
-        nodes: [{ id: 3 }],
+        nodes: [{ id: 3, properties: { name: 'Lana Wachowski' } }],
         nodeTypes: [],
         edgeTypes: [],
       };
@@ -56,7 +56,7 @@ describe('SearchService', () => {
       // Arrange
       const expected = {
         edges: [],
-        nodes: [{ id: 1 }],
+        nodes: [{ id: 1, properties: { name: 'Keanu Reeves' } }],
         nodeTypes: [],
         edgeTypes: [],
       };
@@ -111,24 +111,11 @@ describe('SearchService', () => {
       expect(result).toEqual(expected);
     });
 
-    it('finds nodes and node-types by node type', async () => {
+    it('finds node-types by node type', async () => {
       // Arrange
       const expected = {
         edges: [],
-        nodes: [
-          {
-            id: 3,
-          },
-          {
-            id: 2,
-          },
-          {
-            id: 1,
-          },
-          {
-            id: 0,
-          },
-        ],
+        nodes: [],
         nodeTypes: [
           {
             name: 'Person',
@@ -148,26 +135,10 @@ describe('SearchService', () => {
       expect(result).toEqual(expected);
     });
 
-    it('finds edges and edge types by entity type', async () => {
+    it('finds edge types by entity type', async () => {
       // Arrange
       const expected = {
-        edges: [
-          {
-            from: 3,
-            id: 2,
-            to: 0,
-          },
-          {
-            from: 2,
-            id: 1,
-            to: 0,
-          },
-          {
-            from: 1,
-            id: 0,
-            to: 0,
-          },
-        ],
+        edges: [],
         nodes: [],
         nodeTypes: [],
         edgeTypes: [
@@ -223,6 +194,9 @@ describe('SearchService', () => {
             from: 2,
             id: 1,
             to: 0,
+            properties: {
+              roles: 'Trinity',
+            },
           },
         ],
         nodes: [],
@@ -246,6 +220,9 @@ describe('SearchService', () => {
             from: 2,
             id: 1,
             to: 0,
+            properties: {
+              roles: 'Trinity',
+            },
           },
         ],
         nodes: [],

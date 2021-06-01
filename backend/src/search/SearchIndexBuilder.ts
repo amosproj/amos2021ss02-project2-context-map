@@ -29,11 +29,15 @@ function convertToString(value: unknown): string | null {
 
   // If the value is an array, convert each element and combine them via flattenArray.
   if (Array.isArray(value)) {
-    return flattenArray(
-      <string[]>(
-        value.map((entry) => convertToString(entry)).filter((entry) => entry)
-      )
-    );
+    if (value.length > 1) {
+      return flattenArray(
+        <string[]>(
+          value.map((entry) => convertToString(entry)).filter((entry) => entry)
+        )
+      );
+    }
+
+    return convertToString(value[0]);
   }
 
   // Try to invoke a 'toString()' function, that may be present.
@@ -198,6 +202,15 @@ function recordEntityType(
  * @returns The translated edge-type.
  */
 function recordEdgeType(edgeType: EdgeType, entries: IndexEntry[]): void {
+  const nodeEntityEntry: IndexEntry = {
+    entityType: 'edge-type',
+    id: edgeType.name,
+    indexKey: 'entity-type',
+    indexValue: 'edge',
+  };
+
+  entries.push(nodeEntityEntry);
+
   recordEntityType(edgeType, 'edge-type', entries);
 }
 
@@ -208,6 +221,15 @@ function recordEdgeType(edgeType: EdgeType, entries: IndexEntry[]): void {
  * @returns The translated node-type.
  */
 function recordNodeType(nodeType: NodeType, entries: IndexEntry[]): void {
+  const nodeEntityEntry: IndexEntry = {
+    entityType: 'node-type',
+    id: nodeType.name,
+    indexKey: 'entity-type',
+    indexValue: 'node',
+  };
+
+  entries.push(nodeEntityEntry);
+
   recordEntityType(nodeType, 'node-type', entries);
 }
 
@@ -292,7 +314,7 @@ export class SearchIndexBuilder {
     }
 
     // Build the index
-    const fields = ['entityType', 'indexValue'];
+    const fields = ['indexValue'];
     const storeFields = [
       'entityType',
       'id',
