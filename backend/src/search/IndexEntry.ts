@@ -8,9 +8,17 @@ export interface IndexEntry extends RestoredIndexEntry {
   type?: string;
 
   /**
-   * Contains the properties of the entity.
+   * Contains the properties of the entry.
    */
-  properties: {
-    [key: string]: string | undefined;
-  };
+  properties: IndexEntryProperties;
+}
+
+/**
+ * Represents the properties of an index-entry.
+ */
+export interface IndexEntryProperties {
+  /**
+   * Gets or sets a property of an index entry.
+   */
+  [key: string]: string | undefined;
 }
