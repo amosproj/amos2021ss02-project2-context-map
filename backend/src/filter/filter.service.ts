@@ -4,7 +4,7 @@ import { EdgeDescriptor, NodeDescriptor } from '../shared/entities';
 import consolidateQueryResult from '../utils/consolidateQueryResult';
 import { FilterCondition, FilterQuery, QueryResult } from '../shared/queries';
 import FilterConditionBuilder from './FilterConditionBuilder';
-import { allocateParamKey } from './allocateParamKey';
+import { allocateQueryParamName } from './allocateQueryParamName';
 import { FilterServiceBase } from './filter.service.base';
 import {
   EdgeTypeFilterModel,
@@ -49,7 +49,7 @@ export class FilterService implements FilterServiceBase {
     query = `${query} RETURN ID(n) as id`;
 
     if (limit !== undefined) {
-      const limitParamKey = allocateParamKey(queryParams, 'limit');
+      const limitParamKey = allocateQueryParamName(queryParams, 'limit');
       // toInteger required, since apparently it converts int to double.
       query = `${query} LIMIT toInteger($${limitParamKey})`;
       queryParams[limitParamKey] = limit;
@@ -76,7 +76,7 @@ export class FilterService implements FilterServiceBase {
     query = `${query} RETURN ID(e) as id, ID(from) as from, ID(to) as to`;
 
     if (limit !== undefined) {
-      const limitParamKey = allocateParamKey(queryParams, 'limit');
+      const limitParamKey = allocateQueryParamName(queryParams, 'limit');
       // toInteger required, since apparently it converts int to double.
       query = `${query} LIMIT toInteger($${limitParamKey})`;
       queryParams[limitParamKey] = limit;

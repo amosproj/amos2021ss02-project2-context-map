@@ -5,7 +5,7 @@ import {
   MatchPropertyCondition,
   OfTypeCondition,
 } from '../shared/queries';
-import { allocateParamKey } from './allocateParamKey';
+import { allocateQueryParamName } from './allocateQueryParamName';
 import FilterConditionVisitor from './FilterConditionVisitor';
 import { QueryParams } from './QueryParams';
 
@@ -57,7 +57,7 @@ export default class FilterConditionBuilder extends FilterConditionVisitor {
 
   protected visitOfTypeCondition(condition: OfTypeCondition): FilterCondition {
     const { type } = condition;
-    const paramName = allocateParamKey(this.queryParams, type);
+    const paramName = allocateQueryParamName(this.queryParams, type);
 
     if (this.entity === 'node') {
       this.resultCondition = `$${paramName} in labels(${this.name})`;
@@ -74,8 +74,11 @@ export default class FilterConditionBuilder extends FilterConditionVisitor {
     condition: MatchPropertyCondition
   ): FilterCondition {
     const { property, value } = condition;
-    const propertyParamName = allocateParamKey(this.queryParams, property);
-    const valueParamName = allocateParamKey(
+    const propertyParamName = allocateQueryParamName(
+      this.queryParams,
+      property
+    );
+    const valueParamName = allocateQueryParamName(
       this.queryParams,
       `${property}_value`
     );

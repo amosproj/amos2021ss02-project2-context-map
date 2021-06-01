@@ -6,7 +6,7 @@ import { QueryParams } from './QueryParams';
  * @param name The suggested database query parameter name.
  * @returns The allocated unique name.
  */
-export function allocateParamKey(
+export function allocateQueryParamName(
   queryParams: QueryParams,
   name: string
 ): string {
