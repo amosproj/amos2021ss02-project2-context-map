@@ -24,7 +24,7 @@ import {
   FilterQuery,
   MatchAnyCondition,
 } from '../../shared/queries';
-import FilterEntityType from './FilterEntityType';
+import EntityTypeTemplate from './helpers/EntityTypeTemplate';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -129,51 +129,16 @@ const Filter = (props: {
     executeQuery({ filters, limits: { edges: 250 } });
   }
 
-  // a JSX.Element template used for rendering
-  const entityTemplate = (
-    color: string,
-    name: string,
-    entity: 'node' | 'edge',
-    i: number
-  ) => {
-    const setEntryFilterCondition = (
-      condition: FilterCondition | null
-    ): void => {
-      const conditionsRef =
-        entity === 'node' ? nodeConditionsRef : edgeConditionsRef;
-      const conditions = conditionsRef.current;
-
-      while (conditions.length - 1 < i) {
-        conditions.push(null);
-      }
-
-      conditions[i] = condition;
-      conditionsRef.current = conditions;
-      updateQuery();
-    };
-
-    return (
-      <div>
-        <Box display="flex" p={1}>
-          <FilterEntityType
-            backgroundColor={color}
-            name={name}
-            entity={entity}
-            setFilterQuery={setEntryFilterCondition}
-          />
-        </Box>
-      </div>
-    );
-  };
-
   function renderNodes(nodeTypes: NodeType[]): JSX.Element {
     return (
       <>
         {nodeTypes.map((type, i) =>
-          entityTemplate(
+          EntityTypeTemplate(
             entityColors[i % entityColors.length],
             type.name,
             'node',
+            nodeConditionsRef,
+            updateQuery,
             i
           )
         )}
@@ -185,7 +150,14 @@ const Filter = (props: {
     return (
       <>
         {edgeTypes.map((type, i) =>
-          entityTemplate('#a9a9a9', type.name, 'edge', i)
+          EntityTypeTemplate(
+            '#a9a9a9',
+            type.name,
+            'edge',
+            edgeConditionsRef,
+            updateQuery,
+            i
+          )
         )}
       </>
     );
