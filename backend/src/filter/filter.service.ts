@@ -3,7 +3,9 @@ import { Neo4jService } from 'nest-neo4j/dist';
 import { EdgeDescriptor, NodeDescriptor } from '../shared/entities';
 import consolidateQueryResult from '../utils/consolidateQueryResult';
 import { FilterCondition, FilterQuery, QueryResult } from '../shared/queries';
-import FilterConditionBuilder, { QueryParams } from './FilterConditionBuilder';
+import FilterConditionBuilder, {
+  FilterConditionBuildResult,
+} from './FilterConditionBuilder';
 import { allocateParamKey } from './allocateParamKey';
 import { FilterServiceBase } from './filter.service.base';
 import {
@@ -16,9 +18,9 @@ function buildFilterCondition(
   entity: 'node' | 'edge',
   name: string,
   filter?: FilterCondition
-): [string | null, QueryParams] {
+): FilterConditionBuildResult {
   if (filter === undefined) {
-    return [null, {}];
+    return FilterConditionBuildResult();
   }
 
   const conditionBuilder = new FilterConditionBuilder(entity, name);
@@ -49,7 +51,11 @@ export class FilterService implements FilterServiceBase {
     filter?: FilterCondition,
     limit?: number
   ): Promise<NodeDescriptor[]> {
-    const [condition, params] = buildFilterCondition('node', 'n', filter);
+    const { condition, queryParams } = buildFilterCondition(
+      'node',
+      'n',
+      filter
+    );
     let query = 'MATCH (n)';
 
     if (condition !== null) {
@@ -59,13 +65,13 @@ export class FilterService implements FilterServiceBase {
     query = `${query} RETURN ID(n) as id`;
 
     if (limit !== undefined) {
-      const limitParamKey = allocateParamKey(params, 'limit');
+      const limitParamKey = allocateParamKey(queryParams, 'limit');
       // toInteger required, since apparently it converts int to double.
       query = `${query} LIMIT toInteger($${limitParamKey})`;
-      params[limitParamKey] = limit;
+      queryParams[limitParamKey] = limit;
     }
 
-    const result = await this.neo4jService.read(query, params);
+    const result = await this.neo4jService.read(query, queryParams);
     return result.records.map((x) => x.toObject() as NodeDescriptor);
   }
 
@@ -73,7 +79,11 @@ export class FilterService implements FilterServiceBase {
     filter?: FilterCondition,
     limit?: number
   ): Promise<EdgeDescriptor[]> {
-    const [condition, params] = buildFilterCondition('edge', 'e', filter);
+    const { condition, queryParams } = buildFilterCondition(
+      'edge',
+      'e',
+      filter
+    );
     let query = 'MATCH (from)-[e]->(to)';
 
     if (condition !== null) {
@@ -83,13 +93,13 @@ export class FilterService implements FilterServiceBase {
     query = `${query} RETURN ID(e) as id, ID(from) as from, ID(to) as to`;
 
     if (limit !== undefined) {
-      const limitParamKey = allocateParamKey(params, 'limit');
+      const limitParamKey = allocateParamKey(queryParams, 'limit');
       // toInteger required, since apparently it converts int to double.
       query = `${query} LIMIT toInteger($${limitParamKey})`;
-      params[limitParamKey] = limit;
+      queryParams[limitParamKey] = limit;
     }
 
-    const result = await this.neo4jService.read(query, params);
+    const result = await this.neo4jService.read(query, queryParams);
     return result.records.map((x) => x.toObject() as EdgeDescriptor);
   }
 

@@ -1,10 +1,13 @@
 import { QueryParams } from './FilterConditionBuilder';
 
-export function allocateParamKey(params: QueryParams, name: string): string {
+export function allocateParamKey(
+  queryParams: QueryParams,
+  name: string
+): string {
   let additionalNum = 0;
   let paramName = name;
 
-  while (params[paramName] !== undefined) {
+  while (queryParams[paramName] !== undefined) {
     additionalNum += 1;
     paramName = `${name}_${additionalNum}`;
   }

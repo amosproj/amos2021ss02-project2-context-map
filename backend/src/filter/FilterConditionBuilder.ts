@@ -12,6 +12,18 @@ export interface QueryParams {
   [key: string]: unknown | undefined;
 }
 
+export interface FilterConditionBuildResult {
+  condition: string | null;
+  queryParams: QueryParams;
+}
+
+export function FilterConditionBuildResult(
+  condition: string | null = null,
+  queryParams: QueryParams = {}
+): FilterConditionBuildResult {
+  return { condition, queryParams };
+}
+
 export default class FilterConditionBuilder extends FilterConditionVisitor {
   /* eslint-disable lines-between-class-members */
   private readonly entity: 'node' | 'edge';
@@ -26,9 +38,9 @@ export default class FilterConditionBuilder extends FilterConditionVisitor {
     this.name = name;
   }
 
-  public buildCondition(filter: FilterCondition): [string | null, QueryParams] {
+  public buildCondition(filter: FilterCondition): FilterConditionBuildResult {
     this.visit(filter);
-    return [this.resultCondition, this.queryParams];
+    return FilterConditionBuildResult(this.resultCondition, this.queryParams);
   }
 
   protected visitOfTypeCondition(condition: OfTypeCondition): FilterCondition {
