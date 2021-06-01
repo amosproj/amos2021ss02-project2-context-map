@@ -1,6 +1,6 @@
-import { apiBaseUrl } from '../support/constants';
-
 context('Filter', () => {
+  const apiBaseUrl = 'http://localhost:8080/api';
+
   it('can be cancelled', () => {
     const loadingIconFound = Cypress.Promise.defer();
 
