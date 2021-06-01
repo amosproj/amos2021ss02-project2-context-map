@@ -7,7 +7,7 @@ import { formatErrorMessage } from './formatErrorMessage';
  * @param condition The condition to check.
  * @returns The converted filter condition.
  */
-export function validateMatchPropertyCondition(
+export function castToMatchPropertyCondition(
   condition: FilterCondition
 ): MatchPropertyCondition {
   const result = <MatchPropertyCondition>condition;

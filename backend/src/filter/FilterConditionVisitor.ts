@@ -8,7 +8,7 @@ import {
 } from '../shared/queries';
 import { castToMatchAllCondition } from './castToMatchAllCondition';
 import { castToMatchAnyCondition } from './castToMatchAnyCondition';
-import { validateMatchPropertyCondition } from './validateMatchPropertyCondition';
+import { castToMatchPropertyCondition } from './castToMatchPropertyCondition';
 import { castToOfTypeCondition } from './castToOfTypeCondition';
 
 export default abstract class FilterConditionVisitor {
@@ -25,7 +25,7 @@ export default abstract class FilterConditionVisitor {
     }
 
     if (condition.rule === 'match-property') {
-      const matchPropertyCondition = validateMatchPropertyCondition(condition);
+      const matchPropertyCondition = castToMatchPropertyCondition(condition);
       return this.visitMatchPropertyCondition(matchPropertyCondition);
     }
 
