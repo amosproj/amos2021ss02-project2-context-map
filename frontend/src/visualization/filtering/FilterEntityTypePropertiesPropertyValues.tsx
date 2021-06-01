@@ -13,7 +13,7 @@ import FilterPropertyModel from './helpers/FilterPropertyModel';
 const useStyles = makeStyles(() =>
   createStyles({
     select: {
-      width: 200,
+      width: 500,
     },
   })
 );
