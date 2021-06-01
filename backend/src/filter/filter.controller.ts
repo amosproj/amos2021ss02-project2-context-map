@@ -11,6 +11,7 @@ import { FilterService } from './filter.service';
 import { NodeTypeFilterModel } from '../shared/filter';
 import { FilterQuery, QueryResult } from '../shared/queries';
 import { RequiredPipe } from '../pipes/RequiredPipe';
+import FilterConditionValidator from './FilterConditionValidator';
 
 @Controller('filter')
 export class FilterController {
@@ -23,6 +24,20 @@ export class FilterController {
   @Post('query')
   @HttpCode(200)
   query(@Body(RequiredPipe) query?: FilterQuery): Promise<QueryResult> {
+    if (
+      query?.filters?.edges &&
+      !FilterConditionValidator.isValid(query?.filters?.edges)
+    ) {
+      throw new BadRequestException();
+    }
+
+    if (
+      query?.filters?.nodes &&
+      !FilterConditionValidator.isValid(query?.filters?.nodes)
+    ) {
+      throw new BadRequestException();
+    }
+
     return this.filterService.query(query);
   }
 
