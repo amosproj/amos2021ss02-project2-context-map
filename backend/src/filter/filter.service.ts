@@ -4,7 +4,7 @@ import { EdgeDescriptor, NodeDescriptor } from '../shared/entities';
 import consolidateQueryResult from '../utils/consolidateQueryResult';
 import { FilterCondition, FilterQuery, QueryResult } from '../shared/queries';
 import FilterConditionBuilder from './FilterConditionBuilder';
-import { allocateQueryParamName } from './allocateQueryParamName';
+import { allocateQueryParamName } from '../utils/allocateQueryParamName';
 import { FilterServiceBase } from './filter.service.base';
 import {
   EdgeTypeFilterModel,

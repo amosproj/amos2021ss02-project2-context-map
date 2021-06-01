@@ -1,3 +1,4 @@
+import { allocateQueryParamName } from '../utils/allocateQueryParamName';
 import {
   FilterCondition,
   MatchAllCondition,
@@ -5,9 +6,8 @@ import {
   MatchPropertyCondition,
   OfTypeCondition,
 } from '../shared/queries';
-import { allocateQueryParamName } from './allocateQueryParamName';
 import FilterConditionVisitor from './FilterConditionVisitor';
-import { QueryParams } from './QueryParams';
+import { QueryParams } from '../utils/QueryParams';
 
 export interface FilterConditionBuildResult {
   condition: string | null;
