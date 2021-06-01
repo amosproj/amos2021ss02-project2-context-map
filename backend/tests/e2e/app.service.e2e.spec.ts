@@ -2,15 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Neo4jService } from 'nest-neo4j/dist';
 import { AppModule } from '../../src/app.module';
 import { AppService } from '../../src/app.service';
-import { Node } from '../../src/shared/entities/Node';
-import { Edge } from '../../src/shared/entities/Edge';
+import { Node, Edge } from '../../src/shared/entities';
 import {
   getEdgesByIdDummies,
   getNodesByIdDummies,
   queryAllDummies,
   queryAllNoLimitDummies,
 } from '../fixtures/testingDumpData';
-import { QueryResult } from '../../src/shared/queries';
+import { CountQueryResult, QueryResult } from '../../src/shared/queries';
 import { KmapNeo4jModule } from '../../src/config/neo4j/KmapNeo4jModule';
 
 describe('AppService (e2e)', () => {
@@ -102,6 +101,22 @@ describe('AppService (e2e)', () => {
 
       // Assert
       expect(actualEdges).toEqual(expectedEdges);
+    });
+  });
+
+  describe('Method getNumberOfEntities', () => {
+    it('should return the correct number of nodes and edges', async () => {
+      // Arrange
+      const expected: CountQueryResult = {
+        nodes: 4,
+        edges: 3,
+      };
+
+      // Act
+      const actual = await appService.getNumberOfEntities();
+
+      // Assert
+      expect(actual).toEqual(expected);
     });
   });
 });

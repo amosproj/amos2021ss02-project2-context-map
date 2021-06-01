@@ -10,6 +10,7 @@ import FilterQuery, {
 import NodeResultDescriptor from './NodeResultDescriptor';
 import QueryBase from './QueryBase';
 import QueryResult from './QueryResult';
+import CountQueryResult from './CountQueryResult';
 
 export {
   OfTypeCondition,
@@ -24,4 +25,5 @@ export type {
   NodeResultDescriptor,
   QueryBase,
   QueryResult,
+  CountQueryResult,
 };

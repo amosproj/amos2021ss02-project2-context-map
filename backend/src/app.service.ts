@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
 import { Node, EdgeDescriptor, Edge, NodeDescriptor } from './shared/entities';
-import { QueryBase, QueryResult } from './shared/queries';
+import { CountQueryResult, QueryBase, QueryResult } from './shared/queries';
 import consolidateQueryResult from './utils/consolidateQueryResult';
 import {
   neo4jReturnEdge,
@@ -112,5 +112,26 @@ export class AppService {
     );
 
     return result.records.map((r) => r.toObject() as Edge);
+  }
+
+  /**
+   * Returns the number of nodes and edges in the graph
+   */
+  async getNumberOfEntities(): Promise<CountQueryResult> {
+    const result = await this.neo4jService.read(
+      `
+        CALL {
+            MATCH (n)
+            RETURN count(n) as nodes
+        }
+        CALL {
+            MATCH ()-[e]->()
+            RETURN count(e) as edges
+        }
+        return nodes, edges
+    `
+    );
+
+    return result.records[0].toObject() as CountQueryResult;
   }
 }
