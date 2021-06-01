@@ -30,6 +30,11 @@ const routes: Record<string, RouteDefinition> = {
         label: 'Schema',
         content: () => <Schema />,
       },
+      {
+        path: '/visualization/hierarchical',
+        label: 'Hierarchies',
+        content: () => <Graph layout="hierarchical" />,
+      },
     ],
   },
   Exploration: {

@@ -21,6 +21,12 @@ const cardContents: Array<CardPresentationContent> = [
     description: 'Take a deeper look into the database structure',
     icon: 'account_tree',
   },
+  {
+    label: 'Hierarchies',
+    subLabel: 'Node relations',
+    description: 'Display queried data in a hierarchically structured graph.',
+    icon: 'device_hub',
+  },
 ];
 
 /**
