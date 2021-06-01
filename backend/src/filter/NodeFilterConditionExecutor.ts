@@ -1,4 +1,4 @@
-import any from '../utils/any';
+import { any } from '../utils';
 import { Node, NodeDescriptor } from '../shared/entities';
 import {
   FilterCondition,

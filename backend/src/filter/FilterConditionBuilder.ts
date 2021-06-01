@@ -6,7 +6,7 @@ import {
   OfTypeCondition,
 } from '../shared/queries';
 import FilterConditionVisitor from './FilterConditionVisitor';
-import { QueryParams, allocateQueryParamName } from '../utils/QueryParams';
+import { QueryParams, allocateQueryParamName } from '../utils';
 
 export interface FilterConditionBuildResult {
   condition: string | null;
