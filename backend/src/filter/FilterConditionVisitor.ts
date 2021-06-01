@@ -6,7 +6,34 @@ import {
   MatchPropertyCondition,
   OfTypeCondition,
 } from '../shared/queries';
-import { formatErrorMessage } from './formatErrorMessage';
+
+/**
+ * The type-names of all known filter conditions.
+ */
+type KnownFilterConditions =
+  | 'OfTypeCondition'
+  | 'MatchPropertyCondition'
+  | 'MatchAllCondition'
+  | 'MatchAnyCondition';
+
+/**
+ * Formats an error message that describes a malformed filter condition.
+ * @param filter The filter condition name.
+ * @param property The property of the filter condition that is malformed.
+ * @param type The expected type of the filter condition property or `undefined` if the property was missing but expected.
+ * @returns The formatted error message.
+ */
+function formatMalformedConditionMessage(
+  filter: KnownFilterConditions,
+  property: string,
+  type?: string
+): string {
+  if (type) {
+    return `Malformed filter condition. A filter condition of type '${filter}' must have a property '${property}' of type '${type}'.`;
+  }
+
+  return `Malformed filter condition. A filter condition of type '${filter}' must have a property '${property}'.`;
+}
 
 /**
  * A base type for filter condition visitors, that allow a deep traversal through filter condition trees.
@@ -63,7 +90,7 @@ export default abstract class FilterConditionVisitor {
     // An of-type condition needs to have a string-typed `type` property.
     if (condition.type === undefined || typeof condition.type !== 'string') {
       throw new ArgumentError(
-        formatErrorMessage('OfTypeCondition', 'type', 'string')
+        formatMalformedConditionMessage('OfTypeCondition', 'type', 'string')
       );
     }
 
@@ -93,14 +120,18 @@ export default abstract class FilterConditionVisitor {
       typeof condition.property !== 'string'
     ) {
       throw new ArgumentError(
-        formatErrorMessage('MatchPropertyCondition', 'property', 'string')
+        formatMalformedConditionMessage(
+          'MatchPropertyCondition',
+          'property',
+          'string'
+        )
       );
     }
 
     // // A match-property condition must `value` property.
     if (condition.value === undefined) {
       throw new ArgumentError(
-        formatErrorMessage('MatchPropertyCondition', 'value')
+        formatMalformedConditionMessage('MatchPropertyCondition', 'value')
       );
     }
 
@@ -129,7 +160,11 @@ export default abstract class FilterConditionVisitor {
     // A match-all condition must have a property `filters` that is an array of strings.
     if (condition.filters === undefined || !Array.isArray(condition.filters)) {
       throw new ArgumentError(
-        formatErrorMessage('MatchAllCondition', 'filters', 'string[]')
+        formatMalformedConditionMessage(
+          'MatchAllCondition',
+          'filters',
+          'string[]'
+        )
       );
     }
 
@@ -158,7 +193,11 @@ export default abstract class FilterConditionVisitor {
     // A match-any condition must have a property `filters` that is an array of strings.
     if (condition.filters === undefined || !Array.isArray(condition.filters)) {
       throw new ArgumentError(
-        formatErrorMessage('MatchAnyCondition', 'filters', 'string[]')
+        formatMalformedConditionMessage(
+          'MatchAnyCondition',
+          'filters',
+          'string[]'
+        )
       );
     }
 
