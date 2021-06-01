@@ -10,4 +10,9 @@ export interface SearchEdgeResult extends EdgeDescriptor {
   properties?: {
     [key: string]: string | undefined;
   };
+
+  /**
+   * The unique name of the type of the edge.
+   */
+  type: string;
 }

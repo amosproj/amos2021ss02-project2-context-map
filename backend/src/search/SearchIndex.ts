@@ -86,16 +86,16 @@ export class SearchIndex {
     result: SearchResult
   ): void {
     // The entry describes a node.
-    if (entry.entityType === 'node' && typeof entry.id === 'number') {
-      if (!result.nodes.some((node) => node.id === entry.id)) {
-        result.nodes.push({ id: entry.id });
-      }
-
+    if (
+      entry.entityType === 'node' &&
+      typeof entry.id === 'number' &&
+      Array.isArray(entry.types) &&
+      entry.types.length > 0
+    ) {
       let resultEntry = result.nodes.find((node) => node.id === entry.id);
 
       if (!resultEntry) {
-        resultEntry = { id: entry.id };
-
+        resultEntry = { id: entry.id, types: entry.types };
         result.nodes.push(resultEntry);
       }
 
@@ -109,13 +109,16 @@ export class SearchIndex {
       entry.entityType === 'edge' &&
       typeof entry.id === 'number' &&
       typeof entry.from === 'number' &&
-      typeof entry.to === 'number'
+      typeof entry.to === 'number' &&
+      Array.isArray(entry.types) &&
+      entry.types.length === 1
     ) {
       let resultEntry = result.edges.find((edge) => edge.id === entry.id);
 
       if (!resultEntry) {
         resultEntry = {
           id: entry.id,
+          type: entry.types[0],
           from: entry.from,
           to: entry.to,
         };

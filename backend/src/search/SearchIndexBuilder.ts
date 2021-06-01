@@ -67,6 +67,7 @@ function recordEdge(edge: Edge, entries: IndexEntry[]): void {
   const entityIdEntry: IndexEntry = {
     entityType: 'edge',
     id: edge.id,
+    types: [edge.type],
     to: edge.to,
     from: edge.from,
     indexKey: 'id',
@@ -78,6 +79,7 @@ function recordEdge(edge: Edge, entries: IndexEntry[]): void {
   const entityTypeEntry: IndexEntry = {
     entityType: 'edge',
     id: edge.id,
+    types: [edge.type],
     to: edge.to,
     from: edge.from,
     indexKey: 'type',
@@ -97,6 +99,7 @@ function recordEdge(edge: Edge, entries: IndexEntry[]): void {
       entries.push({
         entityType: 'edge',
         id: edge.id,
+        types: [edge.type],
         to: edge.to,
         from: edge.from,
         indexKey: `properties.${key}`,
@@ -118,6 +121,7 @@ function recordNode(node: Node, entries: IndexEntry[]): void {
   const entityIdEntry: IndexEntry = {
     entityType: 'node',
     id: node.id,
+    types: node.types,
     indexKey: 'id',
     indexValue: node.id.toString(),
   };
@@ -127,6 +131,7 @@ function recordNode(node: Node, entries: IndexEntry[]): void {
   const entityTypeEntry: IndexEntry = {
     entityType: 'node',
     id: node.id,
+    types: node.types,
     indexKey: 'type',
     indexValue: flattenArray(node.types),
   };
@@ -144,6 +149,7 @@ function recordNode(node: Node, entries: IndexEntry[]): void {
       entries.push({
         entityType: 'node',
         id: node.id,
+        types: node.types,
         indexKey: `properties.${key}`,
         indexValue: stringifiedValue,
       });
@@ -318,6 +324,7 @@ export class SearchIndexBuilder {
     const storeFields = [
       'entityType',
       'id',
+      'types',
       'from',
       'to',
       'indexKey',

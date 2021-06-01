@@ -10,4 +10,9 @@ export interface SearchNodeResult extends NodeDescriptor {
   properties?: {
     [key: string]: string | undefined;
   };
+
+  /**
+   * The unique name of the types of the node.
+   */
+  types: string[];
 }

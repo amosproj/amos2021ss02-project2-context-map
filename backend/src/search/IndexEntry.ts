@@ -10,6 +10,11 @@ export interface IndexEntry {
   id: number | string;
 
   /**
+   * Contains the id node-types if {@link entityType} is 'node', a single entry that is the edge-type, if {@link entityType} is 'edge', {@code undefined} otherwise.
+   */
+  types?: string[];
+
+  /**
    * Contains the id of the from node of the edge, if {@link entityType} is 'edge', {@code undefined} otherwise.
    */
   from?: number;

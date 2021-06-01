@@ -39,7 +39,9 @@ describe('SearchService', () => {
       // Arrange
       const expected = {
         edges: [],
-        nodes: [{ id: 3, properties: { name: 'Lana Wachowski' } }],
+        nodes: [
+          { id: 3, properties: { name: 'Lana Wachowski' }, types: ['Person'] },
+        ],
         nodeTypes: [],
         edgeTypes: [],
       };
@@ -56,7 +58,9 @@ describe('SearchService', () => {
       // Arrange
       const expected = {
         edges: [],
-        nodes: [{ id: 1, properties: { name: 'Keanu Reeves' } }],
+        nodes: [
+          { id: 1, properties: { name: 'Keanu Reeves' }, types: ['Person'] },
+        ],
         nodeTypes: [],
         edgeTypes: [],
       };
@@ -73,7 +77,11 @@ describe('SearchService', () => {
       // Arrange
       const expected = {
         edges: [],
-        nodes: [{ id: 3 }, { id: 2 }, { id: 1 }],
+        nodes: [
+          { id: 3, types: ['Person'] },
+          { id: 2, types: ['Person'] },
+          { id: 1, types: ['Person'] },
+        ],
         nodeTypes: [
           {
             name: 'Person',
@@ -94,7 +102,11 @@ describe('SearchService', () => {
       // Arrange
       const expected = {
         edges: [],
-        nodes: [{ id: 3 }, { id: 2 }, { id: 1 }],
+        nodes: [
+          { id: 3, types: ['Person'] },
+          { id: 2, types: ['Person'] },
+          { id: 1, types: ['Person'] },
+        ],
         nodeTypes: [
           {
             name: 'Person',
@@ -167,6 +179,7 @@ describe('SearchService', () => {
             from: 3,
             id: 2,
             to: 0,
+            type: 'DIRECTED',
           },
         ],
         nodes: [],
@@ -197,6 +210,7 @@ describe('SearchService', () => {
             properties: {
               roles: 'Trinity',
             },
+            type: 'ACTED_IN',
           },
         ],
         nodes: [],
@@ -223,6 +237,7 @@ describe('SearchService', () => {
             properties: {
               roles: 'Trinity',
             },
+            type: 'ACTED_IN',
           },
         ],
         nodes: [],
