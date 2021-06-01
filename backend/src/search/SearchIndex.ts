@@ -1,7 +1,7 @@
 import MiniSearch from 'minisearch';
 import { AsyncLazy } from '../shared/utils';
 import { SearchResult } from '../shared/search';
-import { RestoredIndexEntry } from './SearchIndexBuilder';
+import { RestoredIndexEntry } from './RestoredIndexEntry';
 
 /**
  * Represents a search index that can be used to perform search operations and auto suggestions.

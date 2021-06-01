@@ -7,43 +7,7 @@ import { parseNeo4jEntityInfo } from '../schema/parseNeo4jEntityInfo';
 import { EdgeType, EntityType, NodeType } from '../shared/schema';
 import { SearchIndex } from './SearchIndex';
 import { AsyncLazy } from '../shared/utils';
-
-export interface RestoredIndexEntry {
-  /**
-   * Contains the type of index entry.
-   */
-  entityType: 'node' | 'edge' | 'node-type' | 'edge-type';
-
-  /**
-   * Contains the id of the entity or the name of the entity type.
-   */
-  id: number | string;
-
-  /**
-   * Contains the id of the from node of the edge, if {@link entityType} is 'edge', {@code undefined} otherwise.
-   */
-  from?: number;
-
-  /**
-   * Contains the id of the to node of the edge, if {@link entityType} is 'edge', {@code undefined} otherwise.
-   */
-  to?: number;
-}
-
-interface IndexEntry extends RestoredIndexEntry {
-  /**
-   * Contains the type of entity, that is the type of edge or the combined types of the node if the entry represents an entity,
-   * or the name of the entity-type if the entry represents an entity-type.
-   */
-  type?: string;
-
-  /**
-   * Contains the properties of the entity.
-   */
-  properties: {
-    [key: string]: string | undefined;
-  };
-}
+import { IndexEntry } from './IndexEntry';
 
 function recordPropertyKeys(
   entries: IndexEntry[],
