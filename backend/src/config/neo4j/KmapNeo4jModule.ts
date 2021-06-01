@@ -1,6 +1,6 @@
 import { DynamicModule, FactoryProvider } from '@nestjs/common';
 import { Neo4jConfig, Neo4jModule } from 'nest-neo4j/dist';
-import { NEO4J_DRIVER, NEO4J_OPTIONS } from 'nest-neo4j/dist/neo4j.constants';
+import { NEO4J_DRIVER } from 'nest-neo4j/dist/neo4j.constants';
 import { Config as Neo4jDriverOptions } from 'neo4j-driver';
 import { createNeo4jDriver } from './createNeo4jDriver';
 
@@ -16,8 +16,7 @@ export class KmapNeo4jModule {
    */
   private static replaceDriverWithCustomDriver(
     module: DynamicModule,
-    options: Neo4jDriverOptions,
-    customConfig?: Neo4jConfig
+    options: Neo4jDriverOptions
   ): DynamicModule {
     const driverProvider = module.providers?.find(
       // eslint-disable-next-line dot-notation
@@ -33,21 +32,6 @@ export class KmapNeo4jModule {
     driverProvider.useFactory = async (config: Neo4jConfig) =>
       createNeo4jDriver(config, options);
 
-    if (customConfig) {
-      const optionsProvider = module.providers?.find(
-        // eslint-disable-next-line dot-notation
-        (provider) =>
-          typeof provider === 'object' && provider.provide === NEO4J_OPTIONS
-      ) as FactoryProvider;
-
-      if (optionsProvider == null) {
-        /* istanbul ignore next */
-        throw Error('Neo4j driver provider not found.');
-      }
-
-      optionsProvider.useFactory = (): Neo4jConfig => customConfig;
-    }
-
     return module;
   }
 
@@ -56,14 +40,31 @@ export class KmapNeo4jModule {
    * Uses environment variables to retrieve connection details.
    * Uses {@link Neo4jModule.fromEnv}.
    */
-  static fromEnv(
+  static fromEnv(options: Neo4jDriverOptions): DynamicModule {
+    return this.replaceDriverWithCustomDriver(Neo4jModule.fromEnv(), options);
+  }
+
+  /**
+   * Creates a Neo4jModule.
+   * Uses a custom port to retrieve connection details.
+   * Uses {@link Neo4jModule.forRoot}.
+   */
+  static forRootTesting(
     options: Neo4jDriverOptions,
-    customConfig?: Neo4jConfig
+    port: number | string
   ): DynamicModule {
+    // TODO: no idea how to combine fromEnv() with parts of custom config
+    const customConfig: Neo4jConfig = {
+      scheme: 'neo4j',
+      host: 'localhost',
+      port,
+      username: 'neo4j',
+      password: 'amos',
+    };
+
     return this.replaceDriverWithCustomDriver(
-      Neo4jModule.fromEnv(),
-      options,
-      customConfig
+      Neo4jModule.forRoot(customConfig),
+      options
     );
   }
 }
