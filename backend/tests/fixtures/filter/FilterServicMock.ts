@@ -9,7 +9,7 @@ import {
   getNodeTypeFilterModelResult,
 } from './FilterQueryResults';
 import { NodeFilterConditionExecutor } from '../../../src/filter/NodeFilterConditionExecutor';
-import { EdgeFilterConditionExecutor } from '../../../src/filter/EntityFilterConditionExecutor';
+import { EdgeFilterConditionExecutor } from '../../../src/filter/EdgeFilterConditionExecutor';
 import consolidateQueryResult from '../../../src/utils/consolidateQueryResult';
 
 const nodes = [
