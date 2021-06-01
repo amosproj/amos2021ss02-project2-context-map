@@ -3,6 +3,7 @@ import { Neo4jService } from 'nest-neo4j/dist';
 import { SchemaService } from '../../../src/schema/schema.service';
 import { KmapNeo4jModule } from '../../../src/config/neo4j/KmapNeo4jModule';
 import { edgeInfo, nodeInfo } from '../../fixtures/nodeInfo/GraphInfoDb';
+import { AppModule } from '../../../src/app.module';
 
 /*
 Tests schema.service.ts
@@ -17,12 +18,13 @@ describe('SchemaService', () => {
     beforeAll(async () => {
       const module: TestingModule = await Test.createTestingModule({
         imports: [
+          AppModule,
           KmapNeo4jModule.forRootTesting(
             { disableLosslessIntegers: true },
             7687
           ),
         ],
-        providers: [],
+        providers: [SchemaService],
       }).compile();
 
       service = module.get<SchemaService>(SchemaService);

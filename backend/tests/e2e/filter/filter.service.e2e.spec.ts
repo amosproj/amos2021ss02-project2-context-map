@@ -29,7 +29,7 @@ describe('FilterService', () => {
             7687
           ),
         ],
-        providers: [],
+        providers: [FilterService],
       }).compile();
 
       service = module.get<FilterService>(FilterService);
