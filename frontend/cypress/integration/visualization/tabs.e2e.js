@@ -1,5 +1,6 @@
+import { apiBaseUrl } from '../../support/constants';
+
 context('Visualization Tabs', () => {
-  const apiBaseUrl = 'http://localhost:8080/api';
   // Global setup
   beforeEach(() => {
     cy.visit('http://localhost:3000/visualization');

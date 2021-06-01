@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Neo4jService } from 'nest-neo4j/dist';
-import { AppModule } from '../../src/app.module';
+import { ConfigModule } from '@nestjs/config';
 import { AppService } from '../../src/app.service';
 import { Node, Edge } from '../../src/shared/entities';
 import {
@@ -9,7 +9,7 @@ import {
   queryAllDummies,
   queryAllNoLimitDummies,
 } from '../fixtures/testingDumpData';
-import { CountQueryResult, QueryResult } from '../../src/shared/queries';
+import { QueryResult } from '../../src/shared/queries';
 import { KmapNeo4jModule } from '../../src/config/neo4j/KmapNeo4jModule';
 
 describe('AppService (e2e)', () => {
@@ -19,7 +19,14 @@ describe('AppService (e2e)', () => {
   beforeAll(async () => {
     // Global setup
     const mockAppModule: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, KmapNeo4jModule],
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: '.env.test',
+        }),
+        KmapNeo4jModule.fromEnv({
+          disableLosslessIntegers: true,
+        }),
+      ],
       providers: [AppService],
     }).compile();
 
@@ -55,6 +62,24 @@ describe('AppService (e2e)', () => {
 
       // Assert
       expect(actualResult).toEqual(expectedResult);
+    });
+
+    describe('Method queryAll for no limit', () => {
+      it('should return expected node length for no limit', async () => {
+        // Act
+        const actualResult: QueryResult = await appService.queryAll();
+
+        // Assert
+        expect(actualResult.nodes.length).toEqual(4);
+      });
+
+      it('should return expected edge length for no limit', async () => {
+        // Act
+        const actualResult: QueryResult = await appService.queryAll();
+
+        // Assert
+        expect(actualResult.edges.length).toEqual(3);
+      });
     });
 
     it('should return no nodes when called with nodes limited to 0', async () => {
@@ -101,22 +126,6 @@ describe('AppService (e2e)', () => {
 
       // Assert
       expect(actualEdges).toEqual(expectedEdges);
-    });
-  });
-
-  describe('Method getNumberOfEntities', () => {
-    it('should return the correct number of nodes and edges', async () => {
-      // Arrange
-      const expected: CountQueryResult = {
-        nodes: 4,
-        edges: 3,
-      };
-
-      // Act
-      const actual = await appService.getNumberOfEntities();
-
-      // Assert
-      expect(actual).toEqual(expected);
     });
   });
 });

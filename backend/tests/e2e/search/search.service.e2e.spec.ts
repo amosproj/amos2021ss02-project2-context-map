@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Neo4jService } from 'nest-neo4j/dist';
+import { ConfigModule } from '@nestjs/config';
 import { SearchService } from '../../../src/search/search.service';
 import { KmapNeo4jModule } from '../../../src/config/neo4j/KmapNeo4jModule';
-import { AppModule } from '../../../src/app.module';
 
 describe('SearchService', () => {
   let service: SearchService;
@@ -11,7 +11,14 @@ describe('SearchService', () => {
   // Global Setup
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, KmapNeo4jModule],
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: '.env.test',
+        }),
+        KmapNeo4jModule.fromEnv({
+          disableLosslessIntegers: true,
+        }),
+      ],
       providers: [SearchService],
     }).compile();
 
