@@ -1,6 +1,5 @@
 import { ArgumentError } from '../shared/errors';
 import { FilterCondition, OfTypeCondition } from '../shared/queries';
-import { checkValidOfTypeCondition } from './checkValidOfTypeCondition';
 import { formatErrorMessage } from './formatErrorMessage';
 
 /**
@@ -13,15 +12,9 @@ export function validateOfTypeCondition(
 ): OfTypeCondition {
   const result = <OfTypeCondition>condition;
 
-  const validationResult = checkValidOfTypeCondition(result);
-
-  if (validationResult.invalidProperty !== undefined) {
+  if (result.type === undefined || typeof result.type !== 'string') {
     throw new ArgumentError(
-      formatErrorMessage(
-        'OfTypeCondition',
-        validationResult.invalidProperty,
-        validationResult.type
-      )
+      formatErrorMessage('OfTypeCondition', 'type', 'string')
     );
   }
 
