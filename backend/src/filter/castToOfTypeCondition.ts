@@ -7,7 +7,7 @@ import { formatErrorMessage } from './formatErrorMessage';
  * @param condition The condition to check.
  * @returns The converted filter condition.
  */
-export function validateOfTypeCondition(
+export function castToOfTypeCondition(
   condition: FilterCondition
 ): OfTypeCondition {
   const result = <OfTypeCondition>condition;

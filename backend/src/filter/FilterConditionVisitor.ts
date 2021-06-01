@@ -9,7 +9,7 @@ import {
 import { validateMatchAllCondition } from './validateMatchAllCondition';
 import { validateMatchAnyCondition } from './validateMatchAnyCondition';
 import { validateMatchPropertyCondition } from './validateMatchPropertyCondition';
-import { validateOfTypeCondition } from './validateOfTypeCondition';
+import { castToOfTypeCondition } from './castToOfTypeCondition';
 
 export default abstract class FilterConditionVisitor {
   protected visit(condition: FilterCondition): FilterCondition {
@@ -20,7 +20,7 @@ export default abstract class FilterConditionVisitor {
     }
 
     if (condition.rule === 'of-type') {
-      const ofTypeCondition = validateOfTypeCondition(condition);
+      const ofTypeCondition = castToOfTypeCondition(condition);
       return this.visitOfTypeCondition(ofTypeCondition);
     }
 
