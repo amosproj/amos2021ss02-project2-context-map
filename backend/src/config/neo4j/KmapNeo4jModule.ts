@@ -11,7 +11,7 @@ import { createNeo4jDriver } from './createNeo4jDriver';
 export class KmapNeo4jModule {
   /**
    * Overrides the driver factory from the {@link Neo4jModule} so
-   * additional {@link Neo4jDriverOptions} and custom {@link Neo4jConfig}s are possible.
+   * additional {@link Neo4jDriverOptions} are possible.
    * @private
    */
   private static replaceDriverWithCustomDriver(
@@ -42,29 +42,5 @@ export class KmapNeo4jModule {
    */
   static fromEnv(options: Neo4jDriverOptions): DynamicModule {
     return this.replaceDriverWithCustomDriver(Neo4jModule.fromEnv(), options);
-  }
-
-  /**
-   * Creates a Neo4jModule.
-   * Uses a custom port to retrieve connection details.
-   * Uses {@link Neo4jModule.forRoot}.
-   */
-  static forRootTesting(
-    options: Neo4jDriverOptions,
-    port: number | string
-  ): DynamicModule {
-    // TODO: no idea how to combine fromEnv() with parts of custom config
-    const customConfig: Neo4jConfig = {
-      scheme: 'neo4j',
-      host: 'localhost',
-      port,
-      username: 'neo4j',
-      password: 'amos',
-    };
-
-    return this.replaceDriverWithCustomDriver(
-      Neo4jModule.forRoot(customConfig),
-      options
-    );
   }
 }

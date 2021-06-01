@@ -1,152 +1,150 @@
 import '../../support/index.js';
 
 context('Filter', () => {
-  context('testing-dump', () => {
-    // Global setup
-    beforeEach(() => {
-      cy.visit('http://localhost:3000/visualization/graph');
+  // Global setup
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/visualization/graph');
+  });
+
+  context('Open/Close View', () => {
+    it('opens and closes view correctly', () => {
+      cy.get('.Filter').click();
+      cy.get('.closeFilter').click();
+    });
+  });
+
+  context('Number of EntityTypes', () => {
+    it('has expected number of nodeTypes', () => {
+      // Act
+      cy.get('.Filter').click();
+      cy.get('.FilterButton').should('have.length', 4);
+    });
+  });
+
+  context('Nodes', () => {
+    it('Shows expected property-names', () => {
+      // Act
+      cy.get('.Filter').click();
+      cy.get('.FilterButton:first').click();
+      cy.get('.FilterDialog');
+
+      // Assert
+      cy.contains('born');
+      cy.contains('name');
     });
 
-    context('Open/Close View', () => {
-      it('opens and closes view correctly', () => {
-        cy.get('.Filter').click();
-        cy.get('.closeFilter').click();
-      });
+    it('shows expected property-values', () => {
+      // Act
+      cy.get('.Filter').click();
+      cy.get('.FilterButton:first').click();
+      cy.get('.FilterDialog');
+      cy.get('.FilterSelect:last').click();
+
+      // Assert
+      cy.contains('Keanu Reeves');
+      cy.contains('Carrie-Anne Moss');
+      cy.contains('Lana Wachowski');
     });
 
-    context('Number of EntityTypes', () => {
-      it('has expected number of nodeTypes', () => {
-        // Act
-        cy.get('.Filter').click();
-        cy.get('.FilterButton').should('have.length', 4);
-      });
+    it('selects no property values', () => {
+      // Act
+      cy.get('.Filter').click();
+      cy.get('.FilterButton:first').click();
+      cy.get('.FilterDialog');
+
+      // eslint-disable-next-line cypress/no-force
+      cy.get('.ApplyFilter').focus().click({ force: true });
+
+      cy.get('.AddButton:first').click();
     });
 
-    context('Nodes', () => {
-      it('Shows expected property-names', () => {
-        // Act
-        cy.get('.Filter').click();
-        cy.get('.FilterButton:first').click();
-        cy.get('.FilterDialog');
+    it('applies filter', () => {
+      // Act
+      cy.get('.Filter').click();
+      cy.get('.FilterButton:first').click();
+      cy.get('.FilterDialog');
+      cy.get('.FilterSelect:last').click();
 
-        // Assert
-        cy.contains('born');
-        cy.contains('name');
-      });
+      cy.contains('Keanu Reeves').click();
+      cy.contains('Carrie-Anne Moss').click();
+      cy.contains('Lana Wachowski').click();
 
-      it('shows expected property-values', () => {
-        // Act
-        cy.get('.Filter').click();
-        cy.get('.FilterButton:first').click();
-        cy.get('.FilterDialog');
-        cy.get('.FilterSelect:last').click();
-
-        // Assert
-        cy.contains('Keanu Reeves');
-        cy.contains('Carrie-Anne Moss');
-        cy.contains('Lana Wachowski');
-      });
-
-      it('selects no property values', () => {
-        // Act
-        cy.get('.Filter').click();
-        cy.get('.FilterButton:first').click();
-        cy.get('.FilterDialog');
-
-        // eslint-disable-next-line cypress/no-force
-        cy.get('.ApplyFilter').focus().click({ force: true });
-
-        cy.get('.AddButton:first').click();
-      });
-
-      it('applies filter', () => {
-        // Act
-        cy.get('.Filter').click();
-        cy.get('.FilterButton:first').click();
-        cy.get('.FilterDialog');
-        cy.get('.FilterSelect:last').click();
-
-        cy.contains('Keanu Reeves').click();
-        cy.contains('Carrie-Anne Moss').click();
-        cy.contains('Lana Wachowski').click();
-
-        // eslint-disable-next-line cypress/no-force
-        cy.get('.ApplyFilter').focus().click({ force: true });
-      });
-
-      it('adds nodes to view', () => {
-        // Act
-        cy.get('.Filter').click();
-        cy.get('.FilterButton:first').click();
-        cy.get('.FilterDialog');
-        cy.get('.FilterSelect:last').click();
-
-        // Assert
-        cy.contains('Keanu Reeves').click();
-        cy.contains('Carrie-Anne Moss').click();
-        cy.contains('Lana Wachowski').click();
-        // eslint-disable-next-line cypress/no-force
-        cy.get('.ApplyFilter').focus().click({ force: true });
-
-        cy.get('.AddButton:first').click();
-        cy.get('.AddButton:first').click();
-      });
+      // eslint-disable-next-line cypress/no-force
+      cy.get('.ApplyFilter').focus().click({ force: true });
     });
 
-    context('Edges', () => {
-      it('shows expected property-names', () => {
-        // Act
-        cy.get('.Filter').click();
-        cy.contains('Edge Types').click();
-        cy.get('.FilterButton').eq(2).click();
-        cy.get('.FilterDialog');
+    it('adds nodes to view', () => {
+      // Act
+      cy.get('.Filter').click();
+      cy.get('.FilterButton:first').click();
+      cy.get('.FilterDialog');
+      cy.get('.FilterSelect:last').click();
 
-        // Assert
-        cy.contains('roles');
-      });
+      // Assert
+      cy.contains('Keanu Reeves').click();
+      cy.contains('Carrie-Anne Moss').click();
+      cy.contains('Lana Wachowski').click();
+      // eslint-disable-next-line cypress/no-force
+      cy.get('.ApplyFilter').focus().click({ force: true });
 
-      it('Shows expected property-values', () => {
-        // Act
-        cy.get('.Filter').click();
-        cy.get('.EdgeTypes').click();
-        cy.get('.FilterButton').eq(2).click();
-        cy.get('.FilterDialog');
-        cy.get('.FilterSelect').first().click();
+      cy.get('.AddButton:first').click();
+      cy.get('.AddButton:first').click();
+    });
+  });
 
-        // Assert
-        cy.contains('Error: No string').click();
-      });
+  context('Edges', () => {
+    it('shows expected property-names', () => {
+      // Act
+      cy.get('.Filter').click();
+      cy.contains('Edge Types').click();
+      cy.get('.FilterButton').eq(2).click();
+      cy.get('.FilterDialog');
 
-      it('applies filter', () => {
-        // Act
-        cy.get('.Filter').click();
-        cy.get('.EdgeTypes').click();
-        cy.get('.FilterButton').eq(2).click();
-        cy.get('.FilterDialog');
-        cy.get('.FilterSelect').first().click();
+      // Assert
+      cy.contains('roles');
+    });
 
-        // Assert
-        cy.contains('Error: No string').click();
-        // eslint-disable-next-line cypress/no-force
-        cy.get('.ApplyFilter').focus().click({ force: true });
-      });
+    it('Shows expected property-values', () => {
+      // Act
+      cy.get('.Filter').click();
+      cy.get('.EdgeTypes').click();
+      cy.get('.FilterButton').eq(2).click();
+      cy.get('.FilterDialog');
+      cy.get('.FilterSelect').first().click();
 
-      it('adds edges to view', () => {
-        // Act
-        cy.get('.Filter').click();
-        cy.get('.EdgeTypes').click();
-        cy.get('.FilterButton').eq(2).click();
-        cy.get('.FilterDialog');
-        cy.get('.FilterSelect').first().click();
+      // Assert
+      cy.contains('Error: No string').click();
+    });
 
-        // Assert
-        cy.contains('Error: No string').click();
-        // eslint-disable-next-line cypress/no-force
-        cy.get('.ApplyFilter').focus().click({ force: true });
+    it('applies filter', () => {
+      // Act
+      cy.get('.Filter').click();
+      cy.get('.EdgeTypes').click();
+      cy.get('.FilterButton').eq(2).click();
+      cy.get('.FilterDialog');
+      cy.get('.FilterSelect').first().click();
 
-        cy.get('.AddButton').eq(2).click();
-        cy.get('.AddButton').eq(2).click();
-      });
+      // Assert
+      cy.contains('Error: No string').click();
+      // eslint-disable-next-line cypress/no-force
+      cy.get('.ApplyFilter').focus().click({ force: true });
+    });
+
+    it('adds edges to view', () => {
+      // Act
+      cy.get('.Filter').click();
+      cy.get('.EdgeTypes').click();
+      cy.get('.FilterButton').eq(2).click();
+      cy.get('.FilterDialog');
+      cy.get('.FilterSelect').first().click();
+
+      // Assert
+      cy.contains('Error: No string').click();
+      // eslint-disable-next-line cypress/no-force
+      cy.get('.ApplyFilter').focus().click({ force: true });
+
+      cy.get('.AddButton').eq(2).click();
+      cy.get('.AddButton').eq(2).click();
     });
   });
 });
