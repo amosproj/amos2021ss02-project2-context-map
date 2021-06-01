@@ -3,7 +3,7 @@
  */
 export interface QueryParams {
   /**
-   * Gets or sets a database parameter by its key.
+   * Gets or sets a database parameter by its name.
    */
-  [key: string]: unknown | undefined;
+  [name: string]: unknown | undefined;
 }
