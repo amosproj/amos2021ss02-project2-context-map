@@ -38,7 +38,22 @@ export default class FilterConditionBuilder extends FilterConditionVisitor {
     this.name = name;
   }
 
-  public buildCondition(filter: FilterCondition): FilterConditionBuildResult {
+  public static buildFilterCondition(
+    entity: 'node' | 'edge',
+    name: string,
+    filter?: FilterCondition
+  ): FilterConditionBuildResult {
+    if (filter === undefined) {
+      return FilterConditionBuildResult();
+    }
+
+    const conditionBuilder = new FilterConditionBuilder(entity, name);
+    return conditionBuilder.buildConditionCore(filter);
+  }
+
+  private buildConditionCore(
+    filter: FilterCondition
+  ): FilterConditionBuildResult {
     this.visit(filter);
     return FilterConditionBuildResult(this.resultCondition, this.queryParams);
   }

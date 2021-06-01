@@ -14,19 +14,6 @@ import {
   NodeTypeFilterModel,
 } from '../shared/filter';
 
-function buildFilterCondition(
-  entity: 'node' | 'edge',
-  name: string,
-  filter?: FilterCondition
-): FilterConditionBuildResult {
-  if (filter === undefined) {
-    return FilterConditionBuildResult();
-  }
-
-  const conditionBuilder = new FilterConditionBuilder(entity, name);
-  return conditionBuilder.buildCondition(filter);
-}
-
 @Injectable()
 export class FilterService implements FilterServiceBase {
   constructor(private readonly neo4jService: Neo4jService) {}
@@ -51,11 +38,10 @@ export class FilterService implements FilterServiceBase {
     filter?: FilterCondition,
     limit?: number
   ): Promise<NodeDescriptor[]> {
-    const { condition, queryParams } = buildFilterCondition(
-      'node',
-      'n',
-      filter
-    );
+    const {
+      condition,
+      queryParams,
+    } = FilterConditionBuilder.buildFilterCondition('node', 'n', filter);
     let query = 'MATCH (n)';
 
     if (condition !== null) {
@@ -79,11 +65,10 @@ export class FilterService implements FilterServiceBase {
     filter?: FilterCondition,
     limit?: number
   ): Promise<EdgeDescriptor[]> {
-    const { condition, queryParams } = buildFilterCondition(
-      'edge',
-      'e',
-      filter
-    );
+    const {
+      condition,
+      queryParams,
+    } = FilterConditionBuilder.buildFilterCondition('edge', 'e', filter);
     let query = 'MATCH (from)-[e]->(to)';
 
     if (condition !== null) {
