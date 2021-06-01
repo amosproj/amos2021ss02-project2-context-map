@@ -1,24 +1,35 @@
-import { RestoredIndexEntry } from './RestoredIndexEntry';
-
-export interface IndexEntry extends RestoredIndexEntry {
+export interface IndexEntry {
   /**
-   * Contains the type of entity, that is the type of edge or the combined types of the node if the entry represents an entity,
-   * or the name of the entity-type if the entry represents an entity-type.
+   * Contains the type of index entry.
    */
-  type?: string;
+  entityType: 'node' | 'edge' | 'node-type' | 'edge-type';
 
   /**
-   * Contains the properties of the entry.
+   * Contains the id of the entity or the name of the entity type.
    */
-  properties: IndexEntryProperties;
-}
+  id: number | string;
 
-/**
- * Represents the properties of an index-entry.
- */
-export interface IndexEntryProperties {
   /**
-   * Gets or sets a property of an index entry.
+   * Contains the id of the from node of the edge, if {@link entityType} is 'edge', {@code undefined} otherwise.
    */
-  [key: string]: string | undefined;
+  from?: number;
+
+  /**
+   * Contains the id of the to node of the edge, if {@link entityType} is 'edge', {@code undefined} otherwise.
+   */
+  to?: number;
+
+  /**
+   * Contains the key of the indexed string.
+   * This is
+   * properties.{property-name} if a property is indexed
+   * type if the entity is is indexed
+   * id if the id of the entity or the name of the entity-type is indexed.
+   */
+  indexKey?: string;
+
+  /**
+   * Contains the string value that is indexed.
+   */
+  indexValue: string;
 }

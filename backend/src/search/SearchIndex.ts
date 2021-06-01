@@ -1,7 +1,7 @@
 import MiniSearch from 'minisearch';
 import { AsyncLazy } from '../shared/utils';
 import { SearchResult } from '../shared/search';
-import { RestoredIndexEntry } from './RestoredIndexEntry';
+import { IndexEntry } from './IndexEntry';
 
 /**
  * Represents a search index that can be used to perform search operations and auto suggestions.
@@ -34,7 +34,7 @@ export class SearchIndex {
     //        ~ means 'does not include'
     const entries = index
       .search(searchString, { prefix: true })
-      .map((result) => (result as unknown) as RestoredIndexEntry);
+      .map((result) => (result as unknown) as IndexEntry);
 
     const result = this.createEmptySearchResult();
 
@@ -61,12 +61,15 @@ export class SearchIndex {
    * @param result The search result that contains the aggregated result.
    */
   private processSearchResultEntry(
-    entry: RestoredIndexEntry,
+    entry: IndexEntry,
     result: SearchResult
   ): void {
     // The entry describes a node.
     if (entry.entityType === 'node' && typeof entry.id === 'number') {
-      result.nodes.push({ id: entry.id });
+      if (!result.nodes.some((node) => node.id === entry.id)) {
+        result.nodes.push({ id: entry.id });
+      }
+
       return;
     }
 
@@ -77,27 +80,33 @@ export class SearchIndex {
       typeof entry.from === 'number' &&
       typeof entry.to === 'number'
     ) {
-      result.edges.push({
-        id: entry.id,
-        from: entry.from,
-        to: entry.to,
-      });
+      if (!result.edges.some((edge) => edge.id === entry.id)) {
+        result.edges.push({
+          id: entry.id,
+          from: entry.from,
+          to: entry.to,
+        });
+      }
       return;
     }
 
     // The entry describes a node-type.
     if (entry.entityType === 'node-type' && typeof entry.id === 'string') {
-      result.nodeTypes.push({
-        name: entry.id,
-      });
+      if (!result.nodeTypes.some((nodeType) => nodeType.name === entry.id)) {
+        result.nodeTypes.push({
+          name: entry.id,
+        });
+      }
       return;
     }
 
     // The entry describes an edge-type.
     if (entry.entityType === 'edge-type' && typeof entry.id === 'string') {
-      result.edgeTypes.push({
-        name: entry.id,
-      });
+      if (!result.edgeTypes.some((edgeType) => edgeType.name === entry.id)) {
+        result.edgeTypes.push({
+          name: entry.id,
+        });
+      }
     }
   }
 

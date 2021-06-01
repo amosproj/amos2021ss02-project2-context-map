@@ -4,6 +4,15 @@ import { SearchService } from '../../../src/search/search.service';
 import { KmapNeo4jModule } from '../../../src/config/neo4j/KmapNeo4jModule';
 import { AppModule } from '../../../src/app.module';
 import { SearchIndexBuilder } from '../../../src/search/SearchIndexBuilder';
+import { SearchResult } from '../../../src/shared/search';
+
+function normalizeSearchResult(searchResult: SearchResult): void {
+  searchResult.nodes.sort((a, b) => b.id - a.id);
+  searchResult.edges.sort((a, b) => b.id - a.id);
+
+  searchResult.nodeTypes.sort((a, b) => b.name.localeCompare(a.name));
+  searchResult.edgeTypes.sort((a, b) => b.name.localeCompare(a.name));
+}
 
 describe('SearchService', () => {
   let service: SearchService;
@@ -39,6 +48,7 @@ describe('SearchService', () => {
       const result = await service.search('lana');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -55,6 +65,7 @@ describe('SearchService', () => {
       const result = await service.search('reev');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -75,6 +86,7 @@ describe('SearchService', () => {
       const result = await service.search('person');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -95,6 +107,7 @@ describe('SearchService', () => {
       const result = await service.search('pers');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -118,10 +131,10 @@ describe('SearchService', () => {
         ],
         nodeTypes: [
           {
-            name: 'Movie',
+            name: 'Person',
           },
           {
-            name: 'Person',
+            name: 'Movie',
           },
         ],
         edgeTypes: [],
@@ -131,6 +144,7 @@ describe('SearchService', () => {
       const result = await service.search('node');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -170,6 +184,7 @@ describe('SearchService', () => {
       const result = await service.search('edge');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -196,6 +211,7 @@ describe('SearchService', () => {
       const result = await service.search('directed');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -218,6 +234,7 @@ describe('SearchService', () => {
       const result = await service.search('trinity');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -240,6 +257,7 @@ describe('SearchService', () => {
       const result = await service.search('trini');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -260,6 +278,7 @@ describe('SearchService', () => {
       const result = await service.search('roles');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -280,6 +299,7 @@ describe('SearchService', () => {
       const result = await service.search('released');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
   });
