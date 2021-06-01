@@ -3,6 +3,7 @@ import { Neo4jService } from 'nest-neo4j/dist';
 import { SearchService } from '../../../src/search/search.service';
 import { KmapNeo4jModule } from '../../../src/config/neo4j/KmapNeo4jModule';
 import { AppModule } from '../../../src/app.module';
+import { SearchIndexBuilder } from '../../../src/search/SearchIndexBuilder';
 
 describe('SearchService', () => {
   let service: SearchService;
@@ -12,7 +13,7 @@ describe('SearchService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule, KmapNeo4jModule],
-      providers: [SearchService],
+      providers: [SearchService, SearchIndexBuilder],
     }).compile();
 
     service = module.get<SearchService>(SearchService);
