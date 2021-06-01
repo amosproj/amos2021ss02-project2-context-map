@@ -9,16 +9,16 @@ import {
   FormControl,
 } from '@material-ui/core';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import EntityPropertySelect from './EntityPropertySelect';
-import { FilterModelEntry } from '../../../../shared/filter';
+import FilterEntityTypePropertiesPropertyValues from './FilterEntityTypePropertiesPropertyValues';
+import { FilterModelEntry } from '../../shared/filter';
 import {
   FilterCondition,
   MatchAllCondition,
   MatchAnyCondition,
   MatchPropertyCondition,
-} from '../../../../shared/queries';
-import useArrayState from '../useArrayState';
-import FilterPropertyModel from '../../FilterPropertyModel';
+} from '../../shared/queries';
+import useArrayState from './helpers/useArrayState';
+import FilterPropertyModel from './helpers/FilterPropertyModel';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const EntityFilterDialog = (props: {
+const FilterEntityTypeProperties = (props: {
   filterOpen: boolean;
   handleCloseFilter: () => void;
   filterModelEntries: FilterModelEntry[];
@@ -53,7 +53,7 @@ const EntityFilterDialog = (props: {
   );
 
   const entitySelects = properties.map((property, index) => (
-    <EntityPropertySelect
+    <FilterEntityTypePropertiesPropertyValues
       property={property}
       setProperty={setProperties[index]}
     />
@@ -127,4 +127,4 @@ const EntityFilterDialog = (props: {
   );
 };
 
-export default EntityFilterDialog;
+export default FilterEntityTypeProperties;

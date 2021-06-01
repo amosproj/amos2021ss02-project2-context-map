@@ -16,7 +16,6 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import useService from '../../dependency-injection/useService';
 import { CancellationToken } from '../../utils/CancellationToken';
 import { NodeType, EdgeType } from '../../shared/schema';
-import EntityFilterElement from './components/EntityFilterElement';
 import fetchDataFromService from '../shared-ops/fetchDataFromService';
 import entityColors from '../data/GraphData';
 import { SchemaService } from '../../services/schema';
@@ -25,6 +24,7 @@ import {
   FilterQuery,
   MatchAnyCondition,
 } from '../../shared/queries';
+import FilterEntityType from './FilterEntityType';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -155,7 +155,7 @@ const Filter = (props: {
     return (
       <div>
         <Box display="flex" p={1}>
-          <EntityFilterElement
+          <FilterEntityType
             backgroundColor={color}
             name={name}
             entity={entity}

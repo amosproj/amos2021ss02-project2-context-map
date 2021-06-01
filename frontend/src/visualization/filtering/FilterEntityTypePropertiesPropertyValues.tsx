@@ -8,7 +8,7 @@ import {
   Select,
 } from '@material-ui/core';
 import React from 'react';
-import FilterPropertyModel from '../../FilterPropertyModel';
+import FilterPropertyModel from './helpers/FilterPropertyModel';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -18,7 +18,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-const EntityPropertySelect = (props: {
+const FilterEntityTypePropertiesPropertyValues = (props: {
   property: FilterPropertyModel;
   setProperty: React.Dispatch<React.SetStateAction<FilterPropertyModel>>;
 }): JSX.Element => {
@@ -85,4 +85,4 @@ const EntityPropertySelect = (props: {
   );
 };
 
-export default EntityPropertySelect;
+export default FilterEntityTypePropertiesPropertyValues;

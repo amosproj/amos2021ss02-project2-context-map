@@ -4,16 +4,13 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
 import TuneIcon from '@material-ui/icons/Tune';
 import AddIcon from '@material-ui/icons/Add';
-import EntityFilterDialog from './dialog/EntityFilterDialog';
-import {
-  EdgeTypeFilterModel,
-  NodeTypeFilterModel,
-} from '../../../shared/filter';
-import { CancellationToken } from '../../../utils/CancellationToken';
-import useService from '../../../dependency-injection/useService';
-import { FilterService } from '../../../services/filter';
-import { MatchAllCondition, OfTypeCondition } from '../../../shared/queries';
-import fetchDataFromService from '../../shared-ops/fetchDataFromService';
+import FilterEntityTypeProperties from './FilterEntityTypeProperties';
+import { EdgeTypeFilterModel, NodeTypeFilterModel } from '../../shared/filter';
+import { CancellationToken } from '../../utils/CancellationToken';
+import useService from '../../dependency-injection/useService';
+import { FilterService } from '../../services/filter';
+import { MatchAllCondition, OfTypeCondition } from '../../shared/queries';
+import fetchDataFromService from '../shared-ops/fetchDataFromService';
 
 type EntityTypeFilterModel = NodeTypeFilterModel | EdgeTypeFilterModel;
 
@@ -66,7 +63,7 @@ function fetchEdgeTypeFilterModel(
   return filterService.getEdgeTypeFilterModel(edgeName, cancellation);
 }
 
-const EntityFilterElement = (props: {
+const FilterEntityType = (props: {
   backgroundColor: string;
   name: string;
   entity: 'node' | 'edge';
@@ -156,7 +153,7 @@ const EntityFilterElement = (props: {
         <IconButton component="span" className="AddButton">
           <AddIcon onClick={handleAddEntity} />
         </IconButton>
-        <EntityFilterDialog
+        <FilterEntityTypeProperties
           filterOpen={filterOpen}
           handleCloseFilter={handleCloseFilter}
           filterModelEntries={filterModelEntries}
@@ -174,4 +171,4 @@ const EntityFilterElement = (props: {
   );
 };
 
-export default EntityFilterElement;
+export default FilterEntityType;

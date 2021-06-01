@@ -124,7 +124,7 @@ function executeFilterQuery(
 function Graph(): JSX.Element {
   const classes = useStyles();
 
-  // the filtered QueryResult from child-component EntityFilterDialog
+  // the filtered QueryResult from child-component FilterEntityTypeProperties
   const filterQueryRef = React.useRef<FilterQuery>({
     limits: { edges: 150, nodes: 200 },
   });
