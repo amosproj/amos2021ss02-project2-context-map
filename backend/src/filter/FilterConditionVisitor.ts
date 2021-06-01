@@ -6,8 +6,8 @@ import {
   MatchPropertyCondition,
   OfTypeCondition,
 } from '../shared/queries';
-import { validateMatchAllCondition } from './validateMatchAllCondition';
-import { validateMatchAnyCondition } from './validateMatchAnyCondition';
+import { castToMatchAllCondition } from './castToMatchAllCondition';
+import { castToMatchAnyCondition } from './castToMatchAnyCondition';
 import { validateMatchPropertyCondition } from './validateMatchPropertyCondition';
 import { castToOfTypeCondition } from './castToOfTypeCondition';
 
@@ -30,12 +30,12 @@ export default abstract class FilterConditionVisitor {
     }
 
     if (condition.rule === 'all') {
-      const matchAllCondition = validateMatchAllCondition(condition);
+      const matchAllCondition = castToMatchAllCondition(condition);
       return this.visitMatchAllCondition(matchAllCondition);
     }
 
     if (condition.rule === 'any') {
-      const matchAnyCondition = validateMatchAnyCondition(condition);
+      const matchAnyCondition = castToMatchAnyCondition(condition);
       return this.visitMatchAnyCondition(matchAnyCondition);
     }
 

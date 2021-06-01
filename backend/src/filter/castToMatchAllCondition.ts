@@ -1,20 +1,20 @@
 import { ArgumentError } from '../shared/errors';
-import { FilterCondition, MatchAnyCondition } from '../shared/queries';
+import { FilterCondition, MatchAllCondition } from '../shared/queries';
 import { formatErrorMessage } from './formatErrorMessage';
 
 /**
- * Checks the specified filter condition to be a valid MatchAnyCondition and converts it.
+ * Checks the specified filter condition to be a valid MatchAllCondition and converts it.
  * @param condition The condition to check.
  * @returns The converted filter condition.
  */
-export function validateMatchAnyCondition(
+export function castToMatchAllCondition(
   condition: FilterCondition
-): MatchAnyCondition {
-  const result = <MatchAnyCondition>condition;
+): MatchAllCondition {
+  const result = <MatchAllCondition>condition;
 
   if (result.filters === undefined || !Array.isArray(result.filters)) {
     throw new ArgumentError(
-      formatErrorMessage('MatchAnyCondition', 'filters', 'string[]')
+      formatErrorMessage('MatchAllCondition', 'filters', 'string[]')
     );
   }
 
