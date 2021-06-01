@@ -5,6 +5,8 @@ import { neo4jReturnEdge, neo4jReturnNode } from '../config/commonFunctions';
 import { Node, Edge, Property } from '../shared/entities';
 import { parseNeo4jEntityInfo } from '../schema/parseNeo4jEntityInfo';
 import { EdgeType, EntityType, NodeType } from '../shared/schema';
+import { SearchIndex } from './SearchIndex';
+import { AsyncLazy } from '../shared/utils';
 
 export interface RestoredIndexEntry {
   /**
@@ -149,7 +151,11 @@ function convertNodeType(nodeType: NodeType): IndexEntry {
 export class SearchIndexBuilder {
   public constructor(private readonly neo4jService: Neo4jService) {}
 
-  public async buildIndex(): Promise<MiniSearch> {
+  public buildIndex(): SearchIndex {
+    return new SearchIndex(new AsyncLazy(() => this.buildIndexCore()));
+  }
+
+  private async buildIndexCore(): Promise<MiniSearch> {
     // TODO: For large databases it would be beneficial, if we read the entries in smaller batches,
     //       so we don't have to copy the entire dataset into memory (again).
     //       The problem here, is that we need the property names before adding the entries to the
