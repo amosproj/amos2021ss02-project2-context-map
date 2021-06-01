@@ -1,20 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import VisGraph, { GraphData } from 'react-graph-vis';
 import * as vis from 'vis-network';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { uuid } from 'uuidv4';
+import { tap } from 'rxjs/operators';
 import useService from '../dependency-injection/useService';
 import { EdgeDescriptor } from '../shared/entities';
-import {
-  FilterQuery,
-  NodeResultDescriptor,
-  QueryResult,
-} from '../shared/queries';
-import { CancellationToken } from '../utils/CancellationToken';
+import { NodeResultDescriptor, QueryResult } from '../shared/queries';
 import { useSize } from '../utils/useSize';
 import Filter from './filtering/Filter';
-import fetchDataFromService from './shared-ops/fetchDataFromService';
-import { FilterService } from '../services/filter';
+import useObservable from '../utils/useObservable';
+import QueryResultStore from '../stores/QueryResultStore';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -106,28 +102,8 @@ function buildOptions(width: number, height: number) {
   };
 }
 
-/**
- * Fetches a filtered QueryResult from the filterService.
- *
- * @param filterService - the filterService the data is fetched from
- * @param filterQuery - the filterQuery that is applied for filtering
- * @param cancellation - the cancellation token
- */
-function executeFilterQuery(
-  filterService: FilterService,
-  filterQuery: React.MutableRefObject<FilterQuery>,
-  cancellation: CancellationToken
-): Promise<QueryResult> {
-  return filterService.query(filterQuery.current, cancellation);
-}
-
 function Graph(): JSX.Element {
   const classes = useStyles();
-
-  // the filtered QueryResult from child-component FilterEntityTypeProperties
-  const filterQueryRef = React.useRef<FilterQuery>({
-    limits: { edges: 150, nodes: 200 },
-  });
 
   // A React ref to the container that is used to measure the available space for the graph.
   const sizeMeasureContainerRef = React.useRef<HTMLDivElement>(null);
@@ -135,54 +111,21 @@ function Graph(): JSX.Element {
   // The size of the container that is used to measure the available space for the graph.
   const containerSize = useSize(sizeMeasureContainerRef);
 
-  // The query- and schema-service injected from DI.
-  const filterService = useService(FilterService, null);
+  const graphDataStore = useService(QueryResultStore);
 
-  // Dirty hack to get to to instance of the update function for components that are not part of
-  // the the render content function. This is a workaround for
-  // https://github.com/amosproj/amos-ss2021-project2-context-map/issues/187 and for
-  // https://github.com/amosproj/amos-ss2021-project2-context-map/issues/186
-  // that causes the filter to be use-less, as the filter conditions are reset on every load.
-  // This workaround moves the filter out of the renderContent method, so it does not get re-rendered.
-  // TODO: Fix #187 and #186 and remove this workaround.
-  const updateRef = React.useRef<(() => void) | null>(null);
+  const [graphData, setGraphData] = useState<GraphData>({
+    edges: [],
+    nodes: [],
+  });
 
-  function renderContent(
-    queryResult: QueryResult,
-    update: () => void
-  ): JSX.Element {
-    // Convert the query result to an object, react-graph-vis understands.
-    const graphData = convertQueryResult(queryResult);
-
-    // Build the react-graph-vis graph options.
-    const options = buildOptions(containerSize.width, containerSize.height);
-
-    updateRef.current = update;
-
-    return (
-      <>
-        <div className={classes.graphContainer}>
-          <VisGraph graph={graphData} options={options} key={uuid()} />
-        </div>
-      </>
-    );
-  }
-
-  const graphView = fetchDataFromService(
-    executeFilterQuery,
-    renderContent,
-    filterService,
-    filterQueryRef
+  useObservable(
+    graphDataStore.getState().pipe(
+      tap((queryResult) => {
+        // Convert the query result to an object, react-graph-vis understands.
+        setGraphData(convertQueryResult(queryResult));
+      })
+    )
   );
-
-  const executeQuery = (query: FilterQuery): void => {
-    filterQueryRef.current = query;
-    const update = updateRef.current;
-
-    if (typeof update === 'function') {
-      update();
-    }
-  };
 
   return (
     <>
@@ -192,9 +135,15 @@ function Graph(): JSX.Element {
         ref={sizeMeasureContainerRef}
       />
       <div className={classes.graphPage}>
-        {graphView}
+        <div className={classes.graphContainer}>
+          <VisGraph
+            graph={graphData}
+            options={buildOptions(containerSize.width, containerSize.height)}
+            key={uuid()}
+          />
+        </div>
         <div className={classes.Filter}>
-          <Filter executeQuery={executeQuery} />
+          <Filter />
         </div>
       </div>
     </>
