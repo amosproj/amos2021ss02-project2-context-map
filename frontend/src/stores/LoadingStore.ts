@@ -1,10 +1,13 @@
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { injectable } from 'inversify';
+import 'reflect-metadata';
 
 type LoadingKey = Subscription;
 
 /**
  * Stateful store that stores currently active observables
  */
+@injectable()
 export default class LoadingStore {
   /**
    * Array of all currently active loading processes

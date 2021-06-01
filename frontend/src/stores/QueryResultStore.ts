@@ -1,6 +1,6 @@
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { from } from 'rxjs';
+import { from, Observable, Subscription } from 'rxjs';
 import { QueryResult } from '../shared/queries';
 import SimpleStore from './SimpleStore';
 import FilterQueryStore from './FilterQueryStore';
@@ -17,16 +17,46 @@ import withLoadingBar from '../utils/withLoadingBar';
  */
 @injectable()
 export default class QueryResultStore extends SimpleStore<QueryResult> {
+  /**
+   * Active cancel token for the filter query.
+   * @private
+   */
   private filterQueryCancelToken?: CancellationTokenSource;
-  constructor(
-    private readonly filterStore: FilterQueryStore,
-    private readonly filterService: FilterService,
-    private readonly errorStore: ErrorStore,
-    private readonly loadingStore: LoadingStore
-  ) {
-    super();
+  private filterQueryStoreSubscription?: Subscription;
+
+  @inject(FilterQueryStore)
+  private readonly filterQueryStore!: FilterQueryStore;
+
+  @inject(FilterService)
+  private readonly filterService!: FilterService;
+
+  @inject(ErrorStore)
+  private readonly errorStore!: ErrorStore;
+
+  @inject(LoadingStore)
+  private readonly loadingStore!: LoadingStore;
+
+  protected getInitialValue(): QueryResult {
+    return { nodes: [], edges: [] };
+  }
+
+  getState(): Observable<QueryResult> {
+    if (this.filterQueryStoreSubscription == null) {
+      // If it's called the first time => subscribe to the filterQueryStore
+      this.filterQueryStoreSubscription = this.subscribeToFilterQueryStore();
+    }
+    return super.getState();
+  }
+
+  /**
+   * Subscribes to the state of the {@link filterQueryStore} so that the state
+   * of this store is updated when the {@link filterQueryStore} updates.
+   * @returns subscription of the {@link filterQueryStore} state
+   * @private
+   */
+  private subscribeToFilterQueryStore(): Subscription {
     // If the filter changes, the graph state will be updated automatically
-    this.filterStore.getState().subscribe({
+    return this.filterQueryStore.getState().subscribe({
       next: (filter) => {
         this.filterQueryCancelToken?.cancel();
         this.filterQueryCancelToken = new CancellationTokenSource();
@@ -34,8 +64,8 @@ export default class QueryResultStore extends SimpleStore<QueryResult> {
           this.filterService.query(filter, this.filterQueryCancelToken.token)
         )
           .pipe(
-            withLoadingBar({ loadingStore }),
-            withErrorHandler({ rethrow: true, errorStore })
+            withLoadingBar({ loadingStore: this.loadingStore }),
+            withErrorHandler({ rethrow: true, errorStore: this.errorStore })
           )
           .subscribe({
             next: (res) => {
@@ -51,9 +81,5 @@ export default class QueryResultStore extends SimpleStore<QueryResult> {
           });
       },
     });
-  }
-
-  protected getInitialValue(): QueryResult {
-    return { nodes: [], edges: [] };
   }
 }

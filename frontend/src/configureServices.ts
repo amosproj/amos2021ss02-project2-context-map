@@ -33,24 +33,9 @@ export default function configureServices(container: Container): void {
   container.bind(SchemaService).to(SchemaServiceImpl);
   container.bind(FilterService).to(FilterServiceImpl);
 
-  // stores
-  const errorStore = new ErrorStore();
-  const filterStore = new FilterQueryStore();
-  const loadingStore = new LoadingStore();
-
-  container.bind(ErrorStore).toConstantValue(errorStore);
-  container.bind(FilterQueryStore).toConstantValue(filterStore);
-  container.bind(LoadingStore).toConstantValue(loadingStore);
-  // if filterStore is injected like FilterService, then the injected filterStore
-  // differs from all other FilterStores obtained in other parts of the app.
-  container
-    .bind(QueryResultStore)
-    .toConstantValue(
-      new QueryResultStore(
-        filterStore,
-        container.get(FilterService),
-        errorStore,
-        loadingStore
-      )
-    );
+  // stores: use inSingletonScope so only one instance of each store exists
+  container.bind(ErrorStore).to(ErrorStore).inSingletonScope();
+  container.bind(LoadingStore).to(LoadingStore).inSingletonScope();
+  container.bind(FilterQueryStore).to(FilterQueryStore).inSingletonScope();
+  container.bind(QueryResultStore).to(QueryResultStore).inSingletonScope();
 }
