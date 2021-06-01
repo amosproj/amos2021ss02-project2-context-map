@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Neo4jService } from 'nest-neo4j/dist';
 import { AppService } from '../../src/app.service';
-import { Node } from '../../src/shared/entities/Node';
-import { Edge } from '../../src/shared/entities/Edge';
+import { Node, Edge } from '../../src/shared/entities';
 import {
   getEdgesByIdDummies,
   getNodesByIdDummies,
@@ -127,33 +126,5 @@ describe('AppService (e2e)', () => {
         expect(actualEdges).toEqual(expectedEdges);
       });
     });
-  });
-
-  describe('testing-dump-big', () => {
-    let appService: AppService;
-    let neo4jService: Neo4jService;
-
-    beforeAll(async () => {
-      // Global setup
-      const mockAppModule: TestingModule = await Test.createTestingModule({
-        imports: [
-          KmapNeo4jModule.forRootTesting(
-            { disableLosslessIntegers: true },
-            7688
-          ),
-        ],
-        providers: [AppService],
-      }).compile();
-
-      appService = await mockAppModule.resolve<AppService>(AppService);
-      neo4jService = await mockAppModule.resolve(Neo4jService);
-    });
-
-    afterAll(async () => {
-      // Global teardown
-      await neo4jService.getDriver().close();
-    });
-
-    // TODO: Tests
   });
 });
