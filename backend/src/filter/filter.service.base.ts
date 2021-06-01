@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { FilterQuery, QueryResult } from '../shared/queries';
 import { EdgeTypeFilterModel, NodeTypeFilterModel } from '../shared/filter';
 
