@@ -25,11 +25,11 @@ export class AppService {
       nodes:
         query?.limits?.nodes === 0
           ? []
-          : await this.getAllNodes(query?.limits?.nodes),
+          : await this.queryNodes(query?.limits?.nodes),
       edges:
         query?.limits?.edges === 0
           ? []
-          : await this.getAllEdges(query?.limits?.edges),
+          : await this.queryEdges(query?.limits?.edges),
     };
 
     return consolidateQueryResult(queryResult);
@@ -41,7 +41,7 @@ export class AppService {
    * @param nodeLimit  limit number of nodes to be queried
    * @return NodeDescriptor as a result of the Query
    */
-  private async getAllNodes(nodeLimit?: number): Promise<NodeDescriptor[]> {
+  private async queryNodes(nodeLimit?: number): Promise<NodeDescriptor[]> {
     // toInteger required, since apparently it converts int to double...
     const result = await this.neo4jService.read(
       `
@@ -84,7 +84,7 @@ export class AppService {
    * @param edgeLimit  limit number of edges to be queried
    * @return EdgeDescriptor as a result of the Query
    */
-  private async getAllEdges(edgeLimit?: number): Promise<EdgeDescriptor[]> {
+  private async queryEdges(edgeLimit?: number): Promise<EdgeDescriptor[]> {
     // toInteger required, since apparently it converts int to double...
     const result = await this.neo4jService.read(
       `
