@@ -7,10 +7,10 @@ import {
   Node,
   NodeDescriptor,
 } from '../../shared/entities';
-
 import { CancellationToken } from '../../utils/CancellationToken';
 import HttpService, { HttpGetRequest } from '../http';
 import QueryService from './QueryService';
+import CachedObservable from '../../utils/CachedObservable';
 
 const MAX_BATCH_SIZE = 90;
 
@@ -38,9 +38,17 @@ function buildDetailsRequest(
  */
 @injectable()
 export default class QueryServiceImpl extends QueryService {
-  @inject(HttpService)
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  private readonly http: HttpService = null!;
+  private readonly numberOfEntities: CachedObservable<CountQueryResult> =
+    new CachedObservable(() =>
+      this.http.get<CountQueryResult>('/api/getNumberOfEntities')
+    );
+
+  public constructor(
+    @inject(HttpService)
+    private readonly http: HttpService
+  ) {
+    super();
+  }
 
   /* istanbul ignore next */
   public queryAll(
@@ -95,9 +103,6 @@ export default class QueryServiceImpl extends QueryService {
   getNumberOfEntities(
     cancellation?: CancellationToken
   ): Promise<CountQueryResult> {
-    return this.http.get<CountQueryResult>(
-      '/api/getNumberOfEntities',
-      cancellation
-    );
+    return this.numberOfEntities.asPromise(cancellation);
   }
 }
