@@ -1,4 +1,4 @@
-export default function any<T>(
+export function any<T>(
   iterable: Iterable<T>,
   predicate?: (t: T) => boolean
 ): boolean {

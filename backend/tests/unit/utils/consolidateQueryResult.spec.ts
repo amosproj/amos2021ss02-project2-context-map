@@ -1,4 +1,4 @@
-import consolidateQueryResult from '../../../src/utils/consolidateQueryResult';
+import { consolidateQueryResult } from '../../../src/utils';
 
 describe('consolidateQueryResult', () => {
   it('deduplicates nodes', async () => {
