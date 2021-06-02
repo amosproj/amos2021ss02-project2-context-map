@@ -1,19 +1,20 @@
 import MiniSearch from 'minisearch';
 import { Injectable } from '@nestjs/common';
-import { Neo4jService } from 'nest-neo4j/dist';
-import { neo4jReturnEdge, neo4jReturnNode } from '../config/commonFunctions';
-import { Node, Edge } from '../shared/entities';
-import { parseNeo4jEntityInfo } from '../schema/parseNeo4jEntityInfo';
 import { SearchIndex } from './SearchIndex';
 import { AsyncLazy } from '../shared/utils';
 import { SearchIndexEntryRecorder } from './SearchIndexEntryRecorder';
+import { SchemaService } from '../schema/schema.service';
+import { AppService } from '../app.service';
 
 /**
  * A search index builder that can be used to build a search index from a complete dataset.
  */
 @Injectable()
 export class SearchIndexBuilder {
-  public constructor(private readonly neo4jService: Neo4jService) {}
+  public constructor(
+    private readonly queryService: AppService,
+    private readonly schemaService: SchemaService
+  ) {}
 
   /**
    * Builds a search index for the dataset in the database.
@@ -33,57 +34,29 @@ export class SearchIndexBuilder {
     //       as is done in the SchemaService.
 
     // Get all nodes from the database
-    const nodeResults = await this.neo4jService.read(
-      `MATCH (n) RETURN ${neo4jReturnNode('n')}`
-    );
+    const nodes = await this.queryService.getNodesById();
 
-    const nodes = nodeResults.records.map(
-      (record) => record.toObject() as Node
-    );
-
-    // eslint-disable-next-line no-restricted-syntax
     for (const node of nodes) {
       entryRecorder.recordNode(node);
     }
 
     // Get all edges from the database
-    const edgeResults = await this.neo4jService.read(
-      `
-      MATCH (from)-[e]->(to) 
-      RETURN ${neo4jReturnEdge('e', 'from', 'to')}
-      ORDER BY id, from
-      `
-    );
+    const edges = await this.queryService.getEdgesById();
 
-    const edges = edgeResults.records.map(
-      (record) => record.toObject() as Edge
-    );
-
-    // eslint-disable-next-line no-restricted-syntax
     for (const edge of edges) {
       entryRecorder.recordEdge(edge);
     }
 
     // Get all node types from the database
-    const nodeTypeResults = await this.neo4jService.read(
-      `CALL db.schema.nodeTypeProperties`
-    );
+    const nodeTypes = await this.schemaService.getNodeTypes();
 
-    const nodeTypes = parseNeo4jEntityInfo(nodeTypeResults.records, 'node');
-
-    // eslint-disable-next-line no-restricted-syntax
     for (const nodeType of nodeTypes) {
       entryRecorder.recordNodeType(nodeType);
     }
 
     // Get all edge types from the database
-    const edgeTypeResults = await this.neo4jService.read(
-      `CALL db.schema.relTypeProperties`
-    );
+    const edgeTypes = await this.schemaService.getEdgeTypes();
 
-    const edgeTypes = parseNeo4jEntityInfo(edgeTypeResults.records, 'rel');
-
-    // eslint-disable-next-line no-restricted-syntax
     for (const edgeType of edgeTypes) {
       entryRecorder.recordEdgeType(edgeType);
     }
