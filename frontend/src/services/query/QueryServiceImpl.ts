@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { QueryBase, QueryResult } from '../../shared/queries';
+import { CountQueryResult, QueryBase, QueryResult } from '../../shared/queries';
 import {
   Edge,
   EdgeDescriptor,
@@ -90,5 +90,14 @@ export default class QueryServiceImpl extends QueryService {
         )
       )
     ).flat();
+  }
+
+  getNumberOfEntities(
+    cancellation?: CancellationToken
+  ): Promise<CountQueryResult> {
+    return this.http.get<CountQueryResult>(
+      '/api/getNumberOfEntities',
+      cancellation
+    );
   }
 }

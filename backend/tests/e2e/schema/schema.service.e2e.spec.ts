@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Neo4jService } from 'nest-neo4j/dist';
+import { ConfigModule } from '@nestjs/config';
 import { SchemaService } from '../../../src/schema/schema.service';
 import { KmapNeo4jModule } from '../../../src/config/neo4j/KmapNeo4jModule';
-import { AppModule } from '../../../src/app.module';
 import { edgeInfo, nodeInfo } from '../../fixtures/nodeInfo/GraphInfoDb';
 
 /*
@@ -16,8 +16,15 @@ describe('SchemaService', () => {
   // Global Setup
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, KmapNeo4jModule],
-      providers: [],
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: '.env.test',
+        }),
+        KmapNeo4jModule.fromEnv({
+          disableLosslessIntegers: true,
+        }),
+      ],
+      providers: [SchemaService],
     }).compile();
 
     service = module.get<SchemaService>(SchemaService);

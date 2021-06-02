@@ -140,6 +140,7 @@ function fetchDataFromService<TArgs extends unknown[], TData>(
         }
       })
       .catch((err) => {
+        /* istanbul ignore if */
         if (mounted) {
           setError(err);
           setIsLoading(false);

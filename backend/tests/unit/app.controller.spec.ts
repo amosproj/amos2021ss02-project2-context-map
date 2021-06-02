@@ -4,8 +4,7 @@ import { FactoryProvider, INestApplication } from '@nestjs/common';
 import { AppController } from '../../src/app.controller';
 import { AppService } from '../../src/app.service';
 import { QueryResult } from '../../src/shared/queries';
-import { Node } from '../../src/shared/entities/Node';
-import { Edge } from '../../src/shared/entities/Edge';
+import { Node, Edge } from '../../src/shared/entities';
 import {
   getEdgesByIdDummies,
   getNodesByIdDummies,
@@ -25,6 +24,7 @@ describe('AppController', () => {
         queryAll: jest.fn(notImplemented),
         getNodesById: jest.fn(notImplemented),
         getEdgesById: jest.fn(notImplemented),
+        getNumberOfEntities: jest.fn(notImplemented),
       }),
     };
 
@@ -113,6 +113,24 @@ describe('AppController', () => {
         .expect(200, result);
 
       expect(getEdgesById).toBeCalledWith(getEdgesByIdDummies.ids);
+    });
+  });
+
+  describe('getNumberOfEntities', () => {
+    it('should return what the service provides', async () => {
+      // Arrange
+      const result = { edges: 20, nodes: 25 };
+
+      const getEdgesById = jest
+        .spyOn(appService, 'getNumberOfEntities')
+        .mockImplementation(() => Promise.resolve(result));
+
+      // Act & Assert
+      await request(app.getHttpServer())
+        .get('/getNumberOfEntities')
+        .expect(200, result);
+
+      expect(getEdgesById).toBeCalledWith();
     });
   });
 });

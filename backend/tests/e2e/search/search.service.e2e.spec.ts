@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Neo4jService } from 'nest-neo4j/dist';
+import { ConfigModule } from '@nestjs/config';
 import { SearchService } from '../../../src/search/search.service';
 import { KmapNeo4jModule } from '../../../src/config/neo4j/KmapNeo4jModule';
-import { AppModule } from '../../../src/app.module';
 import { SearchIndexBuilder } from '../../../src/search/SearchIndexBuilder';
 import { SearchResult } from '../../../src/shared/search';
 
@@ -21,7 +21,14 @@ describe('SearchService', () => {
   // Global Setup
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, KmapNeo4jModule],
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: '.env.test',
+        }),
+        KmapNeo4jModule.fromEnv({
+          disableLosslessIntegers: true,
+        }),
+      ],
       providers: [SearchService, SearchIndexBuilder],
     }).compile();
 

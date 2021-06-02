@@ -1,5 +1,5 @@
 {
-  "name": "kmap",
+  "name": "amos-kmap",
   "scripts": {
     "sync:shared": "node build/sync.js"
   },

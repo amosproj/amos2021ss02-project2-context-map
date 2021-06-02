@@ -1,20 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import VisGraph, { GraphData } from 'react-graph-vis';
-import * as vis from 'vis-network';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { uuid } from 'uuidv4';
+import { tap } from 'rxjs/operators';
 import useService from '../dependency-injection/useService';
-import { EdgeDescriptor } from '../shared/entities';
-import {
-  FilterQuery,
-  NodeResultDescriptor,
-  QueryResult,
-} from '../shared/queries';
-import { CancellationToken } from '../utils/CancellationToken';
 import { useSize } from '../utils/useSize';
 import Filter from './filtering/Filter';
-import fetchDataFromService from './shared-ops/fetchDataFromService';
-import { FilterService } from '../services/filter';
+import useObservable from '../utils/useObservable';
+import QueryResultStore from '../stores/QueryResultStore';
+import convertQueryResult from './shared-ops/convertQueryResult';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -49,54 +43,16 @@ const useStyles = makeStyles(() =>
   })
 );
 
-function convertNode(node: NodeResultDescriptor): vis.Node {
-  const result: vis.Node = {
-    id: node.id,
-    label: node.id.toString(),
-    // Advanced stuff, like styling nodes with different types differently...
-  };
-
-  if (node.subsidiary) {
-    result.color = 'yellow';
-  }
-
-  return result;
-}
-
-function convertNodes(nodes: NodeResultDescriptor[]): vis.Node[] {
-  return nodes.map((node) => convertNode(node));
-}
-
-function convertEdge(edge: EdgeDescriptor): vis.Edge {
-  return {
-    id: edge.id,
-    from: edge.from,
-    to: edge.to,
-    // Advanced stuff, like styling edges with different types differently...
-  };
-}
-
-function convertEdges(edges: EdgeDescriptor[]): vis.Edge[] {
-  return edges.map((edge) => convertEdge(edge));
-}
-
-function convertQueryResult(queryResult: QueryResult): GraphData {
-  return {
-    nodes: convertNodes(queryResult.nodes),
-    edges: convertEdges(queryResult.edges),
-  };
-}
-
 /**
  * Builds the graph options passed to react-graph-vis.
  * @param width The width of the graph.
  * @param height The height of the graph.
  * @returns The react-graph-vis options.
  */
-function buildOptions(width: number, height: number) {
+function buildOptions(width: number, height: number, layout?: string) {
   return {
     layout: {
-      hierarchical: false,
+      hierarchical: layout === 'hierarchical',
     },
     edges: {
       color: '#000000',
@@ -106,28 +62,13 @@ function buildOptions(width: number, height: number) {
   };
 }
 
-/**
- * Fetches a filtered QueryResult from the filterService.
- *
- * @param filterService - the filterService the data is fetched from
- * @param filterQuery - the filterQuery that is applied for filtering
- * @param cancellation - the cancellation token
- */
-function executeFilterQuery(
-  filterService: FilterService,
-  filterQuery: React.MutableRefObject<FilterQuery>,
-  cancellation: CancellationToken
-): Promise<QueryResult> {
-  return filterService.query(filterQuery.current, cancellation);
-}
+type GraphProps = {
+  layout?: string;
+};
 
-function Graph(): JSX.Element {
+function Graph(props: GraphProps): JSX.Element {
+  const { layout } = props;
   const classes = useStyles();
-
-  // the filtered QueryResult from child-component EntityFilterDialog
-  const filterQueryRef = React.useRef<FilterQuery>({
-    limits: { edges: 150, nodes: 200 },
-  });
 
   // A React ref to the container that is used to measure the available space for the graph.
   const sizeMeasureContainerRef = React.useRef<HTMLDivElement>(null);
@@ -135,54 +76,21 @@ function Graph(): JSX.Element {
   // The size of the container that is used to measure the available space for the graph.
   const containerSize = useSize(sizeMeasureContainerRef);
 
-  // The query- and schema-service injected from DI.
-  const filterService = useService(FilterService, null);
+  const graphDataStore = useService(QueryResultStore);
 
-  // Dirty hack to get to to instance of the update function for components that are not part of
-  // the the render content function. This is a workaround for
-  // https://github.com/amosproj/amos-ss2021-project2-context-map/issues/187 and for
-  // https://github.com/amosproj/amos-ss2021-project2-context-map/issues/186
-  // that causes the filter to be use-less, as the filter conditions are reset on every load.
-  // This workaround moves the filter out of the renderContent method, so it does not get re-rendered.
-  // TODO: Fix #187 and #186 and remove this workaround.
-  const updateRef = React.useRef<(() => void) | null>(null);
+  const [graphData, setGraphData] = useState<GraphData>({
+    edges: [],
+    nodes: [],
+  });
 
-  function renderContent(
-    queryResult: QueryResult,
-    update: () => void
-  ): JSX.Element {
-    // Convert the query result to an object, react-graph-vis understands.
-    const graphData = convertQueryResult(queryResult);
-
-    // Build the react-graph-vis graph options.
-    const options = buildOptions(containerSize.width, containerSize.height);
-
-    updateRef.current = update;
-
-    return (
-      <>
-        <div className={classes.graphContainer}>
-          <VisGraph graph={graphData} options={options} key={uuid()} />
-        </div>
-      </>
-    );
-  }
-
-  const graphView = fetchDataFromService(
-    executeFilterQuery,
-    renderContent,
-    filterService,
-    filterQueryRef
+  useObservable(
+    graphDataStore.getState().pipe(
+      tap((queryResult) => {
+        // Convert the query result to an object, react-graph-vis understands.
+        setGraphData(convertQueryResult(queryResult));
+      })
+    )
   );
-
-  const executeQuery = (query: FilterQuery): void => {
-    filterQueryRef.current = query;
-    const update = updateRef.current;
-
-    if (typeof update === 'function') {
-      update();
-    }
-  };
 
   return (
     <>
@@ -192,13 +100,27 @@ function Graph(): JSX.Element {
         ref={sizeMeasureContainerRef}
       />
       <div className={classes.graphPage}>
-        {graphView}
+        <div className={classes.graphContainer}>
+          <VisGraph
+            graph={graphData}
+            options={buildOptions(
+              containerSize.width,
+              containerSize.height,
+              layout
+            )}
+            key={uuid()}
+          />
+        </div>
         <div className={classes.Filter}>
-          <Filter executeQuery={executeQuery} />
+          <Filter />
         </div>
       </div>
     </>
   );
 }
+
+Graph.defaultProps = {
+  layout: undefined,
+};
 
 export default Graph;

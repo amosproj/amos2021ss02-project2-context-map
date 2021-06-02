@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Neo4jService } from 'nest-neo4j/dist';
+import { ConfigModule } from '@nestjs/config';
 import { FilterService } from '../../../src/filter/filter.service';
 import { KmapNeo4jModule } from '../../../src/config/neo4j/KmapNeo4jModule';
-import { AppModule } from '../../../src/app.module';
 import {
   getEdgeTypeFilterModelResult,
   getNodeTypeFilterModelResult,
@@ -23,8 +23,15 @@ describe('FilterService', () => {
   // Global Setup
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, KmapNeo4jModule],
-      providers: [],
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: '.env.test',
+        }),
+        KmapNeo4jModule.fromEnv({
+          disableLosslessIntegers: true,
+        }),
+      ],
+      providers: [FilterService],
     }).compile();
 
     service = module.get<FilterService>(FilterService);

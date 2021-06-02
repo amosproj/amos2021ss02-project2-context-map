@@ -2,7 +2,7 @@
 
 import { injectable } from 'inversify';
 import 'reflect-metadata';
-import { QueryBase, QueryResult } from '../../shared/queries';
+import { CountQueryResult, QueryBase, QueryResult } from '../../shared/queries';
 import {
   Edge,
   EdgeDescriptor,
@@ -97,4 +97,8 @@ export default abstract class QueryService {
     descriptors: NodeDescriptor[],
     cancellation?: CancellationToken
   ): Promise<Node[]>;
+
+  public abstract getNumberOfEntities(
+    cancellation?: CancellationToken
+  ): Promise<CountQueryResult>;
 }
