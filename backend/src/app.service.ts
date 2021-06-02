@@ -57,23 +57,28 @@ export class AppService {
   }
 
   /**
-   * Queries nodes for a given array of ids or all nodes if no ids are specified.
+   * Queries nodes for a given array of ids.
    *
-   * @param ids node-ids that are being searched for or undefined to get all nodes.
+   * @param ids node-ids that are being searched for.
    * @return array of nodes having the input-ids as id ordered by id
    */
-  public async getNodesById(ids?: number[]): Promise<Node[]> {
-    let result;
-    if (ids !== undefined) {
-      result = await this.neo4jService.read(
-        `MATCH (n) WHERE ID(n) IN $ids RETURN ${neo4jReturnNode('n')}`,
-        { ids }
-      );
-    } else {
-      result = await this.neo4jService.read(
-        `MATCH (n) RETURN ${neo4jReturnNode('n')}`
-      );
-    }
+  public async getNodesById(ids: number[]): Promise<Node[]> {
+    const result = await this.neo4jService.read(
+      `MATCH (n) WHERE ID(n) IN $ids RETURN ${neo4jReturnNode('n')}`,
+      { ids }
+    );
+
+    return result.records.map((record) => record.toObject() as Node);
+  }
+
+  /**
+   * Queries all node details
+   * @return Array of all node details present in the database.
+   */
+  public async getNodes(): Promise<Node[]> {
+    const result = await this.neo4jService.read(
+      `MATCH (n) RETURN ${neo4jReturnNode('n')}`
+    );
 
     return result.records.map((record) => record.toObject() as Node);
   }

@@ -34,7 +34,7 @@ export class SearchIndexBuilder {
     //       as is done in the SchemaService.
 
     // Get all nodes from the database
-    const nodes = await this.queryService.getNodesById();
+    const nodes = await this.queryService.getNodes();
 
     for (const node of nodes) {
       entryRecorder.recordNode(node);
