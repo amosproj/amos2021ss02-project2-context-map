@@ -17,10 +17,8 @@ import { SearchService } from '../services/search';
 import './SearchResultList.scss';
 import SearchResultList from './SearchResultList';
 import convertSearchResultToSearchResultList from './SearchEntryConverter';
-
 import './Searchbar.scss';
 import LimitListSizeComponent from './helper/LimitListSizeComponent';
-import { QueryService } from '../services/query';
 import { CancellationTokenSource } from '../utils/CancellationToken';
 import CancellationError from '../utils/CancellationError';
 import ErrorComponent from '../errors/ErrorComponent';
@@ -31,8 +29,6 @@ export default function Searchbar(): JSX.Element {
    * Contains all the active cancel tokens.
    */
   const searchServiceCancelTokens = useRef<CancellationTokenSource[]>([]);
-
-  const queryService = useService(QueryService);
 
   /**
    * Fires, when the search input is changes
@@ -58,18 +54,7 @@ export default function Searchbar(): JSX.Element {
       searchService
         .fullTextSearch(searchString, cancelToken.token)
         .then(async (result) =>
-          convertSearchResultToSearchResultList(searchString, {
-            edges:
-              result.edges.length > 0
-                ? await queryService.getEdgesById(result.edges)
-                : [],
-            nodes:
-              result.nodes.length > 0
-                ? await queryService.getNodesById(result.nodes)
-                : [],
-            edgeTypes: result.edgeTypes,
-            nodeTypes: result.nodeTypes,
-          })
+          convertSearchResultToSearchResultList(searchString, result)
         )
         .then((result) => {
           setSearchOngoing(false);

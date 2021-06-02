@@ -1,24 +1,10 @@
 export const keanuSearch = {
   search: {
-    nodes: [
-      {
-        id: 1,
-      },
-    ],
     edges: [],
+    nodes: [{ id: 1, properties: { name: 'Keanu Reeves' }, types: ['Person'] }],
     nodeTypes: [],
     edgeTypes: [],
   },
-  getNodesById: [
-    {
-      id: 1,
-      types: ['Person'],
-      properties: {
-        born: 1964,
-        name: 'Keanu Reeves',
-      },
-    },
-  ],
 };
 export const emptySearch = {
   search: {
@@ -30,28 +16,9 @@ export const emptySearch = {
 };
 export const customSearch = {
   search: {
-    nodes: [
-      {
-        id: 1,
-      },
-    ],
-    edges: [
-      {
-        id: 1,
-      },
-    ],
+    nodes: [{ id: 1, properties: { name: 'Keanu Reeves' }, types: ['Person'] }],
+    edges: [{ id: 1, from: 3, to: 0, properties: {}, types: ['Person'] }],
     nodeTypes: [{ name: 'Person' }],
     edgeTypes: [{ name: 'ACTED_IN' }],
   },
-  getNodesById: [
-    {
-      id: 1,
-      types: ['Person'],
-      properties: {
-        born: 1964,
-        name: 'Keanu Reeves',
-      },
-    },
-  ],
-  getEdgesById: [{ id: 2, from: 3, to: 0, properties: {}, type: 'DIRECTED' }],
 };
