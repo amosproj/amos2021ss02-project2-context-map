@@ -41,10 +41,8 @@ function convertToString(value: unknown): string | null {
   }
 
   // Try to invoke a 'toString()' function, that may be present.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  if (typeof (<any>value).toString === 'function') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const result = (<any>value).toString();
+  if (typeof value === 'object' && typeof value?.toString === 'function') {
+    const result = value.toString();
 
     if (typeof result === 'string') {
       return result;
