@@ -41,7 +41,7 @@ export class SearchIndexBuilder {
     }
 
     // Get all edges from the database
-    const edges = await this.queryService.getEdgesById();
+    const edges = await this.queryService.getEdges();
 
     for (const edge of edges) {
       entryRecorder.recordEdge(edge);

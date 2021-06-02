@@ -106,33 +106,37 @@ export class AppService {
   }
 
   /**
-   * Queries edges for a given array of ids or all edges if no ids are specified.
+   * Queries edges for a given array of idsd.
    *
-   * @param ids  edge-ids that are being searched for or undefined to get all nodes.
+   * @param ids  edge-ids that are being searched for.
    * @return array of edges having the input-ids as id ordered by id
    */
-  public async getEdgesById(ids?: number[]): Promise<Edge[]> {
-    let result;
+  public async getEdgesById(ids: number[]): Promise<Edge[]> {
+    const result = await this.neo4jService.read(
+      `
+      MATCH (from)-[e]->(to) 
+      WHERE ID(e) in $ids
+      RETURN ${neo4jReturnEdge('e', 'from', 'to')}
+      ORDER BY id, from
+    `,
+      { ids }
+    );
 
-    if (ids !== undefined) {
-      result = await this.neo4jService.read(
-        `
-        MATCH (from)-[e]->(to) 
-        WHERE ID(e) in $ids
-        RETURN ${neo4jReturnEdge('e', 'from', 'to')}
-        ORDER BY id, from
-      `,
-        { ids }
-      );
-    } else {
-      result = await this.neo4jService.read(
-        `
-        MATCH (from)-[e]->(to) 
-        RETURN ${neo4jReturnEdge('e', 'from', 'to')}
-        ORDER BY id, from
-        `
-      );
-    }
+    return result.records.map((r) => r.toObject() as Edge);
+  }
+
+  /**
+   * Queries all edge details.
+   * @return Array of all edge details present in the database.
+   */
+  public async getEdges(): Promise<Edge[]> {
+    const result = await this.neo4jService.read(
+      `
+      MATCH (from)-[e]->(to) 
+      RETURN ${neo4jReturnEdge('e', 'from', 'to')}
+      ORDER BY id, from
+      `
+    );
 
     return result.records.map((r) => r.toObject() as Edge);
   }
