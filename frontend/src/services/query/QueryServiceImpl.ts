@@ -14,6 +14,8 @@ import QueryService from './QueryService';
 
 const MAX_BATCH_SIZE = 90;
 
+// TODO: This is currently not in use, so untested, add tests when this is needed in production code.
+/* istanbul ignore next */
 function createBatches(array: number[] | NodeDescriptor[]) {
   const batches = [];
   for (let i = 0; i < array.length; i += MAX_BATCH_SIZE) {
@@ -22,6 +24,8 @@ function createBatches(array: number[] | NodeDescriptor[]) {
   return batches;
 }
 
+// TODO: This is currently not in use, so untested, add tests when this is needed in production code.
+/* istanbul ignore next */
 function buildDetailsRequest(
   idsOrDescriptors: number[] | { id: number }[]
 ): HttpGetRequest {
@@ -54,6 +58,8 @@ export default class QueryServiceImpl extends QueryService {
 
   // TODO: Cache entity details: https://github.com/amosproj/amos-ss2021-project2-context-map/issues/62
 
+  // TODO: This is currently not in use, so untested, add tests when this is needed in production code.
+  /* istanbul ignore next */
   public async getEdgesById(
     idsOrDescriptors: number[] | EdgeDescriptor[],
     cancellation?: CancellationToken
@@ -73,6 +79,8 @@ export default class QueryServiceImpl extends QueryService {
     ).flat();
   }
 
+  // TODO: This is currently not in use, so untested, add tests when this is needed in production code.
+  /* istanbul ignore next */
   public async getNodesById(
     idsOrDescriptors: number[] | NodeDescriptor[],
     cancellation?: CancellationToken
