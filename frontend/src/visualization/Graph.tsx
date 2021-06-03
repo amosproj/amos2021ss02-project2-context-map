@@ -9,6 +9,7 @@ import Filter from './filtering/Filter';
 import useObservable from '../utils/useObservable';
 import QueryResultStore from '../stores/QueryResultStore';
 import convertQueryResult from './shared-ops/convertQueryResult';
+import { QueryResult } from '../shared/queries';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -76,7 +77,7 @@ function Graph(props: GraphProps): JSX.Element {
   // The size of the container that is used to measure the available space for the graph.
   const containerSize = useSize(sizeMeasureContainerRef);
 
-  const graphDataStore = useService(QueryResultStore);
+  const graphDataStore = useService<QueryResultStore>(QueryResultStore);
 
   const [graphData, setGraphData] = useState<GraphData>({
     edges: [],
@@ -85,7 +86,7 @@ function Graph(props: GraphProps): JSX.Element {
 
   useObservable(
     graphDataStore.getState().pipe(
-      tap((queryResult) => {
+      tap((queryResult: QueryResult) => {
         // Convert the query result to an object, react-graph-vis understands.
         setGraphData(convertQueryResult(queryResult));
       })

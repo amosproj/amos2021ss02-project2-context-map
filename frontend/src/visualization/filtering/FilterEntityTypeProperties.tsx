@@ -19,6 +19,9 @@ import {
 } from '../../shared/queries';
 import useArrayState from './helpers/useArrayState';
 import FilterPropertyModel from './helpers/FilterPropertyModel';
+import useService from '../../dependency-injection/useService';
+import NodeFilterConditionStore from '../../stores/NodeFilterConditionStore';
+import EdgeFilterConditionStore from '../../stores/EdgeFilterConditionStore';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,12 +41,16 @@ const FilterEntityTypeProperties = (props: {
   filterOpen: boolean;
   handleCloseFilter: () => void;
   filterModelEntries: FilterModelEntry[];
-  setFilterQuery: (condition: MatchAllCondition | null) => void; // TODO: Please rename me!
+  entity: 'node' | 'edge';
 }): JSX.Element => {
   const classes = useStyles();
 
-  const { filterOpen, handleCloseFilter, filterModelEntries, setFilterQuery } =
-    props;
+  const { filterOpen, handleCloseFilter, filterModelEntries, entity } = props;
+
+  const entityFilterConditionStore =
+    entity === 'node'
+      ? useService<NodeFilterConditionStore>(NodeFilterConditionStore)
+      : useService<EdgeFilterConditionStore>(EdgeFilterConditionStore);
 
   const [properties, setProperties] = useArrayState<FilterPropertyModel>(
     filterModelEntries.map(
@@ -86,10 +93,11 @@ const FilterEntityTypeProperties = (props: {
     }
 
     if (filterConditions.length > 0) {
-      setFilterQuery(MatchAllCondition(...filterConditions));
-    } else {
-      setFilterQuery(null);
+      entityFilterConditionStore.mergeState(
+        MatchAllCondition(...filterConditions)
+      );
     }
+    console.log(entityFilterConditionStore.getValue());
 
     handleCloseFilter();
   };

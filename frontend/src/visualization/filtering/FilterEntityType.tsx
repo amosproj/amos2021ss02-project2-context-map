@@ -4,13 +4,21 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
 import TuneIcon from '@material-ui/icons/Tune';
 import AddIcon from '@material-ui/icons/Add';
+import { tap } from 'rxjs/operators';
 import FilterEntityTypeProperties from './FilterEntityTypeProperties';
-import { EdgeTypeFilterModel, NodeTypeFilterModel } from '../../shared/filter';
 import { CancellationToken } from '../../utils/CancellationToken';
 import useService from '../../dependency-injection/useService';
 import { FilterService } from '../../services/filter';
-import { MatchAllCondition, OfTypeCondition } from '../../shared/queries';
 import fetchDataFromService from '../shared-ops/fetchDataFromService';
+import {
+  FilterCondition,
+  MatchAllCondition,
+  OfTypeCondition,
+} from '../../shared/queries';
+import { EdgeTypeFilterModel, NodeTypeFilterModel } from '../../shared/filter';
+import useObservable from '../../utils/useObservable';
+import NodeFilterConditionStore from '../../stores/NodeFilterConditionStore';
+import EdgeFilterConditionStore from '../../stores/EdgeFilterConditionStore';
 
 type EntityTypeFilterModel = NodeTypeFilterModel | EdgeTypeFilterModel;
 
@@ -67,39 +75,43 @@ const FilterEntityType = (props: {
   backgroundColor: string;
   name: string;
   entity: 'node' | 'edge';
-  setFilterQuery: (
-    condition: MatchAllCondition | OfTypeCondition | null
-  ) => void; // TODO: Rename
 }): JSX.Element => {
   const classes = useStyles();
+  const { backgroundColor, name, entity } = props;
 
   // Indicates if filter-dialog is opened.
   const [filterOpen, setFilterOpen] = React.useState(false);
   const [boxShadow, setBoxShadow] = React.useState('None');
   const isActive = React.useRef(false);
 
-  // TODO: Rename
-  const dialogConditionRef = React.useRef<MatchAllCondition | null>(null);
-
-  const { backgroundColor, name, entity, setFilterQuery } = props;
+  const entityFilterConditionStore =
+    entity === 'node'
+      ? useService<NodeFilterConditionStore>(NodeFilterConditionStore)
+      : useService<EdgeFilterConditionStore>(EdgeFilterConditionStore);
 
   const filterService = useService(FilterService, null);
 
+  let propertiesCondition: FilterCondition;
+  useObservable(
+    entityFilterConditionStore.getState().pipe(
+      tap((filterCondition: FilterCondition) => {
+        // Convert the query result to an object, react-graph-vis understands.
+        propertiesCondition = filterCondition;
+      })
+    )
+  );
+
   // TODO: Rename
   function updateFilterQuery(): void {
-    const propertiesCondition = dialogConditionRef.current;
-
-    if (!isActive.current) {
-      setFilterQuery(null);
-      return;
-    }
-
     const ofTypeCondition = OfTypeCondition(name);
 
+    // Convert the query result to an object, react-graph-vis understands.
     if (propertiesCondition === null) {
-      setFilterQuery(ofTypeCondition);
+      entityFilterConditionStore.mergeState(ofTypeCondition);
     } else {
-      setFilterQuery(MatchAllCondition(ofTypeCondition, propertiesCondition));
+      entityFilterConditionStore.mergeState(
+        MatchAllCondition(ofTypeCondition, propertiesCondition)
+      );
     }
   }
 
@@ -128,14 +140,6 @@ const FilterEntityType = (props: {
 
     const filterModelEntries = model.properties;
 
-    // TODO: Rename
-    const dialogSetFilterQuery = (
-      condition: MatchAllCondition | null
-    ): void => {
-      dialogConditionRef.current = condition;
-      updateFilterQuery();
-    };
-
     return (
       <div>
         <Button
@@ -157,7 +161,7 @@ const FilterEntityType = (props: {
           filterOpen={filterOpen}
           handleCloseFilter={handleCloseFilter}
           filterModelEntries={filterModelEntries}
-          setFilterQuery={dialogSetFilterQuery}
+          entity={entity}
         />
       </div>
     );

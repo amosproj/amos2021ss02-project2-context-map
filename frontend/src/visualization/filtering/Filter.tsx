@@ -15,14 +15,14 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import useService from '../../dependency-injection/useService';
 import { CancellationToken } from '../../utils/CancellationToken';
-import { EdgeType, NodeType } from '../../shared/schema';
-import EntityFilterElement from './components/EntityFilterElement';
 import fetchDataFromService from '../shared-ops/fetchDataFromService';
 import entityColors from '../data/GraphData';
 import { SchemaService } from '../../services/schema';
-import { FilterCondition, MatchAnyCondition } from '../../shared/queries';
 import FilterQueryStore from '../../stores/FilterQueryStore';
 import MaxEntitiesSlider from './MaxEntitiesSlider';
+import { EdgeType, NodeType } from '../../shared/schema';
+import { FilterCondition, MatchAnyCondition } from '../../shared/queries';
+import EntityTypeTemplate from './helpers/EntityTypeTemplate';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -126,52 +126,14 @@ const Filter = (): JSX.Element => {
     filterStore.mergeState({ filters });
   }
 
-  // a JSX.Element template used for rendering
-  const entityTemplate = (
-    color: string,
-    name: string,
-    entity: 'node' | 'edge',
-    i: number
-  ) => {
-    const setEntryFilterCondition = (
-      condition: FilterCondition | null
-    ): void => {
-      const conditionsRef =
-        entity === 'node' ? nodeConditionsRef : edgeConditionsRef;
-      const conditions = conditionsRef.current;
-
-      while (conditions.length - 1 < i) {
-        conditions.push(null);
-      }
-
-      conditions[i] = condition;
-      conditionsRef.current = conditions;
-      updateQuery();
-    };
-
-    return (
-      <div>
-        <Box display="flex" p={1}>
-          <EntityFilterElement
-            backgroundColor={color}
-            name={name}
-            entity={entity}
-            setFilterQuery={setEntryFilterCondition}
-          />
-        </Box>
-      </div>
-    );
-  };
-
   function renderNodes(nodeTypes: NodeType[]): JSX.Element {
     return (
       <>
         {nodeTypes.map((type, i) =>
-          entityTemplate(
+          EntityTypeTemplate(
             entityColors[i % entityColors.length],
             type.name,
-            'node',
-            i
+            'node'
           )
         )}
       </>
@@ -182,7 +144,7 @@ const Filter = (): JSX.Element => {
     return (
       <>
         {edgeTypes.map((type, i) =>
-          entityTemplate('#a9a9a9', type.name, 'edge', i)
+          EntityTypeTemplate('#a9a9a9', type.name, 'edge')
         )}
       </>
     );
