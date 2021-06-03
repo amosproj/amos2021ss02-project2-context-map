@@ -11,6 +11,8 @@ import { FilterService } from '../filter/filter.service';
 import { range } from '../utils';
 
 const KMAP_GDS_GRAPH_NAME_SHORTEST_PATH = 'KMAP_GDS_GRAPH_NAME_SHORTEST_PATH';
+const KMAP_GDS_GRAPH_NAME_SHORTEST_PATH_DIRECTED =
+  'KMAP_GDS_GRAPH_NAME_SHORTEST_PATH_DIRECTED';
 
 @Injectable()
 export class ShortestPathService implements ShortestPathServiceBase {
@@ -162,13 +164,17 @@ export class ShortestPathService implements ShortestPathServiceBase {
       };
     }
 
-    if (!(await this.existsGDSProjection(KMAP_GDS_GRAPH_NAME_SHORTEST_PATH))) {
-      await this.createGDSProjection(KMAP_GDS_GRAPH_NAME_SHORTEST_PATH);
+    const graphName = ignoreEdgeDirections
+      ? KMAP_GDS_GRAPH_NAME_SHORTEST_PATH
+      : KMAP_GDS_GRAPH_NAME_SHORTEST_PATH_DIRECTED;
+
+    if (!(await this.existsGDSProjection(graphName))) {
+      await this.createGDSProjection(graphName, ignoreEdgeDirections);
     }
 
     // eslint-disable-next-line no-return-await
     return await this.execGDSShortestPath(
-      KMAP_GDS_GRAPH_NAME_SHORTEST_PATH,
+      graphName,
       startNode,
       endNode,
       ignoreEdgeDirections
@@ -188,13 +194,18 @@ export class ShortestPathService implements ShortestPathServiceBase {
     return nodes.length !== 0 && nodes.some((node) => node.id === id);
   }
 
-  private async createGDSProjection(name: string): Promise<void> {
+  private async createGDSProjection(
+    name: string,
+    ignoreEdgeDirections: boolean | undefined
+  ): Promise<void> {
     await this.neo4jService.read(
       `
       CALL gds.graph.create.cypher(
         $name,
-        'MATCH (m) RETURN id(m) as id',
-        'MATCH (m)-[e]-(n) RETURN id(m) as source, id(n) as target, 1 as cost'
+        'MATCH (m) 
+         RETURN id(m) as id',
+        'MATCH (m)-[e]${ignoreEdgeDirections ? '-' : '->'}(n) 
+         RETURN id(m) as source, id(n) as target, 1 as cost'
       )
       `,
       { name }
@@ -232,7 +243,7 @@ export class ShortestPathService implements ShortestPathServiceBase {
     name: string,
     startNode: number,
     endNode: number,
-    ignoreEdgeDirections?: boolean
+    ignoreEdgeDirections: boolean | undefined
   ): Promise<Path | null> {
     const result = await this.neo4jService.read(
       `
