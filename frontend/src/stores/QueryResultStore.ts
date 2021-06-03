@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { from, Observable, Subscription } from 'rxjs';
+import { from, Subscription } from 'rxjs';
 import { QueryResult } from '../shared/queries';
 import SimpleStore from './SimpleStore';
 import FilterQueryStore from './FilterQueryStore';

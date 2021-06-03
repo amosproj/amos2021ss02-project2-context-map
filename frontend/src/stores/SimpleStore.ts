@@ -1,7 +1,6 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import 'reflect-metadata';
 import { injectable } from 'inversify';
-import nop from '../utils/nop';
 
 /**
  * A simple store contains a single state.
