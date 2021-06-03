@@ -5,6 +5,7 @@ import { KmapNeo4jModule } from '../../../src/config/neo4j/KmapNeo4jModule';
 import { ShortestPathService } from '../../../src/shortest-path/shortest-path.service';
 import { ShortestPathServiceBase } from '../../../src/shortest-path/shortest-path.service.base';
 import { Path } from '../../../src/shortest-path/Path';
+import { FilterService } from '../../../src/filter/filter.service';
 
 describe('ShortestPathService', () => {
   let service: ShortestPathServiceBase;
@@ -23,7 +24,7 @@ describe('ShortestPathService', () => {
           disableLosslessIntegers: true,
         }),
       ],
-      providers: [ShortestPathService],
+      providers: [ShortestPathService, FilterService],
     }).compile();
 
     service = module.get(ShortestPathService);

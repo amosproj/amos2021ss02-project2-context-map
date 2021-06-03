@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
 import { QueryResult } from '../shared/queries';
-import { NodeDescriptor } from '../shared/entities';
+import { EdgeDescriptor, NodeDescriptor } from '../shared/entities';
 import { Path } from './Path';
 import {
   ShortestPathQuery,
   ShortestPathServiceBase,
 } from './shortest-path.service.base';
 import { FilterService } from '../filter/filter.service';
+import { range } from '../utils';
 
 const KMAP_GDS_GRAPH_NAME_SHORTEST_PATH = 'KMAP_GDS_GRAPH_NAME_SHORTEST_PATH';
 
@@ -262,40 +263,46 @@ export class ShortestPathService implements ShortestPathServiceBase {
       };
     }
 
-    const startNodes = nodes.slice(0, -1);
-    const endNodes = nodes.slice(1);
-    const edges = [];
+    const promises = range(nodes.length - 1).map(
+      async (i): Promise<EdgeDescriptor | null> => {
+        const sourceNode = nodes[i];
+        const targetNode = nodes[i + 1];
 
-    // TODO: Can we do this with a one-shot?
-    for (let i = 0; i < startNodes.length; i += 1) {
-      // eslint-disable-next-line no-await-in-loop
-      const edgeResult = await this.neo4jService.read(
-        `
-        MATCH (m)-[e]${ignoreEdgeDirections ? '-' : '->'}(n) 
-        WHERE (id(m) = $startId AND id(n) = $endId) 
-        WITH id(e) as id, 1 as cost 
-        ORDER BY cost 
-        LIMIT 1 
-        RETURN id, cost
-        `,
-        { startId: startNodes[i].id, endId: endNodes[i].id }
-      );
+        // eslint-disable-next-line no-await-in-loop
+        const edgeResult = await this.neo4jService.read(
+          `
+          MATCH (m)-[e]${ignoreEdgeDirections ? '-' : '->'}(n) 
+          WHERE (id(m) = $startId AND id(n) = $endId) 
+          WITH id(e) as id, 1 as cost 
+          ORDER BY cost 
+          LIMIT 1 
+          RETURN id, cost
+          `,
+          { startId: sourceNode.id, endId: targetNode.id }
+        );
 
-      const edgeCandidates = edgeResult.records.map(
-        (x) => x.toObject() as { id: number; cost: number }
-      );
+        const edgeCandidates = edgeResult.records.map(
+          (x) => x.toObject() as { id: number; cost: number }
+        );
 
-      if (edgeCandidates.length === 0) {
-        return null;
+        if (edgeCandidates.length === 0) {
+          return null;
+        }
+
+        return {
+          id: edgeCandidates[0].id,
+          from: sourceNode.id,
+          to: targetNode.id,
+        };
       }
+    );
 
-      edges.push({
-        id: edgeCandidates[0].id,
-        from: startNodes[i].id,
-        to: endNodes[i].id,
-      });
+    const edges = await Promise.all(promises);
+
+    if (edges.some((e) => !e)) {
+      return null;
     }
 
-    return { nodes, edges };
+    return { nodes, edges: edges as EdgeDescriptor[] };
   }
 }
