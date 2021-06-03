@@ -3,6 +3,7 @@ import {
   firstValueFrom,
   Observable,
   ObservableNotification,
+  OperatorFunction,
   Subject,
 } from 'rxjs';
 import {
@@ -13,7 +14,6 @@ import {
   repeatWhen,
   shareReplay,
   startWith,
-  takeWhile,
 } from 'rxjs/operators';
 import { CancellationToken } from './CancellationToken';
 import withCancellation from './withCancellation';
@@ -21,27 +21,28 @@ import withCancellation from './withCancellation';
 /**
  * LoadingNotification like {@link ObservableNotification}.
  */
-interface LoadingNotification {
+export interface LoadingNotification {
   kind: 'L';
 }
 
 /**
  * Extends {@link ObservableNotification} with {@link LoadingNotification}.
  */
-type ExtendedObservableNotification<T> =
+export type ExtendedObservableNotification<T> =
   | ObservableNotification<T>
   | LoadingNotification;
 
 /**
  * Returns true if param is {@link ObservableNotification}.
  */
-function isObservableNotification<T>(
+export function isObservableNotification<T>(
   state: ExtendedObservableNotification<T>
 ): state is ObservableNotification<T> {
   return state.kind === 'N' || state.kind === 'E' || state.kind === 'C';
 }
 
 /**
+ * TODO Change Comment since implementation has changed
  * Observable with a cache.
  * The source observable is only subscribed to after this observable
  * is subscribed to (lazy evaluation).
@@ -50,7 +51,7 @@ function isObservableNotification<T>(
  * The source action is automatically restarted after an error when a new
  * subscription is made.
  */
-export default class CachedObservable<T> {
+export default abstract class CachedObservable<IN, OUT> {
   /**
    * Empty subject. Emits value when a new subscription is made.
    * @see pipe
@@ -62,13 +63,13 @@ export default class CachedObservable<T> {
    * The main source observable with materialized state.
    * @private
    */
-  private readonly observable: Observable<ExtendedObservableNotification<T>>;
+  private readonly observable: Observable<ExtendedObservableNotification<OUT>>;
 
   /**
    * @see {@link CachedObservable}
    * @param source Observable or Promise-Factory
    */
-  constructor(source: Observable<T> | (() => Promise<T>)) {
+  constructor(source: Observable<IN> | (() => Promise<IN>)) {
     if (typeof source === 'function') {
       // eslint-disable-next-line no-param-reassign
       source = defer(source);
@@ -85,19 +86,27 @@ export default class CachedObservable<T> {
       repeatWhen((obs) =>
         obs.pipe(delayWhen(() => this.newSubscriptionIncoming))
       ),
-      // Stops observing the original observable when a value is emitted.
-      takeWhile((state) => state.kind !== 'N', true),
+      this.onNewValue(),
       // Stores the last state.
       shareReplay(1)
     );
   }
 
   /**
+   * Called for each new value of the observable.
+   * @protected
+   */
+  protected abstract onNewValue(): OperatorFunction<
+    ExtendedObservableNotification<IN>,
+    ExtendedObservableNotification<OUT>
+  >;
+
+  /**
    * Returns the cached observable.
    * If the last emitted value was an error, it automatically restarts
    * the pipeline.
    */
-  public pipe(): Observable<T> {
+  public pipe(): Observable<OUT> {
     return defer(() => {
       // This code is called when a new subscription is made
 
@@ -114,7 +123,7 @@ export default class CachedObservable<T> {
   /**
    * Returns a cancellable Promise from that observable
    */
-  public asPromise(cancellation?: CancellationToken): Promise<T> {
+  public asPromise(cancellation?: CancellationToken): Promise<OUT> {
     return withCancellation(firstValueFrom(this.pipe()), cancellation);
   }
 }

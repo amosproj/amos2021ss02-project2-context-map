@@ -5,7 +5,7 @@ import { FilterQuery, QueryResult } from '../../shared/queries';
 import { CancellationToken } from '../../utils/CancellationToken';
 import HttpService, { HttpGetRequest } from '../http';
 import FilterService from './FilterService';
-import CachedObservable from '../../utils/CachedObservable';
+import SimpleCachedObservable from '../../utils/SimpleCachedObservable';
 
 function buildRequest(type: string): HttpGetRequest {
   return new HttpGetRequest({}, { type });
@@ -18,8 +18,8 @@ export default class FilterServiceImpl implements FilterService {
    * @private
    */
   private readonly cache = {
-    edges: new Map<string, CachedObservable<EdgeTypeFilterModel>>(),
-    nodes: new Map<string, CachedObservable<NodeTypeFilterModel>>(),
+    edges: new Map<string, SimpleCachedObservable<EdgeTypeFilterModel>>(),
+    nodes: new Map<string, SimpleCachedObservable<NodeTypeFilterModel>>(),
   };
 
   constructor(
@@ -45,7 +45,7 @@ export default class FilterServiceImpl implements FilterService {
     let cachedValue = this.cache.nodes.get(type);
 
     if (cachedValue == null) {
-      cachedValue = new CachedObservable(() =>
+      cachedValue = new SimpleCachedObservable(() =>
         this.http.get<NodeTypeFilterModel>(
           '/api/filter/node-type',
           buildRequest(type),
@@ -65,7 +65,7 @@ export default class FilterServiceImpl implements FilterService {
     let cachedValue = this.cache.edges.get(type);
 
     if (cachedValue == null) {
-      cachedValue = new CachedObservable(() =>
+      cachedValue = new SimpleCachedObservable(() =>
         this.http.get<EdgeTypeFilterModel>(
           '/api/filter/edge-type',
           buildRequest(type),

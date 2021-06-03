@@ -1,5 +1,7 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
+import { firstValueFrom, from, of, ReplaySubject, Subject } from 'rxjs';
+import { filter, map, mergeMap, startWith } from 'rxjs/operators';
 import { CountQueryResult, QueryBase, QueryResult } from '../../shared/queries';
 import {
   Edge,
@@ -10,7 +12,9 @@ import {
 import { CancellationToken } from '../../utils/CancellationToken';
 import HttpService, { HttpGetRequest } from '../http';
 import QueryService from './QueryService';
-import CachedObservable from '../../utils/CachedObservable';
+import CachedMergeObservable from '../../utils/CachedMergeObservable';
+import withCancellation from '../../utils/withCancellation';
+import SimpleCachedObservable from '../../utils/SimpleCachedObservable';
 
 const MAX_BATCH_SIZE = 90;
 
@@ -32,16 +36,45 @@ function buildDetailsRequest(
   return new HttpGetRequest({}, { ids });
 }
 
+type BatchCache<T> = {
+  batches: Subject<number[]>;
+  entities: CachedMergeObservable<T>;
+};
+
+function buildCache<T extends Edge | Node>(
+  http: HttpService,
+  type: 'Nodes' | 'Edges'
+): BatchCache<T> {
+  const batches = new ReplaySubject<number[]>();
+  const entities = new CachedMergeObservable<T>(
+    (node) => node.id,
+    batches.pipe(
+      startWith([]),
+      mergeMap((batch) => {
+        if (batch.length === 0) return of([]);
+        return from(
+          http.get<T[]>(`/api/get${type}ById`, buildDetailsRequest(batch))
+        );
+      })
+    )
+  );
+
+  return { batches, entities };
+}
+
 /**
  * The implementation of query service that performs query requests
  * via the backend.
  */
 @injectable()
 export default class QueryServiceImpl extends QueryService {
-  private readonly numberOfEntities: CachedObservable<CountQueryResult> =
-    new CachedObservable(() =>
+  private readonly numberOfEntities: SimpleCachedObservable<CountQueryResult> =
+    new SimpleCachedObservable(() =>
       this.http.get<CountQueryResult>('/api/getNumberOfEntities')
     );
+
+  private readonly edgesById = buildCache<Edge>(this.http, 'Edges');
+  private readonly nodesById = buildCache<Node>(this.http, 'Nodes');
 
   public constructor(
     @inject(HttpService)
@@ -66,38 +99,55 @@ export default class QueryServiceImpl extends QueryService {
     idsOrDescriptors: number[] | EdgeDescriptor[],
     cancellation?: CancellationToken
   ): Promise<Edge[]> {
-    const batches = createBatches(idsOrDescriptors);
-
-    return (
-      await Promise.all(
-        batches.map((batch) =>
-          this.http.get<Edge[]>(
-            '/api/getEdgesById',
-            buildDetailsRequest(batch),
-            cancellation
-          )
-        )
+    const cachedIds = this.edgesById.entities.getState();
+    const ids = idsOrDescriptors
+      .map((idOrDescriptor: number | { id: number }) =>
+        typeof idOrDescriptor === 'number' ? idOrDescriptor : idOrDescriptor.id
       )
-    ).flat();
+      .filter((id) => cachedIds[id] === undefined);
+
+    const batches = createBatches(ids) as number[][];
+    for (const batch of batches) {
+      this.edgesById.batches.next(batch);
+    }
+
+    return withCancellation(
+      firstValueFrom(
+        this.edgesById.entities.pipe().pipe(
+          filter((cache) => ids.every((id) => cache[id] != null)),
+          map((x) => Object.values(x))
+        )
+      ),
+      cancellation
+    );
   }
 
   public async getNodesById(
     idsOrDescriptors: number[] | NodeDescriptor[],
     cancellation?: CancellationToken
   ): Promise<Node[]> {
-    const batches = createBatches(idsOrDescriptors);
-
-    return (
-      await Promise.all(
-        batches.map((batch) =>
-          this.http.get<Node[]>(
-            '/api/getNodesById',
-            buildDetailsRequest(batch),
-            cancellation
-          )
-        )
+    const cachedIds = this.nodesById.entities.getState();
+    const ids = idsOrDescriptors
+      .map((idOrDescriptor: number | { id: number }) =>
+        typeof idOrDescriptor === 'number' ? idOrDescriptor : idOrDescriptor.id
       )
-    ).flat();
+      .filter((id) => cachedIds[id] === undefined);
+
+    const batches = createBatches(ids) as number[][];
+    for (const batch of batches) {
+      this.nodesById.batches.next(batch);
+    }
+
+    return withCancellation(
+      firstValueFrom(
+        this.nodesById.entities.pipe().pipe(
+          filter((cache) => ids.every((id) => cache[id] != null)),
+          map((x) => Object.values(x))
+          // timeout(5000)
+        )
+      ),
+      cancellation
+    );
   }
 
   getNumberOfEntities(
