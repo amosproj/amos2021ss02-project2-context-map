@@ -11,6 +11,7 @@ export default class FilterQueryStore extends SimpleStore<FilterQuery> {
   protected getInitialValue(): FilterQuery {
     return {
       limits: { edges: 150, nodes: 200 },
+      includeSubsidiary: true,
     };
   }
 }
