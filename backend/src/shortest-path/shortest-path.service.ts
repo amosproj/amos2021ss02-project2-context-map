@@ -5,7 +5,6 @@ import { Path } from './Path';
 import { ShortestPathServiceBase } from './shortest-path.service.base';
 
 const KMAP_GDS_GRAPH_NAME_SHORTEST_PATH = 'KMAP_GDS_GRAPH_NAME_SHORTEST_PATH';
-// const KMAP_GDS_GRAPH_NAME_UNDIRECTED = 'KMAP_GDS_GRAPH_NAME_UNDIRECTED';
 
 @Injectable()
 export class ShortestPathService implements ShortestPathServiceBase {
@@ -17,7 +16,10 @@ export class ShortestPathService implements ShortestPathServiceBase {
     ignoreEdgeDirections?: boolean
   ): Promise<Path | null> {
     if (startNode === endNode) {
-      // TODO: Check in the DB if the node id exists.
+      if (!(await this.nodeExists(startNode))) {
+        return null;
+      }
+
       return {
         nodes: [{ id: startNode }],
         edges: [],
@@ -35,6 +37,19 @@ export class ShortestPathService implements ShortestPathServiceBase {
       endNode,
       ignoreEdgeDirections
     );
+  }
+
+  private async nodeExists(id: number): Promise<boolean> {
+    const result = await this.neo4jService.read(
+      `
+      MATCH(n) WHERE id(n) = $id RETURN id(n) as id
+      `,
+      { id }
+    );
+
+    const nodes = result.records.map((x) => x.toObject() as NodeDescriptor);
+
+    return nodes.length !== 0 && nodes.some((node) => node.id === id);
   }
 
   private async createGDSProjection(name: string): Promise<void> {
@@ -101,7 +116,6 @@ export class ShortestPathService implements ShortestPathServiceBase {
 
     const nodes = result.records.map((x) => x.toObject() as NodeDescriptor);
 
-    // TODO: What is the result if no path was found?
     if (nodes.length === 0) {
       return null;
     }

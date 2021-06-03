@@ -58,6 +58,20 @@ describe('ShortestPathService', () => {
       expect(result).toBeNull();
     });
 
+    it('returns null if non-existing but identical start and end nodes are specified', async () => {
+      // Arrange
+      // --
+
+      // Act
+      const result = await service.findShortedPath(
+        nonExistingNodeId,
+        nonExistingNodeId
+      );
+
+      // Assert
+      expect(result).toBeNull();
+    });
+
     it('returns single entry result of start node equals end-node', async () => {
       // Arrange
       const expectedResult: Path = {
