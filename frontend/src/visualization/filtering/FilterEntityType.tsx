@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
@@ -12,15 +12,14 @@ import { FilterService } from '../../services/filter';
 import fetchDataFromService from '../shared-ops/fetchDataFromService';
 import {
   FilterCondition,
+  FilterQuery,
   MatchAllCondition,
-  MatchAnyCondition,
   OfTypeCondition,
 } from '../../shared/queries';
 import { EdgeTypeFilterModel, NodeTypeFilterModel } from '../../shared/filter';
 import useObservable from '../../utils/useObservable';
-import NodeFilterConditionStore from '../../stores/NodeFilterConditionStore';
-import EdgeFilterConditionStore from '../../stores/EdgeFilterConditionStore';
 import FilterQueryStore from '../../stores/FilterQueryStore';
+import addToFilterQuery from '../shared-ops/addToFilterQuery';
 
 type EntityTypeFilterModel = NodeTypeFilterModel | EdgeTypeFilterModel;
 
@@ -86,80 +85,34 @@ const FilterEntityType = (props: {
   const [boxShadow, setBoxShadow] = React.useState('None');
   const isActive = React.useRef(false);
 
-  const entityFilterConditionStore =
-    entity === 'node'
-      ? useService<NodeFilterConditionStore>(NodeFilterConditionStore)
-      : useService<EdgeFilterConditionStore>(EdgeFilterConditionStore);
-
   const filterService = useService(FilterService, null);
 
-  const [propertiesCondition, setPropertiesCondition] =
-    React.useState<FilterCondition | null>(null);
+  const [filterQuery, setFilterQuery] = useState<FilterQuery>({});
+  const filterStore = useService<FilterQueryStore>(FilterQueryStore);
+
   useObservable(
-    entityFilterConditionStore.getState().pipe(
-      tap((filterCondition: FilterCondition) => {
-        // Convert the query result to an object, react-graph-vis understands.
-        setPropertiesCondition(filterCondition);
+    filterStore.getState().pipe(
+      tap((filterQueryFromStore: FilterQuery) => {
+        setFilterQuery(filterQueryFromStore);
       })
     )
   );
-
-  const filterStore = useService(FilterQueryStore);
-
-  const nodeFilterConditionStore = useService<NodeFilterConditionStore>(
-    NodeFilterConditionStore
-  );
-
-  const edgeFilterConditionStore = useService<EdgeFilterConditionStore>(
-    EdgeFilterConditionStore
-  );
-
-  const nodeConditions: FilterCondition[] = [];
-  useObservable(
-    nodeFilterConditionStore.getState().pipe(
-      tap((filterCondition: FilterCondition) => {
-        // Convert the query result to an object, react-graph-vis understands.
-        nodeConditions.push(filterCondition);
-      })
-    )
-  );
-
-  const edgeConditions: FilterCondition[] = [];
-  useObservable(
-    edgeFilterConditionStore.getState().pipe(
-      tap((filterCondition: FilterCondition) => {
-        // Convert the query result to an object, react-graph-vis understands.
-        edgeConditions.push(filterCondition);
-      })
-    )
-  );
-
-  function updateQuery() {
-    const filters: { nodes?: FilterCondition; edges?: FilterCondition } = {};
-
-    if (nodeConditions.length > 0) {
-      filters.nodes = MatchAnyCondition(...nodeConditions);
-    }
-
-    if (edgeConditions.length > 0) {
-      filters.edges = MatchAnyCondition(...edgeConditions);
-    }
-    // TODO: Make limits configurable
-    filterStore.mergeState({ filters });
-  }
 
   // TODO: Rename
   function updateFilterQuery(): void {
     const ofTypeCondition = OfTypeCondition(name);
+    const propertiesCondition: FilterCondition | undefined =
+      entity === 'node'
+        ? filterQuery.filters?.nodes
+        : filterQuery.filters?.edges;
 
-    // Convert the query result to an object, react-graph-vis understands.
-    if (propertiesCondition === null) {
-      entityFilterConditionStore.mergeState(ofTypeCondition);
-    } else {
-      entityFilterConditionStore.mergeState(
-        MatchAllCondition(ofTypeCondition, propertiesCondition)
-      );
-    }
+    const conditionToAdd: FilterCondition = propertiesCondition
+      ? MatchAllCondition(ofTypeCondition, propertiesCondition)
+      : ofTypeCondition;
+
+    filterStore.mergeState(
+      addToFilterQuery(conditionToAdd, filterQuery, entity, 'any')
+    );
   }
 
   function updateBoxShadow() {
@@ -183,7 +136,6 @@ const FilterEntityType = (props: {
 
       updateFilterQuery();
       updateBoxShadow();
-      updateQuery();
     };
 
     const filterModelEntries = model.properties;

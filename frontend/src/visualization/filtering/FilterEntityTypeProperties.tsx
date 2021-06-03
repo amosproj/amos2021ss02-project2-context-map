@@ -1,5 +1,5 @@
 import Button from '@material-ui/core/Button';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   createStyles,
   Dialog,
@@ -9,10 +9,12 @@ import {
   FormControl,
 } from '@material-ui/core';
 import { makeStyles, Theme } from '@material-ui/core/styles';
+import { tap } from 'rxjs/operators';
 import FilterEntityTypePropertiesPropertyValues from './FilterEntityTypePropertiesPropertyValues';
 import { FilterModelEntry } from '../../shared/filter';
 import {
   FilterCondition,
+  FilterQuery,
   MatchAllCondition,
   MatchAnyCondition,
   MatchPropertyCondition,
@@ -20,8 +22,9 @@ import {
 import useArrayState from './helpers/useArrayState';
 import FilterPropertyModel from './helpers/FilterPropertyModel';
 import useService from '../../dependency-injection/useService';
-import NodeFilterConditionStore from '../../stores/NodeFilterConditionStore';
-import EdgeFilterConditionStore from '../../stores/EdgeFilterConditionStore';
+import FilterQueryStore from '../../stores/FilterQueryStore';
+import useObservable from '../../utils/useObservable';
+import addToFilterQuery from '../shared-ops/addToFilterQuery';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -47,14 +50,20 @@ const FilterEntityTypeProperties = (props: {
 
   const { filterOpen, handleCloseFilter, filterModelEntries, entity } = props;
 
-  const entityFilterConditionStore =
-    entity === 'node'
-      ? useService<NodeFilterConditionStore>(NodeFilterConditionStore)
-      : useService<EdgeFilterConditionStore>(EdgeFilterConditionStore);
-
   const [properties, setProperties] = useArrayState<FilterPropertyModel>(
     filterModelEntries.map(
       (entry) => ({ ...entry, selectedValues: null } as FilterPropertyModel)
+    )
+  );
+
+  const [filterQuery, setFilterQuery] = useState<FilterQuery>({});
+  const filterStore = useService<FilterQueryStore>(FilterQueryStore);
+
+  useObservable(
+    filterStore.getState().pipe(
+      tap((filterQueryFromStore: FilterQuery) => {
+        setFilterQuery(filterQueryFromStore);
+      })
     )
   );
 
@@ -93,8 +102,13 @@ const FilterEntityTypeProperties = (props: {
     }
 
     if (filterConditions.length > 0) {
-      entityFilterConditionStore.mergeState(
-        MatchAllCondition(...filterConditions)
+      filterStore.mergeState(
+        addToFilterQuery(
+          MatchAllCondition(...filterConditions),
+          filterQuery,
+          entity,
+          'any'
+        )
       );
     }
     handleCloseFilter();

@@ -12,8 +12,6 @@ import QueryResultStore from './stores/QueryResultStore';
 import FilterQueryStore from './stores/FilterQueryStore';
 import ErrorStore from './stores/ErrorStore';
 import LoadingStore from './stores/LoadingStore';
-import NodeFilterConditionStore from './stores/NodeFilterConditionStore';
-import EdgeFilterConditionStore from './stores/EdgeFilterConditionStore';
 
 /**
  * Configures all services in the frontend app.
@@ -40,12 +38,4 @@ export default function configureServices(container: Container): void {
   container.bind(LoadingStore).to(LoadingStore).inSingletonScope();
   container.bind(FilterQueryStore).to(FilterQueryStore).inSingletonScope();
   container.bind(QueryResultStore).to(QueryResultStore).inSingletonScope();
-  container
-    .bind(NodeFilterConditionStore)
-    .to(NodeFilterConditionStore)
-    .inSingletonScope();
-  container
-    .bind(EdgeFilterConditionStore)
-    .to(EdgeFilterConditionStore)
-    .inSingletonScope();
 }
