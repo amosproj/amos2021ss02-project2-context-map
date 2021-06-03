@@ -55,6 +55,7 @@ describe('FilterService', () => {
           nodes: OfTypeCondition('Movie'),
           edges: OfTypeCondition('DIRECTED'),
         },
+        includeSubsidiary: true,
       };
 
       const expectedQueryResult: QueryResult = {
