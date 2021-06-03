@@ -23,6 +23,7 @@ import { SchemaService } from '../../services/schema';
 import { FilterCondition, MatchAnyCondition } from '../../shared/queries';
 import FilterQueryStore from '../../stores/FilterQueryStore';
 import MaxEntitiesSlider from './MaxEntitiesSlider';
+import SubsidiaryNodesToggle from './SubsidiaryNodesToggle';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -243,7 +244,10 @@ const Filter = (): JSX.Element => {
         <List style={{ maxHeight: '94%', width: 320, overflow: 'auto' }}>
           <TabPanel value={tabIndex} index={0}>
             {nodes}
-            <MaxEntitiesSlider entities="nodes" />
+            <SubsidiaryNodesToggle />
+            <div>
+              <MaxEntitiesSlider entities="nodes" />
+            </div>
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
             {edges}
