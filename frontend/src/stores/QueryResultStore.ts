@@ -40,12 +40,13 @@ export default class QueryResultStore extends SimpleStore<QueryResult> {
     return { nodes: [], edges: [] };
   }
 
-  getState(): Observable<QueryResult> {
-    if (this.filterQueryStoreSubscription == null) {
-      // If it's called the first time => subscribe to the filterQueryStore
-      this.filterQueryStoreSubscription = this.subscribeToFilterQueryStore();
+  protected ensureInit(): void {
+    if (this.filterQueryStoreSubscription != null) {
+      return;
     }
-    return super.getState();
+
+    // If it's called the first time => subscribe to the filterQueryStore
+    this.filterQueryStoreSubscription = this.subscribeToFilterQueryStore();
   }
 
   /**
