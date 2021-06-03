@@ -10,7 +10,7 @@ export abstract class ShortestPathServiceBase {
    * @param endNode The id of the end node.
    * @returns The shortest path between the specified nodes or null if the nodes are part of separated subgraphs.
    */
-  public abstract findShortedPath(
+  public abstract findShortestPath(
     startNode: number,
     endNode: number,
     ignoreEdgeDirections?: boolean

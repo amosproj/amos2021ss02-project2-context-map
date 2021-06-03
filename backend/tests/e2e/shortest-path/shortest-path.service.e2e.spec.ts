@@ -35,13 +35,13 @@ describe('ShortestPathService', () => {
     await neo4jService.getDriver().close();
   });
 
-  describe('Method findShortedPath', () => {
+  describe('Method findShortestPath', () => {
     it('returns null if non-existing start node is specified', async () => {
       // Arrange
       // --
 
       // Act
-      const result = await service.findShortedPath(nonExistingNodeId, 1);
+      const result = await service.findShortestPath(nonExistingNodeId, 1);
 
       // Assert
       expect(result).toBeNull();
@@ -52,7 +52,7 @@ describe('ShortestPathService', () => {
       // --
 
       // Act
-      const result = await service.findShortedPath(1, nonExistingNodeId);
+      const result = await service.findShortestPath(1, nonExistingNodeId);
 
       // Assert
       expect(result).toBeNull();
@@ -63,7 +63,7 @@ describe('ShortestPathService', () => {
       // --
 
       // Act
-      const result = await service.findShortedPath(
+      const result = await service.findShortestPath(
         nonExistingNodeId,
         nonExistingNodeId
       );
@@ -80,7 +80,7 @@ describe('ShortestPathService', () => {
       };
 
       // Act
-      const result = await service.findShortedPath(1, 1);
+      const result = await service.findShortestPath(1, 1);
 
       // Assert
       expect(result).toStrictEqual(expectedResult);
@@ -94,7 +94,7 @@ describe('ShortestPathService', () => {
       };
 
       // Act
-      const result = await service.findShortedPath(3, 0);
+      const result = await service.findShortestPath(3, 0);
 
       // Assert
       expect(result).toStrictEqual(expectedResult);
@@ -105,7 +105,7 @@ describe('ShortestPathService', () => {
       // --
 
       // Act
-      const result = await service.findShortedPath(3, 1);
+      const result = await service.findShortestPath(3, 1);
 
       // Assert
       expect(result).toBeNull();
@@ -122,7 +122,7 @@ describe('ShortestPathService', () => {
       };
 
       // Act
-      const result = await service.findShortedPath(3, 1, true);
+      const result = await service.findShortestPath(3, 1, true);
 
       // Assert
       expect(result).toStrictEqual(expectedResult);

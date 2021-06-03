@@ -10,7 +10,7 @@ const KMAP_GDS_GRAPH_NAME_SHORTEST_PATH = 'KMAP_GDS_GRAPH_NAME_SHORTEST_PATH';
 export class ShortestPathService implements ShortestPathServiceBase {
   constructor(private readonly neo4jService: Neo4jService) {}
 
-  public async findShortedPath(
+  public async findShortestPath(
     startNode: number,
     endNode: number,
     ignoreEdgeDirections?: boolean
