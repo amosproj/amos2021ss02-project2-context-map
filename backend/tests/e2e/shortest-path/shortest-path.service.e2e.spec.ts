@@ -108,7 +108,7 @@ describe('ShortestPathService', () => {
       };
 
       // Act
-      const result = await service.findShortedPath(3, 1);
+      const result = await service.findShortedPath(3, 1, true);
 
       // Assert
       expect(result).toStrictEqual(expectedResult);
