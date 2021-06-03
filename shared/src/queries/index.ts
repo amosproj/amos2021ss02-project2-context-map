@@ -7,6 +7,7 @@ import FilterQuery, {
   MatchAllCondition,
   MatchAnyCondition,
 } from './FilterQuery';
+import { QueryEdgeResult } from './QueryEdgeResult';
 import QueryNodeResult from './QueryNodeResult';
 import QueryBase from './QueryBase';
 import QueryResult from './QueryResult';
@@ -22,6 +23,7 @@ export {
 export type {
   FilterQuery,
   FilterCondition,
+  QueryEdgeResult,
   QueryNodeResult,
   QueryBase,
   QueryResult,

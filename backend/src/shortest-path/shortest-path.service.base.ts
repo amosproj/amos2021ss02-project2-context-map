@@ -1,4 +1,11 @@
+import { FilterQuery, QueryResult } from '../shared/queries';
 import { Path } from './Path';
+
+export interface ShortestPathQuery extends FilterQuery {
+  startNode: number;
+  endNode: number;
+  ignoreEdgeDirections?: boolean;
+}
 
 /**
  * The base type for shorted-path services.
@@ -15,4 +22,6 @@ export abstract class ShortestPathServiceBase {
     endNode: number,
     ignoreEdgeDirections?: boolean
   ): Promise<Path | null>;
+
+  public abstract executeQuery(query: ShortestPathQuery): Promise<QueryResult>;
 }

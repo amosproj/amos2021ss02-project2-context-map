@@ -1,4 +1,4 @@
-import { EdgeDescriptor } from '../entities/EdgeDescriptor';
+import { QueryEdgeResult } from './QueryEdgeResult';
 import QueryNodeResult from './QueryNodeResult';
 
 /**
@@ -15,5 +15,5 @@ export default interface QueryResult {
   /**
    * EdgeDescriptors (array of node-ids, from-ids and edge-ids) as result of the Query
    */
-  edges: EdgeDescriptor[];
+  edges: QueryEdgeResult[];
 }
