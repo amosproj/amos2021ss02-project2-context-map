@@ -13,12 +13,14 @@ import fetchDataFromService from '../shared-ops/fetchDataFromService';
 import {
   FilterCondition,
   MatchAllCondition,
+  MatchAnyCondition,
   OfTypeCondition,
 } from '../../shared/queries';
 import { EdgeTypeFilterModel, NodeTypeFilterModel } from '../../shared/filter';
 import useObservable from '../../utils/useObservable';
 import NodeFilterConditionStore from '../../stores/NodeFilterConditionStore';
 import EdgeFilterConditionStore from '../../stores/EdgeFilterConditionStore';
+import FilterQueryStore from '../../stores/FilterQueryStore';
 
 type EntityTypeFilterModel = NodeTypeFilterModel | EdgeTypeFilterModel;
 
@@ -91,15 +93,60 @@ const FilterEntityType = (props: {
 
   const filterService = useService(FilterService, null);
 
-  let propertiesCondition: FilterCondition;
+  const [propertiesCondition, setPropertiesCondition] =
+    React.useState<FilterCondition | null>(null);
   useObservable(
     entityFilterConditionStore.getState().pipe(
       tap((filterCondition: FilterCondition) => {
         // Convert the query result to an object, react-graph-vis understands.
-        propertiesCondition = filterCondition;
+        setPropertiesCondition(filterCondition);
       })
     )
   );
+
+  const filterStore = useService(FilterQueryStore);
+
+  const nodeFilterConditionStore = useService<NodeFilterConditionStore>(
+    NodeFilterConditionStore
+  );
+
+  const edgeFilterConditionStore = useService<EdgeFilterConditionStore>(
+    EdgeFilterConditionStore
+  );
+
+  const nodeConditions: FilterCondition[] = [];
+  useObservable(
+    nodeFilterConditionStore.getState().pipe(
+      tap((filterCondition: FilterCondition) => {
+        // Convert the query result to an object, react-graph-vis understands.
+        nodeConditions.push(filterCondition);
+      })
+    )
+  );
+
+  const edgeConditions: FilterCondition[] = [];
+  useObservable(
+    edgeFilterConditionStore.getState().pipe(
+      tap((filterCondition: FilterCondition) => {
+        // Convert the query result to an object, react-graph-vis understands.
+        edgeConditions.push(filterCondition);
+      })
+    )
+  );
+
+  function updateQuery() {
+    const filters: { nodes?: FilterCondition; edges?: FilterCondition } = {};
+
+    if (nodeConditions.length > 0) {
+      filters.nodes = MatchAnyCondition(...nodeConditions);
+    }
+
+    if (edgeConditions.length > 0) {
+      filters.edges = MatchAnyCondition(...edgeConditions);
+    }
+    // TODO: Make limits configurable
+    filterStore.mergeState({ filters });
+  }
 
   // TODO: Rename
   function updateFilterQuery(): void {
@@ -136,6 +183,7 @@ const FilterEntityType = (props: {
 
       updateFilterQuery();
       updateBoxShadow();
+      updateQuery();
     };
 
     const filterModelEntries = model.properties;

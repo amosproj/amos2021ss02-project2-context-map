@@ -9,7 +9,7 @@ import {
   Tabs,
   Typography,
 } from '@material-ui/core';
-import React, { useRef } from 'react';
+import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -18,10 +18,8 @@ import { CancellationToken } from '../../utils/CancellationToken';
 import fetchDataFromService from '../shared-ops/fetchDataFromService';
 import entityColors from '../data/GraphData';
 import { SchemaService } from '../../services/schema';
-import FilterQueryStore from '../../stores/FilterQueryStore';
 import MaxEntitiesSlider from './MaxEntitiesSlider';
 import { EdgeType, NodeType } from '../../shared/schema';
-import { FilterCondition, MatchAnyCondition } from '../../shared/queries';
 import EntityTypeTemplate from './helpers/EntityTypeTemplate';
 
 const useStyles = makeStyles((theme) =>
@@ -98,34 +96,6 @@ const Filter = (): JSX.Element => {
 
   const schemaService = useService(SchemaService, null);
 
-  const filterStore = useService(FilterQueryStore);
-
-  const nodeConditionsRef = useRef<(FilterCondition | null)[]>([]);
-  const edgeConditionsRef = useRef<(FilterCondition | null)[]>([]);
-
-  function updateQuery() {
-    const nodeConditions = nodeConditionsRef.current.filter(
-      (condition) => condition !== null
-    ) as FilterCondition[];
-
-    const edgeConditions = edgeConditionsRef.current.filter(
-      (condition) => condition !== null
-    ) as FilterCondition[];
-
-    const filters: { nodes?: FilterCondition; edges?: FilterCondition } = {};
-
-    if (nodeConditions.length > 0) {
-      filters.nodes = MatchAnyCondition(...nodeConditions);
-    }
-
-    if (edgeConditions.length > 0) {
-      filters.edges = MatchAnyCondition(...edgeConditions);
-    }
-
-    // TODO: Make limits configurable
-    filterStore.mergeState({ filters });
-  }
-
   function renderNodes(nodeTypes: NodeType[]): JSX.Element {
     return (
       <>
@@ -143,7 +113,7 @@ const Filter = (): JSX.Element => {
   function renderEdges(edgeTypes: EdgeType[]): JSX.Element {
     return (
       <>
-        {edgeTypes.map((type, i) =>
+        {edgeTypes.map((type) =>
           EntityTypeTemplate('#a9a9a9', type.name, 'edge')
         )}
       </>

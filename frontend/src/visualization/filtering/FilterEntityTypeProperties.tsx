@@ -97,8 +97,6 @@ const FilterEntityTypeProperties = (props: {
         MatchAllCondition(...filterConditions)
       );
     }
-    console.log(entityFilterConditionStore.getValue());
-
     handleCloseFilter();
   };
 
