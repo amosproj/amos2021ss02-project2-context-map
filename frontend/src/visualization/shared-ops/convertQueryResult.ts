@@ -1,9 +1,9 @@
 import { GraphData } from 'react-graph-vis';
 import * as vis from 'vis-network';
 import { EdgeDescriptor } from '../../shared/entities';
-import { NodeResultDescriptor, QueryResult } from '../../shared/queries';
+import { QueryNodeResult, QueryResult } from '../../shared/queries';
 
-function convertNode(node: NodeResultDescriptor): vis.Node {
+function convertNode(node: QueryNodeResult): vis.Node {
   const result: vis.Node = {
     id: node.id,
     label: node.id.toString(),
@@ -17,7 +17,7 @@ function convertNode(node: NodeResultDescriptor): vis.Node {
   return result;
 }
 
-function convertNodes(nodes: NodeResultDescriptor[]): vis.Node[] {
+function convertNodes(nodes: QueryNodeResult[]): vis.Node[] {
   return nodes.map((node) => convertNode(node));
 }
 

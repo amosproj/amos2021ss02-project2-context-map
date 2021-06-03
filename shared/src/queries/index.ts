@@ -7,7 +7,7 @@ import FilterQuery, {
   MatchAllCondition,
   MatchAnyCondition,
 } from './FilterQuery';
-import NodeResultDescriptor from './NodeResultDescriptor';
+import QueryNodeResult from './QueryNodeResult';
 import QueryBase from './QueryBase';
 import QueryResult from './QueryResult';
 import CountQueryResult from './CountQueryResult';
@@ -22,7 +22,7 @@ export {
 export type {
   FilterQuery,
   FilterCondition,
-  NodeResultDescriptor,
+  QueryNodeResult,
   QueryBase,
   QueryResult,
   CountQueryResult,
