@@ -1,3 +1,5 @@
+import '../../support/index.js';
+
 context('Filter', () => {
   // Global setup
   beforeEach(() => {
@@ -31,7 +33,7 @@ context('Filter', () => {
       cy.contains('name');
     });
 
-    it('Shows expected property-values', () => {
+    it('shows expected property-values', () => {
       // Act
       cy.get('.Filter').click();
       cy.get('.FilterButton:first').click();
@@ -44,17 +46,29 @@ context('Filter', () => {
       cy.contains('Lana Wachowski');
     });
 
-    it('constructs correct filterQuery', () => {
+    it('selects no property values', () => {
+      // Act
+      cy.get('.Filter').click();
+      cy.get('.FilterButton:first').click();
+      cy.get('.FilterDialog');
+
+      // eslint-disable-next-line cypress/no-force
+      cy.get('.ApplyFilter').focus().click({ force: true });
+
+      cy.get('.AddButton:first').click();
+    });
+
+    it('applies filter', () => {
       // Act
       cy.get('.Filter').click();
       cy.get('.FilterButton:first').click();
       cy.get('.FilterDialog');
       cy.get('.FilterSelect:last').click();
 
-      // Assert
       cy.contains('Keanu Reeves').click();
       cy.contains('Carrie-Anne Moss').click();
       cy.contains('Lana Wachowski').click();
+
       // eslint-disable-next-line cypress/no-force
       cy.get('.ApplyFilter').focus().click({ force: true });
     });
@@ -79,7 +93,7 @@ context('Filter', () => {
   });
 
   context('Edges', () => {
-    it('Shows expected property-names', () => {
+    it('shows expected property-names', () => {
       // Act
       cy.get('.Filter').click();
       cy.contains('Edge Types').click();
@@ -102,7 +116,7 @@ context('Filter', () => {
       cy.contains('Error: No string').click();
     });
 
-    it('constructs correct filterQuery', () => {
+    it('applies filter', () => {
       // Act
       cy.get('.Filter').click();
       cy.get('.EdgeTypes').click();
@@ -116,7 +130,7 @@ context('Filter', () => {
       cy.get('.ApplyFilter').focus().click({ force: true });
     });
 
-    it('constructs correct filterQuery', () => {
+    it('adds edges to view', () => {
       // Act
       cy.get('.Filter').click();
       cy.get('.EdgeTypes').click();

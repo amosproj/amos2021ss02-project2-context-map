@@ -1,87 +1,29 @@
 import React from 'react';
 import SearchResultList from './SearchResultList';
-import { ExpandedSearchResult } from '../shared/search';
+import {
+  SearchEdgeResult,
+  SearchNodeResult,
+  SearchResult,
+} from '../shared/search';
 import NodeTypeComponent from './helper/NodeTypeComponent';
 import EdgeTypeComponent from './helper/EdgeTypeComponent';
-import { Node, Edge, Property } from '../shared/entities';
 
-/**
- * This is an first approach to find the attribute that contains `searchString`.
- */
-function findSearchStringInProperties(
-  searchString: string,
-  entity: Node | Edge
-) {
-  const search = searchString.toLocaleLowerCase();
-  let foundValue: string | undefined;
-  const idString = `[${entity.id}]`;
+function formatEntry(resultEntry: SearchNodeResult | SearchEdgeResult) {
+  let result = `[${resultEntry.id}]`;
 
-  const format = (propName: string, propValue: string) =>
-    `{ ${propName}: ${propValue} }`;
-
-  /**
-   * Returns `value.toString()` if `search` was found in `value`
-   */
-  function findInPrimitive(value: string | number | unknown) {
-    if (
-      (typeof value === 'string' &&
-        value.toLocaleLowerCase().search(search) >= 0) || // strings
-      (typeof value === 'number' && value.toString().search(search) >= 0) // numbers
-    ) {
-      return value.toString();
+  if (resultEntry.properties) {
+    for (const key of Object.keys(resultEntry.properties)) {
+      const value = resultEntry.properties[key];
+      result += ` { ${key}: ${value} }`;
     }
-    return undefined;
   }
 
-  /**
-   * Returns a formatted string ({@link format}) if `search` was found
-   * somewhere in the (nested) object `props`
-   */
-  function findInProperties(props: {
-    [key: string]: Property;
-  }): string | undefined {
-    for (const propName of Object.keys(props)) {
-      const propValue = props[propName];
-
-      foundValue = findInPrimitive(propValue);
-      if (foundValue) {
-        // String or Number value found
-        return format(propName, foundValue);
-      }
-
-      /* istanbul ignore if */
-      if (Array.isArray(propValue)) {
-        const foundValues = propValue
-          .map((x) => findInPrimitive(x)) // Returns string if found
-          .filter((x) => x !== undefined); // Returns only "found" items
-
-        if (foundValues?.length > 0) {
-          const allValuesMatch = foundValues.length === propValue.length;
-          return format(
-            propName,
-            `[${foundValues.join(', ')}${allValuesMatch ? ', ...' : ''}]`
-          );
-        }
-      }
-
-      /* istanbul ignore if */
-      if (typeof propValue === 'object' && propValue != null) {
-        foundValue = findInProperties(propValue as Record<string, unknown>);
-        if (foundValue) {
-          return format(propName, foundValue);
-        }
-      }
-    }
-    return undefined;
-  }
-
-  foundValue = findInProperties(entity.properties);
-  return `${idString} ${foundValue ?? ''}`;
+  return result;
 }
 
 export default function convertSearchResultToSearchResultList(
   searchString: string,
-  result: ExpandedSearchResult | undefined
+  result: SearchResult | undefined
 ): SearchResultList[] {
   /* istanbul ignore if */
   if (result === undefined) {
@@ -100,7 +42,7 @@ export default function convertSearchResultToSearchResultList(
               <NodeTypeComponent name={t} />
             ))}
             &nbsp;
-            {findSearchStringInProperties(searchString, n)}
+            {formatEntry(n)}
           </div>
         ),
         href: `/data/node/${n.id}`,
@@ -114,7 +56,7 @@ export default function convertSearchResultToSearchResultList(
         element: (
           <div>
             <EdgeTypeComponent type={n.type} />
-            &nbsp;{findSearchStringInProperties(searchString, n)}
+            &nbsp;{formatEntry(n)}
           </div>
         ),
         href: `/data/edge/${n.id}`,

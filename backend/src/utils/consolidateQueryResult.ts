@@ -50,7 +50,7 @@ function deduplicateEntities<T extends HasId>(
  * @param queryResult The query-result to filter
  * @param includeSubsidiary A boolean value that indicated whether nodes that are not part of the result but references by edges that are part of the results shall be added or the referencing edges deleted.
  */
-export default function consolidateQueryResult(
+export function consolidateQueryResult(
   queryResult: QueryResult,
   includeSubsidiary = false
 ): QueryResult {

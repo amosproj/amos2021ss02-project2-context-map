@@ -10,7 +10,7 @@ import { createNeo4jDriver } from './createNeo4jDriver';
  */
 export class KmapNeo4jModule {
   /**
-   * Overrides the driver factory from the {@link Neo4jModule} so additional
+   * Overrides the driver factory from the {@link Neo4jModule} so
    * additional {@link Neo4jDriverOptions} are possible.
    * @private
    */

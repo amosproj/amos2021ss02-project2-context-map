@@ -16,12 +16,13 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import useService from '../../dependency-injection/useService';
 import { CancellationToken } from '../../utils/CancellationToken';
 import { EdgeType, NodeType } from '../../shared/schema';
+import EntityFilterElement from './components/EntityFilterElement';
 import fetchDataFromService from '../shared-ops/fetchDataFromService';
 import entityColors from '../data/GraphData';
 import { SchemaService } from '../../services/schema';
 import { FilterCondition, MatchAnyCondition } from '../../shared/queries';
 import FilterQueryStore from '../../stores/FilterQueryStore';
-import EntityTypeTemplate from './helpers/EntityTypeTemplate';
+import MaxEntitiesSlider from './MaxEntitiesSlider';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -125,16 +126,51 @@ const Filter = (): JSX.Element => {
     filterStore.mergeState({ filters });
   }
 
+  // a JSX.Element template used for rendering
+  const entityTemplate = (
+    color: string,
+    name: string,
+    entity: 'node' | 'edge',
+    i: number
+  ) => {
+    const setEntryFilterCondition = (
+      condition: FilterCondition | null
+    ): void => {
+      const conditionsRef =
+        entity === 'node' ? nodeConditionsRef : edgeConditionsRef;
+      const conditions = conditionsRef.current;
+
+      while (conditions.length - 1 < i) {
+        conditions.push(null);
+      }
+
+      conditions[i] = condition;
+      conditionsRef.current = conditions;
+      updateQuery();
+    };
+
+    return (
+      <div>
+        <Box display="flex" p={1}>
+          <EntityFilterElement
+            backgroundColor={color}
+            name={name}
+            entity={entity}
+            setFilterQuery={setEntryFilterCondition}
+          />
+        </Box>
+      </div>
+    );
+  };
+
   function renderNodes(nodeTypes: NodeType[]): JSX.Element {
     return (
       <>
         {nodeTypes.map((type, i) =>
-          EntityTypeTemplate(
+          entityTemplate(
             entityColors[i % entityColors.length],
             type.name,
             'node',
-            nodeConditionsRef,
-            updateQuery,
             i
           )
         )}
@@ -146,14 +182,7 @@ const Filter = (): JSX.Element => {
     return (
       <>
         {edgeTypes.map((type, i) =>
-          EntityTypeTemplate(
-            '#a9a9a9',
-            type.name,
-            'edge',
-            edgeConditionsRef,
-            updateQuery,
-            i
-          )
+          entityTemplate('#a9a9a9', type.name, 'edge', i)
         )}
       </>
     );
@@ -214,9 +243,11 @@ const Filter = (): JSX.Element => {
         <List style={{ maxHeight: '94%', width: 320, overflow: 'auto' }}>
           <TabPanel value={tabIndex} index={0}>
             {nodes}
+            <MaxEntitiesSlider entities="nodes" />
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
             {edges}
+            <MaxEntitiesSlider entities="edges" />
           </TabPanel>
         </List>
       </Drawer>
