@@ -18,6 +18,8 @@ import SingleValueCachedObservable from '../../utils/SingleValueCachedObservable
 
 const MAX_BATCH_SIZE = 90;
 
+// TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
+/* istanbul ignore next */
 function createBatches(array: number[]) {
   const batches = [];
   for (let i = 0; i < array.length; i += MAX_BATCH_SIZE) {
@@ -26,6 +28,8 @@ function createBatches(array: number[]) {
   return batches;
 }
 
+// TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
+/* istanbul ignore next */
 function buildDetailsRequest(
   idsOrDescriptors: number[] | { id: number }[]
 ): HttpGetRequest {
@@ -41,6 +45,8 @@ type BatchCache<T> = {
   entities: KeyedCacheObservable<T>;
 };
 
+// TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
+/* istanbul ignore next */
 function buildCache<T extends Edge | Node>(
   http: HttpService,
   type: 'Nodes' | 'Edges'
@@ -93,6 +99,8 @@ export default class QueryServiceImpl extends QueryService {
     return this.http.post<QueryResult>(url, query, cancellation);
   }
 
+  // TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
+  /* istanbul ignore next */
   public async getEdgesById(
     idsOrDescriptors: number[] | EdgeDescriptor[],
     cancellation?: CancellationToken
@@ -100,6 +108,8 @@ export default class QueryServiceImpl extends QueryService {
     return this.getEntitiesById(this.edgesById, idsOrDescriptors, cancellation);
   }
 
+  // TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
+  /* istanbul ignore next */
   public async getNodesById(
     idsOrDescriptors: number[] | NodeDescriptor[],
     cancellation?: CancellationToken
@@ -107,7 +117,9 @@ export default class QueryServiceImpl extends QueryService {
     return this.getEntitiesById(this.nodesById, idsOrDescriptors, cancellation);
   }
 
-  getEntitiesById<T = Node | Edge>(
+  // TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
+  /* istanbul ignore next */
+  private getEntitiesById<T = Node | Edge>(
     entitiesById: BatchCache<T>,
     idsOrDescriptors: number[] | NodeDescriptor[],
     cancellation?: CancellationToken

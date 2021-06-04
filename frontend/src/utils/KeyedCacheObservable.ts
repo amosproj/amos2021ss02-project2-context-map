@@ -1,3 +1,6 @@
+// TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
+/* istanbul ignore file */
+
 import { Observable, OperatorFunction } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LRUMap } from 'lru_map';
