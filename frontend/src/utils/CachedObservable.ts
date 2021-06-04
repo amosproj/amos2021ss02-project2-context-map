@@ -1,6 +1,7 @@
+/* istanbul ignore file */
+
 import {
   defer,
-  firstValueFrom,
   Observable,
   ObservableNotification,
   OperatorFunction,
@@ -15,8 +16,6 @@ import {
   shareReplay,
   startWith,
 } from 'rxjs/operators';
-import { CancellationToken } from './CancellationToken';
-import withCancellation from './withCancellation';
 
 /**
  * LoadingNotification like {@link ObservableNotification}.
@@ -42,19 +41,18 @@ export function isObservableNotification<T>(
 }
 
 /**
- * TODO Change Comment since implementation has changed
  * Observable with a cache.
  * The source observable is only subscribed to after this observable
  * is subscribed to (lazy evaluation).
- * The cached value is the first value emitted from the given source observable.
+ * The cached value is depends on the implementation.
  * If an error happens, the error is forwarded to all active subscribers.
  * The source action is automatically restarted after an error when a new
  * subscription is made.
  */
-export default abstract class CachedObservable<IN, OUT> {
+export default abstract class CachedObservable<In, Out> {
   /**
    * Empty subject. Emits value when a new subscription is made.
-   * @see pipe
+   * @see get
    * @private
    */
   private readonly newSubscriptionIncoming = new Subject<void>();
@@ -63,14 +61,19 @@ export default abstract class CachedObservable<IN, OUT> {
    * The main source observable with materialized state.
    * @private
    */
-  private readonly observable: Observable<ExtendedObservableNotification<OUT>>;
+  private readonly observable: Observable<ExtendedObservableNotification<Out>>;
 
   /**
    * @see {@link CachedObservable}
-   * @param source Observable or Promise-Factory
+   * @param source Observable or Promise-Factory (latter ensures a lazy start
+   * of the promise, i.e. at the first subscription)
    */
-  constructor(source: Observable<IN> | (() => Promise<IN>)) {
+  constructor(source: Observable<In> | (() => Promise<In>)) {
     if (typeof source === 'function') {
+      // Defer is used here to delay the creation of the promise.
+      // The Promise is created at the first subscription.
+      // For observables this delay is not required since it's the
+      // default behaviour.
       // eslint-disable-next-line no-param-reassign
       source = defer(source);
     }
@@ -97,8 +100,8 @@ export default abstract class CachedObservable<IN, OUT> {
    * @protected
    */
   protected abstract onNewValue(): OperatorFunction<
-    ExtendedObservableNotification<IN>,
-    ExtendedObservableNotification<OUT>
+    ExtendedObservableNotification<In>,
+    ExtendedObservableNotification<Out>
   >;
 
   /**
@@ -106,7 +109,10 @@ export default abstract class CachedObservable<IN, OUT> {
    * If the last emitted value was an error, it automatically restarts
    * the pipeline.
    */
-  public pipe(): Observable<OUT> {
+  public get(): Observable<Out> {
+    // Defer is used here to delay the call `this.newSubscriptionIncoming.next()`.
+    // That ensures that the cache is properly retried if it's subscribed to
+    // after an error.
     return defer(() => {
       // This code is called when a new subscription is made
 
@@ -118,12 +124,5 @@ export default abstract class CachedObservable<IN, OUT> {
         dematerialize()
       );
     });
-  }
-
-  /**
-   * Returns a cancellable Promise from that observable
-   */
-  public asPromise(cancellation?: CancellationToken): Promise<OUT> {
-    return withCancellation(firstValueFrom(this.pipe()), cancellation);
   }
 }

@@ -1,11 +1,13 @@
 import { injectable, inject } from 'inversify';
 import 'reflect-metadata';
+import { firstValueFrom } from 'rxjs';
 import { EdgeTypeFilterModel, NodeTypeFilterModel } from '../../shared/filter';
 import { FilterQuery, QueryResult } from '../../shared/queries';
 import { CancellationToken } from '../../utils/CancellationToken';
 import HttpService, { HttpGetRequest } from '../http';
 import FilterService from './FilterService';
-import SimpleCachedObservable from '../../utils/SimpleCachedObservable';
+import SingleValueCachedObservable from '../../utils/SingleValueCachedObservable';
+import withCancellation from '../../utils/withCancellation';
 
 function buildRequest(type: string): HttpGetRequest {
   return new HttpGetRequest({}, { type });
@@ -18,8 +20,8 @@ export default class FilterServiceImpl implements FilterService {
    * @private
    */
   private readonly cache = {
-    edges: new Map<string, SimpleCachedObservable<EdgeTypeFilterModel>>(),
-    nodes: new Map<string, SimpleCachedObservable<NodeTypeFilterModel>>(),
+    edges: new Map<string, SingleValueCachedObservable<EdgeTypeFilterModel>>(),
+    nodes: new Map<string, SingleValueCachedObservable<NodeTypeFilterModel>>(),
   };
 
   constructor(
@@ -45,17 +47,16 @@ export default class FilterServiceImpl implements FilterService {
     let cachedValue = this.cache.nodes.get(type);
 
     if (cachedValue == null) {
-      cachedValue = new SimpleCachedObservable(() =>
+      cachedValue = new SingleValueCachedObservable(() =>
         this.http.get<NodeTypeFilterModel>(
           '/api/filter/node-type',
-          buildRequest(type),
-          cancellation
+          buildRequest(type)
         )
       );
       this.cache.nodes.set(type, cachedValue);
     }
 
-    return cachedValue.asPromise(cancellation);
+    return withCancellation(firstValueFrom(cachedValue.get()), cancellation);
   }
 
   public getEdgeTypeFilterModel(
@@ -65,16 +66,15 @@ export default class FilterServiceImpl implements FilterService {
     let cachedValue = this.cache.edges.get(type);
 
     if (cachedValue == null) {
-      cachedValue = new SimpleCachedObservable(() =>
+      cachedValue = new SingleValueCachedObservable(() =>
         this.http.get<EdgeTypeFilterModel>(
           '/api/filter/edge-type',
-          buildRequest(type),
-          cancellation
+          buildRequest(type)
         )
       );
       this.cache.edges.set(type, cachedValue);
     }
 
-    return cachedValue.asPromise(cancellation);
+    return withCancellation(firstValueFrom(cachedValue.get()), cancellation);
   }
 }

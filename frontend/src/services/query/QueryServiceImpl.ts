@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
 import { firstValueFrom, from, of, ReplaySubject, Subject } from 'rxjs';
-import { filter, map, mergeMap, startWith } from 'rxjs/operators';
+import { filter, map, mergeMap, startWith, tap } from 'rxjs/operators';
 import { CountQueryResult, QueryBase, QueryResult } from '../../shared/queries';
 import {
   Edge,
@@ -12,13 +12,13 @@ import {
 import { CancellationToken } from '../../utils/CancellationToken';
 import HttpService, { HttpGetRequest } from '../http';
 import QueryService from './QueryService';
-import CachedMergeObservable from '../../utils/CachedMergeObservable';
+import KeyedCacheObservable from '../../utils/KeyedCacheObservable';
 import withCancellation from '../../utils/withCancellation';
-import SimpleCachedObservable from '../../utils/SimpleCachedObservable';
+import SingleValueCachedObservable from '../../utils/SingleValueCachedObservable';
 
 const MAX_BATCH_SIZE = 90;
 
-function createBatches(array: number[] | NodeDescriptor[]) {
+function createBatches(array: number[]) {
   const batches = [];
   for (let i = 0; i < array.length; i += MAX_BATCH_SIZE) {
     batches.push(array.slice(i, i + MAX_BATCH_SIZE));
@@ -38,7 +38,7 @@ function buildDetailsRequest(
 
 type BatchCache<T> = {
   batches: Subject<number[]>;
-  entities: CachedMergeObservable<T>;
+  entities: KeyedCacheObservable<T>;
 };
 
 function buildCache<T extends Edge | Node>(
@@ -46,7 +46,7 @@ function buildCache<T extends Edge | Node>(
   type: 'Nodes' | 'Edges'
 ): BatchCache<T> {
   const batches = new ReplaySubject<number[]>();
-  const entities = new CachedMergeObservable<T>(
+  const entities = new KeyedCacheObservable<T>(
     (node) => node.id,
     batches.pipe(
       startWith([]),
@@ -68,8 +68,8 @@ function buildCache<T extends Edge | Node>(
  */
 @injectable()
 export default class QueryServiceImpl extends QueryService {
-  private readonly numberOfEntities: SimpleCachedObservable<CountQueryResult> =
-    new SimpleCachedObservable(() =>
+  private readonly numberOfEntities: SingleValueCachedObservable<CountQueryResult> =
+    new SingleValueCachedObservable<CountQueryResult>(() =>
       this.http.get<CountQueryResult>('/api/getNumberOfEntities')
     );
 
@@ -93,57 +93,70 @@ export default class QueryServiceImpl extends QueryService {
     return this.http.post<QueryResult>(url, query, cancellation);
   }
 
-  // TODO: Cache entity details: https://github.com/amosproj/amos-ss2021-project2-context-map/issues/62
-
   public async getEdgesById(
     idsOrDescriptors: number[] | EdgeDescriptor[],
     cancellation?: CancellationToken
   ): Promise<Edge[]> {
-    const cachedIds = this.edgesById.entities.getState();
-    const ids = idsOrDescriptors
-      .map((idOrDescriptor: number | { id: number }) =>
-        typeof idOrDescriptor === 'number' ? idOrDescriptor : idOrDescriptor.id
-      )
-      .filter((id) => cachedIds[id] === undefined);
-
-    const batches = createBatches(ids) as number[][];
-    for (const batch of batches) {
-      this.edgesById.batches.next(batch);
-    }
-
-    return withCancellation(
-      firstValueFrom(
-        this.edgesById.entities.pipe().pipe(
-          filter((cache) => ids.every((id) => cache[id] != null)),
-          map((x) => Object.values(x))
-        )
-      ),
-      cancellation
-    );
+    return this.getEntitiesById(this.edgesById, idsOrDescriptors, cancellation);
   }
 
   public async getNodesById(
     idsOrDescriptors: number[] | NodeDescriptor[],
     cancellation?: CancellationToken
   ): Promise<Node[]> {
-    const cachedIds = this.nodesById.entities.getState();
-    const ids = idsOrDescriptors
-      .map((idOrDescriptor: number | { id: number }) =>
-        typeof idOrDescriptor === 'number' ? idOrDescriptor : idOrDescriptor.id
-      )
-      .filter((id) => cachedIds[id] === undefined);
+    return this.getEntitiesById(this.nodesById, idsOrDescriptors, cancellation);
+  }
 
-    const batches = createBatches(ids) as number[][];
+  getEntitiesById<T = Node | Edge>(
+    entitiesById: BatchCache<T>,
+    idsOrDescriptors: number[] | NodeDescriptor[],
+    cancellation?: CancellationToken
+  ): Promise<T[]> {
+    const cache = entitiesById.entities.getState();
+
+    // Ids as number.
+    const ids = idsOrDescriptors.map(
+      (idOrDescriptor: number | { id: number }) =>
+        typeof idOrDescriptor === 'number' ? idOrDescriptor : idOrDescriptor.id
+    );
+    // Already cached values.
+    // Stored here since they might get removed from the cache during the async operation.
+    const foundValues = ids
+      .filter((id) => cache.has(id))
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- nullcheck done in line before
+      .map((id) => cache.get(id)!);
+    // Values not in cache.
+    let missingIds: number[] = ids.filter((id) => !cache.has(id));
+
+    // https://github.com/amosproj/amos-ss2021-project2-context-map/issues/170
+    const batches = createBatches(missingIds);
     for (const batch of batches) {
-      this.nodesById.batches.next(batch);
+      // Initializes requests.
+      entitiesById.batches.next(batch);
     }
 
     return withCancellation(
       firstValueFrom(
-        this.nodesById.entities.pipe().pipe(
-          filter((cache) => ids.every((id) => cache[id] != null)),
-          map((x) => Object.values(x))
-          // timeout(5000)
+        entitiesById.entities.get().pipe(
+          // Called on each new state of the cache.
+          // Puts the found values in `foundValues` and removes them from `missingIds`.
+          tap((newCache) => {
+            missingIds = missingIds.reduce((stillMissing, id) => {
+              if (newCache.has(id)) {
+                // If missing item was found => put them in `foundValues`
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                foundValues.push(newCache.get(id)!);
+              } else {
+                // If missing item is not found => mark them as still missing.
+                stillMissing.push(id);
+              }
+              return stillMissing;
+            }, [] as number[]);
+          }),
+          // Only continue if all missing values are found
+          filter(() => missingIds.length === 0),
+          // Return the found values.
+          map(() => foundValues)
         )
       ),
       cancellation
@@ -153,6 +166,9 @@ export default class QueryServiceImpl extends QueryService {
   getNumberOfEntities(
     cancellation?: CancellationToken
   ): Promise<CountQueryResult> {
-    return this.numberOfEntities.asPromise(cancellation);
+    return withCancellation(
+      firstValueFrom(this.numberOfEntities.get()),
+      cancellation
+    );
   }
 }

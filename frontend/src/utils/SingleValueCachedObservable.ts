@@ -5,9 +5,17 @@ import CachedObservable, {
 } from './CachedObservable';
 
 /**
- * TODO Comment
+ * The cached value is the first value emitted from the given source observable.
+ * @see CachedObservable
  */
-export default class SimpleCachedObservable<T> extends CachedObservable<T, T> {
+export default class SingleValueCachedObservable<T> extends CachedObservable<
+  T,
+  T
+> {
+  /**
+   * Stops the pipeline after the first successful value comes in.
+   * @inheritDoc
+   */
   protected onNewValue(): OperatorFunction<
     ExtendedObservableNotification<T>,
     ExtendedObservableNotification<T>
