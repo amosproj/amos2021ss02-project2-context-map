@@ -13,7 +13,7 @@ const testScheduler = () =>
     expect(actual).deep.equal(expected);
   });
 
-context('NodeColorStore', () => {
+context('withErrorHandler', () => {
   let errorStore: ErrorStore;
 
   beforeEach(() => {
