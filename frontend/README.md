@@ -20,10 +20,11 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Testing
+1. start react with `yarn run start:forTests` in package.json.
+2. open cypress with `yarn run cy:open:e2e` or `yarn run cy:run:e2e`.
+3. if `yarn run cy:open:e2e` was used, start all tests manually.
+4. print testing-coverage with `yarn run coverage:print`.
 
 ### `yarn run build`
 
