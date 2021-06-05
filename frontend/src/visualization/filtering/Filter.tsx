@@ -9,18 +9,26 @@ import {
   Tabs,
   Typography,
 } from '@material-ui/core';
-import React from 'react';
+import React, { useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { tap } from 'rxjs/operators';
+import { forkJoin, from } from 'rxjs';
 import useService from '../../dependency-injection/useService';
-import { CancellationToken } from '../../utils/CancellationToken';
-import fetchDataFromService from '../shared-ops/fetchDataFromService';
 import entityColors from '../data/GraphData';
 import { SchemaService } from '../../services/schema';
 import MaxEntitiesSlider from './MaxEntitiesSlider';
 import { EdgeType, NodeType } from '../../shared/schema';
 import EntityTypeTemplate from './helpers/EntityTypeTemplate';
+import FilterStateStore, {
+  FilterLineState,
+} from '../../stores/FilterStateStore';
+import useObservable from '../../utils/useObservable';
+import withLoadingBar from '../../utils/withLoadingBar';
+import withErrorHandler from '../../utils/withErrorHandler';
+import LoadingStore from '../../stores/LoadingStore';
+import ErrorStore from '../../stores/ErrorStore';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -62,74 +70,75 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-/**
- * Fetches nodeTypes from the schemaService.
- *
- * @param schemaService - the schemaService the data is fetched from
- * @param cancellation - the cancellation token
- */
-function fetchNodeTypes(
-  schemaService: SchemaService,
-  cancellation: CancellationToken
-): Promise<NodeType[]> {
-  return schemaService.getNodeTypes(cancellation);
-}
-
-/**
- * Fetches edgeTypes from the schemaService.
- *
- * @param schemaService - the schemaService the data is fetched from
- * @param cancellation - the cancellation token
- */
-function fetchEdgeTypes(
-  schemaService: SchemaService,
-  cancellation: CancellationToken
-): Promise<EdgeType[]> {
-  return schemaService.getEdgeTypes(cancellation);
-}
-
 const Filter = (): JSX.Element => {
   // hooks
   const classes = useStyles();
   const [tabIndex, setTabIndex] = React.useState(0);
   const [open, setOpen] = React.useState(false);
 
+  const filterStateStore = useService<FilterStateStore>(FilterStateStore);
+
   const schemaService = useService(SchemaService, null);
 
-  function renderNodes(nodeTypes: NodeType[]): JSX.Element {
-    return (
-      <>
-        {nodeTypes.map((type, i) =>
-          EntityTypeTemplate(
-            entityColors[i % entityColors.length],
-            type.name,
-            'node'
-          )
-        )}
-      </>
-    );
-  }
+  const [schema, setSchema] = useState<{
+    nodes: NodeType[];
+    edges: EdgeType[];
+  }>({ nodes: [], edges: [] });
 
-  function renderEdges(edgeTypes: EdgeType[]): JSX.Element {
-    return (
-      <>
-        {edgeTypes.map((type) =>
-          EntityTypeTemplate('#a9a9a9', type.name, 'edge')
-        )}
-      </>
-    );
-  }
+  const loadingStore = useService<LoadingStore>(LoadingStore);
+  const errorStore = useService<ErrorStore>(ErrorStore);
 
-  const nodes = fetchDataFromService(
-    fetchNodeTypes,
-    renderNodes,
-    schemaService
+  useObservable(
+    forkJoin([
+      from(schemaService.getNodeTypes()),
+      from(schemaService.getEdgeTypes()),
+    ]).pipe(
+      withLoadingBar({ loadingStore }),
+      withErrorHandler({ rethrow: true, errorStore }),
+      tap((schemaFromService) => {
+        setSchema({ nodes: schemaFromService[0], edges: schemaFromService[1] });
+      })
+    )
   );
 
-  const edges = fetchDataFromService(
-    fetchEdgeTypes,
-    renderEdges,
-    schemaService
+  const nodeLineStates: FilterLineState[] = [];
+  const edgeLineStates: FilterLineState[] = [];
+
+  for (const nodeTypes of schema.nodes) {
+    nodeLineStates.push({
+      type: nodeTypes.name,
+      isActive: false,
+      propertyFilters: [],
+    });
+  }
+
+  for (const edgeTypes of schema.edges) {
+    edgeLineStates.push({
+      type: edgeTypes.name,
+      isActive: false,
+      propertyFilters: [],
+    });
+  }
+
+  filterStateStore.mergeState({ nodes: nodeLineStates, edges: edgeLineStates });
+
+  const nodes = (
+    <>
+      {schema.nodes.map((type, i) =>
+        EntityTypeTemplate(
+          entityColors[i % entityColors.length],
+          type.name,
+          'node'
+        )
+      )}
+    </>
+  );
+  const edges = (
+    <>
+      {schema.edges.map((type) =>
+        EntityTypeTemplate('#a9a9a9', type.name, 'edge')
+      )}
+    </>
   );
 
   const handleChange = (

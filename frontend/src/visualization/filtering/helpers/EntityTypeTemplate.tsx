@@ -4,12 +4,12 @@ import FilterEntityType from '../FilterEntityType';
 
 const EntityTypeTemplate = (
   color: string,
-  name: string,
+  type: string,
   entity: 'node' | 'edge'
 ): JSX.Element => (
   <div>
     <Box display="flex" p={1}>
-      <FilterEntityType backgroundColor={color} name={name} entity={entity} />
+      <FilterEntityType backgroundColor={color} type={type} entity={entity} />
     </Box>
   </div>
 );
