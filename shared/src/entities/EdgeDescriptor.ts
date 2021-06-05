@@ -3,6 +3,7 @@
  */
 export interface EdgeDescriptor {
   id: number;
+  type: string;
   /**
    * ID of the start node
    */

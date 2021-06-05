@@ -31,7 +31,6 @@ export class AppService {
           ? []
           : await this.queryEdges(query?.limits?.edges),
     };
-
     return consolidateQueryResult(queryResult);
   }
 

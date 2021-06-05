@@ -12,10 +12,14 @@ export const queryAllDummies: {
 } = {
   query: { limits: { nodes: 3, edges: 4 } },
   queryResult: {
-    nodes: [{ id: 0 }, { id: 1 }, { id: 2 }],
+    nodes: [
+      { id: 0, types: ['Person'] },
+      { id: 1, types: ['Person'] },
+      { id: 2, types: ['Person'] },
+    ],
     edges: [
-      { id: 0, from: 1, to: 0 },
-      { id: 1, from: 2, to: 0 },
+      { id: 0, type: 'ACTED_IN', from: 1, to: 0 },
+      { id: 1, type: 'ACTED_IN', from: 2, to: 0 },
     ],
   },
 };
@@ -24,11 +28,16 @@ export const queryAllNoLimitDummies: {
   queryResult: QueryResult;
 } = {
   queryResult: {
-    nodes: [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
+    nodes: [
+      { id: 0, types: ['Person'] },
+      { id: 1, types: ['Person'] },
+      { id: 2, types: ['Person'] },
+      { id: 3, types: ['Person'] },
+    ],
     edges: [
-      { id: 0, from: 1, to: 0 },
-      { id: 1, from: 2, to: 0 },
-      { id: 2, from: 3, to: 0 },
+      { id: 0, type: 'ACTED_IN', from: 1, to: 0 },
+      { id: 1, type: 'ACTED_IN', from: 2, to: 0 },
+      { id: 2, type: 'ACTED_IN', from: 3, to: 0 },
     ],
   },
 };
