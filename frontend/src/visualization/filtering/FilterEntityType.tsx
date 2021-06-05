@@ -74,11 +74,11 @@ function fetchEdgeTypeFilterModel(
 
 const FilterEntityType = (props: {
   backgroundColor: string;
-  name: string;
+  type: string;
   entity: 'node' | 'edge';
 }): JSX.Element => {
   const classes = useStyles();
-  const { backgroundColor, name, entity } = props;
+  const { backgroundColor, type, entity } = props;
 
   // Indicates if filter-dialog is opened.
   const [filterOpen, setFilterOpen] = React.useState(false);
@@ -88,10 +88,11 @@ const FilterEntityType = (props: {
   const filterService = useService(FilterService, null);
 
   const [filterQuery, setFilterQuery] = useState<FilterQuery>({});
-  const filterStore = useService<FilterQueryStore>(FilterQueryStore);
+
+  const filterQueryStore = useService<FilterQueryStore>(FilterQueryStore);
 
   useObservable(
-    filterStore.getState().pipe(
+    filterQueryStore.getState().pipe(
       tap((filterQueryFromStore: FilterQuery) => {
         setFilterQuery(filterQueryFromStore);
       })
@@ -100,7 +101,7 @@ const FilterEntityType = (props: {
 
   // TODO: Rename
   function updateFilterQuery(): void {
-    const ofTypeCondition = OfTypeCondition(name);
+    const ofTypeCondition = OfTypeCondition(type);
     const propertiesCondition: FilterCondition | undefined =
       entity === 'node'
         ? filterQuery.filters?.nodes
@@ -110,7 +111,7 @@ const FilterEntityType = (props: {
       ? MatchAllCondition(ofTypeCondition, propertiesCondition)
       : ofTypeCondition;
 
-    filterStore.mergeState(
+    filterQueryStore.mergeState(
       addToFilterQuery(conditionToAdd, filterQuery, entity, 'any')
     );
   }
@@ -136,6 +137,7 @@ const FilterEntityType = (props: {
 
       updateFilterQuery();
       updateBoxShadow();
+      filterQueryStore.toggleUpdate();
     };
 
     const filterModelEntries = model.properties;
@@ -149,7 +151,7 @@ const FilterEntityType = (props: {
           disableRipple
           className={classes.root}
         >
-          {name}
+          {type}
         </Button>
         <IconButton component="span" className="FilterButton">
           <TuneIcon onClick={handleOpenFilter} />
@@ -161,6 +163,7 @@ const FilterEntityType = (props: {
           filterOpen={filterOpen}
           handleCloseFilter={handleCloseFilter}
           filterModelEntries={filterModelEntries}
+          filterLineType={type}
           entity={entity}
         />
       </div>
@@ -171,7 +174,7 @@ const FilterEntityType = (props: {
     entity === 'node' ? fetchNodeTypeFilterModel : fetchEdgeTypeFilterModel,
     renderContent,
     filterService,
-    name
+    type
   );
 };
 

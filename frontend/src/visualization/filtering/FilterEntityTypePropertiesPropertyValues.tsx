@@ -8,7 +8,9 @@ import {
   Select,
 } from '@material-ui/core';
 import React from 'react';
-import FilterPropertyModel from './helpers/FilterPropertyModel';
+import useService from '../../dependency-injection/useService';
+import FilterStateStore from '../../stores/FilterStateStore';
+import { FilterModelEntry } from '../../shared/filter';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -19,11 +21,15 @@ const useStyles = makeStyles(() =>
 );
 
 const FilterEntityTypePropertiesPropertyValues = (props: {
-  property: FilterPropertyModel;
-  setProperty: React.Dispatch<React.SetStateAction<FilterPropertyModel>>;
+  filterModelEntry: FilterModelEntry;
+  filterLineType: string;
+  entity: 'node' | 'edge';
 }): JSX.Element => {
   const classes = useStyles();
-  const { property, setProperty } = props;
+  const { filterModelEntry, filterLineType, entity } = props;
+
+  const [selectedValues, setSelectedValues] = React.useState<string[]>([]);
+  const filterStateStore = useService<FilterStateStore>(FilterStateStore);
 
   // utils from material ui multiselect https://material-ui.com/components/selects/#select
   const ITEM_HEIGHT = 48;
@@ -49,30 +55,36 @@ const FilterEntityTypePropertiesPropertyValues = (props: {
   const theme = useTheme();
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setProperty({
-      ...property,
-      selectedValues: event.target.value as string[],
-    });
+    setSelectedValues(event.target.value as string[]);
+
+    filterStateStore.addFilterPropertyState(
+      {
+        name: filterModelEntry.key,
+        values: selectedValues,
+      },
+      filterLineType,
+      entity
+    );
   };
 
   return (
     <div className="FilterSelect">
       <FormControl className={classes.select}>
-        <InputLabel>{property.key}</InputLabel>
+        <InputLabel>{filterModelEntry.key}</InputLabel>
         <Select
           multiple
-          value={(property.selectedValues ?? []) as string[]}
+          value={(selectedValues ?? []) as string[]}
           onChange={handleChange}
           input={<Input />}
           MenuProps={MenuProps}
         >
-          {property.values.map((name) => (
+          {filterModelEntry.values.map((name) => (
             <MenuItem
               key={typeof name === 'string' ? name : 'Error: No string'}
               value={typeof name === 'string' ? name : 'Error: No string'}
               style={getStyles(
                 typeof name === 'string' ? name : 'Error: No string',
-                property.values as string[],
+                filterModelEntry.values as string[],
                 theme
               )}
             >

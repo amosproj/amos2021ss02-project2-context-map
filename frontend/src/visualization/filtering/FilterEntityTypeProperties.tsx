@@ -1,5 +1,5 @@
 import Button from '@material-ui/core/Button';
-import React, { useState } from 'react';
+import React from 'react';
 import {
   createStyles,
   Dialog,
@@ -9,22 +9,8 @@ import {
   FormControl,
 } from '@material-ui/core';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import { tap } from 'rxjs/operators';
 import FilterEntityTypePropertiesPropertyValues from './FilterEntityTypePropertiesPropertyValues';
 import { FilterModelEntry } from '../../shared/filter';
-import {
-  FilterCondition,
-  FilterQuery,
-  MatchAllCondition,
-  MatchAnyCondition,
-  MatchPropertyCondition,
-} from '../../shared/queries';
-import useArrayState from './helpers/useArrayState';
-import FilterPropertyModel from './helpers/FilterPropertyModel';
-import useService from '../../dependency-injection/useService';
-import FilterQueryStore from '../../stores/FilterQueryStore';
-import useObservable from '../../utils/useObservable';
-import addToFilterQuery from '../shared-ops/addToFilterQuery';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,73 +30,28 @@ const FilterEntityTypeProperties = (props: {
   filterOpen: boolean;
   handleCloseFilter: () => void;
   filterModelEntries: FilterModelEntry[];
+  filterLineType: string;
   entity: 'node' | 'edge';
 }): JSX.Element => {
   const classes = useStyles();
 
-  const { filterOpen, handleCloseFilter, filterModelEntries, entity } = props;
+  const {
+    filterOpen,
+    handleCloseFilter,
+    filterModelEntries,
+    filterLineType,
+    entity,
+  } = props;
 
-  const [properties, setProperties] = useArrayState<FilterPropertyModel>(
-    filterModelEntries.map(
-      (entry) => ({ ...entry, selectedValues: null } as FilterPropertyModel)
-    )
-  );
-
-  const [filterQuery, setFilterQuery] = useState<FilterQuery>({});
-  const filterStore = useService<FilterQueryStore>(FilterQueryStore);
-
-  useObservable(
-    filterStore.getState().pipe(
-      tap((filterQueryFromStore: FilterQuery) => {
-        setFilterQuery(filterQueryFromStore);
-      })
-    )
-  );
-
-  const entitySelects = properties.map((property, index) => (
+  const entitySelects = filterModelEntries.map((entry) => (
     <FilterEntityTypePropertiesPropertyValues
-      property={property}
-      setProperty={setProperties[index]}
+      filterModelEntry={entry}
+      filterLineType={filterLineType}
+      entity={entity}
     />
   ));
 
   const handleApplyFilter = () => {
-    const filterConditions: FilterCondition[] = [];
-
-    for (const entry of properties) {
-      // There is a filter specified for the property
-      if (entry.selectedValues !== null && entry.selectedValues.length > 0) {
-        // If only a single value is specified in the filter, add this directly
-        // Example: name=Peter
-        if (entry.selectedValues.length === 1) {
-          filterConditions.push(
-            MatchPropertyCondition(entry.key, entry.selectedValues[0])
-          );
-        } else {
-          // There are multiple alternative filters specified for the property
-          // Example: name=Peter|William|Chris
-          // Combine these via MatchAny conditions.
-          filterConditions.push(
-            MatchAnyCondition(
-              ...entry.selectedValues.map((value) =>
-                MatchPropertyCondition(entry.key, value)
-              )
-            )
-          );
-        }
-      }
-    }
-
-    if (filterConditions.length > 0) {
-      filterStore.mergeState(
-        addToFilterQuery(
-          MatchAllCondition(...filterConditions),
-          filterQuery,
-          entity,
-          'any'
-        )
-      );
-    }
     handleCloseFilter();
   };
 
