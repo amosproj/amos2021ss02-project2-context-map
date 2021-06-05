@@ -20,6 +20,7 @@ import FilterStateStore, {
  */
 @injectable()
 export default class FilterQueryStore extends SimpleStore<FilterQuery> {
+  private update = false;
   private filterStateStoreSubscription?: Subscription;
 
   @inject(FilterStateStore)
@@ -39,9 +40,8 @@ export default class FilterQueryStore extends SimpleStore<FilterQuery> {
     return super.getState();
   }
 
-  update(): Observable<FilterQuery> {
-    this.filterStateStoreSubscription = this.subscribeToFilterStateStore();
-    return super.getState();
+  toggleUpdate(): void {
+    this.update = !this.update;
   }
 
   /**
@@ -54,8 +54,11 @@ export default class FilterQueryStore extends SimpleStore<FilterQuery> {
     // If the filter changes, the graph state will be updated automatically
     return this.filterStateStore.getState().subscribe({
       next: (filter) => {
-        const filterQuery = this.convertToFilterQuery(filter);
-        this.setState(filterQuery);
+        if (this.update) {
+          const filterQuery = this.convertToFilterQuery(filter);
+          this.setState(filterQuery);
+          this.toggleUpdate();
+        }
       },
     });
   }

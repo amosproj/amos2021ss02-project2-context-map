@@ -10,16 +10,10 @@ import { CancellationToken } from '../../utils/CancellationToken';
 import useService from '../../dependency-injection/useService';
 import { FilterService } from '../../services/filter';
 import fetchDataFromService from '../shared-ops/fetchDataFromService';
-import {
-  FilterCondition,
-  FilterQuery,
-  MatchAllCondition,
-  OfTypeCondition,
-} from '../../shared/queries';
+import { FilterQuery } from '../../shared/queries';
 import { EdgeTypeFilterModel, NodeTypeFilterModel } from '../../shared/filter';
 import useObservable from '../../utils/useObservable';
 import FilterQueryStore from '../../stores/FilterQueryStore';
-import addToFilterQuery from '../shared-ops/addToFilterQuery';
 
 type EntityTypeFilterModel = NodeTypeFilterModel | EdgeTypeFilterModel;
 
@@ -99,23 +93,6 @@ const FilterEntityType = (props: {
     )
   );
 
-  // TODO: Rename
-  function updateFilterQuery(): void {
-    const ofTypeCondition = OfTypeCondition(type);
-    const propertiesCondition: FilterCondition | undefined =
-      entity === 'node'
-        ? filterQuery.filters?.nodes
-        : filterQuery.filters?.edges;
-
-    const conditionToAdd: FilterCondition = propertiesCondition
-      ? MatchAllCondition(ofTypeCondition, propertiesCondition)
-      : ofTypeCondition;
-
-    filterQueryStore.mergeState(
-      addToFilterQuery(conditionToAdd, filterQuery, entity, 'any')
-    );
-  }
-
   function updateBoxShadow() {
     if (isActive.current) {
       setBoxShadow('0 0 0 0.2rem rgba(0,123,255,.5)');
@@ -135,7 +112,6 @@ const FilterEntityType = (props: {
     const handleAddEntity = () => {
       isActive.current = !isActive.current;
 
-      updateFilterQuery();
       updateBoxShadow();
       filterQueryStore.toggleUpdate();
     };
