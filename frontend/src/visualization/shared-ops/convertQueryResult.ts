@@ -2,12 +2,16 @@ import { GraphData } from 'react-graph-vis';
 import * as vis from 'vis-network';
 import { EdgeDescriptor } from '../../shared/entities';
 import { NodeResultDescriptor, QueryResult } from '../../shared/queries';
+import NodeColorStore from '../../stores/colors/NodeColorStore';
+
+const nodeColorStore = new NodeColorStore();
+const colorize = nodeColorStore.getValue();
 
 function convertNode(node: NodeResultDescriptor): vis.Node {
   const result: vis.Node = {
     id: node.id,
     label: node.id.toString(),
-    // Advanced stuff, like styling nodes with different types differently...
+    color: colorize(node.types).toString(),
   };
 
   if (node.subsidiary) {
@@ -22,11 +26,12 @@ function convertNodes(nodes: NodeResultDescriptor[]): vis.Node[] {
 }
 
 function convertEdge(edge: EdgeDescriptor): vis.Edge {
+  const type = [edge.type];
   return {
     id: edge.id,
     from: edge.from,
     to: edge.to,
-    // Advanced stuff, like styling edges with different types differently...
+    color: colorize(type).toString(),
   };
 }
 
