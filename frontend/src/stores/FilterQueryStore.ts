@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import {
   FilterCondition,
   FilterQuery,
@@ -20,9 +20,6 @@ import FilterStateStore, {
  */
 @injectable()
 export default class FilterQueryStore extends SimpleStore<FilterQuery> {
-  private update = false;
-  private filterStateStoreSubscription?: Subscription;
-
   @inject(FilterStateStore)
   private readonly filterStateStore!: FilterStateStore;
 
@@ -33,34 +30,13 @@ export default class FilterQueryStore extends SimpleStore<FilterQuery> {
   }
 
   getState(): Observable<FilterQuery> {
-    if (this.filterStateStoreSubscription == null) {
-      // If it's called the first time => subscribe to the filterStateStore
-      this.filterStateStoreSubscription = this.subscribeToFilterStateStore();
-    }
     return super.getState();
   }
 
-  toggleUpdate(): void {
-    this.update = !this.update;
-  }
-
-  /**
-   * Subscribes to the state of the {@link filterStateStore} so that the state
-   * of this store is updated when the {@link filterStateStore} updates.
-   * @returns subscription of the {@link filterStateStore} state
-   * @private
-   */
-  private subscribeToFilterStateStore(): Subscription {
-    // If the filter changes, the graph state will be updated automatically
-    return this.filterStateStore.getState().subscribe({
-      next: (filter) => {
-        if (this.update) {
-          const filterQuery = this.convertToFilterQuery(filter);
-          this.setState(filterQuery);
-          this.toggleUpdate();
-        }
-      },
-    });
+  update(): void {
+    const filter = this.filterStateStore.getValue();
+    const filterQuery = this.convertToFilterQuery(filter);
+    this.setState(filterQuery);
   }
 
   /**

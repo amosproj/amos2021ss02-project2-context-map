@@ -23,6 +23,20 @@ export default class FilterStateStore extends SimpleStore<FilterState> {
     return { edges: [], nodes: [] };
   }
 
+  public toggleFilterLineActive(
+    filterLineType: string,
+    entity: 'node' | 'edge'
+  ): void {
+    const line: FilterLineState | undefined = this.searchForLine(
+      filterLineType,
+      entity
+    );
+
+    if (line) {
+      line.isActive = !line.isActive;
+    }
+  }
+
   public addFilterPropertyState(
     stateToAdd: FilterPropertyState,
     filterLineType: string,

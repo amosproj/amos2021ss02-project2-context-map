@@ -14,6 +14,7 @@ import { FilterQuery } from '../../shared/queries';
 import { EdgeTypeFilterModel, NodeTypeFilterModel } from '../../shared/filter';
 import useObservable from '../../utils/useObservable';
 import FilterQueryStore from '../../stores/FilterQueryStore';
+import FilterStateStore from '../../stores/FilterStateStore';
 
 type EntityTypeFilterModel = NodeTypeFilterModel | EdgeTypeFilterModel;
 
@@ -84,6 +85,7 @@ const FilterEntityType = (props: {
   const [filterQuery, setFilterQuery] = useState<FilterQuery>({});
 
   const filterQueryStore = useService<FilterQueryStore>(FilterQueryStore);
+  const filterStateStore = useService<FilterStateStore>(FilterStateStore);
 
   useObservable(
     filterQueryStore.getState().pipe(
@@ -113,7 +115,8 @@ const FilterEntityType = (props: {
       isActive.current = !isActive.current;
 
       updateBoxShadow();
-      filterQueryStore.toggleUpdate();
+      filterStateStore.toggleFilterLineActive(type, entity);
+      filterQueryStore.update();
     };
 
     const filterModelEntries = model.properties;
