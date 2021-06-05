@@ -41,4 +41,16 @@ describe('NodeColorStore', () => {
 
     expect(color1).to.deep.eq(color2);
   });
+
+  it('should not alter the input array', () => {
+    const colorize = nodeColorStore.getValue();
+
+    const arr1 = ['A', 'B'];
+    colorize(arr1);
+    expect(arr1).to.have.ordered.members(['A', 'B']);
+
+    const arr2 = ['D', 'C'];
+    colorize(arr2);
+    expect(arr2).to.have.ordered.members(['D', 'C']);
+  });
 });

@@ -5,6 +5,9 @@ type NodeTypes = Node['types'];
 
 export default class NodeColorStore extends BaseEntityColorStore<NodeTypes> {
   protected getTypeOfEntity(entityTypeId: NodeTypes): string {
-    return entityTypeId.sort((a, b) => a.localeCompare(b)).join(' ');
+    return entityTypeId
+      .map((x) => x)
+      .sort((a, b) => a.localeCompare(b))
+      .join(' ');
   }
 }
