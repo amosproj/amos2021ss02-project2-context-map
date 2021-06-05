@@ -4,8 +4,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { uuid } from 'uuidv4';
 import { tap } from 'rxjs/operators';
 import useService from '../dependency-injection/useService';
-import { useSize } from '../utils/useSize';
-import Filter from './filtering/Filter';
+import { ContainerSize } from '../utils/useSize';
 import useObservable from '../utils/useObservable';
 import QueryResultStore from '../stores/QueryResultStore';
 import convertQueryResult from './shared-ops/convertQueryResult';
@@ -13,33 +12,12 @@ import { QueryResult } from '../shared/queries';
 
 const useStyles = makeStyles(() =>
   createStyles({
-    sizeMeasureContainer: {
-      position: 'absolute',
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-      visibility: 'hidden',
-      pointerEvents: 'none',
-    },
-    graphPage: {
-      position: 'absolute',
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-      display: 'flex',
-    },
     graphContainer: {
       zIndex: 1200,
       position: 'relative',
       flexGrow: 1,
       overflowY: 'hidden',
       overflowX: 'hidden',
-    },
-    Filter: {
-      // high zIndex so content is in the foreground
-      zIndex: 1500,
     },
   })
 );
@@ -65,17 +43,12 @@ function buildOptions(width: number, height: number, layout?: string) {
 
 type GraphProps = {
   layout?: string;
+  containerSize: ContainerSize;
 };
 
 function Graph(props: GraphProps): JSX.Element {
-  const { layout } = props;
+  const { layout, containerSize } = props;
   const classes = useStyles();
-
-  // A React ref to the container that is used to measure the available space for the graph.
-  const sizeMeasureContainerRef = React.useRef<HTMLDivElement>(null);
-
-  // The size of the container that is used to measure the available space for the graph.
-  const containerSize = useSize(sizeMeasureContainerRef);
 
   const graphDataStore = useService<QueryResultStore>(QueryResultStore);
 
@@ -95,26 +68,16 @@ function Graph(props: GraphProps): JSX.Element {
 
   return (
     <>
-      <div
-        // ref sizeMeasureContainerRef to classes.sizeMeasureContainer to compute containerSize.width and containerSize.height
-        className={classes.sizeMeasureContainer}
-        ref={sizeMeasureContainerRef}
-      />
-      <div className={classes.graphPage}>
-        <div className={classes.graphContainer}>
-          <VisGraph
-            graph={graphData}
-            options={buildOptions(
-              containerSize.width,
-              containerSize.height,
-              layout
-            )}
-            key={uuid()}
-          />
-        </div>
-        <div className={classes.Filter}>
-          <Filter />
-        </div>
+      <div className={classes.graphContainer}>
+        <VisGraph
+          graph={graphData}
+          options={buildOptions(
+            containerSize.width,
+            containerSize.height,
+            layout
+          )}
+          key={uuid()}
+        />
       </div>
     </>
   );
