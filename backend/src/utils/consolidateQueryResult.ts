@@ -61,11 +61,6 @@ export function consolidateQueryResult(
     dedupNodes.map((descriptor) => descriptor.id)
   );
 
-  const nodeMap = new Map();
-  for (const node of dedupNodes) {
-    nodeMap.set(node.id, node);
-  }
-
   const subsidiary: NodeResultDescriptor[] = [];
 
   for (let i = dedupEdges.length - 1; i >= 0; i -= 1) {
@@ -76,7 +71,7 @@ export function consolidateQueryResult(
         nodeIds.add(edge.from);
         subsidiary.push({
           id: edge.from,
-          types: nodeMap.get(edge.from).types,
+          types: [], // types of subsidiary nodes are unknown, color is yellow either way
           subsidiary: true,
         });
       }
@@ -85,7 +80,7 @@ export function consolidateQueryResult(
         nodeIds.add(edge.to);
         subsidiary.push({
           id: edge.to,
-          types: nodeMap.get(edge.to).types,
+          types: [], // types of subsidiary nodes are unknown, color is yellow either way
           subsidiary: true,
         });
       }
