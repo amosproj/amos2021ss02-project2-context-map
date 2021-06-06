@@ -22,9 +22,11 @@ import LimitListSizeComponent from './helper/LimitListSizeComponent';
 import { CancellationTokenSource } from '../utils/CancellationToken';
 import CancellationError from '../utils/CancellationError';
 import ErrorComponent from '../errors/ErrorComponent';
+import EntityColorStore from '../stores/colors/EntityColorStore';
 
 export default function Searchbar(): JSX.Element {
   const searchService = useService(SearchService);
+  const entityColorStore = useService(EntityColorStore);
   /**
    * Contains all the active cancel tokens.
    */
@@ -47,6 +49,8 @@ export default function Searchbar(): JSX.Element {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   function loadSearchResults(searchString: string) {
+    const colorize = entityColorStore.getValue();
+
     if (searchString?.length > 0) {
       const cancelToken = new CancellationTokenSource();
       searchServiceCancelTokens.current.push(cancelToken);
@@ -54,7 +58,7 @@ export default function Searchbar(): JSX.Element {
       searchService
         .fullTextSearch(searchString, cancelToken.token)
         .then(async (result) =>
-          convertSearchResultToSearchResultList(searchString, result)
+          convertSearchResultToSearchResultList(searchString, result, colorize)
         )
         .then((result) => {
           setSearchOngoing(false);

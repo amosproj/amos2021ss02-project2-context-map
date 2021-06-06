@@ -7,6 +7,7 @@ import {
 } from '../shared/search';
 import NodeTypeComponent from './helper/NodeTypeComponent';
 import EdgeTypeComponent from './helper/EdgeTypeComponent';
+import { EntityColorizer } from '../stores/colors';
 
 function formatEntry(resultEntry: SearchNodeResult | SearchEdgeResult) {
   let result = `[${resultEntry.id}]`;
@@ -23,7 +24,8 @@ function formatEntry(resultEntry: SearchNodeResult | SearchEdgeResult) {
 
 export default function convertSearchResultToSearchResultList(
   searchString: string,
-  result: SearchResult | undefined
+  result: SearchResult | undefined,
+  colorize: EntityColorizer | undefined
 ): SearchResultList[] {
   /* istanbul ignore if */
   if (result === undefined) {
@@ -39,7 +41,7 @@ export default function convertSearchResultToSearchResultList(
         element: (
           <div>
             {n.types.map((t) => (
-              <NodeTypeComponent name={t} />
+              <NodeTypeComponent name={t} node={n} colorize={colorize} />
             ))}
             &nbsp;
             {formatEntry(n)}
@@ -51,35 +53,35 @@ export default function convertSearchResultToSearchResultList(
     {
       key: 'Edges',
       header: 'Edges',
-      elements: result.edges.map((n) => ({
-        key: n.id,
+      elements: result.edges.map((e) => ({
+        key: e.id,
         element: (
           <div>
-            <EdgeTypeComponent type={n.type} />
-            &nbsp;{formatEntry(n)}
+            <EdgeTypeComponent type={e.type} edge={e} colorize={colorize} />
+            &nbsp;{formatEntry(e)}
           </div>
         ),
-        href: `/data/edge/${n.id}`,
+        href: `/data/edge/${e.id}`,
       })),
     },
-    {
-      key: 'Node Types',
-      header: 'Node Types',
-      elements: result.nodeTypes.map((n) => ({
-        key: n.name,
-        element: <NodeTypeComponent name={n.name} />,
-        href: `/data/node-type/${n.name}`,
-      })),
-    },
-    {
-      key: 'Edge Types',
-      header: 'Edge Types',
-      elements: result.edgeTypes.map((n) => ({
-        key: n.name,
-        element: <EdgeTypeComponent type={n.name} />,
-        href: `/data/edge-type/${n.name}`,
-      })),
-    },
+    // {
+    //   key: 'Node Types',
+    //   header: 'Node Types',
+    //   elements: result.nodeTypes.map((t) => ({
+    //     key: t.name,
+    //     element: <NodeTypeComponent name={t.name} colorize={colorize} />,
+    //     href: `/data/node-type/${t.name}`,
+    //   })),
+    // },
+    // {
+    //   key: 'Edge Types',
+    //   header: 'Edge Types',
+    //   elements: result.edgeTypes.map((n) => ({
+    //     key: n.name,
+    //     element: <EdgeTypeComponent type={n.name} />,
+    //     href: `/data/edge-type/${n.name}`,
+    //   })),
+    // },
   ]
     .filter((e) => e.elements.length > 0)
     .map((x) => ({
