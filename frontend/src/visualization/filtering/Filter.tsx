@@ -70,6 +70,13 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
+/**
+ * The filtering sidebar component used to filter specific elements of the {@link Graph}.
+ * The filter is divided into node and edge types sections. Each entity section consists of
+ * {@link FilterLine}s where the user can further specify which properties the chosen entity
+ * shall have. The properties are managed in {@link FilterLineProperties} and a single Property in
+ * {@link FilterLineProperty}.
+ */
 const Filter = (): JSX.Element => {
   // hooks
   const classes = useStyles();
