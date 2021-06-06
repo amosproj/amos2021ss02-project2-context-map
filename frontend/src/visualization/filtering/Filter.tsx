@@ -9,7 +9,7 @@ import {
   Tabs,
   Typography,
 } from '@material-ui/core';
-import React, { useCallback, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -102,7 +102,7 @@ const Filter = (): JSX.Element => {
   );
 
   // filterStore will only be initialized on the first render
-  useCallback(() => {
+  useEffect(() => {
     const nodeLineStates: FilterLineState[] = [];
     const edgeLineStates: FilterLineState[] = [];
 
@@ -126,7 +126,7 @@ const Filter = (): JSX.Element => {
       nodes: nodeLineStates,
       edges: edgeLineStates,
     });
-  }, []);
+  }, [schema]);
 
   const nodes = (
     <>

@@ -73,12 +73,9 @@ const FilterEntityTypePropertiesPropertyValues = (props: {
 
   const theme = useTheme();
 
-  const handleChange = React.useCallback(
-    (event: React.ChangeEvent<{ value: unknown }>) => {
-      setSelectedValues(event.target.value as string[]);
-    },
-    []
-  );
+  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setSelectedValues(event.target.value as string[]);
+  };
 
   return (
     <div className="FilterSelect">
