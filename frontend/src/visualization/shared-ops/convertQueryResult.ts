@@ -11,7 +11,7 @@ function convertNode(node: NodeResultDescriptor): vis.Node {
   const result: vis.Node = {
     id: node.id,
     label: node.id.toString(),
-    color: colorize(node.types).toString(),
+    color: colorize(node.types).color,
   };
 
   if (node.subsidiary) {
