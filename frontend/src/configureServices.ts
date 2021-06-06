@@ -12,8 +12,7 @@ import QueryResultStore from './stores/QueryResultStore';
 import FilterQueryStore from './stores/FilterQueryStore';
 import ErrorStore from './stores/ErrorStore';
 import LoadingStore from './stores/LoadingStore';
-import NodeColorStore from './stores/colors/NodeColorStore';
-import EdgeColorStore from './stores/colors/EdgeColorStore';
+import EntityColorStore from './stores/colors/EntityColorStore';
 import FilterStateStore from './stores/filterState/FilterStateStore';
 
 /**
@@ -42,6 +41,5 @@ export default function configureServices(container: Container): void {
   container.bind(FilterStateStore).to(FilterStateStore).inSingletonScope();
   container.bind(FilterQueryStore).to(FilterQueryStore).inSingletonScope();
   container.bind(QueryResultStore).to(QueryResultStore).inSingletonScope();
-  container.bind(NodeColorStore).to(NodeColorStore).inSingletonScope();
-  container.bind(EdgeColorStore).to(EdgeColorStore).inSingletonScope();
+  container.bind(EntityColorStore).to(EntityColorStore).inSingletonScope();
 }

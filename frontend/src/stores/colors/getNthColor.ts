@@ -24,7 +24,7 @@ import {
 /**
  * Contains all colors palettes.
  */
-const colorPalettes = [
+export const colorPalettes = [
   amber,
   blue,
   blueGrey,
@@ -61,11 +61,14 @@ export const nAvailableColors = colorPalettes.length * shades.length;
  * @returns color as hex-string (i.e. '#ABCDEF')
  */
 export default function getNthColor(n: number): string {
+  // eslint-disable-next-line no-param-reassign -- make it positive
+  while (n < 0) n += nAvailableColors;
   // eslint-disable-next-line no-param-reassign
   n %= nAvailableColors;
 
   const colorBase = colorPalettes[n % colorPalettes.length];
-  const colorShade = shades[n % shades.length];
+  const colorShade =
+    shades[Math.floor(n / colorPalettes.length) % shades.length];
 
   return colorBase[colorShade];
 }

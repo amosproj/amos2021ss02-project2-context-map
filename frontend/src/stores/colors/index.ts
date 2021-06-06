@@ -1,3 +1,2 @@
-export * from './EdgeColorStore';
-export * from './NodeColorStore';
+export * from './EntityColorStore';
 export * from './EntityVisualisationAttributes';
