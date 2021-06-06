@@ -11,7 +11,7 @@ import useService from '../../dependency-injection/useService';
 import { FilterService } from '../../services/filter';
 import { EdgeTypeFilterModel, NodeTypeFilterModel } from '../../shared/filter';
 import FilterQueryStore from '../../stores/FilterQueryStore';
-import FilterStateStore from '../../stores/FilterStateStore';
+import FilterStateStore from '../../stores/filterState/FilterStateStore';
 import useObservable from '../../utils/useObservable';
 import withLoadingBar from '../../utils/withLoadingBar';
 import withErrorHandler from '../../utils/withErrorHandler';

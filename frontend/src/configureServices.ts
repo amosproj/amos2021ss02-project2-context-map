@@ -14,7 +14,7 @@ import ErrorStore from './stores/ErrorStore';
 import LoadingStore from './stores/LoadingStore';
 import NodeColorStore from './stores/colors/NodeColorStore';
 import EdgeColorStore from './stores/colors/EdgeColorStore';
-import FilterStateStore from './stores/FilterStateStore';
+import FilterStateStore from './stores/filterState/FilterStateStore';
 
 /**
  * Configures all services in the frontend app.

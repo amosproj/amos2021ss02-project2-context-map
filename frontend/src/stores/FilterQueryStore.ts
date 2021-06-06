@@ -1,6 +1,5 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { Observable } from 'rxjs';
 import {
   FilterCondition,
   FilterQuery,
@@ -10,13 +9,15 @@ import {
   OfTypeCondition,
 } from '../shared/queries';
 import SimpleStore from './SimpleStore';
-import FilterStateStore, {
+import {
+  FilterLineState,
   FilterPropertyState,
   FilterState,
-} from './FilterStateStore';
+} from './filterState/FilterState';
+import FilterStateStore from './filterState/FilterStateStore';
 
 /**
- * Contains the current state of the filter.
+ * Contains the current state of the filterQuery.
  */
 @injectable()
 export default class FilterQueryStore extends SimpleStore<FilterQuery> {
@@ -30,10 +31,9 @@ export default class FilterQueryStore extends SimpleStore<FilterQuery> {
     };
   }
 
-  getState(): Observable<FilterQuery> {
-    return super.getState();
-  }
-
+  /**
+   * Updates the state of the filterQuery by synchronizing it with the {@link FilterStateStore}.
+   */
   update(): void {
     const filter = this.filterStateStore.getValue();
     const filterQuery = this.convertToFilterQuery(filter);
@@ -47,15 +47,10 @@ export default class FilterQueryStore extends SimpleStore<FilterQuery> {
    * @private
    */
   private convertToFilterQuery(filterState: FilterState): FilterQuery {
-    let nodes: FilterCondition | undefined;
-    let edges: FilterCondition | undefined;
-
-    for (const entities of [filterState.nodes, filterState.edges]) {
-      // collect from entity tab
-
+    const createEntityCondition = (filterLineStates: FilterLineState[]) => {
       const entityConditions: FilterCondition[] = [];
 
-      for (const filterLineState of entities) {
+      for (const filterLineState of filterLineStates) {
         // collect from filter line
 
         if (filterLineState.isActive) {
@@ -74,18 +69,14 @@ export default class FilterQueryStore extends SimpleStore<FilterQuery> {
 
           entityConditions.push(lineCondition);
         }
-
-        if (entities === filterState.nodes) {
-          nodes = MatchAnyCondition(...entityConditions);
-        } else {
-          edges = MatchAnyCondition(...entityConditions);
-        }
       }
-    }
+      return MatchAnyCondition(...entityConditions);
+    };
+
     return {
       filters: {
-        nodes,
-        edges,
+        nodes: createEntityCondition(filterState.nodes),
+        edges: createEntityCondition(filterState.edges),
       },
     };
   }

@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import useService from '../../dependency-injection/useService';
-import FilterStateStore from '../../stores/FilterStateStore';
+import FilterStateStore from '../../stores/filterState/FilterStateStore';
 import { FilterModelEntry } from '../../shared/filter';
 
 const useStyles = makeStyles(() =>

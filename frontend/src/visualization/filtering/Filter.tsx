@@ -21,15 +21,14 @@ import { SchemaService } from '../../services/schema';
 import MaxEntitiesSlider from './MaxEntitiesSlider';
 import { EdgeType, NodeType } from '../../shared/schema';
 import EntityTypeTemplate from './helpers/EntityTypeTemplate';
-import FilterStateStore, {
-  FilterLineState,
-} from '../../stores/FilterStateStore';
 import useObservable from '../../utils/useObservable';
 import withLoadingBar from '../../utils/withLoadingBar';
 import withErrorHandler from '../../utils/withErrorHandler';
 import LoadingStore from '../../stores/LoadingStore';
 import ErrorStore from '../../stores/ErrorStore';
 import SubsidiaryNodesToggle from './SubsidiaryNodesToggle';
+import FilterStateStore from '../../stores/filterState/FilterStateStore';
+import { FilterLineState } from '../../stores/filterState/FilterState';
 
 const useStyles = makeStyles((theme) =>
   createStyles({

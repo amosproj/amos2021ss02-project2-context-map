@@ -2,6 +2,12 @@ import { Box } from '@material-ui/core';
 import React from 'react';
 import FilterLine from '../FilterLine';
 
+/**
+ * Template for a {@link FilterLine} to simplify the assignment in {@link Filter}.
+ * @param color - color of the entity
+ * @param type - type of the entity
+ * @param entity - specifies whether this entity is a node or an edge
+ */
 const EntityTypeTemplate = (
   color: string,
   type: string,
