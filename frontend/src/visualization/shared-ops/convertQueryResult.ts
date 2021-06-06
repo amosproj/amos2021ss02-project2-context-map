@@ -31,7 +31,7 @@ function convertEdge(edge: EdgeDescriptor): vis.Edge {
     id: edge.id,
     from: edge.from,
     to: edge.to,
-    color: colorize(type).toString(),
+    color: colorize(type).color,
   };
 }
 
