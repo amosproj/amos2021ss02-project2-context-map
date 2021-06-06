@@ -87,7 +87,7 @@ export class FilterService implements FilterServiceBase {
       query = `${query} WHERE ${condition}`;
     }
 
-    query = `${query} ${neo4jReturnNodeDescriptor('n')}`;
+    query = `${query} RETURN ${neo4jReturnNodeDescriptor('n')}`;
 
     // Only add a LIMIT clause if a limit is specified.
     if (limit !== undefined) {
@@ -136,7 +136,7 @@ export class FilterService implements FilterServiceBase {
       query = `${query} WHERE ${condition}`;
     }
 
-    query = `${query} ${neo4jReturnEdgeDescriptor('e', 'from', 'to')}`;
+    query = `${query} RETURN ${neo4jReturnEdgeDescriptor('e', 'from', 'to')}`;
 
     // Only add a LIMIT clause if a limit is specified.
     if (limit !== undefined) {
