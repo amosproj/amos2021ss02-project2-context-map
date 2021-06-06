@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
-import VisGraph, { GraphData } from 'react-graph-vis';
+import React from 'react';
+import VisGraph from 'react-graph-vis';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { uuid } from 'uuidv4';
-import { tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
+import { combineLatest } from 'rxjs';
 import useService from '../dependency-injection/useService';
 import { useSize } from '../utils/useSize';
 import Filter from './filtering/Filter';
 import useObservable from '../utils/useObservable';
 import QueryResultStore from '../stores/QueryResultStore';
 import convertQueryResult from './shared-ops/convertQueryResult';
+import NodeColorStore from '../stores/colors/NodeColorStore';
+import EdgeColorStore from '../stores/colors/EdgeColorStore';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -47,6 +50,7 @@ const useStyles = makeStyles(() =>
  * Builds the graph options passed to react-graph-vis.
  * @param width The width of the graph.
  * @param height The height of the graph.
+ * @param layout Possible values: "hierarchical", undefined
  * @returns The react-graph-vis options.
  */
 function buildOptions(width: number, height: number, layout?: string) {
@@ -76,20 +80,19 @@ function Graph(props: GraphProps): JSX.Element {
   // The size of the container that is used to measure the available space for the graph.
   const containerSize = useSize(sizeMeasureContainerRef);
 
-  const graphDataStore = useService(QueryResultStore);
+  const queryResultStore = useService(QueryResultStore);
+  const nodeColorStore = useService(NodeColorStore);
+  const edgeColorStore = useService(EdgeColorStore);
 
-  const [graphData, setGraphData] = useState<GraphData>({
-    edges: [],
-    nodes: [],
-  });
-
-  useObservable(
-    graphDataStore.getState().pipe(
-      tap((queryResult) => {
-        // Convert the query result to an object, react-graph-vis understands.
-        setGraphData(convertQueryResult(queryResult));
-      })
-    )
+  const graphData = useObservable(
+    // When one emits, the whole observable emits with the last emitted value from the other inputs
+    // Example: New query result comes in => emits it with the most recent values from nodeColorStore & edgeColorStore
+    combineLatest([
+      queryResultStore.getState(),
+      nodeColorStore.getState(),
+      edgeColorStore.getState(),
+    ]).pipe(map((next) => convertQueryResult(next[0], next[1], next[2]))),
+    { edges: [], nodes: [] }
   );
 
   return (
