@@ -3,4 +3,5 @@
  */
 export interface NodeDescriptor {
   id: number;
+  types: string[];
 }

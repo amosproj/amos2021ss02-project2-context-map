@@ -10,6 +10,10 @@ import {
   FilterModelEntry,
   NodeTypeFilterModel,
 } from '../shared/filter';
+import {
+  neo4jReturnEdgeDescriptor,
+  neo4jReturnNodeDescriptor,
+} from '../config/commonFunctions';
 
 /**
  * The default implementation of the filter service for the neo4j database.
@@ -47,7 +51,10 @@ export class FilterService implements FilterServiceBase {
 
     // Post process the query result to dedupe entities and consolidate
     // references nodes.
-    return consolidateQueryResult(queryResult, true);
+    return consolidateQueryResult(
+      queryResult,
+      query?.includeSubsidiary ?? false
+    );
   }
 
   /**
@@ -83,7 +90,7 @@ export class FilterService implements FilterServiceBase {
       query = `${query} WHERE ${condition}`;
     }
 
-    query = `${query} RETURN ID(n) as id`;
+    query = `${query} RETURN ${neo4jReturnNodeDescriptor('n')}`;
 
     // Only add a LIMIT clause if a limit is specified.
     if (limit !== undefined) {
@@ -132,7 +139,7 @@ export class FilterService implements FilterServiceBase {
       query = `${query} WHERE ${condition}`;
     }
 
-    query = `${query} RETURN ID(e) as id, ID(from) as from, ID(to) as to`;
+    query = `${query} RETURN ${neo4jReturnEdgeDescriptor('e', 'from', 'to')}`;
 
     // Only add a LIMIT clause if a limit is specified.
     if (limit !== undefined) {

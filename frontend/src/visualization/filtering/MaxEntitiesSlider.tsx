@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { from } from 'rxjs';
-import { tap } from 'rxjs/operators';
 import { Slider } from '@material-ui/core';
 import useService from '../../dependency-injection/useService';
 import { QueryService } from '../../services/query';
 import LoadingStore from '../../stores/LoadingStore';
 import ErrorStore from '../../stores/ErrorStore';
-import { CountQueryResult } from '../../shared/queries';
 import useObservable from '../../utils/useObservable';
 import withLoadingBar from '../../utils/withLoadingBar';
 import withErrorHandler from '../../utils/withErrorHandler';
@@ -28,20 +26,13 @@ export default function MaxEntitiesSlider({ entities }: Props): JSX.Element {
   const errorStore = useService(ErrorStore);
 
   // number of edges and nodes
-  const [counts, setCounts] = useState<CountQueryResult>({
-    nodes: 150,
-    edges: 150,
-  });
-
-  useObservable(
+  const counts = useObservable(
     // load max number of entities on mount
     from(queryService.getNumberOfEntities()).pipe(
       withLoadingBar({ loadingStore }),
-      withErrorHandler({ errorStore }),
-      tap((res) => {
-        setCounts(res);
-      })
-    )
+      withErrorHandler({ errorStore })
+    ),
+    { nodes: 150, edges: 150 }
   );
 
   // max number that can be selected with the slider
@@ -74,7 +65,7 @@ export default function MaxEntitiesSlider({ entities }: Props): JSX.Element {
       Number of {entities === 'edges' ? 'Edges' : 'Nodes'}
       <Slider
         aria-label="Max Nodes"
-        defaultValue={max}
+        defaultValue={150}
         max={max}
         valueLabelDisplay="auto"
         valueLabelFormat={getLabel}

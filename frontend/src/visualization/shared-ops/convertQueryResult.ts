@@ -2,12 +2,16 @@ import { GraphData } from 'react-graph-vis';
 import * as vis from 'vis-network';
 import { EdgeDescriptor } from '../../shared/entities';
 import { NodeResultDescriptor, QueryResult } from '../../shared/queries';
+import { NodeColorizer, EdgeColorizer } from '../../stores/colors';
 
-function convertNode(node: NodeResultDescriptor): vis.Node {
+function convertNode(
+  node: NodeResultDescriptor,
+  colorize: NodeColorizer
+): vis.Node {
   const result: vis.Node = {
     id: node.id,
     label: node.id.toString(),
-    // Advanced stuff, like styling nodes with different types differently...
+    color: colorize(node).color,
   };
 
   if (node.subsidiary) {
@@ -17,28 +21,36 @@ function convertNode(node: NodeResultDescriptor): vis.Node {
   return result;
 }
 
-function convertNodes(nodes: NodeResultDescriptor[]): vis.Node[] {
-  return nodes.map((node) => convertNode(node));
+function convertNodes(
+  nodes: NodeResultDescriptor[],
+  colorize: NodeColorizer
+): vis.Node[] {
+  return nodes.map((node) => convertNode(node, colorize));
 }
 
-function convertEdge(edge: EdgeDescriptor): vis.Edge {
+function convertEdge(edge: EdgeDescriptor, colorize: EdgeColorizer): vis.Edge {
   return {
     id: edge.id,
     from: edge.from,
     to: edge.to,
-    // Advanced stuff, like styling edges with different types differently...
+    color: colorize(edge).color,
   };
 }
 
-function convertEdges(edges: EdgeDescriptor[]): vis.Edge[] {
-  return edges.map((edge) => convertEdge(edge));
+function convertEdges(
+  edges: EdgeDescriptor[],
+  colorize: EdgeColorizer
+): vis.Edge[] {
+  return edges.map((edge) => convertEdge(edge, colorize));
 }
 
 export default function convertQueryResult(
-  queryResult: QueryResult
+  queryResult: QueryResult,
+  colorizeNodes: NodeColorizer,
+  colorizeEdges: EdgeColorizer
 ): GraphData {
   return {
-    nodes: convertNodes(queryResult.nodes),
-    edges: convertEdges(queryResult.edges),
+    nodes: convertNodes(queryResult.nodes, colorizeNodes),
+    edges: convertEdges(queryResult.edges, colorizeEdges),
   };
 }

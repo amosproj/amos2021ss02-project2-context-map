@@ -29,6 +29,7 @@ import withLoadingBar from '../../utils/withLoadingBar';
 import withErrorHandler from '../../utils/withErrorHandler';
 import LoadingStore from '../../stores/LoadingStore';
 import ErrorStore from '../../stores/ErrorStore';
+import SubsidiaryNodesToggle from './SubsidiaryNodesToggle';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -197,7 +198,10 @@ const Filter = (): JSX.Element => {
         <List style={{ maxHeight: '94%', width: 320, overflow: 'auto' }}>
           <TabPanel value={tabIndex} index={0}>
             {nodes}
-            <MaxEntitiesSlider entities="nodes" />
+            <SubsidiaryNodesToggle />
+            <div>
+              <MaxEntitiesSlider entities="nodes" />
+            </div>
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
             {edges}

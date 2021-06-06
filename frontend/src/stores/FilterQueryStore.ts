@@ -26,6 +26,7 @@ export default class FilterQueryStore extends SimpleStore<FilterQuery> {
   protected getInitialValue(): FilterQuery {
     return {
       limits: { edges: 150, nodes: 200 },
+      includeSubsidiary: true,
     };
   }
 
@@ -91,7 +92,7 @@ export default class FilterQueryStore extends SimpleStore<FilterQuery> {
 
   /**
    * Converts an Array of raw {@link FilterPropertyState}s given from the users input
-   * in a {@link FilterEntityTypeProperties} to {@link FilterCondition}s representing the properties of an entity.
+   * in a {@link FilterLineProperties} to {@link FilterCondition}s representing the properties of an entity.
    * @param propertyFilters - the {@link FilterPropertyState}s to be converted
    * @returns {@link FilterCondition}s representing the properties of an entity.
    * @private
