@@ -13,7 +13,7 @@ export const queryAllDummies: {
   query: { limits: { nodes: 3, edges: 4 } },
   queryResult: {
     nodes: [
-      { id: 0, types: ['Person'] },
+      { id: 0, types: ['Movie'] },
       { id: 1, types: ['Person'] },
       { id: 2, types: ['Person'] },
     ],
@@ -29,7 +29,7 @@ export const queryAllNoLimitDummies: {
 } = {
   queryResult: {
     nodes: [
-      { id: 0, types: ['Person'] },
+      { id: 0, types: ['Movie'] },
       { id: 1, types: ['Person'] },
       { id: 2, types: ['Person'] },
       { id: 3, types: ['Person'] },
@@ -37,7 +37,7 @@ export const queryAllNoLimitDummies: {
     edges: [
       { id: 0, type: 'ACTED_IN', from: 1, to: 0 },
       { id: 1, type: 'ACTED_IN', from: 2, to: 0 },
-      { id: 2, type: 'ACTED_IN', from: 3, to: 0 },
+      { id: 2, type: 'DIRECTED', from: 3, to: 0 },
     ],
   },
 };
