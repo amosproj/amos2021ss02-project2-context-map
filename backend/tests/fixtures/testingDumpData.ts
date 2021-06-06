@@ -1,5 +1,4 @@
-import { Node } from '../../src/shared/entities/Node';
-import { Edge } from '../../src/shared/entities/Edge';
+import { Node, Edge } from '../../src/shared/entities';
 import { QueryBase, QueryResult } from '../../src/shared/queries';
 
 /**
