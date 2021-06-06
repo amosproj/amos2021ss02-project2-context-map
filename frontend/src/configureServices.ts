@@ -14,6 +14,7 @@ import ErrorStore from './stores/ErrorStore';
 import LoadingStore from './stores/LoadingStore';
 import NodeColorStore from './stores/colors/NodeColorStore';
 import EdgeColorStore from './stores/colors/EdgeColorStore';
+import FilterStateStore from './stores/filterState/FilterStateStore';
 
 /**
  * Configures all services in the frontend app.
@@ -38,6 +39,7 @@ export default function configureServices(container: Container): void {
   // stores: use inSingletonScope so only one instance of each store exists
   container.bind(ErrorStore).to(ErrorStore).inSingletonScope();
   container.bind(LoadingStore).to(LoadingStore).inSingletonScope();
+  container.bind(FilterStateStore).to(FilterStateStore).inSingletonScope();
   container.bind(FilterQueryStore).to(FilterQueryStore).inSingletonScope();
   container.bind(QueryResultStore).to(QueryResultStore).inSingletonScope();
   container.bind(NodeColorStore).to(NodeColorStore).inSingletonScope();
