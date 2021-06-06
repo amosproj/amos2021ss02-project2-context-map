@@ -1,10 +1,22 @@
 import getNthColor, {
+  colorPalettes,
   nAvailableColors,
 } from '../../../../src/stores/colors/getNthColor';
 
 context('getNthColor', () => {
   it('should have many colors', () => {
     expect(nAvailableColors).to.be.greaterThan(150);
+  });
+
+  it('should use the main material colors first', () => {
+    const expected = colorPalettes.map((x) => x[500]);
+
+    const actual = expected.map((_, i) => getNthColor(i));
+
+    expected.sort();
+    actual.sort();
+
+    expect(actual).to.have.members(expected);
   });
 
   it('should use all available colors', () => {
