@@ -31,7 +31,11 @@ export class AppService {
           ? []
           : await this.queryEdges(query?.limits?.edges),
     };
-    return consolidateQueryResult(queryResult);
+
+    return consolidateQueryResult(
+      queryResult,
+      query?.includeSubsidiary ?? false
+    );
   }
 
   /**

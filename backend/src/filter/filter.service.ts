@@ -51,7 +51,10 @@ export class FilterService implements FilterServiceBase {
 
     // Post process the query result to dedupe entities and consolidate
     // references nodes.
-    return consolidateQueryResult(queryResult, true);
+    return consolidateQueryResult(
+      queryResult,
+      query?.includeSubsidiary ?? false
+    );
   }
 
   /**
