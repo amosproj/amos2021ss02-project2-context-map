@@ -1,6 +1,6 @@
 import { Box } from '@material-ui/core';
 import React from 'react';
-import FilterEntityType from '../FilterEntityType';
+import FilterLine from '../FilterLine';
 
 const EntityTypeTemplate = (
   color: string,
@@ -9,7 +9,7 @@ const EntityTypeTemplate = (
 ): JSX.Element => (
   <div>
     <Box display="flex" p={1}>
-      <FilterEntityType backgroundColor={color} type={type} entity={entity} />
+      <FilterLine backgroundColor={color} type={type} entity={entity} />
     </Box>
   </div>
 );

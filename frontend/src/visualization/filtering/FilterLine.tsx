@@ -6,7 +6,7 @@ import TuneIcon from '@material-ui/icons/Tune';
 import AddIcon from '@material-ui/icons/Add';
 import { from } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import FilterEntityTypeProperties from './FilterEntityTypeProperties';
+import FilterLineProperties from './FilterLineProperties';
 import useService from '../../dependency-injection/useService';
 import { FilterService } from '../../services/filter';
 import { EdgeTypeFilterModel, NodeTypeFilterModel } from '../../shared/filter';
@@ -37,7 +37,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-const FilterEntityType = (props: {
+const FilterLine = (props: {
   backgroundColor: string;
   type: string;
   entity: 'node' | 'edge';
@@ -119,7 +119,7 @@ const FilterEntityType = (props: {
       <IconButton component="span" className="AddButton">
         <AddIcon onClick={handleAddEntity} />
       </IconButton>
-      <FilterEntityTypeProperties
+      <FilterLineProperties
         filterOpen={filterOpen}
         handleCloseFilter={handleCloseFilter}
         filterModelEntries={filterModelEntries}
@@ -130,4 +130,4 @@ const FilterEntityType = (props: {
   );
 };
 
-export default FilterEntityType;
+export default FilterLine;

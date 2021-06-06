@@ -35,6 +35,8 @@ export default class FilterStateStore extends SimpleStore<FilterState> {
     if (line) {
       line.isActive = !line.isActive;
     }
+
+    this.setState(this.getValue());
   }
 
   public addFilterPropertyState(

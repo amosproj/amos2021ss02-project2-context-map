@@ -20,7 +20,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-const FilterEntityTypePropertiesPropertyValues = (props: {
+const FilterLineProperty = (props: {
   filterModelEntry: FilterModelEntry;
   filterLineType: string;
   entity: 'node' | 'edge';
@@ -118,4 +118,4 @@ const FilterEntityTypePropertiesPropertyValues = (props: {
   );
 };
 
-export default FilterEntityTypePropertiesPropertyValues;
+export default FilterLineProperty;

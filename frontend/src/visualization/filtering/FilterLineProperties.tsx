@@ -9,8 +9,8 @@ import {
   FormControl,
 } from '@material-ui/core';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import FilterEntityTypePropertiesPropertyValues from './FilterEntityTypePropertiesPropertyValues';
 import { FilterModelEntry } from '../../shared/filter';
+import FilterLineProperty from './FilterLineProperty';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const FilterEntityTypeProperties = (props: {
+const FilterLineProperties = (props: {
   filterOpen: boolean;
   handleCloseFilter: () => void;
   filterModelEntries: FilterModelEntry[];
@@ -46,7 +46,7 @@ const FilterEntityTypeProperties = (props: {
   } = props;
 
   const entitySelects = filterModelEntries.map((entry) => (
-    <FilterEntityTypePropertiesPropertyValues
+    <FilterLineProperty
       filterModelEntry={entry}
       filterLineType={filterLineType}
       entity={entity}
@@ -91,4 +91,4 @@ const FilterEntityTypeProperties = (props: {
   );
 };
 
-export default FilterEntityTypeProperties;
+export default FilterLineProperties;
