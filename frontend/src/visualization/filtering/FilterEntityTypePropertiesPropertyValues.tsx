@@ -7,7 +7,7 @@ import {
   MenuItem,
   Select,
 } from '@material-ui/core';
-import React from 'react';
+import React, { useEffect } from 'react';
 import useService from '../../dependency-injection/useService';
 import FilterStateStore from '../../stores/FilterStateStore';
 import { FilterModelEntry } from '../../shared/filter';
@@ -30,6 +30,18 @@ const FilterEntityTypePropertiesPropertyValues = (props: {
 
   const [selectedValues, setSelectedValues] = React.useState<string[]>([]);
   const filterStateStore = useService<FilterStateStore>(FilterStateStore);
+
+  // update filterStateStore here because selectedValues will first be updated in the next render
+  useEffect(() => {
+    filterStateStore.addFilterPropertyState(
+      {
+        name: filterModelEntry.key,
+        values: selectedValues,
+      },
+      filterLineType,
+      entity
+    );
+  }, [selectedValues]);
 
   // utils from material ui multiselect https://material-ui.com/components/selects/#select
   const ITEM_HEIGHT = 48;
@@ -54,18 +66,12 @@ const FilterEntityTypePropertiesPropertyValues = (props: {
 
   const theme = useTheme();
 
-  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setSelectedValues(event.target.value as string[]);
-
-    filterStateStore.addFilterPropertyState(
-      {
-        name: filterModelEntry.key,
-        values: selectedValues,
-      },
-      filterLineType,
-      entity
-    );
-  };
+  const handleChange = React.useCallback(
+    (event: React.ChangeEvent<{ value: unknown }>) => {
+      setSelectedValues(event.target.value as string[]);
+    },
+    []
+  );
 
   return (
     <div className="FilterSelect">
