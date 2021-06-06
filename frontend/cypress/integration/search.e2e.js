@@ -1,4 +1,8 @@
-import { customSearch, emptySearch } from '../fixtures/search/search';
+import {
+  customSearch,
+  emptySearch,
+  longSearch,
+} from '../fixtures/search/search';
 
 // TODO: Remove interception when real e2e tests are done
 context('Searchbar', () => {
@@ -107,5 +111,19 @@ context('Searchbar', () => {
 
     // Assert
     cy.contains('error occurred');
+  });
+
+  it('Shows expandable list if result list is too long', () => {
+    // Arrange
+    cy.intercept(`${apiBaseUrl}/search/all*`, longSearch.search);
+
+    // Act
+    cy.get('.SearchBar').type('Hello');
+
+    // Assert
+    cy.get('.SubList .MuiListItem-root').should('have.length', 6);
+    cy.contains(/show more/i).click();
+    cy.get('.SubList .MuiListItem-root').should('have.length', 8);
+    cy.contains(/show more/i).should('not.exist');
   });
 });
