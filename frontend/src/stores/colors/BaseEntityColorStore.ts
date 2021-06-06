@@ -5,6 +5,7 @@ import { injectable } from 'inversify';
 import { BehaviorSubject, Observable } from 'rxjs';
 import EntityVisualisationAttributes from './EntityVisualisationAttributes';
 import getNthColor from './getNthColor';
+import { EdgeDescriptor, NodeDescriptor } from '../../shared/entities';
 
 type EntityConverter<T> = (type: T) => EntityVisualisationAttributes;
 
@@ -14,7 +15,9 @@ type EntityConverter<T> = (type: T) => EntityVisualisationAttributes;
  * and with {@link getState} (until unsubscribed).
  */
 @injectable()
-export default abstract class BaseEntityColorStore<EntityTypeId> {
+export default abstract class BaseEntityColorStore<
+  EntityTypeId extends EdgeDescriptor | NodeDescriptor
+> {
   protected readonly entityTypeColorMap = new Map<string, string>();
 
   /**
