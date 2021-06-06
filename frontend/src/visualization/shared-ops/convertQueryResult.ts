@@ -11,7 +11,7 @@ function convertNode(node: NodeResultDescriptor): vis.Node {
   const result: vis.Node = {
     id: node.id,
     label: node.id.toString(),
-    color: colorize(node.types).color,
+    color: colorize({ id: node.id, types: node.types }).color,
   };
 
   if (node.subsidiary) {
@@ -31,7 +31,7 @@ function convertEdge(edge: EdgeDescriptor): vis.Edge {
     id: edge.id,
     from: edge.from,
     to: edge.to,
-    color: colorize(type).color,
+    color: colorize({ id: edge.id, types: type }).color,
   };
 }
 
