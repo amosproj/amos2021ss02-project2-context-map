@@ -18,6 +18,7 @@ export function useSize(ref: React.RefObject<HTMLElement>): ContainerSize {
   useLayoutEffect(() => {
     const element = ref.current;
 
+    /* istanbul ignore else */
     if (element) {
       setSize(element.getBoundingClientRect());
     }
