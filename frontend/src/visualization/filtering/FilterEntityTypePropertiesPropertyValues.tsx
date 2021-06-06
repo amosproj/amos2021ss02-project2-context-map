@@ -28,8 +28,15 @@ const FilterEntityTypePropertiesPropertyValues = (props: {
   const classes = useStyles();
   const { filterModelEntry, filterLineType, entity } = props;
 
-  const [selectedValues, setSelectedValues] = React.useState<string[]>([]);
   const filterStateStore = useService<FilterStateStore>(FilterStateStore);
+
+  const [selectedValues, setSelectedValues] = React.useState<string[]>(
+    filterStateStore.getPropertyStateValues(
+      filterLineType,
+      filterModelEntry.key,
+      entity
+    ) ?? []
+  );
 
   // update filterStateStore here because selectedValues will first be updated in the next render
   useEffect(() => {

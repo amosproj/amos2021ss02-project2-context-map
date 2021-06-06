@@ -27,7 +27,7 @@ export default class FilterStateStore extends SimpleStore<FilterState> {
     filterLineType: string,
     entity: 'node' | 'edge'
   ): void {
-    const line: FilterLineState | undefined = this.searchForLine(
+    const line: FilterLineState | undefined = this.searchForLineState(
       filterLineType,
       entity
     );
@@ -42,27 +42,38 @@ export default class FilterStateStore extends SimpleStore<FilterState> {
     filterLineType: string,
     entity: 'node' | 'edge'
   ): void {
-    const line: FilterLineState | undefined = this.searchForLine(
+    const lineState: FilterLineState | undefined = this.searchForLineState(
       filterLineType,
       entity
     );
 
-    if (line) {
-      const propertyWithExistentName = line.propertyFilters.find(
+    if (lineState) {
+      const propertyWithExistentName = lineState.propertyFilters.find(
         (e) => e.name === stateToAdd.name
       );
       if (propertyWithExistentName) {
         propertyWithExistentName.values = stateToAdd.values;
       } else {
-        line.propertyFilters.push(stateToAdd);
+        lineState.propertyFilters.push(stateToAdd);
       }
     }
 
     this.setState(this.getValue());
   }
 
-  private searchForLine(
-    type: string,
+  public getPropertyStateValues(
+    filterLineType: string,
+    filterPropertyName: string,
+    entity: 'node' | 'edge'
+  ): string[] | undefined {
+    const propertyState: FilterPropertyState | undefined =
+      this.searchForPropertyState(filterLineType, filterPropertyName, entity);
+
+    return propertyState ? propertyState.values : undefined;
+  }
+
+  private searchForLineState(
+    filterLineType: string,
     entity: 'node' | 'edge'
   ): FilterLineState | undefined {
     let result: FilterLineState | undefined;
@@ -72,12 +83,34 @@ export default class FilterStateStore extends SimpleStore<FilterState> {
       entity === 'node' ? filterState.nodes : filterState.edges;
 
     for (const entityLine of entityLineStates) {
-      if (entityLine.type === type) {
+      if (entityLine.type === filterLineType) {
         result = entityLine;
         break;
       }
     }
 
+    return result;
+  }
+
+  private searchForPropertyState(
+    filterLineType: string,
+    filterPropertyName: string,
+    entity: 'node' | 'edge'
+  ) {
+    let result: FilterPropertyState | undefined;
+
+    const line: FilterLineState | undefined = this.searchForLineState(
+      filterLineType,
+      entity
+    );
+
+    if (line) {
+      for (const propertyFilters of line.propertyFilters) {
+        if (propertyFilters.name === filterPropertyName) {
+          result = propertyFilters;
+        }
+      }
+    }
     return result;
   }
 }
