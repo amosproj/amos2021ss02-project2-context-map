@@ -1,5 +1,7 @@
 import { EdgeDescriptor } from '../../shared/entities';
-import BaseEntityColorStore from './BaseEntityColorStore';
+import BaseEntityColorStore, { EntityColorizer } from './BaseEntityColorStore';
+
+export type EdgeColorizer = EntityColorizer<EdgeDescriptor>;
 
 export default class EdgeColorStore extends BaseEntityColorStore<EdgeDescriptor> {
   protected getTypeOfEntity(edgeDescriptor: EdgeDescriptor): string {

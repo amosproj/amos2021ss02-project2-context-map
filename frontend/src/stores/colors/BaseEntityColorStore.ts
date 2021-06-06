@@ -7,7 +7,7 @@ import EntityVisualisationAttributes from './EntityVisualisationAttributes';
 import getNthColor from './getNthColor';
 import { EdgeDescriptor, NodeDescriptor } from '../../shared/entities';
 
-type EntityConverter<T> = (type: T) => EntityVisualisationAttributes;
+export type EntityColorizer<T> = (type: T) => EntityVisualisationAttributes;
 
 /**
  * A simple store contains a single state.
@@ -16,7 +16,7 @@ type EntityConverter<T> = (type: T) => EntityVisualisationAttributes;
  */
 @injectable()
 export default abstract class BaseEntityColorStore<
-  EntityTypeId extends EdgeDescriptor | NodeDescriptor
+  Entity extends EdgeDescriptor | NodeDescriptor
 > {
   protected readonly entityTypeColorMap = new Map<string, string>();
 
@@ -26,14 +26,14 @@ export default abstract class BaseEntityColorStore<
    * @protected
    */
   protected readonly storeSubject = new BehaviorSubject<
-    EntityConverter<EntityTypeId>
+    EntityColorizer<Entity>
   >(this.getInitialValue());
 
   /**
    * Returns the initial value of the stored subject.
    * @protected
    */
-  protected getInitialValue(): EntityConverter<EntityTypeId> {
+  protected getInitialValue(): EntityColorizer<Entity> {
     return (entity) => {
       const type = this.getTypeOfEntity(entity);
       let color = this.entityTypeColorMap.get(type);
@@ -45,19 +45,19 @@ export default abstract class BaseEntityColorStore<
     };
   }
 
-  protected abstract getTypeOfEntity(entityTypeId: EntityTypeId): string;
+  protected abstract getTypeOfEntity(entityTypeId: Entity): string;
 
   /**
    * Returns an observable that outputs the stored value.
    */
-  public getState(): Observable<EntityConverter<EntityTypeId>> {
+  public getState(): Observable<EntityColorizer<Entity>> {
     return this.storeSubject.pipe();
   }
 
   /**
    * Returns the current value of the stored value.
    */
-  public getValue(): EntityConverter<EntityTypeId> {
+  public getValue(): EntityColorizer<Entity> {
     return this.storeSubject.value;
   }
 }
