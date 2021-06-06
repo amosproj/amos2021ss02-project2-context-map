@@ -1,5 +1,5 @@
 import Button from '@material-ui/core/Button';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   createStyles,
   Dialog,
@@ -35,6 +35,8 @@ const FilterEntityTypeProperties = (props: {
 }): JSX.Element => {
   const classes = useStyles();
 
+  const [applyFilter, setApplyFilter] = useState(false);
+
   const {
     filterOpen,
     handleCloseFilter,
@@ -48,10 +50,13 @@ const FilterEntityTypeProperties = (props: {
       filterModelEntry={entry}
       filterLineType={filterLineType}
       entity={entity}
+      applyFilter={applyFilter}
+      setApplyFilter={setApplyFilter}
     />
   ));
 
   const handleApplyFilter = () => {
+    setApplyFilter(true);
     handleCloseFilter();
   };
 
