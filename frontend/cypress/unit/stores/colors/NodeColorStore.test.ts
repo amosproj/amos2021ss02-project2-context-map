@@ -1,8 +1,13 @@
 import NodeColorStore from '../../../../src/stores/colors/NodeColorStore';
+import { NodeDescriptor } from '../../../../src/shared/entities';
 
 describe('NodeColorStore', () => {
   let nodeColorStore: NodeColorStore;
-  const types = [['HELLO'], ['WORLD'], ['COMPOSED', 'KEY']];
+  const dummies: NodeDescriptor[] = [
+    { id: 1, types: ['HELLO'] },
+    { id: 2, types: ['WORLD'] },
+    { id: 3, types: ['COMPOSED', 'KEY'] },
+  ];
 
   beforeEach(() => {
     nodeColorStore = new NodeColorStore();
@@ -10,7 +15,7 @@ describe('NodeColorStore', () => {
 
   it('should return colors for types', () => {
     const colorize = nodeColorStore.getValue();
-    const colors = types.map((t) => colorize(t));
+    const colors = dummies.map((t) => colorize(t));
 
     for (const color of colors) {
       expect(color.color).to.match(/#[0-9a-fA-F]{6}/);
@@ -19,16 +24,16 @@ describe('NodeColorStore', () => {
 
   it('should return new colors for new types', () => {
     const colorize = nodeColorStore.getValue();
-    const colors = new Set(types.map((t) => colorize(t)));
+    const colors = new Set(dummies.map((t) => colorize(t)));
 
-    expect(colors.size).to.be.eq(types.length);
+    expect(colors.size).to.be.eq(dummies.length);
   });
 
   it('should return the same color for the same type', () => {
     const colorize = nodeColorStore.getValue();
     const numCalls = 5;
 
-    const colors = new Array(numCalls).map(() => colorize(['MyType']));
+    const colors = new Array(numCalls).map(() => colorize(dummies[0]));
 
     expect(colors).to.have.length(numCalls);
     expect(new Set(colors).size).to.be.eq(1);
@@ -36,8 +41,8 @@ describe('NodeColorStore', () => {
 
   it('should return the same color independent of the type order', () => {
     const colorize = nodeColorStore.getValue();
-    const color1 = colorize(['HELLO', 'WORLD']);
-    const color2 = colorize(['WORLD', 'HELLO']);
+    const color1 = colorize({ id: 1, types: ['HELLO', 'WORLD'] });
+    const color2 = colorize({ id: 2, types: ['WORLD', 'HELLO'] });
 
     expect(color1).to.deep.eq(color2);
   });
@@ -45,12 +50,12 @@ describe('NodeColorStore', () => {
   it('should not alter the input array', () => {
     const colorize = nodeColorStore.getValue();
 
-    const arr1 = ['A', 'B'];
-    colorize(arr1);
-    expect(arr1).to.have.ordered.members(['A', 'B']);
+    const dummy1: NodeDescriptor = { id: 1, types: ['A', 'B'] };
+    colorize(dummy1);
+    expect(dummy1.types).to.have.ordered.members(['A', 'B']);
 
-    const arr2 = ['D', 'C'];
-    colorize(arr2);
-    expect(arr2).to.have.ordered.members(['D', 'C']);
+    const dummy2: NodeDescriptor = { id: 1, types: ['D', 'C'] };
+    colorize(dummy2);
+    expect(dummy2.types).to.have.ordered.members(['D', 'C']);
   });
 });
