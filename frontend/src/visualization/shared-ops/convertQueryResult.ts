@@ -2,11 +2,11 @@ import { GraphData } from 'react-graph-vis';
 import * as vis from 'vis-network';
 import { EdgeDescriptor } from '../../shared/entities';
 import { NodeResultDescriptor, QueryResult } from '../../shared/queries';
-import { NodeColorizer, EdgeColorizer } from '../../stores/colors';
+import { EntityColorizer } from '../../stores/colors';
 
 function convertNode(
   node: NodeResultDescriptor,
-  colorize: NodeColorizer
+  colorize: EntityColorizer
 ): vis.Node {
   const result: vis.Node = {
     id: node.id,
@@ -23,12 +23,15 @@ function convertNode(
 
 function convertNodes(
   nodes: NodeResultDescriptor[],
-  colorize: NodeColorizer
+  colorize: EntityColorizer
 ): vis.Node[] {
   return nodes.map((node) => convertNode(node, colorize));
 }
 
-function convertEdge(edge: EdgeDescriptor, colorize: EdgeColorizer): vis.Edge {
+function convertEdge(
+  edge: EdgeDescriptor,
+  colorize: EntityColorizer
+): vis.Edge {
   return {
     id: edge.id,
     from: edge.from,
@@ -39,18 +42,17 @@ function convertEdge(edge: EdgeDescriptor, colorize: EdgeColorizer): vis.Edge {
 
 function convertEdges(
   edges: EdgeDescriptor[],
-  colorize: EdgeColorizer
+  colorize: EntityColorizer
 ): vis.Edge[] {
   return edges.map((edge) => convertEdge(edge, colorize));
 }
 
 export default function convertQueryResult(
   queryResult: QueryResult,
-  colorizeNodes: NodeColorizer,
-  colorizeEdges: EdgeColorizer
+  colorize: EntityColorizer
 ): GraphData {
   return {
-    nodes: convertNodes(queryResult.nodes, colorizeNodes),
-    edges: convertEdges(queryResult.edges, colorizeEdges),
+    nodes: convertNodes(queryResult.nodes, colorize),
+    edges: convertEdges(queryResult.edges, colorize),
   };
 }

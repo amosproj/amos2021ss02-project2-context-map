@@ -10,8 +10,7 @@ import Filter from './filtering/Filter';
 import useObservable from '../utils/useObservable';
 import QueryResultStore from '../stores/QueryResultStore';
 import convertQueryResult from './shared-ops/convertQueryResult';
-import NodeColorStore from '../stores/colors/NodeColorStore';
-import EdgeColorStore from '../stores/colors/EdgeColorStore';
+import { EntityColorStore } from '../stores/colors';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -81,17 +80,15 @@ function Graph(props: GraphProps): JSX.Element {
   const containerSize = useSize(sizeMeasureContainerRef);
 
   const queryResultStore = useService(QueryResultStore);
-  const nodeColorStore = useService(NodeColorStore);
-  const edgeColorStore = useService(EdgeColorStore);
+  const entityColorStore = useService(EntityColorStore);
 
   const graphData = useObservable(
     // When one emits, the whole observable emits with the last emitted value from the other inputs
-    // Example: New query result comes in => emits it with the most recent values from nodeColorStore & edgeColorStore
+    // Example: New query result comes in => emits it with the most recent values from entityColorStore
     combineLatest([
       queryResultStore.getState(),
-      nodeColorStore.getState(),
-      edgeColorStore.getState(),
-    ]).pipe(map((next) => convertQueryResult(next[0], next[1], next[2]))),
+      entityColorStore.getState(),
+    ]).pipe(map((next) => convertQueryResult(next[0], next[1]))),
     { edges: [], nodes: [] }
   );
 
