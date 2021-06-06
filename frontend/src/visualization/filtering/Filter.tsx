@@ -9,7 +9,7 @@ import {
   Tabs,
   Typography,
 } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -101,26 +101,32 @@ const Filter = (): JSX.Element => {
     )
   );
 
-  const nodeLineStates: FilterLineState[] = [];
-  const edgeLineStates: FilterLineState[] = [];
+  // filterStore will only be initialized on the first render
+  useCallback(() => {
+    const nodeLineStates: FilterLineState[] = [];
+    const edgeLineStates: FilterLineState[] = [];
 
-  for (const nodeTypes of schema.nodes) {
-    nodeLineStates.push({
-      type: nodeTypes.name,
-      isActive: false,
-      propertyFilters: [],
+    for (const nodeTypes of schema.nodes) {
+      nodeLineStates.push({
+        type: nodeTypes.name,
+        isActive: false,
+        propertyFilters: [],
+      });
+    }
+
+    for (const edgeTypes of schema.edges) {
+      edgeLineStates.push({
+        type: edgeTypes.name,
+        isActive: false,
+        propertyFilters: [],
+      });
+    }
+
+    filterStateStore.mergeState({
+      nodes: nodeLineStates,
+      edges: edgeLineStates,
     });
-  }
-
-  for (const edgeTypes of schema.edges) {
-    edgeLineStates.push({
-      type: edgeTypes.name,
-      isActive: false,
-      propertyFilters: [],
-    });
-  }
-
-  filterStateStore.mergeState({ nodes: nodeLineStates, edges: edgeLineStates });
+  }, []);
 
   const nodes = (
     <>
