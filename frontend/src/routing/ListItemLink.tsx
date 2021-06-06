@@ -34,7 +34,11 @@ function ListItemLink(props: ListItemLinkProps): JSX.Element {
   return (
     <li>
       <ListItem button component={renderLink}>
-        {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
+        {
+          /* istanbul ignore next */ icon ? (
+            <ListItemIcon>{icon}</ListItemIcon>
+          ) : null
+        }
         <ListItemText primary={primary} />
       </ListItem>
     </li>
