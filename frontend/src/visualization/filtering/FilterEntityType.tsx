@@ -4,17 +4,19 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
 import TuneIcon from '@material-ui/icons/Tune';
 import AddIcon from '@material-ui/icons/Add';
+import { from } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import FilterEntityTypeProperties from './FilterEntityTypeProperties';
-import { CancellationToken } from '../../utils/CancellationToken';
 import useService from '../../dependency-injection/useService';
 import { FilterService } from '../../services/filter';
-import fetchDataFromService from '../shared-ops/fetchDataFromService';
-import { FilterQuery } from '../../shared/queries';
 import { EdgeTypeFilterModel, NodeTypeFilterModel } from '../../shared/filter';
-import useObservable from '../../utils/useObservable';
 import FilterQueryStore from '../../stores/FilterQueryStore';
 import FilterStateStore from '../../stores/FilterStateStore';
+import useObservable from '../../utils/useObservable';
+import withLoadingBar from '../../utils/withLoadingBar';
+import withErrorHandler from '../../utils/withErrorHandler';
+import LoadingStore from '../../stores/LoadingStore';
+import ErrorStore from '../../stores/ErrorStore';
 
 type EntityTypeFilterModel = NodeTypeFilterModel | EdgeTypeFilterModel;
 
@@ -35,38 +37,6 @@ const useStyles = makeStyles(() =>
   })
 );
 
-/**
- * fetches a nodeTypeFilterModel with the filterService
- *
- * @param filterService - the filterService the data is fetched from
- * @param nodeName - the name of the node of the nodeTypeFilterModel
- * @param cancellation - the cancellation token
- * @returns the nodeTypeFilterModel
- */
-function fetchNodeTypeFilterModel(
-  filterService: FilterService,
-  nodeName: string,
-  cancellation: CancellationToken
-): Promise<NodeTypeFilterModel> {
-  return filterService.getNodeTypeFilterModel(nodeName, cancellation);
-}
-
-/**
- * fetches a edgeTypeFilterModel with the filterService
- *
- * @param filterService - the filterService the data is fetched from
- * @param edgeName - the name of the edge of the edgeTypeFilterModel
- * @param cancellation - the cancellation token
- * @returns the edgeTypeFilterModel
- */
-function fetchEdgeTypeFilterModel(
-  filterService: FilterService,
-  edgeName: string,
-  cancellation: CancellationToken
-): Promise<NodeTypeFilterModel> {
-  return filterService.getEdgeTypeFilterModel(edgeName, cancellation);
-}
-
 const FilterEntityType = (props: {
   backgroundColor: string;
   type: string;
@@ -82,15 +52,27 @@ const FilterEntityType = (props: {
 
   const filterService = useService(FilterService, null);
 
-  const [filterQuery, setFilterQuery] = useState<FilterQuery>({});
-
   const filterQueryStore = useService<FilterQueryStore>(FilterQueryStore);
   const filterStateStore = useService<FilterStateStore>(FilterStateStore);
 
+  const loadingStore = useService<LoadingStore>(LoadingStore);
+  const errorStore = useService<ErrorStore>(ErrorStore);
+
+  const [filterModel, setFilterModel] = useState<EntityTypeFilterModel>({
+    name: '',
+    properties: [],
+  });
+
   useObservable(
-    filterQueryStore.getState().pipe(
-      tap((filterQueryFromStore: FilterQuery) => {
-        setFilterQuery(filterQueryFromStore);
+    from(
+      entity === 'node'
+        ? filterService.getNodeTypeFilterModel(type)
+        : filterService.getEdgeTypeFilterModel(type)
+    ).pipe(
+      withLoadingBar({ loadingStore }),
+      withErrorHandler({ rethrow: true, errorStore }),
+      tap((model) => {
+        setFilterModel(model);
       })
     )
   );
@@ -103,57 +85,48 @@ const FilterEntityType = (props: {
     }
   }
 
-  function renderContent(model: EntityTypeFilterModel): JSX.Element {
-    const handleOpenFilter = () => {
-      setFilterOpen(true);
-    };
-    const handleCloseFilter = () => {
-      setFilterOpen(false);
-    };
+  const handleOpenFilter = () => {
+    setFilterOpen(true);
+  };
+  const handleCloseFilter = () => {
+    setFilterOpen(false);
+  };
 
-    const handleAddEntity = () => {
-      isActive.current = !isActive.current;
+  const handleAddEntity = () => {
+    isActive.current = !isActive.current;
 
-      updateBoxShadow();
-      filterStateStore.toggleFilterLineActive(type, entity);
-      filterQueryStore.update();
-    };
+    updateBoxShadow();
+    filterStateStore.toggleFilterLineActive(type, entity);
+    filterQueryStore.update();
+  };
 
-    const filterModelEntries = model.properties;
+  const filterModelEntries = filterModel.properties;
 
-    return (
-      <div>
-        <Button
-          style={{ backgroundColor, boxShadow }}
-          variant="contained"
-          color="primary"
-          disableRipple
-          className={classes.root}
-        >
-          {type}
-        </Button>
-        <IconButton component="span" className="FilterButton">
-          <TuneIcon onClick={handleOpenFilter} />
-        </IconButton>
-        <IconButton component="span" className="AddButton">
-          <AddIcon onClick={handleAddEntity} />
-        </IconButton>
-        <FilterEntityTypeProperties
-          filterOpen={filterOpen}
-          handleCloseFilter={handleCloseFilter}
-          filterModelEntries={filterModelEntries}
-          filterLineType={type}
-          entity={entity}
-        />
-      </div>
-    );
-  }
-
-  return fetchDataFromService(
-    entity === 'node' ? fetchNodeTypeFilterModel : fetchEdgeTypeFilterModel,
-    renderContent,
-    filterService,
-    type
+  return (
+    <div>
+      <Button
+        style={{ backgroundColor, boxShadow }}
+        variant="contained"
+        color="primary"
+        disableRipple
+        className={classes.root}
+      >
+        {type}
+      </Button>
+      <IconButton component="span" className="FilterButton">
+        <TuneIcon onClick={handleOpenFilter} />
+      </IconButton>
+      <IconButton component="span" className="AddButton">
+        <AddIcon onClick={handleAddEntity} />
+      </IconButton>
+      <FilterEntityTypeProperties
+        filterOpen={filterOpen}
+        handleCloseFilter={handleCloseFilter}
+        filterModelEntries={filterModelEntries}
+        filterLineType={type}
+        entity={entity}
+      />
+    </div>
   );
 };
 
