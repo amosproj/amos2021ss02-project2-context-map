@@ -10,7 +10,10 @@ import {
   FilterModelEntry,
   NodeTypeFilterModel,
 } from '../shared/filter';
-import { neo4jReturnEdgeDescriptor, neo4jReturnNodeDescriptor } from '../config/commonFunctions';
+import {
+  neo4jReturnEdgeDescriptor,
+  neo4jReturnNodeDescriptor,
+} from '../config/commonFunctions';
 
 /**
  * The default implementation of the filter service for the neo4j database.
