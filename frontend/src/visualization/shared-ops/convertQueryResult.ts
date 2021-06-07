@@ -8,17 +8,11 @@ function convertNode(
   node: NodeResultDescriptor,
   colorize: EntityColorizer
 ): vis.Node {
-  const result: vis.Node = {
+  return {
     id: node.id,
     label: node.id.toString(),
     color: colorize(node).color,
   };
-
-  if (node.subsidiary) {
-    result.color = 'yellow';
-  }
-
-  return result;
 }
 
 function convertNodes(
