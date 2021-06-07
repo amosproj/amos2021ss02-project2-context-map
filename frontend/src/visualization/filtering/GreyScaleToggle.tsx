@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Checkbox, FormControlLabel } from '@material-ui/core';
+import { Box, Checkbox, FormControlLabel } from '@material-ui/core';
 import useService from '../../dependency-injection/useService';
 import { EntityColorStore } from '../../stores/colors';
 
@@ -21,7 +21,7 @@ export default function GreyScaleToggle(): JSX.Element {
   };
 
   return (
-    <>
+    <Box p={3}>
       <FormControlLabel
         control={
           <Checkbox
@@ -33,6 +33,6 @@ export default function GreyScaleToggle(): JSX.Element {
         }
         label="Colorize Graph"
       />
-    </>
+    </Box>
   );
 }
