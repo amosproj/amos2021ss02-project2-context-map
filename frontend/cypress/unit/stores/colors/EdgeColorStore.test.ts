@@ -39,4 +39,15 @@ describe('EdgeColorStore', () => {
     expect(colors).to.have.length(numCalls);
     expect(new Set(colors).size).to.be.eq(1);
   });
+
+  it('should return black for all edge types when greyScale is true', () => {
+    const colorize = edgeColorStore.getValue();
+    edgeColorStore.setGreyScale(true);
+    const black = '#000';
+    const colors = dummies.map((t) => colorize(t));
+
+    for (const color of colors) {
+      expect(color.color).to.be.eq(black);
+    }
+  });
 });
