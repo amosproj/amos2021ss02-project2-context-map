@@ -60,6 +60,7 @@ export function consolidateQueryResult(
   const nodeIds = new Set<number>(
     dedupNodes.map((descriptor) => descriptor.id)
   );
+
   const subsidiary: NodeResultDescriptor[] = [];
 
   for (let i = dedupEdges.length - 1; i >= 0; i -= 1) {
@@ -70,6 +71,7 @@ export function consolidateQueryResult(
         nodeIds.add(edge.from);
         subsidiary.push({
           id: edge.from,
+          types: [], // types of subsidiary nodes are unknown, color is yellow either way
           subsidiary: true,
         });
       }
@@ -78,6 +80,7 @@ export function consolidateQueryResult(
         nodeIds.add(edge.to);
         subsidiary.push({
           id: edge.to,
+          types: [], // types of subsidiary nodes are unknown, color is yellow either way
           subsidiary: true,
         });
       }

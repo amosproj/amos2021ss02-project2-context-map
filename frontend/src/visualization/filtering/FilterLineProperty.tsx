@@ -7,23 +7,59 @@ import {
   MenuItem,
   Select,
 } from '@material-ui/core';
-import React from 'react';
-import FilterPropertyModel from '../../FilterPropertyModel';
+import React, { useEffect } from 'react';
+import useService from '../../dependency-injection/useService';
+import FilterStateStore from '../../stores/filterState/FilterStateStore';
+import { FilterModelEntry } from '../../shared/filter';
 
 const useStyles = makeStyles(() =>
   createStyles({
     select: {
-      width: 200,
+      width: 500,
     },
   })
 );
 
-const EntityPropertySelect = (props: {
-  property: FilterPropertyModel;
-  setProperty: React.Dispatch<React.SetStateAction<FilterPropertyModel>>;
+const FilterLineProperty = (props: {
+  filterModelEntry: FilterModelEntry;
+  filterLineType: string;
+  entity: 'node' | 'edge';
+  applyFilter: boolean;
+  setApplyFilter: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const classes = useStyles();
-  const { property, setProperty } = props;
+  const {
+    filterModelEntry,
+    filterLineType,
+    entity,
+    applyFilter,
+    setApplyFilter,
+  } = props;
+
+  const filterStateStore = useService<FilterStateStore>(FilterStateStore);
+
+  const [selectedValues, setSelectedValues] = React.useState<string[]>(
+    filterStateStore.getPropertyStateValues(
+      filterLineType,
+      filterModelEntry.key,
+      entity
+    ) ?? []
+  );
+
+  // update filterStateStore here because selectedValues will first be updated in the next render
+  useEffect(() => {
+    if (applyFilter) {
+      filterStateStore.addFilterPropertyState(
+        {
+          name: filterModelEntry.key,
+          values: selectedValues,
+        },
+        filterLineType,
+        entity
+      );
+      setApplyFilter(false);
+    }
+  }, [selectedValues, applyFilter]);
 
   // utils from material ui multiselect https://material-ui.com/components/selects/#select
   const ITEM_HEIGHT = 48;
@@ -49,30 +85,27 @@ const EntityPropertySelect = (props: {
   const theme = useTheme();
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setProperty({
-      ...property,
-      selectedValues: event.target.value as string[],
-    });
+    setSelectedValues(event.target.value as string[]);
   };
 
   return (
     <div className="FilterSelect">
       <FormControl className={classes.select}>
-        <InputLabel>{property.key}</InputLabel>
+        <InputLabel>{filterModelEntry.key}</InputLabel>
         <Select
           multiple
-          value={(property.selectedValues ?? []) as string[]}
+          value={(selectedValues ?? []) as string[]}
           onChange={handleChange}
           input={<Input />}
           MenuProps={MenuProps}
         >
-          {property.values.map((name) => (
+          {filterModelEntry.values.map((name) => (
             <MenuItem
               key={typeof name === 'string' ? name : 'Error: No string'}
               value={typeof name === 'string' ? name : 'Error: No string'}
               style={getStyles(
                 typeof name === 'string' ? name : 'Error: No string',
-                property.values as string[],
+                filterModelEntry.values as string[],
                 theme
               )}
             >
@@ -85,4 +118,4 @@ const EntityPropertySelect = (props: {
   );
 };
 
-export default EntityPropertySelect;
+export default FilterLineProperty;

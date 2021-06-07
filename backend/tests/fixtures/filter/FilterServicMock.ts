@@ -72,11 +72,12 @@ export default class FilterServiceMock implements FilterServiceBase {
       : edges;
 
     const result = {
-      nodes: filteredNodes.map((node) => ({ id: node.id })),
+      nodes: filteredNodes.map((node) => ({ id: node.id, types: node.types })),
       edges: filteredEdges.map((edge) => ({
         id: edge.id,
         from: edge.from,
         to: edge.to,
+        type: edge.type,
       })),
     };
     return Promise.resolve(consolidateQueryResult(result));

@@ -20,7 +20,7 @@ const MAX_BATCH_SIZE = 90;
 
 // TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
 /* istanbul ignore next */
-function createBatches(array: number[]) {
+function createBatches(array: number[] | NodeDescriptor[] | EdgeDescriptor[]) {
   const batches = [];
   for (let i = 0; i < array.length; i += MAX_BATCH_SIZE) {
     batches.push(array.slice(i, i + MAX_BATCH_SIZE));
