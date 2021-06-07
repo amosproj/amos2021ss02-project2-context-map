@@ -195,7 +195,7 @@ const Filter = (): JSX.Element => {
             <Tab label="Edge Types" className="EdgeTypes" />
           </Tabs>
         </AppBar>
-        <List style={{ maxHeight: '94%', width: 320, overflow: 'auto' }}>
+        <List style={{ overflow: 'auto' }}>
           <TabPanel value={tabIndex} index={0}>
             {nodes}
             <SubsidiaryNodesToggle />

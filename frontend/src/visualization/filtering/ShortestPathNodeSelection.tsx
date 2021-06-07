@@ -10,7 +10,7 @@ import useObservable from '../../utils/useObservable';
  * Selection of a start or an end node using a {@link Autocomplete}.
  */
 export default function ShortestPathNodeSelection(props: {
-  end: 'start' | 'end';
+  end: 'start' | 'tail';
   setNode: React.Dispatch<React.SetStateAction<number | null>>;
 }): JSX.Element {
   const { end, setNode } = props;
@@ -48,7 +48,7 @@ export default function ShortestPathNodeSelection(props: {
         onChange={handleSetNode}
         options={nodeIds}
         getOptionLabel={(option) => option.toString()}
-        style={{ width: 200 }}
+        style={{ width: '70%' }}
         renderInput={(params) => (
           <TextField
             className="StartEndNodeSelection"
@@ -60,11 +60,6 @@ export default function ShortestPathNodeSelection(props: {
           />
         )}
         PopperComponent={AutocompletePopper}
-        ListboxProps={{
-          style: {
-            maxHeight: '200px',
-          },
-        }}
       />
     </>
   );

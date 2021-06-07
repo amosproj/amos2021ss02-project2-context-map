@@ -7,31 +7,30 @@ import ShortestPathNodeSelection from './ShortestPathNodeSelection';
  * Menu where start and end node for shortest path can be selected
  */
 export default function ShortestPathMenu(): JSX.Element {
-  const [errorNotSpecified, setErrorNotSpecified] = useState(false);
+  const [errorSpecified, setErrorSpecified] = useState(false);
 
   const [startNode, setStartNode] = useState<number | null>(null);
   const [endNode, setEndNode] = useState<number | null>(null);
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   const handleStartShortestPath = () => {
     if (startNode !== null && endNode !== null) {
-      setErrorNotSpecified(false);
+      setErrorSpecified(false);
       // TODO: compute shortest path. Use startNode and endNode.
     } else {
-      setErrorNotSpecified(true);
+      setErrorSpecified(true);
     }
   };
 
   return (
     <>
       <Box display="flex" p={1} fontWeight={500} fontSize={16}>
-        Shortest path computation
+        Find shortest path
       </Box>
       <Box display="flex" p={1}>
         <ShortestPathNodeSelection end="start" setNode={setStartNode} />
       </Box>
       <Box display="flex" p={1}>
-        <ShortestPathNodeSelection end="end" setNode={setEndNode} />
+        <ShortestPathNodeSelection end="tail" setNode={setEndNode} />
       </Box>
       <Box display="flex" p={1}>
         <Button
@@ -44,7 +43,7 @@ export default function ShortestPathMenu(): JSX.Element {
         </Button>
       </Box>
       <Box display="flex" p={1}>
-        {errorNotSpecified && (
+        {errorSpecified && (
           <Alert className="ShortestPathNodesNotSpecified" severity="error">
             Specify start and end node!
           </Alert>
