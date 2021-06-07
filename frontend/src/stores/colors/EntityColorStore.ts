@@ -41,9 +41,9 @@ type Entity = EdgeDescriptor | NodeDescriptor | NodeResultDescriptor;
 export class EntityColorStore {
   protected readonly entityTypeColorMap = new Map<string, string>();
   /**
-   * When this is true, graphs will be black and gray only
+   * When greyScale is true, graphs will be black and gray only
    */
-  greyScale = false;
+  protected greyScale = false;
 
   /**
    * Contains the state.
@@ -151,6 +151,15 @@ export class EntityColorStore {
    */
   public getValue(): EntityColorizer {
     return this.storeSubject.value;
+  }
+
+  public getGreyScale(): boolean {
+    return this.greyScale;
+  }
+
+  public setGreyScale(greyScale: boolean): void {
+    this.greyScale = greyScale;
+    this.storeSubject.next(this.getEntityColorizer());
   }
 }
 
