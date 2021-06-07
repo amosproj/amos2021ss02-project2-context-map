@@ -72,7 +72,7 @@ export default function convertSearchResultToSearchResultList(
         element: (
           <NodeTypeComponent
             name={t.name}
-            node={{ id: -1, types: [`${t.name}`] }}
+            node={{ id: -1, types: [t.name] }}
             colorize={colorize}
           />
         ),
