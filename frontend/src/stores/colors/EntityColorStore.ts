@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { injectable } from 'inversify';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { common } from '@material-ui/core/colors';
+import { common, grey } from '@material-ui/core/colors';
 import EntityVisualisationAttributes, {
   NodeVisualisationAttributes,
 } from './EntityVisualisationAttributes';
@@ -40,6 +40,10 @@ type Entity = EdgeDescriptor | NodeDescriptor | NodeResultDescriptor;
 @injectable()
 export class EntityColorStore {
   protected readonly entityTypeColorMap = new Map<string, string>();
+  /**
+   * When this is true, graphs will be black and gray only
+   */
+  greyScale = false;
 
   /**
    * Contains the state.
@@ -70,7 +74,13 @@ export class EntityColorStore {
       };
 
       const type = this.getTypeOfEntity(entity);
-      let mainColor = this.entityTypeColorMap.get(type);
+
+      let mainColor;
+      if (this.greyScale) {
+        mainColor = isNodeDescriptor(entity) ? grey[500] : common.black;
+      } else {
+        mainColor = this.entityTypeColorMap.get(type);
+      }
 
       if (!mainColor) {
         // main color not yet found for this entity type
