@@ -10,12 +10,14 @@ export default function GreyScaleToggle(): JSX.Element {
   const entityColorStore = useService(EntityColorStore);
 
   // toggle greyScale
-  const [colorize, setGreyScale] = useState<boolean>(true);
+  const [colorize, setGreyScale] = useState<boolean>(
+    !entityColorStore.getGreyScale()
+  );
 
   // update the state
   const updateGreyScale = (val: boolean) => {
     entityColorStore.setGreyScale(val);
-    setGreyScale(val);
+    setGreyScale(!val);
   };
 
   return (
@@ -23,7 +25,7 @@ export default function GreyScaleToggle(): JSX.Element {
       <FormControlLabel
         control={
           <Checkbox
-            checked={!entityColorStore.getGreyScale()}
+            checked={colorize}
             onChange={(_, val) => updateGreyScale(!val)}
             name="colorize-graph"
             color="primary"
