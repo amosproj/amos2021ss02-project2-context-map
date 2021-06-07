@@ -24,6 +24,10 @@ export default abstract class SimpleStore<T> {
    */
   protected abstract getInitialValue(): T;
 
+  /**
+   * Ensures that the store is initialized. This is called on every action on
+   * the store and has to ensure that the initialization is only done once.
+   */
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected ensureInit(): void {}
 
