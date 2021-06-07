@@ -1,6 +1,16 @@
 import { EdgeDescriptor, NodeDescriptor } from '../shared/entities';
 
 /**
+ * An edge entry in a graph path.
+ */
+export interface PathEdgeEntry extends EdgeDescriptor {
+  /**
+   * The cost of the edge.
+   */
+  cost: number;
+}
+
+/**
  * Describes a path through a graph of nodes.
  */
 export interface Path {
@@ -16,5 +26,5 @@ export interface Path {
    * The array contains one less entry than the nodes array.
    * The array must not contain edges that reference nodes that are not included in the nodes array.
    */
-  edges: EdgeDescriptor[];
+  edges: PathEdgeEntry[];
 }

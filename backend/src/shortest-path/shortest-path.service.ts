@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
-import { QueryResult } from '../shared/queries';
+import { QueryEdgeResult, QueryResult } from '../shared/queries';
 import { EdgeDescriptor, NodeDescriptor } from '../shared/entities';
-import { Path } from './Path';
+import { Path, PathEdgeEntry } from './Path';
 import {
   ShortestPathQuery,
   ShortestPathServiceBase,
@@ -39,9 +39,12 @@ export class ShortestPathService implements ShortestPathServiceBase {
       (node) => node.id === path.nodes[0].id
     );
 
+    let startNodeAdded = false;
+
     if (!startNode) {
       [startNode] = path.nodes;
       queryResult.nodes.push(startNode);
+      startNodeAdded = true;
     }
 
     startNode.isPath = true;
@@ -51,14 +54,15 @@ export class ShortestPathService implements ShortestPathServiceBase {
       (node) => node.id === path.nodes[path.nodes.length - 1].id
     );
 
+    let endNodeAdded = false;
+
     if (!endNode) {
       endNode = path.nodes[path.nodes.length - 1];
       queryResult.nodes.push(endNode);
+      endNodeAdded = true;
     }
 
     endNode.isPath = true;
-
-    let sourceNode = startNode;
 
     // TODO: Is it guaranteed, that neo4j ids are never negative? It would be better if we use some other datatype, like string instead of number
     //       and prefix virtual entities with some unique string.
@@ -77,20 +81,32 @@ export class ShortestPathService implements ShortestPathServiceBase {
       return result;
     };
 
+    let lastNode = startNode;
+
+    // The true id of the last node, not the virtual id, if last node is virtual.
+    let lastNodeId = startNode.id;
+
     // Walk the path from the start to the end
-    for (const curr of path.edges) {
+    for (const currEdge of path.edges) {
+      // Get the id of the currently processed node.
+      // We cannot just use curr.to, as paths can ignore edge directions, so
+      // the direction of the current edge may be flipped and point from
+      // currNode to lastNode
+      const currNodeId =
+        currEdge.to === lastNodeId ? currEdge.from : currEdge.to;
+
       // We assume that the start node is already present in the query-result
       // Check whether the end-node is present
-      const targetNode = queryResult.nodes.find((node) => node.id === curr.to);
+      const currNode = queryResult.nodes.find((node) => node.id === currNodeId);
 
       // The target node was found. Mark it as path.
-      if (targetNode) {
-        targetNode.isPath = true;
+      if (currNode) {
+        currNode.isPath = true;
 
         // Check whether the edge from source node to target node is in the query-result.
         // This can only be the case, if the source-node is not virtual.
-        if (!sourceNode.virtual) {
-          const edge = queryResult.edges.find((e) => e.id === curr.id);
+        if (!lastNode.virtual) {
+          const edge = queryResult.edges.find((e) => e.id === currEdge.id);
 
           // The edge was found. Mark it as path.
           if (edge) {
@@ -98,51 +114,94 @@ export class ShortestPathService implements ShortestPathServiceBase {
           }
           // The edge was not found. Insert it.
           else {
-            queryResult.edges.push({
-              ...curr,
-              subsidiary: true,
-            });
+            let subsidiary = true;
+
+            // Edges to/from the path start node and edges to/from the path end node
+            // are per definition subsidiary, only when we did not add the start/end node to
+            // the query-result.
+            if (startNodeAdded && lastNodeId === startNode.id) {
+              subsidiary = false;
+            }
+
+            if (endNodeAdded && currNode.id === endNode.id) {
+              subsidiary = false;
+            }
+
+            const edgeToAdd: QueryEdgeResult = {
+              id: currEdge.id,
+              from: currEdge.from,
+              to: currEdge.to,
+              isPath: true,
+            };
+
+            if (subsidiary) {
+              edgeToAdd.subsidiary = true;
+            }
+
+            queryResult.edges.push(edgeToAdd);
           }
         }
         // The source node is virtual. Add a virtual edge to the target node.
         else {
           const vEdgeId = getNextVEdgeId();
+          // Do not take the real id of the last node, but the allocated virtual id.
+          let from = lastNode.id;
+          let to = currNodeId;
+
+          // The current edge points from curr to last (the reverse of the path direction)
+          if (currNodeId === currEdge.from) {
+            const acc = from;
+            from = to;
+            to = acc;
+          }
+
           queryResult.edges.push({
             id: vEdgeId,
-            from: sourceNode.id,
-            to: targetNode.id,
+            from,
+            to,
             virtual: true,
             isPath: true,
           });
         }
 
-        sourceNode = targetNode;
+        lastNode = currNode;
       }
       // The target node was not-found. Check whether the source node is virtual. If it is
       // we don't have to do anything, as the virtual node already replaces a complete
       // subgraph (that our node now will become part of), if it is not, we have to create
       // it as a replacement for the subgraph. In the last case, we also have to insert
       // a virtual edge.
-      else if (!sourceNode.virtual) {
+      else if (!lastNode.virtual) {
         const vEdgeId = getNextVEdgeId();
         const vNodeId = getNextVNodeId();
+        let from = lastNodeId;
+        let to = vNodeId;
+
+        // The current edge points from curr to last (the reverse of the path direction)
+        if (currNodeId === currEdge.from) {
+          const acc = from;
+          from = to;
+          to = acc;
+        }
 
         queryResult.edges.push({
           id: vEdgeId,
-          from: sourceNode.id,
-          to: vNodeId,
+          from,
+          to,
           virtual: true,
           isPath: true,
         });
 
-        sourceNode = {
+        lastNode = {
           id: vNodeId,
           virtual: true,
           isPath: true,
         };
 
-        queryResult.nodes.push(sourceNode);
+        queryResult.nodes.push(lastNode);
       }
+
+      lastNodeId = currNodeId;
     }
 
     return queryResult;
@@ -282,29 +341,29 @@ export class ShortestPathService implements ShortestPathServiceBase {
         // eslint-disable-next-line no-await-in-loop
         const edgeResult = await this.neo4jService.read(
           `
-          MATCH (m)-[e]${ignoreEdgeDirections ? '-' : '->'}(n) 
-          WHERE (id(m) = $startId AND id(n) = $endId) 
-          WITH id(e) as id, 1 as cost 
+          MATCH (m)-[e]->(n) 
+          WHERE ((ID(m) = $startId AND ID(n) = $endId)${
+            ignoreEdgeDirections
+              ? ' OR (ID(n) = $startId AND ID(m) = $endId)'
+              : ''
+          })
+          WITH ID(e) as id, ID(m) as from, ID(n) as to, 1 as cost 
           ORDER BY cost 
           LIMIT 1 
-          RETURN id, cost
+          RETURN id, from, to, cost
           `,
           { startId: sourceNode.id, endId: targetNode.id }
         );
 
         const edgeCandidates = edgeResult.records.map(
-          (x) => x.toObject() as { id: number; cost: number }
+          (x) => x.toObject() as PathEdgeEntry
         );
 
         if (edgeCandidates.length === 0) {
           return null;
         }
 
-        return {
-          id: edgeCandidates[0].id,
-          from: sourceNode.id,
-          to: targetNode.id,
-        };
+        return edgeCandidates[0];
       }
     );
 
@@ -314,6 +373,6 @@ export class ShortestPathService implements ShortestPathServiceBase {
       return null;
     }
 
-    return { nodes, edges: edges as EdgeDescriptor[] };
+    return { nodes, edges: edges as PathEdgeEntry[] };
   }
 }
