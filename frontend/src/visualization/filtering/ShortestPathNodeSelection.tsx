@@ -1,6 +1,6 @@
 import React, { ChangeEvent } from 'react';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { TextField } from '@material-ui/core';
+import { Popper, PopperProps, TextField } from '@material-ui/core';
 import { map } from 'rxjs/operators';
 import useService from '../../dependency-injection/useService';
 import QueryResultStore from '../../stores/QueryResultStore';
@@ -31,18 +31,38 @@ export default function ShortestPathNodeSelection(props: {
     setNode(newValue);
   };
 
+  // used to display selection in the foreground and placement on top of component
+  const AutocompletePopper = (popperProps: PopperProps) => (
+    <Popper
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...popperProps}
+      disablePortal // displays selection in the foreground
+      placement="top-start"
+    />
+  );
+
   return (
     <>
       <Autocomplete
-        disablePortal // displays selection in the foreground
         onChange={handleSetNode}
         options={nodeIds}
         getOptionLabel={(option) => option.toString()}
         style={{ width: 200 }}
         renderInput={(params) => (
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          <TextField {...params} label={end} variant="outlined" required />
+          <TextField
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...params}
+            label={end}
+            variant="outlined"
+            required
+          />
         )}
+        PopperComponent={AutocompletePopper}
+        ListboxProps={{
+          style: {
+            maxHeight: '200px',
+          },
+        }}
       />
     </>
   );
