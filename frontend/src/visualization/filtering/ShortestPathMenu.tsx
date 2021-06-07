@@ -1,14 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Button } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import ShortestPathNodeSelection from './ShortestPathNodeSelection';
 
 /**
  * Menu where start and end node for shortest path can be selected
  */
 export default function ShortestPathMenu(): JSX.Element {
+  const [errorNotSpecified, setErrorNotSpecified] = useState(false);
+
+  const [startNode, setStartNode] = useState<number | null>(null);
+  const [endNode, setEndNode] = useState<number | null>(null);
+
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const handleStartShortestPath = () => {
-    // TODO: compute shortest path.
+    if (startNode !== null && endNode !== null) {
+      setErrorNotSpecified(false);
+      // TODO: compute shortest path. Use startNode and endNode.
+    } else {
+      setErrorNotSpecified(true);
+    }
   };
 
   return (
@@ -17,10 +28,10 @@ export default function ShortestPathMenu(): JSX.Element {
         Shortest path computation
       </Box>
       <Box display="flex" p={1}>
-        <ShortestPathNodeSelection end="start" />
+        <ShortestPathNodeSelection end="start" setNode={setStartNode} />
       </Box>
       <Box display="flex" p={1}>
-        <ShortestPathNodeSelection end="end" />
+        <ShortestPathNodeSelection end="end" setNode={setEndNode} />
       </Box>
       <Box display="flex" p={1}>
         <Button
@@ -30,6 +41,11 @@ export default function ShortestPathMenu(): JSX.Element {
         >
           Search
         </Button>
+      </Box>
+      <Box display="flex" p={1}>
+        {errorNotSpecified && (
+          <Alert severity="error">Specify start and end node!</Alert>
+        )}
       </Box>
     </>
   );
