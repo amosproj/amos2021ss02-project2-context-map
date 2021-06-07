@@ -16,7 +16,7 @@ const MAX_BATCH_SIZE = 90;
 
 // TODO: This is currently not in use, so untested, add tests when this is needed in production code.
 /* istanbul ignore next */
-function createBatches(array: number[] | NodeDescriptor[]) {
+function createBatches(array: number[] | NodeDescriptor[] | EdgeDescriptor[]) {
   const batches = [];
   for (let i = 0; i < array.length; i += MAX_BATCH_SIZE) {
     batches.push(array.slice(i, i + MAX_BATCH_SIZE));

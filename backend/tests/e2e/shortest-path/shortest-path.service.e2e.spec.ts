@@ -15,6 +15,7 @@ import {
   OfTypeCondition,
   QueryResult,
 } from '../../../src/shared/queries';
+import { AppService } from '../../../src/app.service';
 
 describe('ShortestPathService', () => {
   let service: ShortestPathServiceBase;
@@ -33,7 +34,7 @@ describe('ShortestPathService', () => {
           disableLosslessIntegers: true,
         }),
       ],
-      providers: [ShortestPathService, FilterService],
+      providers: [ShortestPathService, FilterService, AppService],
     }).compile();
 
     service = module.get(ShortestPathService);
@@ -85,7 +86,7 @@ describe('ShortestPathService', () => {
     it('returns single entry result of start node equals end-node', async () => {
       // Arrange
       const expectedResult: Path = {
-        nodes: [{ id: 1 }],
+        nodes: [{ id: 1, types: ['Person'] }],
         edges: [],
       };
 
@@ -99,8 +100,11 @@ describe('ShortestPathService', () => {
     it('returns correct result when path spans multiple nodes', async () => {
       // Arrange
       const expectedResult: Path = {
-        nodes: [{ id: 3 }, { id: 0 }],
-        edges: [{ id: 2, from: 3, to: 0, cost: 1 }],
+        nodes: [
+          { id: 3, types: ['Person'] },
+          { id: 0, types: ['Movie'] },
+        ],
+        edges: [{ id: 2, from: 3, to: 0, cost: 1, type: 'DIRECTED' }],
       };
 
       // Act
@@ -124,10 +128,14 @@ describe('ShortestPathService', () => {
     it('returns correct result when there is a path only when ignoring edge directions', async () => {
       // Arrange
       const expectedResult: Path = {
-        nodes: [{ id: 3 }, { id: 0 }, { id: 1 }],
+        nodes: [
+          { id: 3, types: ['Person'] },
+          { id: 0, types: ['Movie'] },
+          { id: 1, types: ['Person'] },
+        ],
         edges: [
-          { id: 2, from: 3, to: 0, cost: 1 },
-          { id: 0, from: 1, to: 0, cost: 1 },
+          { id: 2, from: 3, to: 0, cost: 1, type: 'DIRECTED' },
+          { id: 0, from: 1, to: 0, cost: 1, type: 'ACTED_IN' },
         ],
       };
 
@@ -154,7 +162,7 @@ describe('ShortestPathService', () => {
       };
 
       const expectedResult: QueryResult = {
-        nodes: [{ id: 0 }],
+        nodes: [{ id: 0, types: ['Movie'] }],
         edges: [],
       };
 
@@ -181,10 +189,10 @@ describe('ShortestPathService', () => {
 
       const expectedResult: QueryResult = {
         nodes: [
-          { id: 0, isPath: true },
-          { id: 3, isPath: true },
+          { id: 0, isPath: true, types: ['Movie'] },
+          { id: 3, isPath: true, types: ['Person'] },
         ],
-        edges: [{ id: 2, from: 3, to: 0, isPath: true }],
+        edges: [{ id: 2, from: 3, to: 0, isPath: true, type: 'DIRECTED' }],
       };
 
       // Act
@@ -207,10 +215,10 @@ describe('ShortestPathService', () => {
 
       const expectedResult: QueryResult = {
         nodes: [
-          { id: 0, isPath: true },
-          { id: 3, isPath: true },
+          { id: 0, isPath: true, types: ['Movie'] },
+          { id: 3, isPath: true, types: ['Person'] },
         ],
-        edges: [{ id: 2, from: 3, to: 0, isPath: true }],
+        edges: [{ id: 2, from: 3, to: 0, isPath: true, type: 'DIRECTED' }],
       };
 
       // Act
@@ -233,10 +241,10 @@ describe('ShortestPathService', () => {
 
       const expectedResult: QueryResult = {
         nodes: [
-          { id: 3, isPath: true },
-          { id: 0, isPath: true },
+          { id: 3, isPath: true, types: ['Person'] },
+          { id: 0, isPath: true, types: ['Movie'] },
         ],
-        edges: [{ id: 2, from: 3, to: 0, isPath: true }],
+        edges: [{ id: 2, from: 3, to: 0, isPath: true, type: 'DIRECTED' }],
       };
 
       // Act
@@ -262,10 +270,19 @@ describe('ShortestPathService', () => {
 
       const expectedResult: QueryResult = {
         nodes: [
-          { id: 0, isPath: true },
-          { id: 3, isPath: true },
+          { id: 0, isPath: true, types: ['Movie'] },
+          { id: 3, isPath: true, types: ['Person'] },
         ],
-        edges: [{ id: 2, from: 3, to: 0, isPath: true, subsidiary: true }],
+        edges: [
+          {
+            id: 2,
+            from: 3,
+            to: 0,
+            isPath: true,
+            subsidiary: true,
+            type: 'DIRECTED',
+          },
+        ],
       };
 
       // Act
@@ -293,13 +310,20 @@ describe('ShortestPathService', () => {
 
       const expectedResult: QueryResult = {
         nodes: [
-          { id: 0, isPath: true },
-          { id: 1, isPath: true },
-          { id: 3, isPath: true },
+          { id: 0, isPath: true, types: ['Movie'] },
+          { id: 1, isPath: true, types: ['Person'] },
+          { id: 3, isPath: true, types: ['Person'] },
         ],
         edges: [
-          { id: 2, from: 3, to: 0, isPath: true },
-          { id: 0, from: 1, to: 0, isPath: true, subsidiary: true },
+          { id: 2, from: 3, to: 0, isPath: true, type: 'DIRECTED' },
+          {
+            id: 0,
+            from: 1,
+            to: 0,
+            isPath: true,
+            subsidiary: true,
+            type: 'ACTED_IN',
+          },
         ],
       };
 
@@ -338,13 +362,13 @@ describe('ShortestPathService', () => {
 
       const expectedResult: QueryResult = {
         nodes: [
-          { id: 1, isPath: true },
-          { id: 3, isPath: true },
-          { id: -1, isPath: true, virtual: true },
+          { id: 1, isPath: true, types: ['Person'] },
+          { id: 3, isPath: true, types: ['Person'] },
+          { id: -1, isPath: true, virtual: true, types: [] },
         ],
         edges: [
-          { id: -1, from: 3, to: -1, isPath: true, virtual: true },
-          { id: -2, from: 1, to: -1, isPath: true, virtual: true },
+          { id: -1, from: 3, to: -1, isPath: true, virtual: true, type: '' },
+          { id: -2, from: 1, to: -1, isPath: true, virtual: true, type: '' },
         ],
       };
 
@@ -368,10 +392,10 @@ describe('ShortestPathService', () => {
 
       const expectedResult: QueryResult = {
         nodes: [
-          { id: 3, isPath: true },
-          { id: 0, isPath: true },
+          { id: 3, isPath: true, types: ['Person'] },
+          { id: 0, isPath: true, types: ['Movie'] },
         ],
-        edges: [{ id: 2, from: 3, to: 0, isPath: true }],
+        edges: [{ id: 2, from: 3, to: 0, isPath: true, type: 'DIRECTED' }],
       };
 
       // Act
@@ -406,13 +430,13 @@ describe('ShortestPathService', () => {
 
       const expectedResult: QueryResult = {
         nodes: [
-          { id: 3, isPath: true },
-          { id: 1, isPath: true },
-          { id: -1, isPath: true, virtual: true },
+          { id: 3, isPath: true, types: ['Person'] },
+          { id: 1, isPath: true, types: ['Person'] },
+          { id: -1, isPath: true, virtual: true, types: [] },
         ],
         edges: [
-          { id: -1, from: 3, to: -1, isPath: true, virtual: true },
-          { id: -2, from: 1, to: -1, isPath: true, virtual: true },
+          { id: -1, from: 3, to: -1, isPath: true, virtual: true, type: '' },
+          { id: -2, from: 1, to: -1, isPath: true, virtual: true, type: '' },
         ],
       };
 

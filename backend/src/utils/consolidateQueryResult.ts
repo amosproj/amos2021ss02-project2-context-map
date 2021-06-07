@@ -70,6 +70,7 @@ export function consolidateQueryResult(
         nodeIds.add(edge.from);
         subsidiary.push({
           id: edge.from,
+          types: [], // types of subsidiary nodes are unknown, color is special
           subsidiary: true,
         });
       }
@@ -78,6 +79,7 @@ export function consolidateQueryResult(
         nodeIds.add(edge.to);
         subsidiary.push({
           id: edge.to,
+          types: [], // types of subsidiary nodes are unknown, color is special
           subsidiary: true,
         });
       }

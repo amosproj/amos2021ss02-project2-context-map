@@ -9,20 +9,26 @@ import {
   Tabs,
   Typography,
 } from '@material-ui/core';
-import React, { useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { tap } from 'rxjs/operators';
+import { forkJoin, from } from 'rxjs';
 import useService from '../../dependency-injection/useService';
-import { CancellationToken } from '../../utils/CancellationToken';
-import { EdgeType, NodeType } from '../../shared/schema';
-import EntityFilterElement from './components/EntityFilterElement';
-import fetchDataFromService from '../shared-ops/fetchDataFromService';
 import entityColors from '../data/GraphData';
 import { SchemaService } from '../../services/schema';
-import { FilterCondition, MatchAnyCondition } from '../../shared/queries';
-import FilterQueryStore from '../../stores/FilterQueryStore';
 import MaxEntitiesSlider from './MaxEntitiesSlider';
+import { EdgeType, NodeType } from '../../shared/schema';
+import EntityTypeTemplate from './helpers/EntityTypeTemplate';
+import useObservable from '../../utils/useObservable';
+import withLoadingBar from '../../utils/withLoadingBar';
+import withErrorHandler from '../../utils/withErrorHandler';
+import LoadingStore from '../../stores/LoadingStore';
+import ErrorStore from '../../stores/ErrorStore';
+import SubsidiaryNodesToggle from './SubsidiaryNodesToggle';
+import FilterStateStore from '../../stores/filterState/FilterStateStore';
+import { FilterLineState } from '../../stores/filterState/FilterState';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -65,139 +71,87 @@ function TabPanel(props: TabPanelProps) {
 }
 
 /**
- * Fetches nodeTypes from the schemaService.
- *
- * @param schemaService - the schemaService the data is fetched from
- * @param cancellation - the cancellation token
+ * The filtering sidebar component used to filter specific elements of the {@link Graph}.
+ * The filter is divided into node and edge types sections. Each entity section consists of
+ * {@link FilterLine}s where the user can further specify which properties the chosen entity
+ * shall have. The properties are managed in {@link FilterLineProperties} and a single Property in
+ * {@link FilterLineProperty}.
  */
-function fetchNodeTypes(
-  schemaService: SchemaService,
-  cancellation: CancellationToken
-): Promise<NodeType[]> {
-  return schemaService.getNodeTypes(cancellation);
-}
-
-/**
- * Fetches edgeTypes from the schemaService.
- *
- * @param schemaService - the schemaService the data is fetched from
- * @param cancellation - the cancellation token
- */
-function fetchEdgeTypes(
-  schemaService: SchemaService,
-  cancellation: CancellationToken
-): Promise<EdgeType[]> {
-  return schemaService.getEdgeTypes(cancellation);
-}
-
 const Filter = (): JSX.Element => {
   // hooks
   const classes = useStyles();
   const [tabIndex, setTabIndex] = React.useState(0);
   const [open, setOpen] = React.useState(false);
 
+  const filterStateStore = useService<FilterStateStore>(FilterStateStore);
+
   const schemaService = useService(SchemaService, null);
 
-  const filterStore = useService(FilterQueryStore);
+  const [schema, setSchema] = useState<{
+    nodes: NodeType[];
+    edges: EdgeType[];
+  }>({ nodes: [], edges: [] });
 
-  const nodeConditionsRef = useRef<(FilterCondition | null)[]>([]);
-  const edgeConditionsRef = useRef<(FilterCondition | null)[]>([]);
+  const loadingStore = useService<LoadingStore>(LoadingStore);
+  const errorStore = useService<ErrorStore>(ErrorStore);
 
-  function updateQuery() {
-    const nodeConditions = nodeConditionsRef.current.filter(
-      (condition) => condition !== null
-    ) as FilterCondition[];
-
-    const edgeConditions = edgeConditionsRef.current.filter(
-      (condition) => condition !== null
-    ) as FilterCondition[];
-
-    const filters: { nodes?: FilterCondition; edges?: FilterCondition } = {};
-
-    if (nodeConditions.length > 0) {
-      filters.nodes = MatchAnyCondition(...nodeConditions);
-    }
-
-    if (edgeConditions.length > 0) {
-      filters.edges = MatchAnyCondition(...edgeConditions);
-    }
-
-    // TODO: Make limits configurable
-    filterStore.mergeState({ filters });
-  }
-
-  // a JSX.Element template used for rendering
-  const entityTemplate = (
-    color: string,
-    name: string,
-    entity: 'node' | 'edge',
-    i: number
-  ) => {
-    const setEntryFilterCondition = (
-      condition: FilterCondition | null
-    ): void => {
-      const conditionsRef =
-        entity === 'node' ? nodeConditionsRef : edgeConditionsRef;
-      const conditions = conditionsRef.current;
-
-      while (conditions.length - 1 < i) {
-        conditions.push(null);
-      }
-
-      conditions[i] = condition;
-      conditionsRef.current = conditions;
-      updateQuery();
-    };
-
-    return (
-      <div>
-        <Box display="flex" p={1}>
-          <EntityFilterElement
-            backgroundColor={color}
-            name={name}
-            entity={entity}
-            setFilterQuery={setEntryFilterCondition}
-          />
-        </Box>
-      </div>
-    );
-  };
-
-  function renderNodes(nodeTypes: NodeType[]): JSX.Element {
-    return (
-      <>
-        {nodeTypes.map((type, i) =>
-          entityTemplate(
-            entityColors[i % entityColors.length],
-            type.name,
-            'node',
-            i
-          )
-        )}
-      </>
-    );
-  }
-
-  function renderEdges(edgeTypes: EdgeType[]): JSX.Element {
-    return (
-      <>
-        {edgeTypes.map((type, i) =>
-          entityTemplate('#a9a9a9', type.name, 'edge', i)
-        )}
-      </>
-    );
-  }
-
-  const nodes = fetchDataFromService(
-    fetchNodeTypes,
-    renderNodes,
-    schemaService
+  useObservable(
+    forkJoin([
+      from(schemaService.getNodeTypes()),
+      from(schemaService.getEdgeTypes()),
+    ]).pipe(
+      withLoadingBar({ loadingStore }),
+      withErrorHandler({ rethrow: true, errorStore }),
+      tap((schemaFromService) => {
+        setSchema({ nodes: schemaFromService[0], edges: schemaFromService[1] });
+      })
+    )
   );
 
-  const edges = fetchDataFromService(
-    fetchEdgeTypes,
-    renderEdges,
-    schemaService
+  // filterStore will only be initialized on the first render
+  useEffect(() => {
+    const nodeLineStates: FilterLineState[] = [];
+    const edgeLineStates: FilterLineState[] = [];
+
+    for (const nodeTypes of schema.nodes) {
+      nodeLineStates.push({
+        type: nodeTypes.name,
+        isActive: false,
+        propertyFilters: [],
+      });
+    }
+
+    for (const edgeTypes of schema.edges) {
+      edgeLineStates.push({
+        type: edgeTypes.name,
+        isActive: false,
+        propertyFilters: [],
+      });
+    }
+
+    filterStateStore.mergeState({
+      nodes: nodeLineStates,
+      edges: edgeLineStates,
+    });
+  }, [schema]);
+
+  const nodes = (
+    <>
+      {schema.nodes.map((type, i) =>
+        EntityTypeTemplate(
+          entityColors[i % entityColors.length],
+          type.name,
+          'node'
+        )
+      )}
+    </>
+  );
+  const edges = (
+    <>
+      {schema.edges.map((type) =>
+        EntityTypeTemplate('#a9a9a9', type.name, 'edge')
+      )}
+    </>
   );
 
   const handleChange = (
@@ -243,7 +197,10 @@ const Filter = (): JSX.Element => {
         <List style={{ maxHeight: '94%', width: 320, overflow: 'auto' }}>
           <TabPanel value={tabIndex} index={0}>
             {nodes}
-            <MaxEntitiesSlider entities="nodes" />
+            <SubsidiaryNodesToggle />
+            <div>
+              <MaxEntitiesSlider entities="nodes" />
+            </div>
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
             {edges}

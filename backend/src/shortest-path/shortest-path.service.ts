@@ -9,6 +9,7 @@ import {
 } from './shortest-path.service.base';
 import { FilterService } from '../filter/filter.service';
 import { range } from '../utils';
+import { AppService } from '../app.service';
 
 const KMAP_GDS_GRAPH_NAME_SHORTEST_PATH = 'KMAP_GDS_GRAPH_NAME_SHORTEST_PATH';
 const KMAP_GDS_GRAPH_NAME_SHORTEST_PATH_DIRECTED =
@@ -18,7 +19,8 @@ const KMAP_GDS_GRAPH_NAME_SHORTEST_PATH_DIRECTED =
 export class ShortestPathService implements ShortestPathServiceBase {
   constructor(
     private readonly neo4jService: Neo4jService,
-    private readonly filterService: FilterService
+    private readonly filterService: FilterService,
+    private readonly queryService: AppService
   ) {}
 
   public async executeQuery(query: ShortestPathQuery): Promise<QueryResult> {
@@ -131,6 +133,7 @@ export class ShortestPathService implements ShortestPathServiceBase {
               id: currEdge.id,
               from: currEdge.from,
               to: currEdge.to,
+              type: currEdge.type,
               isPath: true,
             };
 
@@ -159,6 +162,7 @@ export class ShortestPathService implements ShortestPathServiceBase {
             id: vEdgeId,
             from,
             to,
+            type: '',
             virtual: true,
             isPath: true,
           });
@@ -188,12 +192,14 @@ export class ShortestPathService implements ShortestPathServiceBase {
           id: vEdgeId,
           from,
           to,
+          type: '',
           virtual: true,
           isPath: true,
         });
 
         lastNode = {
           id: vNodeId,
+          types: [],
           virtual: true,
           isPath: true,
         };
@@ -213,12 +219,16 @@ export class ShortestPathService implements ShortestPathServiceBase {
     ignoreEdgeDirections?: boolean
   ): Promise<Path | null> {
     if (startNode === endNode) {
-      if (!(await this.nodeExists(startNode))) {
+      const nodeDetails = (
+        await this.queryService.getNodesById([startNode])
+      ).find((_) => true);
+
+      if (!nodeDetails) {
         return null;
       }
 
       return {
-        nodes: [{ id: startNode }],
+        nodes: [{ id: nodeDetails.id, types: nodeDetails.types }],
         edges: [],
       };
     }
@@ -238,19 +248,6 @@ export class ShortestPathService implements ShortestPathServiceBase {
       endNode,
       ignoreEdgeDirections
     );
-  }
-
-  private async nodeExists(id: number): Promise<boolean> {
-    const result = await this.neo4jService.read(
-      `
-      MATCH(n) WHERE id(n) = $id RETURN id(n) as id
-      `,
-      { id }
-    );
-
-    const nodes = result.records.map((x) => x.toObject() as NodeDescriptor);
-
-    return nodes.length !== 0 && nodes.some((node) => node.id === id);
   }
 
   private async createGDSProjection(
@@ -307,15 +304,17 @@ export class ShortestPathService implements ShortestPathServiceBase {
     const result = await this.neo4jService.read(
       `
       MATCH(start), (end) 
-        WHERE (ID(start) = $startNode AND ID(end) = $endNode) 
-        CALL gds.shortestPath.dijkstra.stream($name, {
-            sourceNode: start,
-            targetNode: end,
-            relationshipWeightProperty: 'cost'
-        })
-        YIELd nodeIds
-        UNWIND nodeIds as id
-        RETURN id
+      WHERE (ID(start) = $startNode AND ID(end) = $endNode) 
+      CALL gds.shortestPath.dijkstra.stream($name, {
+          sourceNode: start,
+          targetNode: end,
+          relationshipWeightProperty: 'cost'
+      })
+      YIELD nodeIds
+      UNWIND nodeIds as id
+      MATCH (n) 
+      WHERE ID(n) = id
+      RETURN id, labels(n) as types
       `,
       { name, startNode, endNode }
     );
@@ -347,10 +346,10 @@ export class ShortestPathService implements ShortestPathServiceBase {
               ? ' OR (ID(n) = $startId AND ID(m) = $endId)'
               : ''
           })
-          WITH ID(e) as id, ID(m) as from, ID(n) as to, 1 as cost 
+          WITH ID(e) as id, ID(m) as from, ID(n) as to, type(e) as type, 1 as cost 
           ORDER BY cost 
           LIMIT 1 
-          RETURN id, from, to, cost
+          RETURN id, from, to, cost, type
           `,
           { startId: sourceNode.id, endId: targetNode.id }
         );
