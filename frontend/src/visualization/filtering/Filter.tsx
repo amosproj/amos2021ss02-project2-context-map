@@ -16,7 +16,6 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { tap } from 'rxjs/operators';
 import { forkJoin, from } from 'rxjs';
 import useService from '../../dependency-injection/useService';
-import entityColors from '../data/GraphData';
 import { SchemaService } from '../../services/schema';
 import MaxEntitiesSlider from './MaxEntitiesSlider';
 import { EdgeType, NodeType } from '../../shared/schema';
@@ -29,6 +28,7 @@ import ErrorStore from '../../stores/ErrorStore';
 import SubsidiaryNodesToggle from './SubsidiaryNodesToggle';
 import FilterStateStore from '../../stores/filterState/FilterStateStore';
 import { FilterLineState } from '../../stores/filterState/FilterState';
+import { EntityColorStore } from '../../stores/colors';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -85,6 +85,9 @@ const Filter = (): JSX.Element => {
 
   const filterStateStore = useService<FilterStateStore>(FilterStateStore);
 
+  const entityColorStore = useService(EntityColorStore);
+  const colorize = entityColorStore.getValue();
+
   const schemaService = useService(SchemaService, null);
 
   const [schema, setSchema] = useState<{
@@ -137,19 +140,24 @@ const Filter = (): JSX.Element => {
 
   const nodes = (
     <>
-      {schema.nodes.map((type, i) =>
+      {schema.nodes.map((type) =>
         EntityTypeTemplate(
-          entityColors[i % entityColors.length],
+          colorize({ id: -1, types: [type.name] }).color,
           type.name,
           'node'
         )
       )}
     </>
   );
+
   const edges = (
     <>
       {schema.edges.map((type) =>
-        EntityTypeTemplate('#a9a9a9', type.name, 'edge')
+        EntityTypeTemplate(
+          colorize({ id: -1, type: type.name, from: -1, to: -1 }).color,
+          type.name,
+          'edge'
+        )
       )}
     </>
   );
