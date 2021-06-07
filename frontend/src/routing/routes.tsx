@@ -3,10 +3,10 @@ import Archetypes from '../archetypes/Archetypes';
 import Data from '../data/Data';
 import Exploration from '../exploration/Exploration';
 import Home from '../home/Home';
-import Graph from '../visualization/Graph';
 import Schema from '../visualization/Schema';
 import Visualization from '../visualization/Visualization';
 import RouteDefinition from './RouteDefinition';
+import GraphPage from '../visualization/GraphPage';
 
 const routes: Record<string, RouteDefinition> = {
   Home: {
@@ -23,7 +23,7 @@ const routes: Record<string, RouteDefinition> = {
       {
         path: '/visualization/graph',
         label: 'Graph',
-        content: () => <Graph />,
+        content: () => <GraphPage />,
       },
       {
         path: '/visualization/schema',
@@ -33,7 +33,7 @@ const routes: Record<string, RouteDefinition> = {
       {
         path: '/visualization/hierarchical',
         label: 'Hierarchies',
-        content: () => <Graph layout="hierarchical" />,
+        content: () => <GraphPage layout="hierarchical" />,
       },
     ],
   },

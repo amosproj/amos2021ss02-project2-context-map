@@ -55,11 +55,15 @@ describe('FilterService', () => {
           nodes: OfTypeCondition('Movie'),
           edges: OfTypeCondition('DIRECTED'),
         },
+        includeSubsidiary: true,
       };
 
       const expectedQueryResult: QueryResult = {
-        nodes: [{ id: 0 }, { id: 3, subsidiary: true }],
-        edges: [{ id: 2, from: 3, to: 0 }],
+        nodes: [
+          { id: 0, types: ['Movie'] },
+          { id: 3, types: [], subsidiary: true },
+        ],
+        edges: [{ id: 2, type: 'DIRECTED', from: 3, to: 0 }],
       };
 
       // Act
