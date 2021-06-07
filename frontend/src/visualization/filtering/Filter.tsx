@@ -26,6 +26,7 @@ import withErrorHandler from '../../utils/withErrorHandler';
 import LoadingStore from '../../stores/LoadingStore';
 import ErrorStore from '../../stores/ErrorStore';
 import SubsidiaryNodesToggle from './SubsidiaryNodesToggle';
+import GreyScaleToggle from './GreyScaleToggle';
 import FilterStateStore from '../../stores/filterState/FilterStateStore';
 import { FilterLineState } from '../../stores/filterState/FilterState';
 import { EntityColorStore } from '../../stores/colors';
@@ -209,10 +210,12 @@ const Filter = (): JSX.Element => {
             <div>
               <MaxEntitiesSlider entities="nodes" />
             </div>
+            <GreyScaleToggle />
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
             {edges}
             <MaxEntitiesSlider entities="edges" />
+            <GreyScaleToggle />
           </TabPanel>
         </List>
       </Drawer>
