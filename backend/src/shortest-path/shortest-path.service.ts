@@ -37,14 +37,12 @@ export class ShortestPathService implements ShortestPathServiceBase {
     }
 
     // Add the start node to the query result and mark it as path
-    let startNode = queryResult.nodes.find(
-      (node) => node.id === path.nodes[0].id
-    );
+    let startNode = queryResult.nodes.find((node) => node.id === path.start.id);
 
     let startNodeAdded = false;
 
     if (!startNode) {
-      [startNode] = path.nodes;
+      startNode = path.start;
       queryResult.nodes.push(startNode);
       startNodeAdded = true;
     }
@@ -52,14 +50,12 @@ export class ShortestPathService implements ShortestPathServiceBase {
     startNode.isPath = true;
 
     // Add the end node to the query result and mark it as path
-    let endNode = queryResult.nodes.find(
-      (node) => node.id === path.nodes[path.nodes.length - 1].id
-    );
+    let endNode = queryResult.nodes.find((node) => node.id === path.end.id);
 
     let endNodeAdded = false;
 
     if (!endNode) {
-      endNode = path.nodes[path.nodes.length - 1];
+      endNode = path.end;
       queryResult.nodes.push(endNode);
       endNodeAdded = true;
     }
@@ -228,7 +224,8 @@ export class ShortestPathService implements ShortestPathServiceBase {
       }
 
       return {
-        nodes: [{ id: nodeDetails.id, types: nodeDetails.types }],
+        start: { id: nodeDetails.id, types: nodeDetails.types },
+        end: { id: nodeDetails.id, types: nodeDetails.types },
         edges: [],
       };
     }
@@ -327,7 +324,8 @@ export class ShortestPathService implements ShortestPathServiceBase {
 
     if (nodes.length === 1) {
       return {
-        nodes,
+        start: nodes[0],
+        end: nodes[0],
         edges: [],
       };
     }
@@ -372,6 +370,10 @@ export class ShortestPathService implements ShortestPathServiceBase {
       return null;
     }
 
-    return { nodes, edges: edges as PathEdgeEntry[] };
+    return {
+      start: nodes[0],
+      end: nodes[nodes.length - 1],
+      edges: edges as PathEdgeEntry[],
+    };
   }
 }

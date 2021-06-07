@@ -86,7 +86,8 @@ describe('ShortestPathService', () => {
     it('returns single entry result of start node equals end-node', async () => {
       // Arrange
       const expectedResult: Path = {
-        nodes: [{ id: 1, types: ['Person'] }],
+        start: { id: 1, types: ['Person'] },
+        end: { id: 1, types: ['Person'] },
         edges: [],
       };
 
@@ -100,10 +101,8 @@ describe('ShortestPathService', () => {
     it('returns correct result when path spans multiple nodes', async () => {
       // Arrange
       const expectedResult: Path = {
-        nodes: [
-          { id: 3, types: ['Person'] },
-          { id: 0, types: ['Movie'] },
-        ],
+        start: { id: 3, types: ['Person'] },
+        end: { id: 0, types: ['Movie'] },
         edges: [{ id: 2, from: 3, to: 0, cost: 1, type: 'DIRECTED' }],
       };
 
@@ -128,11 +127,8 @@ describe('ShortestPathService', () => {
     it('returns correct result when there is a path only when ignoring edge directions', async () => {
       // Arrange
       const expectedResult: Path = {
-        nodes: [
-          { id: 3, types: ['Person'] },
-          { id: 0, types: ['Movie'] },
-          { id: 1, types: ['Person'] },
-        ],
+        start: { id: 3, types: ['Person'] },
+        end: { id: 1, types: ['Person'] },
         edges: [
           { id: 2, from: 3, to: 0, cost: 1, type: 'DIRECTED' },
           { id: 0, from: 1, to: 0, cost: 1, type: 'ACTED_IN' },

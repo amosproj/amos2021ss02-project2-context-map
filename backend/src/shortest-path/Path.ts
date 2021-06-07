@@ -15,11 +15,14 @@ export interface PathEdgeEntry extends EdgeDescriptor {
  */
 export interface Path {
   /**
-   * The ordered collection of nodes the path consists of.
-   * The first node is the start node, the last node is the end node.
-   * The array must contain at least two entries.
+   * The start-node of the path. May be equal to the end-node.
    */
-  nodes: NodeDescriptor[];
+  start: NodeDescriptor;
+
+  /**
+   * The end-node of the path. May be equal to the start-node.
+   */
+  end: NodeDescriptor;
 
   /**
    * The ordered collection of edges that the path consists of.
