@@ -35,6 +35,7 @@ export default function ShortestPathMenu(): JSX.Element {
       </Box>
       <Box display="flex" p={1}>
         <Button
+          className="StartShortestPath"
           variant="contained"
           color="primary"
           onClick={handleStartShortestPath}
@@ -44,7 +45,9 @@ export default function ShortestPathMenu(): JSX.Element {
       </Box>
       <Box display="flex" p={1}>
         {errorNotSpecified && (
-          <Alert severity="error">Specify start and end node!</Alert>
+          <Alert className="ShortestPathNodesNotSpecified" severity="error">
+            Specify start and end node!
+          </Alert>
         )}
       </Box>
     </>

@@ -44,12 +44,14 @@ export default function ShortestPathNodeSelection(props: {
   return (
     <>
       <Autocomplete
+        className="StartEndNode"
         onChange={handleSetNode}
         options={nodeIds}
         getOptionLabel={(option) => option.toString()}
         style={{ width: 200 }}
         renderInput={(params) => (
           <TextField
+            className="StartEndNodeSelection"
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...params}
             label={end}
