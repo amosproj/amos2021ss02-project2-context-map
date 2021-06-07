@@ -64,24 +64,36 @@ export default function convertSearchResultToSearchResultList(
         href: `/data/edge/${e.id}`,
       })),
     },
-    // {
-    //   key: 'Node Types',
-    //   header: 'Node Types',
-    //   elements: result.nodeTypes.map((t) => ({
-    //     key: t.name,
-    //     element: <NodeTypeComponent name={t.name} colorize={colorize} />,
-    //     href: `/data/node-type/${t.name}`,
-    //   })),
-    // },
-    // {
-    //   key: 'Edge Types',
-    //   header: 'Edge Types',
-    //   elements: result.edgeTypes.map((n) => ({
-    //     key: n.name,
-    //     element: <EdgeTypeComponent type={n.name} />,
-    //     href: `/data/edge-type/${n.name}`,
-    //   })),
-    // },
+    {
+      key: 'Node Types',
+      header: 'Node Types',
+      elements: result.nodeTypes.map((t) => ({
+        key: t.name,
+        element: (
+          <NodeTypeComponent
+            name={t.name}
+            node={{ id: -1, types: [`${t.name}`] }}
+            colorize={colorize}
+          />
+        ),
+        href: `/data/node-type/${t.name}`,
+      })),
+    },
+    {
+      key: 'Edge Types',
+      header: 'Edge Types',
+      elements: result.edgeTypes.map((t) => ({
+        key: t.name,
+        element: (
+          <EdgeTypeComponent
+            type={t.name}
+            edge={{ id: -1, from: -1, to: -1, type: t.name }}
+            colorize={colorize}
+          />
+        ),
+        href: `/data/edge-type/${t.name}`,
+      })),
+    },
   ]
     .filter((e) => e.elements.length > 0)
     .map((x) => ({
