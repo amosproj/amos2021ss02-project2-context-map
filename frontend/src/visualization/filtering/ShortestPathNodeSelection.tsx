@@ -6,6 +6,9 @@ import useService from '../../dependency-injection/useService';
 import QueryResultStore from '../../stores/QueryResultStore';
 import useObservable from '../../utils/useObservable';
 
+/**
+ * Selection of a start or an end node using a {@link Autocomplete}.
+ */
 export default function ShortestPathNodeSelection(props: {
   end: 'start' | 'end';
   setNode: React.Dispatch<React.SetStateAction<number | null>>;
@@ -31,10 +34,11 @@ export default function ShortestPathNodeSelection(props: {
   return (
     <>
       <Autocomplete
+        disablePortal // displays selection in the foreground
         onChange={handleSetNode}
         options={nodeIds}
         getOptionLabel={(option) => option.toString()}
-        style={{ width: 500 }}
+        style={{ width: 200 }}
         renderInput={(params) => (
           // eslint-disable-next-line react/jsx-props-no-spreading
           <TextField {...params} label={end} variant="outlined" required />
