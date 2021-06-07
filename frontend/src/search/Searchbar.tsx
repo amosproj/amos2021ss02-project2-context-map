@@ -23,6 +23,8 @@ import { CancellationTokenSource } from '../utils/CancellationToken';
 import CancellationError from '../utils/CancellationError';
 import ErrorComponent from '../errors/ErrorComponent';
 import EntityColorStore from '../stores/colors/EntityColorStore';
+import useObservable from '../utils/useObservable';
+import { SearchResult } from '../shared/search';
 
 export default function Searchbar(): JSX.Element {
   const searchService = useService(SearchService);
@@ -46,25 +48,40 @@ export default function Searchbar(): JSX.Element {
 
   const [searchOngoing, setSearchOngoing] = useState(false);
 
+  const [searchResult, setSearchResult] = useState<{
+    searchString: string;
+    result: SearchResult;
+  }>({
+    searchString: '',
+    result: { nodes: [], edges: [], nodeTypes: [], edgeTypes: [] },
+  });
+
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  function loadSearchResults(searchString: string) {
-    const colorize = entityColorStore.getValue();
+  const colorize = useObservable(
+    entityColorStore.getState(),
+    entityColorStore.getValue()
+  );
 
+  useEffect(() => {
+    const result = convertSearchResultToSearchResultList(
+      searchResult.searchString,
+      searchResult.result,
+      colorize
+    );
+    setSearchOngoing(false);
+    setSearchResults(result);
+    setError(undefined);
+  }, [colorize, searchResult]);
+
+  function loadSearchResults(searchString: string) {
     if (searchString?.length > 0) {
       const cancelToken = new CancellationTokenSource();
       searchServiceCancelTokens.current.push(cancelToken);
       setSearchOngoing(true);
       searchService
         .fullTextSearch(searchString, cancelToken.token)
-        .then(async (result) =>
-          convertSearchResultToSearchResultList(searchString, result, colorize)
-        )
-        .then((result) => {
-          setSearchOngoing(false);
-          setSearchResults(result);
-          setError(undefined);
-        })
+        .then(async (result) => setSearchResult({ searchString, result }))
         .catch((err) => {
           if (err instanceof CancellationError) return;
           setSearchOngoing(false);
@@ -127,12 +144,12 @@ export default function Searchbar(): JSX.Element {
                   <ErrorComponent jsError={error} />
                 ) : (
                   <List className="list" subheader={<li />}>
-                    {searchResults.map((searchResult) => (
-                      <li className="listSection" key={searchResult.key}>
+                    {searchResults.map((result) => (
+                      <li className="listSection" key={result.key}>
                         <ul className="SubList">
-                          <ListSubheader>{searchResult.header}</ListSubheader>
+                          <ListSubheader>{result.header}</ListSubheader>
                           <LimitListSizeComponent
-                            list={searchResult.elements.map((element) => (
+                            list={result.elements.map((element) => (
                               <ListItem
                                 key={element.key}
                                 button

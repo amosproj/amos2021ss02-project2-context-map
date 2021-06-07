@@ -87,7 +87,10 @@ const Filter = (): JSX.Element => {
   const filterStateStore = useService<FilterStateStore>(FilterStateStore);
 
   const entityColorStore = useService(EntityColorStore);
-  const colorize = entityColorStore.getValue();
+  const colorize = useObservable(
+    entityColorStore.getState(),
+    entityColorStore.getValue()
+  );
 
   const schemaService = useService(SchemaService, null);
 

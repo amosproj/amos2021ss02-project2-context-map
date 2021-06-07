@@ -41,11 +41,6 @@ type Entity = EdgeDescriptor | NodeDescriptor | NodeResultDescriptor;
 export class EntityColorStore {
   protected readonly entityTypeColorMap = new Map<string, string>();
   /**
-   * When greyScale is true, graphs will be black and gray only
-   */
-  protected greyScale = false;
-
-  /**
    * Contains the state.
    * Returns the current state immediately after subscribing.
    * @protected
@@ -153,12 +148,17 @@ export class EntityColorStore {
     return this.storeSubject.value;
   }
 
-  public getGreyScale(): boolean {
-    return this.greyScale;
-  }
+  private readonly greyScale = new BehaviorSubject<boolean>(false);
 
+  /**
+   * Getter for greyScale property
+   * @returns An Observable holding a boolean determining whether entities should be in greyscale or colored
+   */
+  public getGreyScale(): Observable<boolean> {
+    return this.greyScale.pipe();
+  }
   public setGreyScale(greyScale: boolean): void {
-    this.greyScale = greyScale;
+    this.greyScale.next(greyScale);
     this.storeSubject.next(this.getEntityColorizer());
   }
 }
