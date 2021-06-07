@@ -29,6 +29,7 @@ import ErrorStore from '../../stores/ErrorStore';
 import SubsidiaryNodesToggle from './SubsidiaryNodesToggle';
 import FilterStateStore from '../../stores/filterState/FilterStateStore';
 import { FilterLineState } from '../../stores/filterState/FilterState';
+import ShortestPathMenu from './ShortestPathMenu';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -206,6 +207,8 @@ const Filter = (): JSX.Element => {
             {edges}
             <MaxEntitiesSlider entities="edges" />
           </TabPanel>
+          <Divider />
+          <ShortestPathMenu />
         </List>
       </Drawer>
     </div>
