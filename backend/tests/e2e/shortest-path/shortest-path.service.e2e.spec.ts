@@ -3,10 +3,7 @@ import { Neo4jService } from 'nest-neo4j/dist';
 import { ConfigModule } from '@nestjs/config';
 import { KmapNeo4jModule } from '../../../src/config/neo4j/KmapNeo4jModule';
 import { ShortestPathService } from '../../../src/shortest-path/shortest-path.service';
-import {
-  ShortestPathQuery,
-  ShortestPathServiceBase,
-} from '../../../src/shortest-path/shortest-path.service.base';
+import { ShortestPathServiceBase } from '../../../src/shortest-path/shortest-path.service.base';
 import { Path } from '../../../src/shortest-path/Path';
 import { FilterService } from '../../../src/filter/filter.service';
 import {
@@ -14,6 +11,7 @@ import {
   MatchPropertyCondition,
   OfTypeCondition,
   QueryResult,
+  ShortestPathQuery,
 } from '../../../src/shared/queries';
 import { AppService } from '../../../src/app.service';
 

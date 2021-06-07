@@ -29,3 +29,5 @@ export type {
   QueryResult,
   CountQueryResult,
 };
+
+export type { ShortestPathQuery } from './ShortestPathQuery';

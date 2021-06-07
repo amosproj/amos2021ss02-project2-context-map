@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
-import { QueryEdgeResult, QueryResult } from '../shared/queries';
+import {
+  QueryEdgeResult,
+  QueryResult,
+  ShortestPathQuery,
+} from '../shared/queries';
 import { EdgeDescriptor, NodeDescriptor } from '../shared/entities';
 import { Path, PathEdgeEntry } from './Path';
-import {
-  ShortestPathQuery,
-  ShortestPathServiceBase,
-} from './shortest-path.service.base';
+import { ShortestPathServiceBase } from './shortest-path.service.base';
 import { FilterService } from '../filter/filter.service';
 import { range } from '../utils';
 import { AppService } from '../app.service';

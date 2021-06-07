@@ -1,11 +1,5 @@
-import { FilterQuery, QueryResult } from '../shared/queries';
 import { Path } from './Path';
-
-export interface ShortestPathQuery extends FilterQuery {
-  startNode: number;
-  endNode: number;
-  ignoreEdgeDirections?: boolean;
-}
+import { QueryResult, ShortestPathQuery } from '../shared/queries';
 
 /**
  * The base type for shorted-path services.
