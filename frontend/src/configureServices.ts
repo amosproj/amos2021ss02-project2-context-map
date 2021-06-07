@@ -44,7 +44,7 @@ export default function configureServices(container: Container): void {
   container
     .bind(FilterService)
     .toDynamicValue(
-      (ctx) => new FilterServiceImpl(ctx.container.get(HttpService))
+      (context) => new FilterServiceImpl(context.container.get(HttpService))
     )
     .inSingletonScope();
 

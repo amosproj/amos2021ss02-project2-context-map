@@ -20,7 +20,7 @@ const MAX_BATCH_SIZE = 90;
 
 // TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
 /* istanbul ignore next */
-function createBatches(array: number[] | NodeDescriptor[] | EdgeDescriptor[]) {
+function createBatches(array: number[]) {
   const batches = [];
   for (let i = 0; i < array.length; i += MAX_BATCH_SIZE) {
     batches.push(array.slice(i, i + MAX_BATCH_SIZE));
@@ -105,7 +105,10 @@ export default class QueryServiceImpl extends QueryService {
     idsOrDescriptors: number[] | EdgeDescriptor[],
     cancellation?: CancellationToken
   ): Promise<Edge[]> {
-    return this.getEntitiesById(this.edgesById, idsOrDescriptors, cancellation);
+    const ids = idsOrDescriptors.map((x: number | EdgeDescriptor) =>
+      typeof x === 'number' ? x : x.id
+    );
+    return this.getEntitiesById(this.edgesById, ids, cancellation);
   }
 
   // TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
@@ -114,14 +117,17 @@ export default class QueryServiceImpl extends QueryService {
     idsOrDescriptors: number[] | NodeDescriptor[],
     cancellation?: CancellationToken
   ): Promise<Node[]> {
-    return this.getEntitiesById(this.nodesById, idsOrDescriptors, cancellation);
+    const ids = idsOrDescriptors.map((x: number | NodeDescriptor) =>
+      typeof x === 'number' ? x : x.id
+    );
+    return this.getEntitiesById(this.nodesById, ids, cancellation);
   }
 
   // TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
   /* istanbul ignore next */
   private getEntitiesById<T = Node | Edge>(
     entitiesById: BatchCache<T>,
-    idsOrDescriptors: number[] | NodeDescriptor[],
+    idsOrDescriptors: number[],
     cancellation?: CancellationToken
   ): Promise<T[]> {
     const cache = entitiesById.entities.getState();
@@ -131,14 +137,15 @@ export default class QueryServiceImpl extends QueryService {
       (idOrDescriptor: number | { id: number }) =>
         typeof idOrDescriptor === 'number' ? idOrDescriptor : idOrDescriptor.id
     );
+
+    const kvps = ids.map((id) => ({ id, value: cache.get(id) }));
     // Already cached values.
     // Stored here since they might get removed from the cache during the async operation.
-    const foundValues = ids
-      .filter((id) => cache.has(id))
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- nullcheck done in line before
-      .map((id) => cache.get(id)!);
+    const foundValues = kvps.filter((p) => p.value != null).map((p) => p.value);
     // Values not in cache.
-    let missingIds: number[] = ids.filter((id) => !cache.has(id));
+    let missingIds: number[] = kvps
+      .filter((p) => p.value == null)
+      .map((p) => p.id);
 
     // https://github.com/amosproj/amos-ss2021-project2-context-map/issues/170
     const batches = createBatches(missingIds);
