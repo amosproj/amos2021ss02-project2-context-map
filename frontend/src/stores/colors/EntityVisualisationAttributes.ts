@@ -14,4 +14,5 @@ export interface NodeVisualisationAttributes
    * Border Attributes
    */
   border: { color: string };
+  text: { color: string };
 }

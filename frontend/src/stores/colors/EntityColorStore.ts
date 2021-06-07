@@ -9,6 +9,7 @@ import getNthColor from './getNthColor';
 import { EdgeDescriptor, NodeDescriptor } from '../../shared/entities';
 import { ArgumentError } from '../../shared/errors';
 import { NodeResultDescriptor } from '../../shared/queries';
+import getTextColor from './getTextColor';
 
 export type EntityColorizer<E extends Entity = Entity> = (
   entity: Entity
@@ -65,6 +66,7 @@ export class EntityColorStore {
       const ret: NodeVisualisationAttributes = {
         color: common.black,
         border: { color: common.black },
+        text: { color: common.black },
       };
 
       const type = this.getTypeOfEntity(entity);
@@ -96,6 +98,7 @@ export class EntityColorStore {
       // this function will be much more complex.
       // However, the type definition ensures that callers that call this function
       // with an EdgeDescriptor will 'see' only EntityVisualisationAttributes.
+      ret.text.color = getTextColor(ret.color);
       return ret;
     };
   }
