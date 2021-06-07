@@ -221,7 +221,7 @@ export class ShortestPathService implements ShortestPathServiceBase {
     if (startNode === endNode) {
       const nodeDetails = (
         await this.queryService.getNodesById([startNode])
-      ).find((_) => true);
+      ).find(() => true);
 
       if (!nodeDetails) {
         return null;
