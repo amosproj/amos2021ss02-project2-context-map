@@ -14,6 +14,8 @@
 
 /* eslint-disable @typescript-eslint/no-var-requires,global-require -- for the inline require statements */
 
+const { startDevServer } = require('@cypress/webpack-dev-server');
+
 /**
  * @type {Cypress.PluginConfig}
  */
@@ -23,7 +25,24 @@ module.exports = (on, config) => {
   // `config` is the resolved Cypress config
 
   if (config.testingType === 'component') {
-    require('@cypress/react/plugins/react-scripts')(on, config);
+    // 1) Load webpackConfig like @cypress/react/plugins/react-scripts
+    const webpackConfig =
+      require('@cypress/react/plugins/react-scripts/findReactScriptsWebpackConfig')(
+        config
+      );
+
+    // 2) Add code coverage plugin like @cypress/instrument-cra
+    // 2.1) Find rules
+    const rules = webpackConfig.module.rules.find((rule) => !!rule.oneOf).oneOf;
+    // 2.2) Find babel rule
+    const babelRule = rules.find((rule) => /babel-loader/.test(rule.loader));
+    // 2.3) Add istanbul plugin to enable code coverage
+    babelRule.options.plugins.push(require.resolve('babel-plugin-istanbul'));
+
+    // 3) Start dev server like @cypress/react/plugins/react-scripts
+    on('dev-server:start', async (options) =>
+      startDevServer({ options, webpackConfig })
+    );
   }
 
   require('@cypress/code-coverage/task')(on, config);

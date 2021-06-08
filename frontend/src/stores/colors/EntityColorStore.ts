@@ -1,12 +1,26 @@
 import 'reflect-metadata';
 import { injectable } from 'inversify';
 import { BehaviorSubject, Observable } from 'rxjs';
-import EntityVisualisationAttributes from './EntityVisualisationAttributes';
+import { common } from '@material-ui/core/colors';
+import EntityVisualisationAttributes, {
+  NodeVisualisationAttributes,
+} from './EntityVisualisationAttributes';
 import getNthColor from './getNthColor';
 import { EdgeDescriptor, NodeDescriptor } from '../../shared/entities';
 import { ArgumentError } from '../../shared/errors';
+import { QueryNodeResult, QueryEdgeResult } from '../../shared/queries';
+import getTextColor from './getTextColor';
 
-export type EntityColorizer = (type: Entity) => EntityVisualisationAttributes;
+export type EntityColorizer<E extends Entity = Entity> = (
+  entity: Entity
+) => // If entity is EdgeDescriptor: Returns EntityVisualisationAttributes
+E extends EdgeDescriptor
+  ? EntityVisualisationAttributes
+  : // If entity is NodeDescriptor: Returns NodeVisualisationAttributes
+  E extends NodeDescriptor
+  ? NodeVisualisationAttributes
+  : // Else does not happen; fallback to never
+    never;
 
 const isEdgeDescriptor = (
   e: EdgeDescriptor | NodeDescriptor
@@ -16,7 +30,11 @@ const isNodeDescriptor = (
   e: EdgeDescriptor | NodeDescriptor
 ): e is NodeDescriptor => 'types' in e;
 
-type Entity = EdgeDescriptor | NodeDescriptor;
+type Entity =
+  | EdgeDescriptor
+  | NodeDescriptor
+  | QueryNodeResult
+  | QueryEdgeResult;
 
 /**
  * A simple store contains a single state.
@@ -33,22 +51,59 @@ export class EntityColorStore {
    * @protected
    */
   protected readonly storeSubject = new BehaviorSubject<EntityColorizer>(
-    this.getInitialValue()
+    this.getEntityColorizer()
   );
 
   /**
-   * Returns the initial value of the stored subject.
+   * Returns the entity colorizing function.
    * @protected
    */
-  protected getInitialValue(): EntityColorizer {
-    return (entity) => {
+  protected getEntityColorizer(): EntityColorizer {
+    /**
+     * Defines the coloring definition for nodes and edges.
+     *
+     * If entity is subsidiary:
+     *   If entity is Node: colored border, white background
+     *   If entity is Edge: black edge
+     */
+    return (entity: Entity) => {
+      const ret: NodeVisualisationAttributes = {
+        color: common.black,
+        border: { color: common.black },
+        text: { color: common.black },
+      };
+
       const type = this.getTypeOfEntity(entity);
-      let color = this.entityTypeColorMap.get(type);
-      if (!color) {
-        color = getNthColor(this.entityTypeColorMap.size);
-        this.entityTypeColorMap.set(type, color);
+      let mainColor = this.entityTypeColorMap.get(type);
+
+      if (!mainColor) {
+        // main color not yet found for this entity type
+        mainColor = getNthColor(this.entityTypeColorMap.size);
+        this.entityTypeColorMap.set(type, mainColor);
       }
-      return { color };
+
+      // Coloring if entity is subsidiary
+      if (this.isSubsidiary(entity)) {
+        // Set border color to main color.
+        ret.border.color = mainColor;
+        if (isNodeDescriptor(entity)) {
+          // Fill nodes white
+          ret.color = common.white;
+        }
+      } else {
+        // Set color = borderColor = mainColor
+        ret.color = mainColor;
+        ret.border.color = mainColor;
+      }
+
+      // Will also return NodeVisualisationAttributes for Edges in contrast to
+      // the type definition.
+      // This is done for simplicity. If the return type is computed differently,
+      // this function will be much more complex.
+      // However, the type definition ensures that callers that call this function
+      // with an EdgeDescriptor will 'see' only EntityVisualisationAttributes.
+      ret.text.color = getTextColor(ret.color);
+      return ret;
     };
   }
 
@@ -64,6 +119,14 @@ export class EntityColorStore {
     }
     /* istanbul ignore next */
     throw new ArgumentError('Argument is neither a node nor an edge');
+  }
+
+  /**
+   * Returns true if parameter is subsidiary.
+   * @private
+   */
+  private isSubsidiary(entity: Entity): boolean {
+    return 'subsidiary' in entity && entity.subsidiary === true;
   }
 
   /**
