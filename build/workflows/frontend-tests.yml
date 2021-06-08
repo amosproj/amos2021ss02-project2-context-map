@@ -1,7 +1,7 @@
 name: Frontend e2e tests
 on: [ push ]
 jobs:
-  e2e-test:
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
