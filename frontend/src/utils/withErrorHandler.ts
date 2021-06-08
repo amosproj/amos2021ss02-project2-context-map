@@ -31,13 +31,10 @@ export default function withErrorHandler<T>(
         next(value) {
           subscriber.next(value);
         },
-        /* istanbul ignore next */ // TODO #194 (tested only in unit tests)
         error(err) {
-          /* istanbul ignore next */ // TODO #194 (tested only in unit tests)
           if (!(err instanceof CancellationError)) {
             config.errorStore.setState(err);
           }
-          /* istanbul ignore next */ // TODO #194 (tested only in unit tests)
           if (config.rethrow) {
             subscriber.error(err);
           }
