@@ -1,36 +1,28 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Checkbox, FormControlLabel } from '@material-ui/core';
 import ShortestPathNodeSelection from './ShortestPathNodeSelection';
 import useService from '../../dependency-injection/useService';
 import { ShortestPathStateStore } from '../../stores/shortest-path/ShortestPathStateStore';
+import useObservable from '../../utils/useObservable';
 
 /**
  * Menu where start and end node for shortest path can be selected
  */
 export default function ShortestPathMenu(): JSX.Element {
   const stateStore = useService(ShortestPathStateStore);
-
-  const [startNode, setStartNode] = useState<number | null>(null);
-  const [endNode, setEndNode] = useState<number | null>(null);
-  const [ignoreEdgeDirections, setIgnoreEdgeDirections] =
-    useState<boolean>(false);
-
-  // TODO: Init the state
+  const state = useObservable(stateStore.getState(), stateStore.getValue());
 
   // Updates the state
   const startNodeChanged = (val: number | null): void => {
     stateStore.setStartNode(val);
-    setStartNode(val);
   };
 
   const endNodeChanged = (val: number | null): void => {
     stateStore.setEndNode(val);
-    setEndNode(val);
   };
 
   const ignoreEdgeDirectionsChanged = (val: boolean) => {
     stateStore.setIgnoreEdgeDirections(val);
-    setIgnoreEdgeDirections(val);
   };
 
   return (
@@ -41,14 +33,14 @@ export default function ShortestPathMenu(): JSX.Element {
       <Box display="flex" p={1}>
         <ShortestPathNodeSelection
           tail="start"
-          node={startNode}
+          node={state.startNode}
           nodeChanged={startNodeChanged}
         />
       </Box>
       <Box display="flex" p={1}>
         <ShortestPathNodeSelection
           tail="end"
-          node={endNode}
+          node={state.endNode}
           nodeChanged={endNodeChanged}
         />
       </Box>
@@ -56,7 +48,7 @@ export default function ShortestPathMenu(): JSX.Element {
         <FormControlLabel
           control={
             <Checkbox
-              checked={ignoreEdgeDirections}
+              checked={state.ignoreEdgeDirections}
               onChange={(_, val) => ignoreEdgeDirectionsChanged(val)}
               name="ignore-edge-directions"
               color="primary"
