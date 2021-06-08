@@ -17,7 +17,7 @@ This file contains functions that are shared across the app
  *  query = `MATCH (a)-->(b) WHERE [...] RETURN ${neo4jReturnNodeDescriptor('b')}`; // cypher variables are called a and b
  */
 export function neo4jReturnNodeDescriptor(node: string): string {
-  return `ID(${node}) as id`;
+  return `ID(${node}) as id, labels(${node}) as types`;
 }
 
 /* istanbul ignore next */
@@ -41,7 +41,7 @@ export function neo4jReturnEdgeDescriptor(
   from: string,
   to: string
 ): string {
-  return `ID(${edge}) as id, ID(${from}) as from, ID(${to}) as to`;
+  return `ID(${edge}) as id, type(${edge}) as type, ID(${from}) as from, ID(${to}) as to`;
 }
 
 /* istanbul ignore next */

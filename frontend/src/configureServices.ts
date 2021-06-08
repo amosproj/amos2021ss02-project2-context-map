@@ -12,6 +12,8 @@ import QueryResultStore from './stores/QueryResultStore';
 import FilterQueryStore from './stores/FilterQueryStore';
 import ErrorStore from './stores/ErrorStore';
 import LoadingStore from './stores/LoadingStore';
+import EntityColorStore from './stores/colors/EntityColorStore';
+import FilterStateStore from './stores/filterState/FilterStateStore';
 
 /**
  * Configures all services in the frontend app.
@@ -28,14 +30,29 @@ export default function configureServices(container: Container): void {
     })
   );
 
-  container.bind(QueryService).to(QueryServiceImpl);
-  container.bind(SearchService).to(SearchServiceImpl);
-  container.bind(SchemaService).to(SchemaServiceImpl);
-  container.bind(FilterService).to(FilterServiceImpl);
+  // The auto-inject does not work. Thus, the required services is
+  // injected manually
+  container
+    .bind(QueryService)
+    .toDynamicValue(
+      (context) => new QueryServiceImpl(context.container.get(HttpService))
+    )
+    .inSingletonScope();
+
+  container.bind(SearchService).to(SearchServiceImpl).inSingletonScope();
+  container.bind(SchemaService).to(SchemaServiceImpl).inSingletonScope();
+  container
+    .bind(FilterService)
+    .toDynamicValue(
+      (context) => new FilterServiceImpl(context.container.get(HttpService))
+    )
+    .inSingletonScope();
 
   // stores: use inSingletonScope so only one instance of each store exists
   container.bind(ErrorStore).to(ErrorStore).inSingletonScope();
   container.bind(LoadingStore).to(LoadingStore).inSingletonScope();
+  container.bind(FilterStateStore).to(FilterStateStore).inSingletonScope();
   container.bind(FilterQueryStore).to(FilterQueryStore).inSingletonScope();
   container.bind(QueryResultStore).to(QueryResultStore).inSingletonScope();
+  container.bind(EntityColorStore).to(EntityColorStore).inSingletonScope();
 }

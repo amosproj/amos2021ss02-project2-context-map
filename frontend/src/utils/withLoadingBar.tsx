@@ -31,6 +31,9 @@ export default function withLoadingBar<T>(config: Props) {
         },
       });
       config.loadingStore.addLoader(sub);
-      return () => sub.unsubscribe();
+      return () => {
+        config.loadingStore.removeLoader(sub);
+        sub.unsubscribe();
+      };
     });
 }
