@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
 import {
   QueryEdgeResult,
+  QueryNodeResult,
   QueryResult,
   ShortestPathQuery,
 } from '../shared/queries';
@@ -9,7 +10,7 @@ import { EdgeDescriptor, NodeDescriptor } from '../shared/entities';
 import { Path, PathEdgeEntry } from './Path';
 import { ShortestPathServiceBase } from './shortest-path.service.base';
 import { FilterService } from '../filter/filter.service';
-import { range, swap } from '../utils';
+import { range } from '../utils';
 import { AppService } from '../app.service';
 
 const KMAP_GDS_GRAPH_NAME_SHORTEST_PATH = 'KMAP_GDS_GRAPH_NAME_SHORTEST_PATH';
@@ -23,6 +24,30 @@ export class ShortestPathService implements ShortestPathServiceBase {
     private readonly filterService: FilterService,
     private readonly queryService: AppService
   ) {}
+
+  /**
+   * Adds the specified node to the query-result.
+   * @param queryResult The query-result-
+   * @param node The node to add.
+   * @returns A tuple that contains the node that was found in the query result,
+   * or the added node and a boolean value indicating whether the node was added.
+   */
+  private addNode(
+    queryResult: QueryResult,
+    node: NodeDescriptor
+  ): [QueryNodeResult, boolean] {
+    let resultNode = queryResult.nodes.find((n) => n.id === node.id);
+    let resultNodeAdded = false;
+
+    if (!resultNode) {
+      resultNode = node;
+      queryResult.nodes.push(resultNode);
+      resultNodeAdded = true;
+    }
+
+    resultNode.isPath = true;
+    return [resultNode, resultNodeAdded];
+  }
 
   /**
    * @inheritdoc
@@ -41,30 +66,10 @@ export class ShortestPathService implements ShortestPathServiceBase {
     }
 
     // Add the start node to the query result and mark it as path
-    let startNode = queryResult.nodes.find((node) => node.id === path.start.id);
-
-    let startNodeAdded = false;
-
-    if (!startNode) {
-      startNode = path.start;
-      queryResult.nodes.push(startNode);
-      startNodeAdded = true;
-    }
-
-    startNode.isPath = true;
+    const [startNode, startNodeAdded] = this.addNode(queryResult, path.start);
 
     // Add the end node to the query result and mark it as path
-    let endNode = queryResult.nodes.find((node) => node.id === path.end.id);
-
-    let endNodeAdded = false;
-
-    if (!endNode) {
-      endNode = path.end;
-      queryResult.nodes.push(endNode);
-      endNodeAdded = true;
-    }
-
-    endNode.isPath = true;
+    const [endNode, endNodeAdded] = this.addNode(queryResult, path.end);
 
     // TODO: Is it guaranteed, that neo4j ids are never negative? It would be better if we use some other datatype, like string instead of number
     //       and prefix virtual entities with some unique string.
@@ -116,19 +121,6 @@ export class ShortestPathService implements ShortestPathServiceBase {
           }
           // The edge was not found. Insert it.
           else {
-            let subsidiary = true;
-
-            // Edges to/from the path start node and edges to/from the path end node
-            // are per definition subsidiary, only when we did not add the start/end node to
-            // the query-result.
-            if (startNodeAdded && lastNodeId === startNode.id) {
-              subsidiary = false;
-            }
-
-            if (endNodeAdded && currNode.id === endNode.id) {
-              subsidiary = false;
-            }
-
             const edgeToAdd: QueryEdgeResult = {
               id: currEdge.id,
               from: currEdge.from,
@@ -137,7 +129,13 @@ export class ShortestPathService implements ShortestPathServiceBase {
               isPath: true,
             };
 
-            if (subsidiary) {
+            // Edges to/from the path start node and edges to/from the path end node
+            // are per definition subsidiary, only when we did not add the start/end node to
+            // the query-result.
+            if (
+              (!startNodeAdded || lastNodeId !== startNode.id) &&
+              (!endNodeAdded || currNode.id !== endNode.id)
+            ) {
               edgeToAdd.subsidiary = true;
             }
 
