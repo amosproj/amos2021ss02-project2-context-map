@@ -1,4 +1,4 @@
-name: Frontend e2e tests
+name: Frontend tests
 on: [ push ]
 jobs:
   test:
