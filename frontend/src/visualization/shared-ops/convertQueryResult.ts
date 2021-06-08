@@ -1,7 +1,10 @@
 import { GraphData } from 'react-graph-vis';
 import * as vis from 'vis-network';
-import { EdgeDescriptor } from '../../shared/entities';
-import { QueryNodeResult, QueryResult } from '../../shared/queries';
+import {
+  QueryEdgeResult,
+  QueryNodeResult,
+  QueryResult,
+} from '../../shared/queries';
 import { EntityStyleProvider, NodeStyle } from '../../stores/colors';
 
 function convertNode(
@@ -35,7 +38,7 @@ function convertNodes(
 }
 
 function convertEdge(
-  edge: EdgeDescriptor,
+  edge: QueryEdgeResult,
   styleProvider: EntityStyleProvider
 ): vis.Edge {
   const style = styleProvider(edge);
@@ -51,7 +54,7 @@ function convertEdge(
 }
 
 function convertEdges(
-  edges: EdgeDescriptor[],
+  edges: QueryEdgeResult[],
   styleProvider: EntityStyleProvider
 ): vis.Edge[] {
   return edges.map((edge) => convertEdge(edge, styleProvider));

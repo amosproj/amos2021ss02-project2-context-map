@@ -18,11 +18,7 @@ const isNodeDescriptor = (
   e: EdgeDescriptor | NodeDescriptor
 ): e is NodeDescriptor => 'types' in e;
 
-export type Entity =
-  | EdgeDescriptor
-  | NodeDescriptor
-  | QueryNodeResult
-  | QueryEdgeResult;
+export type Entity = QueryNodeResult | QueryEdgeResult;
 
 /**
  * A simple store contains a single state.
@@ -85,7 +81,16 @@ export class EntityStyleStore {
       } else {
         // Set color = borderColor = mainColor
         ret.color = mainColor;
-        ret.stroke.color = mainColor;
+        // TODO: Use a color with less contrast. Maybe mix the background-color with black.
+        ret.stroke.color = common.black;
+      }
+
+      if (this.isPath(entity)) {
+        ret.stroke.width = 3;
+      }
+
+      if (this.isVirtual(entity)) {
+        ret.stroke.dashes = [3, 3];
       }
 
       // Will also return NodeVisualisationAttributes for Edges in contrast to
@@ -118,7 +123,15 @@ export class EntityStyleStore {
    * @private
    */
   private isSubsidiary(entity: Entity): boolean {
-    return 'subsidiary' in entity && entity.subsidiary === true;
+    return entity.subsidiary === true;
+  }
+
+  private isPath(entity: Entity): boolean {
+    return entity.isPath === true;
+  }
+
+  private isVirtual(entity: Entity): boolean {
+    return entity.virtual === true;
   }
 
   /**
