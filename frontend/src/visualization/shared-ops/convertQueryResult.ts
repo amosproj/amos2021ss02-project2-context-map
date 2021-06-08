@@ -2,16 +2,19 @@ import { GraphData } from 'react-graph-vis';
 import * as vis from 'vis-network';
 import { EdgeDescriptor } from '../../shared/entities';
 import { QueryNodeResult, QueryResult } from '../../shared/queries';
-import { EntityStyleProvider } from '../../stores/colors';
+import { EntityStyleProvider, NodeStyle } from '../../stores/colors';
 
 function convertNode(
   node: QueryNodeResult,
-  colorize: EntityStyleProvider
+  styleProvider: EntityStyleProvider
 ): vis.Node {
   const result: vis.Node = {
     id: node.id,
     label: node.id.toString(),
-    color: colorize(node).color,
+    color: {
+      border: (styleProvider(node) as NodeStyle).border.color, // TODO: This should be infered automatically
+      background: styleProvider(node).color,
+    },
   };
 
   if (node.subsidiary) {
@@ -23,36 +26,36 @@ function convertNode(
 
 function convertNodes(
   nodes: QueryNodeResult[],
-  colorize: EntityStyleProvider
+  styleProvider: EntityStyleProvider
 ): vis.Node[] {
-  return nodes.map((node) => convertNode(node, colorize));
+  return nodes.map((node) => convertNode(node, styleProvider));
 }
 
 function convertEdge(
   edge: EdgeDescriptor,
-  colorize: EntityStyleProvider
+  styleProvider: EntityStyleProvider
 ): vis.Edge {
   return {
     id: edge.id,
     from: edge.from,
     to: edge.to,
-    color: colorize(edge).color,
+    color: styleProvider(edge).color,
   };
 }
 
 function convertEdges(
   edges: EdgeDescriptor[],
-  colorize: EntityStyleProvider
+  styleProvider: EntityStyleProvider
 ): vis.Edge[] {
-  return edges.map((edge) => convertEdge(edge, colorize));
+  return edges.map((edge) => convertEdge(edge, styleProvider));
 }
 
 export default function convertQueryResult(
   queryResult: QueryResult,
-  colorize: EntityStyleProvider
+  styleProvider: EntityStyleProvider
 ): GraphData {
   return {
-    nodes: convertNodes(queryResult.nodes, colorize),
-    edges: convertEdges(queryResult.edges, colorize),
+    nodes: convertNodes(queryResult.nodes, styleProvider),
+    edges: convertEdges(queryResult.edges, styleProvider),
   };
 }
