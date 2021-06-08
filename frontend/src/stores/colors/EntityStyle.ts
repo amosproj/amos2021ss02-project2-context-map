@@ -1,15 +1,14 @@
 /**
  * Attributes used for visualisation of entities.
  */
-export default interface EntityVisualisationAttributes {
+export default interface EntityStyle {
   /**
    * Background color
    */
   color: string;
 }
 
-export interface NodeVisualisationAttributes
-  extends EntityVisualisationAttributes {
+export interface NodeStyle extends EntityStyle {
   /**
    * Border Attributes
    */

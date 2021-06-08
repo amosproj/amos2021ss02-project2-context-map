@@ -2,9 +2,7 @@ import 'reflect-metadata';
 import { injectable } from 'inversify';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { common } from '@material-ui/core/colors';
-import EntityVisualisationAttributes, {
-  NodeVisualisationAttributes,
-} from './EntityVisualisationAttributes';
+import EntityStyle, { NodeStyle } from './EntityStyle';
 import getNthColor from './getNthColor';
 import { EdgeDescriptor, NodeDescriptor } from '../../shared/entities';
 import { ArgumentError } from '../../shared/errors';
@@ -15,10 +13,10 @@ export type EntityColorizer<E extends Entity = Entity> = (
   entity: Entity
 ) => // If entity is EdgeDescriptor: Returns EntityVisualisationAttributes
 E extends EdgeDescriptor
-  ? EntityVisualisationAttributes
+  ? EntityStyle
   : // If entity is NodeDescriptor: Returns NodeVisualisationAttributes
   E extends NodeDescriptor
-  ? NodeVisualisationAttributes
+  ? NodeStyle
   : // Else does not happen; fallback to never
     never;
 
@@ -67,7 +65,7 @@ export class EntityColorStore {
      *   If entity is Edge: black edge
      */
     return (entity: Entity) => {
-      const ret: NodeVisualisationAttributes = {
+      const ret: NodeStyle = {
         color: common.black,
         border: { color: common.black },
         text: { color: common.black },

@@ -1,2 +1,2 @@
 export * from './EntityColorStore';
-export * from './EntityVisualisationAttributes';
+export * from './EntityStyle';
