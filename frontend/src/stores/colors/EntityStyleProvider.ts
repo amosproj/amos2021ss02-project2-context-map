@@ -1,6 +1,6 @@
 import EntityStyle, { NodeStyle } from './EntityStyle';
 import { EdgeDescriptor, NodeDescriptor } from '../../shared/entities';
-import { Entity } from './EntityColorStore';
+import { Entity } from './EntityStyleStore';
 
 export type EntityStyleProvider<E extends Entity = Entity> = (
   entity: Entity

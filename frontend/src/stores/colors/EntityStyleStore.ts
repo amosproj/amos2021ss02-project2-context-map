@@ -30,7 +30,7 @@ export type Entity =
  * and with {@link getState} (until unsubscribed).
  */
 @injectable()
-export class EntityColorStore {
+export class EntityStyleStore {
   protected readonly entityTypeColorMap = new Map<string, string>();
 
   /**
@@ -132,4 +132,4 @@ export class EntityColorStore {
   }
 }
 
-export default EntityColorStore;
+export default EntityStyleStore;

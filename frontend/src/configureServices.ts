@@ -12,7 +12,7 @@ import QueryResultStore from './stores/QueryResultStore';
 import FilterQueryStore from './stores/FilterQueryStore';
 import ErrorStore from './stores/ErrorStore';
 import LoadingStore from './stores/LoadingStore';
-import EntityColorStore from './stores/colors/EntityColorStore';
+import EntityStyleStore from './stores/colors/EntityStyleStore';
 import FilterStateStore from './stores/filterState/FilterStateStore';
 import ShortestPathService from './services/shortest-path/ShortestPathService';
 import ShortestPathServiceImpl from './services/shortest-path/ShortestPathServiceImpl';
@@ -62,6 +62,6 @@ export default function configureServices(container: Container): void {
   container.bind(FilterStateStore).to(FilterStateStore).inSingletonScope();
   container.bind(FilterQueryStore).to(FilterQueryStore).inSingletonScope();
   container.bind(QueryResultStore).to(QueryResultStore).inSingletonScope();
-  container.bind(EntityColorStore).to(EntityColorStore).inSingletonScope();
+  container.bind(EntityStyleStore).to(EntityStyleStore).inSingletonScope();
   container.bind(ShortestPathStateStore).toSelf().inSingletonScope();
 }

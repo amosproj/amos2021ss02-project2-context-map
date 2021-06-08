@@ -2,17 +2,17 @@ import {
   EdgeDescriptor,
   NodeDescriptor,
 } from '../../../../src/shared/entities';
-import { EntityColorStore } from '../../../../src/stores/colors';
+import { EntityStyleStore } from '../../../../src/stores/colors';
 
 describe('EntityColorStore', () => {
-  let entityColorStore: EntityColorStore;
+  let entityColorStore: EntityStyleStore;
   const dummies: (EdgeDescriptor | NodeDescriptor)[] = [
     { id: 1, type: 'HELLO', from: 1, to: 1 },
     { id: 1, types: ['HELLO'] },
   ];
 
   beforeEach(() => {
-    entityColorStore = new EntityColorStore();
+    entityColorStore = new EntityStyleStore();
   });
 
   it('should return different colors for different entity types', () => {

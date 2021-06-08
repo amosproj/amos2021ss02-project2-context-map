@@ -1,8 +1,8 @@
 import { EdgeDescriptor } from '../../../../src/shared/entities';
-import { EntityColorStore } from '../../../../src/stores/colors';
+import { EntityStyleStore } from '../../../../src/stores/colors';
 
 describe('EdgeColorStore', () => {
-  let edgeColorStore: EntityColorStore;
+  let edgeColorStore: EntityStyleStore;
   const dummies: EdgeDescriptor[] = [
     { id: 1, type: 'HELLO', from: 1, to: 1 },
     { id: 2, type: 'WORLD', from: 2, to: 2 },
@@ -11,7 +11,7 @@ describe('EdgeColorStore', () => {
   ];
 
   beforeEach(() => {
-    edgeColorStore = new EntityColorStore();
+    edgeColorStore = new EntityStyleStore();
   });
 
   it('should return colors for types', () => {

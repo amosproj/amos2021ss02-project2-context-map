@@ -1,8 +1,8 @@
 import { NodeDescriptor } from '../../../../src/shared/entities';
-import { EntityColorStore } from '../../../../src/stores/colors';
+import { EntityStyleStore } from '../../../../src/stores/colors';
 
 describe('NodeColorStore', () => {
-  let nodeColorStore: EntityColorStore;
+  let nodeColorStore: EntityStyleStore;
   const dummies: NodeDescriptor[] = [
     { id: 1, types: ['HELLO'] },
     { id: 2, types: ['WORLD'] },
@@ -10,7 +10,7 @@ describe('NodeColorStore', () => {
   ];
 
   beforeEach(() => {
-    nodeColorStore = new EntityColorStore();
+    nodeColorStore = new EntityStyleStore();
   });
 
   it('should return colors for types', () => {
