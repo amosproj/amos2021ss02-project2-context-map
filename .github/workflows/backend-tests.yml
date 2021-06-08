@@ -74,7 +74,11 @@ jobs:
       
       - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
         working-directory: ${{ env.working-directory }}
-      - run: npx wait-on http://localhost:7474 -t 3240000
+
+      - name: Wait on DB Server
+        run: npx wait-on tcp:7687
+        timeout-minutes: 3
+
       - run: yarn run test:cov
         working-directory: ${{ env.working-directory }}
         env:
