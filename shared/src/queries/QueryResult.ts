@@ -1,5 +1,5 @@
-import { EdgeDescriptor } from '../entities/EdgeDescriptor';
-import NodeResultDescriptor from './NodeResultDescriptor';
+import { QueryEdgeResult } from './QueryEdgeResult';
+import QueryNodeResult from './QueryNodeResult';
 
 /**
  * Generic Result of an API Query.
@@ -10,10 +10,10 @@ export default interface QueryResult {
   /**
    * NodeDescriptors (array of node-ids) as result of the Query
    */
-  nodes: NodeResultDescriptor[];
+  nodes: QueryNodeResult[];
 
   /**
    * EdgeDescriptors (array of node-ids, from-ids and edge-ids) as result of the Query
    */
-  edges: EdgeDescriptor[];
+  edges: QueryEdgeResult[];
 }
