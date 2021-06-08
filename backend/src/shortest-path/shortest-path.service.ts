@@ -9,7 +9,7 @@ import { EdgeDescriptor, NodeDescriptor } from '../shared/entities';
 import { Path, PathEdgeEntry } from './Path';
 import { ShortestPathServiceBase } from './shortest-path.service.base';
 import { FilterService } from '../filter/filter.service';
-import { range } from '../utils';
+import { range, swap } from '../utils';
 import { AppService } from '../app.service';
 
 const KMAP_GDS_GRAPH_NAME_SHORTEST_PATH = 'KMAP_GDS_GRAPH_NAME_SHORTEST_PATH';
@@ -153,9 +153,7 @@ export class ShortestPathService implements ShortestPathServiceBase {
 
           // The current edge points from curr to last (the reverse of the path direction)
           if (currNodeId === currEdge.from) {
-            const acc = from;
-            from = to;
-            to = acc;
+            [from, to] = [to, from];
           }
 
           queryResult.edges.push({
@@ -183,9 +181,7 @@ export class ShortestPathService implements ShortestPathServiceBase {
 
         // The current edge points from curr to last (the reverse of the path direction)
         if (currNodeId === currEdge.from) {
-          const acc = from;
-          from = to;
-          to = acc;
+          [from, to] = [to, from];
         }
 
         queryResult.edges.push({
