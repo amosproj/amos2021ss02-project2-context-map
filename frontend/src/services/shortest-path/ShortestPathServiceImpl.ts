@@ -7,10 +7,8 @@ import ShortestPathService from './ShortestPathService';
 
 @injectable()
 export default class ShortestPathServiceImpl implements ShortestPathService {
-  constructor(
-    @inject(HttpService)
-    private readonly http: HttpService
-  ) {}
+  @inject(HttpService)
+  private readonly http!: HttpService;
 
   public query(
     query?: ShortestPathQuery,
