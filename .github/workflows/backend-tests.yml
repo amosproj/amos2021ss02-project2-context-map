@@ -20,17 +20,17 @@ jobs:
       # kmap.import-action.start-db #
       - run: |
           docker run -d -p 7474:7474 -p 7687:7687 \
-          	-v ${GITHUB_WORKSPACE}/backend/docker/mount:/mnt/amos \
+            -v ${GITHUB_WORKSPACE}/backend/docker/mount:/mnt/amos \
             -v ${GITHUB_WORKSPACE}/backend/docker/plugins:/plugins \
-          	--env NEO4J_ACCEPT_LICENSE_AGREEMENT=yes \
-          	--env DB_PASSWORD=amos \
-          	--env DB_PATH=/mnt/amos/dumps/testing-dump.dump \
+            --env NEO4J_ACCEPT_LICENSE_AGREEMENT=yes \
+            --env DB_PASSWORD=amos \
+            --env DB_PATH=/mnt/amos/dumps/testing-dump.dump \
             --env 'NEO4JLABS_PLUGINS=["apoc", "graph-data-science"]' \
             --env 'NEO4J_dbms_security_procedures_unrestricted=apoc.*,gds.*' \
             --env 'NEO4J_dbms_security_procedures_allowlist=apoc.*,gds.*' \
             --env NEO4J_apoc_import_file_enabled=true \
-          	--name neo4j-DB neo4j:enterprise \
-          	/mnt/amos/load-dump.sh
+            --name neo4j-DB neo4j:enterprise \
+            /mnt/amos/load-dump.sh
       
       - run: npm install -g yarn
       # kmap.import-action.cache #
@@ -74,7 +74,11 @@ jobs:
       
       - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
         working-directory: ${{ env.working-directory }}
-      - run: npx wait-on http://localhost:7474 -t 3240000
+
+      - name: Wait on DB Server
+        run: npx wait-on http://localhost:7474
+        timeout-minutes: 3
+
       - run: yarn run test:cov
         working-directory: ${{ env.working-directory }}
         env:
