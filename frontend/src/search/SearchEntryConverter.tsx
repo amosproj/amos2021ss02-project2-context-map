@@ -25,7 +25,7 @@ function formatEntry(resultEntry: SearchNodeResult | SearchEdgeResult) {
 export default function convertSearchResultToSearchResultList(
   searchString: string,
   result: SearchResult | undefined,
-  colorize: EntityColorizer
+  colorizer: EntityColorizer
 ): SearchResultList[] {
   /* istanbul ignore if */
   if (result === undefined) {
@@ -41,7 +41,7 @@ export default function convertSearchResultToSearchResultList(
         element: (
           <div>
             {n.types.map((t) => (
-              <NodeTypeComponent name={t} color={colorize(n).color} />
+              <NodeTypeComponent name={t} color={colorizer.colorize(n).color} />
             ))}
             &nbsp;
             {formatEntry(n)}
@@ -57,7 +57,10 @@ export default function convertSearchResultToSearchResultList(
         key: e.id,
         element: (
           <div>
-            <EdgeTypeComponent type={e.type} color={colorize(e).color} />
+            <EdgeTypeComponent
+              type={e.type}
+              color={colorizer.colorize(e).color}
+            />
             &nbsp;{formatEntry(e)}
           </div>
         ),
@@ -72,7 +75,7 @@ export default function convertSearchResultToSearchResultList(
         element: (
           <NodeTypeComponent
             name={t.name}
-            color={colorize({ id: -1, types: [t.name] }).color}
+            color={colorizer.colorize({ id: -1, types: [t.name] }).color}
           />
         ),
         href: `/data/node-type/${t.name}`,
@@ -86,7 +89,10 @@ export default function convertSearchResultToSearchResultList(
         element: (
           <EdgeTypeComponent
             type={t.name}
-            color={colorize({ id: -1, from: -1, to: -1, type: t.name }).color}
+            color={
+              colorizer.colorize({ id: -1, from: -1, to: -1, type: t.name })
+                .color
+            }
           />
         ),
         href: `/data/edge-type/${t.name}`,

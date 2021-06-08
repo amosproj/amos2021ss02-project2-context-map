@@ -87,7 +87,7 @@ const Filter = (): JSX.Element => {
   const filterStateStore = useService<FilterStateStore>(FilterStateStore);
 
   const entityColorStore = useService(EntityColorStore);
-  const colorize = useObservable(
+  const colorizer = useObservable(
     entityColorStore.getState(),
     entityColorStore.getValue()
   );
@@ -146,7 +146,7 @@ const Filter = (): JSX.Element => {
     <>
       {schema.nodes.map((type) =>
         EntityTypeTemplate(
-          colorize({ id: -1, types: [type.name] }).color,
+          colorizer.colorize({ id: -1, types: [type.name] }).color,
           type.name,
           'node'
         )
@@ -158,7 +158,8 @@ const Filter = (): JSX.Element => {
     <>
       {schema.edges.map((type) =>
         EntityTypeTemplate(
-          colorize({ id: -1, type: type.name, from: -1, to: -1 }).color,
+          colorizer.colorize({ id: -1, type: type.name, from: -1, to: -1 })
+            .color,
           type.name,
           'edge'
         )

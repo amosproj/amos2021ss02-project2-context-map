@@ -11,16 +11,18 @@ import { ArgumentError } from '../../shared/errors';
 import { NodeResultDescriptor } from '../../shared/queries';
 import getTextColor from './getTextColor';
 
-export type EntityColorizer<E extends Entity = Entity> = (
-  entity: Entity
-) => // If entity is EdgeDescriptor: Returns EntityVisualisationAttributes
-E extends EdgeDescriptor
-  ? EntityVisualisationAttributes
-  : // If entity is NodeDescriptor: Returns NodeVisualisationAttributes
-  E extends NodeDescriptor
-  ? NodeVisualisationAttributes
-  : // Else does not happen; fallback to never
-    never;
+export type EntityColorizer<E extends Entity = Entity> = {
+  colorize: (
+    entity: Entity
+  ) => // If entity is EdgeDescriptor: Returns EntityVisualisationAttributes
+  E extends EdgeDescriptor
+    ? EntityVisualisationAttributes
+    : // If entity is NodeDescriptor: Returns NodeVisualisationAttributes
+    E extends NodeDescriptor
+    ? NodeVisualisationAttributes
+    : // Else does not happen; fallback to never
+      never;
+};
 
 const isEdgeDescriptor = (
   e: EdgeDescriptor | NodeDescriptor
@@ -61,50 +63,52 @@ export class EntityColorStore {
      *   If entity is Node: colored border, white background
      *   If entity is Edge: black edge
      */
-    return (entity: Entity) => {
-      const ret: NodeVisualisationAttributes = {
-        color: common.black,
-        border: { color: common.black },
-        text: { color: common.black },
-      };
+    return {
+      colorize: (entity: Entity) => {
+        const ret: NodeVisualisationAttributes = {
+          color: common.black,
+          border: { color: common.black },
+          text: { color: common.black },
+        };
 
-      const type = this.getTypeOfEntity(entity);
+        const type = this.getTypeOfEntity(entity);
 
-      let mainColor;
-      if (this.greyScale) {
-        mainColor = isNodeDescriptor(entity) ? grey[500] : common.black;
-      } else {
-        mainColor = this.entityTypeColorMap.get(type);
-      }
-
-      if (!mainColor) {
-        // main color not yet found for this entity type
-        mainColor = getNthColor(this.entityTypeColorMap.size);
-        this.entityTypeColorMap.set(type, mainColor);
-      }
-
-      // Coloring if entity is subsidiary
-      if (this.isSubsidiary(entity)) {
-        // Set border color to main color.
-        ret.border.color = mainColor;
-        if (isNodeDescriptor(entity)) {
-          // Fill nodes white
-          ret.color = common.white;
+        let mainColor;
+        if (this.greyScale.value) {
+          mainColor = isNodeDescriptor(entity) ? grey[500] : common.black;
+        } else {
+          mainColor = this.entityTypeColorMap.get(type);
         }
-      } else {
-        // Set color = borderColor = mainColor
-        ret.color = mainColor;
-        ret.border.color = mainColor;
-      }
 
-      // Will also return NodeVisualisationAttributes for Edges in contrast to
-      // the type definition.
-      // This is done for simplicity. If the return type is computed differently,
-      // this function will be much more complex.
-      // However, the type definition ensures that callers that call this function
-      // with an EdgeDescriptor will 'see' only EntityVisualisationAttributes.
-      ret.text.color = getTextColor(ret.color);
-      return ret;
+        if (!mainColor) {
+          // main color not yet found for this entity type
+          mainColor = getNthColor(this.entityTypeColorMap.size);
+          this.entityTypeColorMap.set(type, mainColor);
+        }
+
+        // Coloring if entity is subsidiary
+        if (this.isSubsidiary(entity)) {
+          // Set border color to main color.
+          ret.border.color = mainColor;
+          if (isNodeDescriptor(entity)) {
+            // Fill nodes white
+            ret.color = common.white;
+          }
+        } else {
+          // Set color = borderColor = mainColor
+          ret.color = mainColor;
+          ret.border.color = mainColor;
+        }
+
+        // Will also return NodeVisualisationAttributes for Edges in contrast to
+        // the type definition.
+        // This is done for simplicity. If the return type is computed differently,
+        // this function will be much more complex.
+        // However, the type definition ensures that callers that call this function
+        // with an EdgeDescriptor will 'see' only EntityVisualisationAttributes.
+        ret.text.color = getTextColor(ret.color);
+        return ret;
+      },
     };
   }
 
