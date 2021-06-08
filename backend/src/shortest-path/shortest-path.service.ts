@@ -24,6 +24,9 @@ export class ShortestPathService implements ShortestPathServiceBase {
     private readonly queryService: AppService
   ) {}
 
+  /**
+   * @inheritdoc
+   */
   public async executeQuery(query: ShortestPathQuery): Promise<QueryResult> {
     const path = await this.findShortestPath(
       query.startNode,
@@ -210,6 +213,9 @@ export class ShortestPathService implements ShortestPathServiceBase {
     return queryResult;
   }
 
+  /**
+   * @inheritdoc
+   */
   public async findShortestPath(
     startNode: number,
     endNode: number,
@@ -248,6 +254,11 @@ export class ShortestPathService implements ShortestPathServiceBase {
     );
   }
 
+  /**
+   * Creates an in-memory graph projection with the neo4j GDS plugin, that GDS can execute operations on.
+   * @param name The name of the projection.
+   * @param ignoreEdgeDirections A boolean value indicating whether edge directions shall be ignored.
+   */
   private async createGDSProjection(
     name: string,
     ignoreEdgeDirections: boolean | undefined
@@ -266,6 +277,11 @@ export class ShortestPathService implements ShortestPathServiceBase {
     );
   }
 
+  /**
+   * Returns a boolean value indicating the GDS projection with the specified name exists.
+   * @param name The name of the projection.
+   * @returns True if the projection with the specified name exists, false otherwise
+   */
   private async existsGDSProjection(name: string): Promise<boolean> {
     const result = await this.neo4jService.read(
       `
@@ -293,12 +309,25 @@ export class ShortestPathService implements ShortestPathServiceBase {
     return convertedResults.length > 0 && convertedResults[0].n !== undefined;
   }
 
+  /**
+   * Executes the shortest-path algorithm with the help of the GDS Dijkstra method.
+   * @param name The name if the GDS projection to work on.
+   * @param startNode The id of the start-node.
+   * @param endNode The id of the end-node.
+   * @param ignoreEdgeDirections A boolean value indicating whether to ignore edge directions.
+   * @returns The shortest {@link Path} between the specified nodes or null if the nodes are part of separated subgraphs.
+   */
   private async execGDSShortestPath(
     name: string,
     startNode: number,
     endNode: number,
     ignoreEdgeDirections: boolean | undefined
   ): Promise<Path | null> {
+    // Execute the GDS algorithm, which results in the nodes that the path consists of. It
+    // is not possible to get the edges directly because of the way, GDS stores the projections
+    // in memory. Even if we request the path directly, we do not get the true edges, but the
+    // edges of the in-memory representation, which have GDS specific IDs but not the IDs of the
+    // true edges.
     const result = await this.neo4jService.read(
       `
       MATCH(start), (end) 
@@ -317,12 +346,15 @@ export class ShortestPathService implements ShortestPathServiceBase {
       { name, startNode, endNode }
     );
 
+    // This now contains the nodes that the path contains.
     const nodes = result.records.map((x) => x.toObject() as NodeDescriptor);
 
+    // If no nodes are returned, there is no path.
     if (nodes.length === 0) {
       return null;
     }
 
+    // If only a single node is returned, the start and end node are the same.
     if (nodes.length === 1) {
       return {
         start: nodes[0],
@@ -331,7 +363,14 @@ export class ShortestPathService implements ShortestPathServiceBase {
       };
     }
 
+    // Now build the path. As we have to query each edge individually from the database, we get
+    // n async operations, where n is the number of edges. This is parallelized here.
     const promises = range(nodes.length - 1).map(
+      /**
+       * Request the the i-th edge and returns a promise for the async operation that results in the edge descriptor.
+       * @param i The index of the edge to query.
+       * @returns The edge descriptor of the i-th edge, or null if the edge does not exists.
+       */
       async (i): Promise<EdgeDescriptor | null> => {
         const sourceNode = nodes[i];
         const targetNode = nodes[i + 1];
@@ -365,8 +404,10 @@ export class ShortestPathService implements ShortestPathServiceBase {
       }
     );
 
+    // Collection the edges from the array of promises
     const edges = await Promise.all(promises);
 
+    // Id any of the edges is null, the path does not exist.
     if (edges.some((e) => !e)) {
       return null;
     }

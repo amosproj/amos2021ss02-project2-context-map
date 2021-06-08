@@ -16,5 +16,8 @@ export default interface QueryNodeResult extends NodeDescriptor {
    */
   virtual?: boolean;
 
+  /**
+   * A boolean that specified whether the node is part of the path that shall be highlighted.
+   */
   isPath?: boolean;
 }

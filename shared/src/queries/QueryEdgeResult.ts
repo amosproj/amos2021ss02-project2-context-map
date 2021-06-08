@@ -16,5 +16,8 @@ export interface QueryEdgeResult extends EdgeDescriptor {
    */
   virtual?: boolean;
 
+  /**
+   * A boolean that specified whether the edge is part of the path that shall be highlighted.
+   */
   isPath?: boolean;
 }
