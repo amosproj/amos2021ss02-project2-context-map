@@ -8,18 +8,21 @@ function convertNode(
   node: QueryNodeResult,
   styleProvider: EntityStyleProvider
 ): vis.Node {
+  // TODO: This should be infered automatically
+  const style = styleProvider(node) as NodeStyle;
+
   const result: vis.Node = {
     id: node.id,
     label: node.id.toString(),
     color: {
-      border: (styleProvider(node) as NodeStyle).border.color, // TODO: This should be infered automatically
-      background: styleProvider(node).color,
+      border: style.border.color,
+      background: style.color,
+    },
+    borderWidth: style.stroke.width,
+    shapeProperties: {
+      borderDashes: style.stroke.dashes,
     },
   };
-
-  if (node.subsidiary) {
-    result.color = 'yellow';
-  }
 
   return result;
 }
@@ -35,11 +38,15 @@ function convertEdge(
   edge: EdgeDescriptor,
   styleProvider: EntityStyleProvider
 ): vis.Edge {
+  const style = styleProvider(edge);
+
   return {
     id: edge.id,
     from: edge.from,
     to: edge.to,
-    color: styleProvider(edge).color,
+    color: style.color,
+    dashes: style.stroke.dashes,
+    width: style.stroke.width,
   };
 }
 

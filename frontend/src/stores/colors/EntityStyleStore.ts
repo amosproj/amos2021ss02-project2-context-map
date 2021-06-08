@@ -59,6 +59,10 @@ export class EntityStyleStore {
         color: common.black,
         border: { color: common.black },
         text: { color: common.black },
+        stroke: {
+          width: 1,
+          dashes: false,
+        },
       };
 
       const type = this.getTypeOfEntity(entity);
