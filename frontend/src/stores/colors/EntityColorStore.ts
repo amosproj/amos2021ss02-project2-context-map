@@ -2,23 +2,13 @@ import 'reflect-metadata';
 import { injectable } from 'inversify';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { common } from '@material-ui/core/colors';
-import EntityStyle, { NodeStyle } from './EntityStyle';
+import { NodeStyle } from './EntityStyle';
 import getNthColor from './getNthColor';
 import { EdgeDescriptor, NodeDescriptor } from '../../shared/entities';
 import { ArgumentError } from '../../shared/errors';
 import { QueryNodeResult, QueryEdgeResult } from '../../shared/queries';
 import getTextColor from './getTextColor';
-
-export type EntityColorizer<E extends Entity = Entity> = (
-  entity: Entity
-) => // If entity is EdgeDescriptor: Returns EntityVisualisationAttributes
-E extends EdgeDescriptor
-  ? EntityStyle
-  : // If entity is NodeDescriptor: Returns NodeVisualisationAttributes
-  E extends NodeDescriptor
-  ? NodeStyle
-  : // Else does not happen; fallback to never
-    never;
+import { EntityColorizer } from './EntityColorizer';
 
 const isEdgeDescriptor = (
   e: EdgeDescriptor | NodeDescriptor
@@ -28,7 +18,7 @@ const isNodeDescriptor = (
   e: EdgeDescriptor | NodeDescriptor
 ): e is NodeDescriptor => 'types' in e;
 
-type Entity =
+export type Entity =
   | EdgeDescriptor
   | NodeDescriptor
   | QueryNodeResult
