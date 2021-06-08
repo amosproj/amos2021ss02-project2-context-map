@@ -406,10 +406,6 @@ export class ShortestPathService implements ShortestPathServiceBase {
       return null;
     }
 
-    return {
-      start: nodes[0],
-      end: nodes[nodes.length - 1],
-      edges: edges as PathEdgeEntry[],
-    };
+    return Path(nodes[0], nodes[nodes.length - 1], edges as PathEdgeEntry[]);
   }
 }
