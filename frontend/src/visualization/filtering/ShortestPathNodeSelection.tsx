@@ -10,10 +10,10 @@ import useObservable from '../../utils/useObservable';
  * Selection of a start or an end node using a {@link Autocomplete}.
  */
 export default function ShortestPathNodeSelection(props: {
-  end: 'start' | 'tail';
+  tail: 'start' | 'end';
   setNode: React.Dispatch<React.SetStateAction<number | null>>;
 }): JSX.Element {
-  const { end, setNode } = props;
+  const { tail, setNode } = props;
 
   const queryResultStore = useService(QueryResultStore);
 
@@ -54,7 +54,7 @@ export default function ShortestPathNodeSelection(props: {
             className="StartEndNodeSelection"
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...params}
-            label={end}
+            label={tail}
             variant="outlined"
             required
           />

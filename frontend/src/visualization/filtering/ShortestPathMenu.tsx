@@ -27,10 +27,10 @@ export default function ShortestPathMenu(): JSX.Element {
         Find shortest path
       </Box>
       <Box display="flex" p={1}>
-        <ShortestPathNodeSelection end="start" setNode={setStartNode} />
+        <ShortestPathNodeSelection tail="start" setNode={setStartNode} />
       </Box>
       <Box display="flex" p={1}>
-        <ShortestPathNodeSelection end="tail" setNode={setEndNode} />
+        <ShortestPathNodeSelection tail="end" setNode={setEndNode} />
       </Box>
       <Box display="flex" p={1}>
         <Button
