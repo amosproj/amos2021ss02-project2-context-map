@@ -141,10 +141,13 @@ export default class QueryServiceImpl extends QueryService {
     const kvps = ids.map((id) => ({ id, value: cache.get(id) }));
     // Already cached values.
     // Stored here since they might get removed from the cache during the async operation.
-    const foundValues = kvps.filter((p) => p.value != null).map((p) => p.value);
+    const foundValues = kvps
+      .filter((p) => p.value !== undefined)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked in line before
+      .map((p) => p.value!);
     // Values not in cache.
     let missingIds: number[] = kvps
-      .filter((p) => p.value == null)
+      .filter((p) => p.value === undefined)
       .map((p) => p.id);
 
     // https://github.com/amosproj/amos-ss2021-project2-context-map/issues/170
