@@ -15,8 +15,8 @@ describe('EdgeColorStore', () => {
   });
 
   it('should return colors for types', () => {
-    const colorize = edgeColorStore.getValue();
-    const colors = dummies.map((t) => colorize(t));
+    const colorizer = edgeColorStore.getValue();
+    const colors = dummies.map((t) => colorizer.colorize(t));
 
     for (const color of colors) {
       expect(color.color).to.match(/#[0-9a-fA-F]{6}/);
@@ -24,19 +24,32 @@ describe('EdgeColorStore', () => {
   });
 
   it('should return new colors for new types', () => {
-    const colorize = edgeColorStore.getValue();
-    const colors = new Set(dummies.map((t) => colorize(t)));
+    const colorizer = edgeColorStore.getValue();
+    const colors = new Set(dummies.map((t) => colorizer.colorize(t)));
 
     expect(colors.size).to.be.eq(dummies.length);
   });
 
   it('should return the same color for the same type', () => {
-    const colorize = edgeColorStore.getValue();
+    const colorizer = edgeColorStore.getValue();
     const numCalls = 5;
 
-    const colors = new Array(numCalls).map(() => colorize(dummies[0]));
+    const colors = new Array(numCalls).map(() =>
+      colorizer.colorize(dummies[0])
+    );
 
     expect(colors).to.have.length(numCalls);
     expect(new Set(colors).size).to.be.eq(1);
+  });
+
+  it('should return black for all edge types when greyScale is true', () => {
+    const colorizer = edgeColorStore.getValue();
+    edgeColorStore.setGreyScaleEdges(true);
+    const black = '#000';
+    const colors = dummies.map((t) => colorizer.colorize(t));
+
+    for (const color of colors) {
+      expect(color.color).to.be.eq(black);
+    }
   });
 });

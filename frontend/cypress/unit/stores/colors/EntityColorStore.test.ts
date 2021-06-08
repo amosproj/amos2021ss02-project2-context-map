@@ -9,6 +9,8 @@ describe('EntityColorStore', () => {
   const dummies: (EdgeDescriptor | NodeDescriptor)[] = [
     { id: 1, type: 'HELLO', from: 1, to: 1 },
     { id: 1, types: ['HELLO'] },
+    { id: 2, types: ['FOO'] },
+    { id: 3, types: ['BAR'] },
   ];
 
   beforeEach(() => {
@@ -16,9 +18,9 @@ describe('EntityColorStore', () => {
   });
 
   it('should return different colors for different entity types', () => {
-    const colorize = entityColorStore.getValue();
-    const color1 = colorize(dummies[0]);
-    const color2 = colorize(dummies[1]);
+    const colorizer = entityColorStore.getValue();
+    const color1 = colorizer.colorize(dummies[0]);
+    const color2 = colorizer.colorize(dummies[1]);
 
     expect(color1).not.to.be.deep.eq(color2);
   });

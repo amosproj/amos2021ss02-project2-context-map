@@ -6,19 +6,13 @@ import { EntityColorizer } from '../../stores/colors';
 
 function convertNode(
   node: QueryNodeResult,
-  colorize: EntityColorizer
+  colorizer: EntityColorizer
 ): vis.Node {
-  const result: vis.Node = {
+  return {
     id: node.id,
     label: node.id.toString(),
-    color: colorize(node).color,
+    color: colorizer.colorize(node).color,
   };
-
-  if (node.subsidiary) {
-    result.color = 'yellow';
-  }
-
-  return result;
 }
 
 function convertNodes(
@@ -30,13 +24,13 @@ function convertNodes(
 
 function convertEdge(
   edge: EdgeDescriptor,
-  colorize: EntityColorizer
+  colorizer: EntityColorizer
 ): vis.Edge {
   return {
     id: edge.id,
     from: edge.from,
     to: edge.to,
-    color: colorize(edge).color,
+    color: colorizer.colorize(edge).color,
   };
 }
 
