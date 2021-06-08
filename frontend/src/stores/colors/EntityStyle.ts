@@ -6,12 +6,13 @@ export default interface EntityStyle {
    * Background color
    */
   color: string;
-}
 
-export interface NodeStyle extends EntityStyle {
   /**
    * Border Attributes
    */
   border: { color: string };
+}
+
+export interface NodeStyle extends EntityStyle {
   text: { color: string };
 }
