@@ -8,7 +8,7 @@ import { EdgeDescriptor, NodeDescriptor } from '../../shared/entities';
 import { ArgumentError } from '../../shared/errors';
 import { QueryNodeResult, QueryEdgeResult } from '../../shared/queries';
 import getTextColor from './getTextColor';
-import { EntityColorizer } from './EntityColorizer';
+import { EntityStyleProvider } from './EntityStyleProvider';
 
 const isEdgeDescriptor = (
   e: EdgeDescriptor | NodeDescriptor
@@ -38,7 +38,7 @@ export class EntityColorStore {
    * Returns the current state immediately after subscribing.
    * @protected
    */
-  protected readonly storeSubject = new BehaviorSubject<EntityColorizer>(
+  protected readonly storeSubject = new BehaviorSubject<EntityStyleProvider>(
     this.getEntityColorizer()
   );
 
@@ -46,7 +46,7 @@ export class EntityColorStore {
    * Returns the entity colorizing function.
    * @protected
    */
-  protected getEntityColorizer(): EntityColorizer {
+  protected getEntityColorizer(): EntityStyleProvider {
     /**
      * Defines the coloring definition for nodes and edges.
      *
@@ -120,14 +120,14 @@ export class EntityColorStore {
   /**
    * Returns an observable that outputs the stored value.
    */
-  public getState(): Observable<EntityColorizer> {
+  public getState(): Observable<EntityStyleProvider> {
     return this.storeSubject.pipe();
   }
 
   /**
    * Returns the current value of the stored value.
    */
-  public getValue(): EntityColorizer {
+  public getValue(): EntityStyleProvider {
     return this.storeSubject.value;
   }
 }

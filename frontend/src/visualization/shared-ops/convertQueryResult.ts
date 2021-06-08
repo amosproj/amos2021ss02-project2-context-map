@@ -2,11 +2,11 @@ import { GraphData } from 'react-graph-vis';
 import * as vis from 'vis-network';
 import { EdgeDescriptor } from '../../shared/entities';
 import { QueryNodeResult, QueryResult } from '../../shared/queries';
-import { EntityColorizer } from '../../stores/colors';
+import { EntityStyleProvider } from '../../stores/colors';
 
 function convertNode(
   node: QueryNodeResult,
-  colorize: EntityColorizer
+  colorize: EntityStyleProvider
 ): vis.Node {
   const result: vis.Node = {
     id: node.id,
@@ -23,14 +23,14 @@ function convertNode(
 
 function convertNodes(
   nodes: QueryNodeResult[],
-  colorize: EntityColorizer
+  colorize: EntityStyleProvider
 ): vis.Node[] {
   return nodes.map((node) => convertNode(node, colorize));
 }
 
 function convertEdge(
   edge: EdgeDescriptor,
-  colorize: EntityColorizer
+  colorize: EntityStyleProvider
 ): vis.Edge {
   return {
     id: edge.id,
@@ -42,14 +42,14 @@ function convertEdge(
 
 function convertEdges(
   edges: EdgeDescriptor[],
-  colorize: EntityColorizer
+  colorize: EntityStyleProvider
 ): vis.Edge[] {
   return edges.map((edge) => convertEdge(edge, colorize));
 }
 
 export default function convertQueryResult(
   queryResult: QueryResult,
-  colorize: EntityColorizer
+  colorize: EntityStyleProvider
 ): GraphData {
   return {
     nodes: convertNodes(queryResult.nodes, colorize),
