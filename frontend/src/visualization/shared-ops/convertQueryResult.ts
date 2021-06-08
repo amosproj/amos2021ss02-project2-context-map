@@ -5,14 +5,13 @@ import {
   QueryNodeResult,
   QueryResult,
 } from '../../shared/queries';
-import { EntityStyleProvider, NodeStyle } from '../../stores/colors';
+import { EntityStyleProvider } from '../../stores/colors';
 
 function convertNode(
   node: QueryNodeResult,
   styleProvider: EntityStyleProvider
 ): vis.Node {
-  // TODO: This should be infered automatically
-  const style = styleProvider(node) as NodeStyle;
+  const style = styleProvider(node);
 
   const result: vis.Node = {
     id: node.id,
