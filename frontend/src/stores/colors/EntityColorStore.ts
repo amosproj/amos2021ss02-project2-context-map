@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { injectable } from 'inversify';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { common, grey } from '@material-ui/core/colors';
+import { common } from '@material-ui/core/colors';
 import EntityVisualisationAttributes, {
   NodeVisualisationAttributes,
 } from './EntityVisualisationAttributes';
@@ -74,8 +74,8 @@ export class EntityColorStore {
         const type = this.getTypeOfEntity(entity);
 
         let mainColor;
-        if (this.greyScale.value) {
-          mainColor = isNodeDescriptor(entity) ? grey[500] : common.black;
+        if (isEdgeDescriptor(entity) && this.greyScaleEdges.value) {
+          mainColor = common.black;
         } else {
           mainColor = this.entityTypeColorMap.get(type);
         }
@@ -152,17 +152,18 @@ export class EntityColorStore {
     return this.storeSubject.value;
   }
 
-  private readonly greyScale = new BehaviorSubject<boolean>(false);
+  private readonly greyScaleEdges = new BehaviorSubject<boolean>(false);
 
   /**
-   * Getter for greyScale property
-   * @returns An Observable holding a boolean determining whether entities should be in greyscale or colored
+   * Getter for greyScaleEdges property
+   * @returns An Observable holding a boolean determining whether edges should be in greyscale or colored
    */
-  public getGreyScale(): Observable<boolean> {
-    return this.greyScale.pipe();
+  public getGreyScaleEdges(): Observable<boolean> {
+    return this.greyScaleEdges.pipe();
   }
-  public setGreyScale(greyScale: boolean): void {
-    this.greyScale.next(greyScale);
+
+  public setGreyScaleEdges(greyScale: boolean): void {
+    this.greyScaleEdges.next(greyScale);
     this.storeSubject.next(this.getEntityColorizer());
   }
 }

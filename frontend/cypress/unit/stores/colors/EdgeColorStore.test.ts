@@ -44,7 +44,7 @@ describe('EdgeColorStore', () => {
 
   it('should return black for all edge types when greyScale is true', () => {
     const colorizer = edgeColorStore.getValue();
-    edgeColorStore.setGreyScale(true);
+    edgeColorStore.setGreyScaleEdges(true);
     const black = '#000';
     const colors = dummies.map((t) => colorizer.colorize(t));
 

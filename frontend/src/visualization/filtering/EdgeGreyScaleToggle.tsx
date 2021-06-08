@@ -5,26 +5,26 @@ import { EntityColorStore } from '../../stores/colors';
 import useObservable from '../../utils/useObservable';
 
 /**
- * Control that toggles colorization of the graph.
+ * Control that toggles colorization of the edges.
  */
-export default function GreyScaleToggle(): JSX.Element {
+export default function EdgeGreyScaleToggle(): JSX.Element {
   const entityColorStore = useService(EntityColorStore);
 
   // toggle greyScale
-  const greyScale = useObservable(entityColorStore.getGreyScale());
+  const greyScale = useObservable(entityColorStore.getGreyScaleEdges());
 
   return (
-    <Box p={3}>
+    <Box>
       <FormControlLabel
         control={
           <Checkbox
             checked={!greyScale}
-            onChange={(_, val) => entityColorStore.setGreyScale(!val)}
+            onChange={(_, val) => entityColorStore.setGreyScaleEdges(!val)}
             name="colorize-graph"
             color="primary"
           />
         }
-        label="Colorize Graph"
+        label="Colorize Edges"
       />
     </Box>
   );
