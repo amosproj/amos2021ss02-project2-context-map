@@ -14,6 +14,8 @@ import ErrorStore from './stores/ErrorStore';
 import LoadingStore from './stores/LoadingStore';
 import EntityColorStore from './stores/colors/EntityColorStore';
 import FilterStateStore from './stores/filterState/FilterStateStore';
+import ShortestPathService from './services/shortest-path/ShortestPathService';
+import ShortestPathServiceImpl from './services/shortest-path/ShortestPathServiceImpl';
 
 /**
  * Configures all services in the frontend app.
@@ -46,6 +48,11 @@ export default function configureServices(container: Container): void {
     .toDynamicValue(
       (context) => new FilterServiceImpl(context.container.get(HttpService))
     )
+    .inSingletonScope();
+
+  container
+    .bind(ShortestPathService)
+    .to(ShortestPathServiceImpl)
     .inSingletonScope();
 
   // stores: use inSingletonScope so only one instance of each store exists
