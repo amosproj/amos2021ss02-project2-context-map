@@ -1,4 +1,4 @@
-import { NodeResultDescriptor, QueryResult } from '../shared/queries';
+import { QueryNodeResult, QueryResult } from '../shared/queries';
 
 interface HasId {
   id: number;
@@ -60,8 +60,7 @@ export function consolidateQueryResult(
   const nodeIds = new Set<number>(
     dedupNodes.map((descriptor) => descriptor.id)
   );
-
-  const subsidiary: NodeResultDescriptor[] = [];
+  const subsidiary: QueryNodeResult[] = [];
 
   for (let i = dedupEdges.length - 1; i >= 0; i -= 1) {
     const edge = dedupEdges[i];
@@ -71,7 +70,7 @@ export function consolidateQueryResult(
         nodeIds.add(edge.from);
         subsidiary.push({
           id: edge.from,
-          types: [], // types of subsidiary nodes are unknown, color is yellow either way
+          types: [], // types of subsidiary nodes are unknown, they are displayed in a special way anyway
           subsidiary: true,
         });
       }
@@ -80,7 +79,7 @@ export function consolidateQueryResult(
         nodeIds.add(edge.to);
         subsidiary.push({
           id: edge.to,
-          types: [], // types of subsidiary nodes are unknown, color is yellow either way
+          types: [], // types of subsidiary nodes are unknown, they are displayed in a special way anyway
           subsidiary: true,
         });
       }
