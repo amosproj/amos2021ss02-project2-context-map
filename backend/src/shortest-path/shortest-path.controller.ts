@@ -36,7 +36,13 @@ export class ShortestPathController {
       throw new BadRequestException();
     }
 
-    // TODO: Validate shortest path specific stuff
+    if (!query.startNode) {
+      throw new BadRequestException();
+    }
+
+    if (!query.endNode) {
+      throw new BadRequestException();
+    }
 
     return this.shortestPathService.executeQuery(query);
   }
