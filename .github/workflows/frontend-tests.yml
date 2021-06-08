@@ -107,11 +107,18 @@ jobs:
         run: wait-on tcp:8080
         timeout-minutes: 3
 
-      - name: Cypress run
+      - name: Run e2e tests
+        if: ${{ success() || failure() }} # run tests even if one step has failed (not on cancel)
         run: yarn run cy:run:e2e --browser ${{ matrix.browser }} --headless
         working-directory: ${{ env.working-directory }}
 
+      - name: Run unit tests
+        if: ${{ success() || failure() }} # run tests even if one step has failed (not on cancel)
+        run: yarn run cy:run:unit
+        working-directory: ${{ env.working-directory }}
+
       - name: Print coverage
+        if: ${{ success() || failure() }} # print coverage even if one step has failed (not on cancel)
         run: yarn run coverage:print
         working-directory: ${{ env.working-directory }}
       - name: Check coverage
