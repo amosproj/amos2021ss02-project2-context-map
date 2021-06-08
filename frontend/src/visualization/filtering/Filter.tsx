@@ -30,6 +30,7 @@ import EdgeGreyScaleToggle from './EdgeGreyScaleToggle';
 import FilterStateStore from '../../stores/filterState/FilterStateStore';
 import { FilterLineState } from '../../stores/filterState/FilterState';
 import { EntityColorStore } from '../../stores/colors';
+import ShortestPathMenu from './ShortestPathMenu';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -207,7 +208,7 @@ const Filter = (): JSX.Element => {
             <Tab label="Edge Types" className="EdgeTypes" />
           </Tabs>
         </AppBar>
-        <List style={{ maxHeight: '94%', width: 320, overflow: 'auto' }}>
+        <List style={{ overflow: 'auto' }}>
           <TabPanel value={tabIndex} index={0}>
             {nodes}
             <SubsidiaryNodesToggle />
@@ -220,6 +221,8 @@ const Filter = (): JSX.Element => {
             <MaxEntitiesSlider entities="edges" />
             <EdgeGreyScaleToggle />
           </TabPanel>
+          <Divider />
+          <ShortestPathMenu />
         </List>
       </Drawer>
     </div>

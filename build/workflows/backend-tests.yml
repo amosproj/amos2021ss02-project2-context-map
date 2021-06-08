@@ -21,7 +21,11 @@ jobs:
       # kmap.import-action.cache #
       - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
         working-directory: ${{ env.working-directory }}
-      - run: npx wait-on http://localhost:7474
+
+      - name: Wait on DB Server
+        run: npx wait-on http://localhost:7474
+        timeout-minutes: 3
+
       - run: yarn run test:cov
         working-directory: ${{ env.working-directory }}
         env:

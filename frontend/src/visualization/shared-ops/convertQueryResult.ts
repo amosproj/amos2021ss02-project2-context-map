@@ -1,11 +1,11 @@
 import { GraphData } from 'react-graph-vis';
 import * as vis from 'vis-network';
 import { EdgeDescriptor } from '../../shared/entities';
-import { NodeResultDescriptor, QueryResult } from '../../shared/queries';
+import { QueryNodeResult, QueryResult } from '../../shared/queries';
 import { EntityColorizer } from '../../stores/colors';
 
 function convertNode(
-  node: NodeResultDescriptor,
+  node: QueryNodeResult,
   colorizer: EntityColorizer
 ): vis.Node {
   return {
@@ -16,7 +16,7 @@ function convertNode(
 }
 
 function convertNodes(
-  nodes: NodeResultDescriptor[],
+  nodes: QueryNodeResult[],
   colorize: EntityColorizer
 ): vis.Node[] {
   return nodes.map((node) => convertNode(node, colorize));

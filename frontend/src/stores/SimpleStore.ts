@@ -25,9 +25,17 @@ export default abstract class SimpleStore<T> {
   protected abstract getInitialValue(): T;
 
   /**
+   * Ensures that the store is initialized. This is called on every action on
+   * the store and has to ensure that the initialization is only done once.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected ensureInit(): void {}
+
+  /**
    * Returns an observable that outputs the stored value.
    */
   public getState(): Observable<T> {
+    this.ensureInit();
     return this.storeSubject.pipe();
   }
 
@@ -35,6 +43,7 @@ export default abstract class SimpleStore<T> {
    * Returns the current value of the stored value.
    */
   public getValue(): T {
+    this.ensureInit();
     return this.storeSubject.value;
   }
 
@@ -42,6 +51,7 @@ export default abstract class SimpleStore<T> {
    * Updates the current filter by replacing it completely.
    */
   public setState(newState: T): void {
+    this.ensureInit();
     this.storeSubject.next(newState);
   }
 
@@ -49,6 +59,7 @@ export default abstract class SimpleStore<T> {
    * Updates the current filter by merging it with the current value.
    */
   public mergeState(newState: Partial<T>): void {
+    this.ensureInit();
     this.setState({ ...this.getValue(), ...newState });
   }
 }

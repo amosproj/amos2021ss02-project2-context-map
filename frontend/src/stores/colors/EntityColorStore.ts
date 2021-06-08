@@ -8,7 +8,7 @@ import EntityVisualisationAttributes, {
 import getNthColor from './getNthColor';
 import { EdgeDescriptor, NodeDescriptor } from '../../shared/entities';
 import { ArgumentError } from '../../shared/errors';
-import { NodeResultDescriptor } from '../../shared/queries';
+import { QueryNodeResult, QueryEdgeResult } from '../../shared/queries';
 import getTextColor from './getTextColor';
 
 export type EntityColorizer<E extends Entity = Entity> = {
@@ -32,7 +32,11 @@ const isNodeDescriptor = (
   e: EdgeDescriptor | NodeDescriptor
 ): e is NodeDescriptor => 'types' in e;
 
-type Entity = EdgeDescriptor | NodeDescriptor | NodeResultDescriptor;
+type Entity =
+  | EdgeDescriptor
+  | NodeDescriptor
+  | QueryNodeResult
+  | QueryEdgeResult;
 
 /**
  * A simple store contains a single state.
@@ -131,11 +135,7 @@ export class EntityColorStore {
    * @private
    */
   private isSubsidiary(entity: Entity): boolean {
-    // noinspection PointlessBooleanExpressionJS
-    return (
-      'subsidiary' in entity &&
-      (entity as NodeResultDescriptor).subsidiary === true
-    );
+    return 'subsidiary' in entity && entity.subsidiary === true;
   }
 
   /**

@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { from, Observable, Subscription } from 'rxjs';
+import { from, Subscription } from 'rxjs';
 import { QueryResult } from '../shared/queries';
 import SimpleStore from './SimpleStore';
 import FilterQueryStore from './FilterQueryStore';
@@ -40,12 +40,13 @@ export default class QueryResultStore extends SimpleStore<QueryResult> {
     return { nodes: [], edges: [] };
   }
 
-  getState(): Observable<QueryResult> {
-    if (this.filterQueryStoreSubscription == null) {
-      // If it's called the first time => subscribe to the filterQueryStore
-      this.filterQueryStoreSubscription = this.subscribeToFilterQueryStore();
+  protected ensureInit(): void {
+    if (this.filterQueryStoreSubscription != null) {
+      return;
     }
-    return super.getState();
+
+    // If it's called the first time => subscribe to the filterQueryStore
+    this.filterQueryStoreSubscription = this.subscribeToFilterQueryStore();
   }
 
   /**

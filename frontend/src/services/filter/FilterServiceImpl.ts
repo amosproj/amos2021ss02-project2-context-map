@@ -1,10 +1,13 @@
 import { injectable, inject } from 'inversify';
 import 'reflect-metadata';
+import { firstValueFrom } from 'rxjs';
 import { EdgeTypeFilterModel, NodeTypeFilterModel } from '../../shared/filter';
 import { FilterQuery, QueryResult } from '../../shared/queries';
 import { CancellationToken } from '../../utils/CancellationToken';
 import HttpService, { HttpGetRequest } from '../http';
 import FilterService from './FilterService';
+import SingleValueCachedObservable from '../../utils/SingleValueCachedObservable';
+import withCancellation from '../../utils/withCancellation';
 
 function buildRequest(type: string): HttpGetRequest {
   return new HttpGetRequest({}, { type });
@@ -12,9 +15,19 @@ function buildRequest(type: string): HttpGetRequest {
 
 @injectable()
 export default class FilterServiceImpl implements FilterService {
-  @inject(HttpService)
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  private readonly http: HttpService = null!;
+  /**
+   * Node and Edge cache of form <type, cache>.
+   * @private
+   */
+  private readonly cache = {
+    edges: new Map<string, SingleValueCachedObservable<EdgeTypeFilterModel>>(),
+    nodes: new Map<string, SingleValueCachedObservable<NodeTypeFilterModel>>(),
+  };
+
+  constructor(
+    @inject(HttpService)
+    private readonly http: HttpService
+  ) {}
 
   public query(
     query?: FilterQuery,
@@ -31,21 +44,37 @@ export default class FilterServiceImpl implements FilterService {
     type: string,
     cancellation?: CancellationToken
   ): Promise<NodeTypeFilterModel> {
-    return this.http.get<NodeTypeFilterModel>(
-      '/api/filter/node-type',
-      buildRequest(type),
-      cancellation
-    );
+    let cachedValue = this.cache.nodes.get(type);
+
+    if (cachedValue == null) {
+      cachedValue = new SingleValueCachedObservable(() =>
+        this.http.get<NodeTypeFilterModel>(
+          '/api/filter/node-type',
+          buildRequest(type)
+        )
+      );
+      this.cache.nodes.set(type, cachedValue);
+    }
+
+    return withCancellation(firstValueFrom(cachedValue.get()), cancellation);
   }
 
   public getEdgeTypeFilterModel(
     type: string,
     cancellation?: CancellationToken
   ): Promise<EdgeTypeFilterModel> {
-    return this.http.get<NodeTypeFilterModel>(
-      '/api/filter/edge-type',
-      buildRequest(type),
-      cancellation
-    );
+    let cachedValue = this.cache.edges.get(type);
+
+    if (cachedValue == null) {
+      cachedValue = new SingleValueCachedObservable(() =>
+        this.http.get<EdgeTypeFilterModel>(
+          '/api/filter/edge-type',
+          buildRequest(type)
+        )
+      );
+      this.cache.edges.set(type, cachedValue);
+    }
+
+    return withCancellation(firstValueFrom(cachedValue.get()), cancellation);
   }
 }
