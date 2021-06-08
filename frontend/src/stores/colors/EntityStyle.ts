@@ -14,11 +14,15 @@ export default interface EntityStyle {
   stroke: EntityStrokeStyle;
 }
 
+export interface NodeStrokeStyle extends EntityStrokeStyle {
+  color: string;
+}
+
 export interface NodeStyle extends EntityStyle {
   text: { color: string };
 
   /**
    * Border Attributes
    */
-  border: { color: string };
+  stroke: NodeStrokeStyle;
 }

@@ -15,7 +15,7 @@ function convertNode(
     id: node.id,
     label: node.id.toString(),
     color: {
-      border: style.border.color,
+      border: style.stroke.color,
       background: style.color,
     },
     borderWidth: style.stroke.width,

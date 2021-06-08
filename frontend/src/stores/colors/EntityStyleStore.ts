@@ -57,11 +57,11 @@ export class EntityStyleStore {
     return (entity: Entity) => {
       const ret: NodeStyle = {
         color: common.black,
-        border: { color: common.black },
         text: { color: common.black },
         stroke: {
           width: 1,
           dashes: false,
+          color: common.black,
         },
       };
 
@@ -77,7 +77,7 @@ export class EntityStyleStore {
       // Coloring if entity is subsidiary
       if (this.isSubsidiary(entity)) {
         // Set border color to main color.
-        ret.border.color = mainColor;
+        ret.stroke.color = mainColor;
         if (isNodeDescriptor(entity)) {
           // Fill nodes white
           ret.color = common.white;
@@ -85,7 +85,7 @@ export class EntityStyleStore {
       } else {
         // Set color = borderColor = mainColor
         ret.color = mainColor;
-        ret.border.color = mainColor;
+        ret.stroke.color = mainColor;
       }
 
       // Will also return NodeVisualisationAttributes for Edges in contrast to
