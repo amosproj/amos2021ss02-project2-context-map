@@ -1,8 +1,9 @@
 import { TestScheduler } from 'rxjs/testing';
-import { map, switchMap } from 'rxjs/operators';
-import { timer } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
+import { throwError, timer } from 'rxjs';
 import LoadingStore from '../../../src/stores/LoadingStore';
 import withLoadingBar from '../../../src/utils/withLoadingBar';
+import CancellationError from '../../../src/utils/CancellationError';
 
 const testScheduler = () =>
   new TestScheduler((actual, expected) => {
@@ -79,6 +80,39 @@ context('withLoadingBar', () => {
             switchMap(() => obs.pipe(withLoadingBar({ loadingStore })))
           )
         );
+
+        // Assert
+        expectObservable(
+          loadingStore.getNumActiveLoaders().pipe(
+            // Map incoming numbers to strings since marbles represent strings
+            map((x) => x.toString())
+          )
+        ).toBe(marbles.loading);
+      });
+    });
+
+    it('should stop loading after error without throwing CancellationError', () => {
+      testScheduler().run((helpers) => {
+        const { cold, expectObservable } = helpers;
+
+        const marbles = {
+          // Source throws error after 4 ticks
+          source: '         ----#',
+          expected: '       ----|',
+          loading: '        1---0',
+        };
+
+        // Create dummy observable with these states
+        const obs = cold(marbles.source);
+
+        // Act
+        expectObservable(
+          obs.pipe(
+            // Maps error to Cancellation Error
+            catchError(() => throwError(() => new CancellationError())),
+            withLoadingBar({ loadingStore })
+          )
+        ).toBe(marbles.expected);
 
         // Assert
         expectObservable(
