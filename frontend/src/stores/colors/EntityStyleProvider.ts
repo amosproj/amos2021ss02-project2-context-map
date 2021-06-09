@@ -1,9 +1,9 @@
-import EntityStyle, { NodeStyle } from './EntityStyle';
+import { NodeStyle, EdgeStyle } from './EntityStyle';
 import { EdgeDescriptor, NodeDescriptor } from '../../shared/entities';
 
-export type EntityStyleProvider = {
+export interface EntityStyleProvider {
   getStyle: {
-    (edge: EdgeDescriptor): EntityStyle;
+    (edge: EdgeDescriptor): EdgeStyle;
     (node: NodeDescriptor): NodeStyle;
   };
-};
+}
