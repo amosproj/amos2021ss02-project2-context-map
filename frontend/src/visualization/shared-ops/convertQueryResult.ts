@@ -11,7 +11,7 @@ function convertNode(
   node: QueryNodeResult,
   styleProvider: EntityStyleProvider
 ): vis.Node {
-  const style = styleProvider(node);
+  const style = styleProvider.getStyle(node);
 
   const result: vis.Node = {
     id: node.id,
@@ -40,7 +40,7 @@ function convertEdge(
   edge: QueryEdgeResult,
   styleProvider: EntityStyleProvider
 ): vis.Edge {
-  const style = styleProvider(edge);
+  const style = styleProvider.getStyle(edge);
 
   return {
     id: edge.id,

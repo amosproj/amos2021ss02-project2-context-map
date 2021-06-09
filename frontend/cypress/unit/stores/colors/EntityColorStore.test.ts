@@ -16,9 +16,9 @@ describe('EntityColorStore', () => {
   });
 
   it('should return different colors for different entity types', () => {
-    const colorize = entityColorStore.getValue();
-    const color1 = colorize(dummies[0]);
-    const color2 = colorize(dummies[1]);
+    const styleProvider = entityColorStore.getValue();
+    const color1 = styleProvider.getStyle(dummies[0] as EdgeDescriptor);
+    const color2 = styleProvider.getStyle(dummies[1] as NodeDescriptor);
 
     expect(color1).not.to.be.deep.eq(color2);
   });

@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { from, Observable, Subscription } from 'rxjs';
+import { from, Subscription } from 'rxjs';
 import { FilterQuery, QueryResult, ShortestPathQuery } from '../shared/queries';
 import SimpleStore from './SimpleStore';
 import FilterQueryStore from './FilterQueryStore';
@@ -53,9 +53,8 @@ export default class QueryResultStore extends SimpleStore<QueryResult> {
     return { nodes: [], edges: [] };
   }
 
-  getState(): Observable<QueryResult> {
+  protected ensureInit(): void {
     if (this.filterQueryStoreSubscription == null) {
-      // If it's called the first time => subscribe to the filterQueryStore
       this.filterQueryStoreSubscription = this.subscribeToFilterQueryStore();
     }
 
@@ -63,7 +62,6 @@ export default class QueryResultStore extends SimpleStore<QueryResult> {
       this.shortestPathStateStoreSubscription =
         this.subscribeToShortestPathStateStore();
     }
-    return super.getState();
   }
 
   private executeQuery(

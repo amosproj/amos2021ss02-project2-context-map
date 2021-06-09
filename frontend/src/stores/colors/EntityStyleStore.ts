@@ -50,57 +50,64 @@ export class EntityStyleStore {
      *   If entity is Node: colored border, white background
      *   If entity is Edge: black edge
      */
-    return (entity: Entity) => {
-      const ret: NodeStyle = {
-        color: common.black,
-        text: { color: common.black },
-        stroke: {
-          width: 1,
-          dashes: false,
+    return {
+      getStyle: (entity: Entity) => {
+        const ret: NodeStyle = {
           color: common.black,
-        },
-      };
+          text: { color: common.black },
+          stroke: {
+            width: 1,
+            dashes: false,
+            color: common.black,
+          },
+        };
 
-      const type = this.getTypeOfEntity(entity);
-      let mainColor = this.entityTypeColorMap.get(type);
-
-      if (!mainColor) {
-        // main color not yet found for this entity type
-        mainColor = getNthColor(this.entityTypeColorMap.size);
-        this.entityTypeColorMap.set(type, mainColor);
-      }
-
-      // Coloring if entity is subsidiary
-      if (this.isSubsidiary(entity)) {
-        // Set border color to main color.
-        ret.stroke.color = mainColor;
-        if (isNodeDescriptor(entity)) {
-          // Fill nodes white
-          ret.color = common.white;
+        const type = this.getTypeOfEntity(entity);
+        let mainColor;
+        if (isEdgeDescriptor(entity) && this.greyScaleEdges.value) {
+          mainColor = common.black;
+        } else {
+          mainColor = this.entityTypeColorMap.get(type);
         }
-      } else {
-        // Set color = borderColor = mainColor
-        ret.color = mainColor;
-        // TODO: Use a color with less contrast. Maybe mix the background-color with black.
-        ret.stroke.color = common.black;
-      }
 
-      if (this.isPath(entity)) {
-        ret.stroke.width = 3;
-      }
+        if (!mainColor) {
+          // main color not yet found for this entity type
+          mainColor = getNthColor(this.entityTypeColorMap.size);
+          this.entityTypeColorMap.set(type, mainColor);
+        }
 
-      if (this.isVirtual(entity)) {
-        ret.stroke.dashes = [3, 3];
-      }
+        // Coloring if entity is subsidiary
+        if (this.isSubsidiary(entity)) {
+          // Set border color to main color.
+          ret.stroke.color = mainColor;
+          if (isNodeDescriptor(entity)) {
+            // Fill nodes white
+            ret.color = common.white;
+          }
+        } else {
+          // Set color = borderColor = mainColor
+          ret.color = mainColor;
+          // TODO: Use a color with less contrast. Maybe mix the background-color with black.
+          ret.stroke.color = common.black;
+        }
 
-      // Will also return NodeVisualisationAttributes for Edges in contrast to
-      // the type definition.
-      // This is done for simplicity. If the return type is computed differently,
-      // this function will be much more complex.
-      // However, the type definition ensures that callers that call this function
-      // with an EdgeDescriptor will 'see' only EntityVisualisationAttributes.
-      ret.text.color = getTextColor(ret.color);
-      return ret;
+        if (this.isPath(entity)) {
+          ret.stroke.width = 3;
+        }
+
+        if (this.isVirtual(entity)) {
+          ret.stroke.dashes = [3, 3];
+        }
+
+        // Will also return NodeStyle for Edges in contrast to
+        // the type definition.
+        // This is done for simplicity. If the return type is computed differently,
+        // this function will be much more complex.
+        // However, the type definition ensures that callers that call this function
+        // with an EdgeDescriptor will 'see' only an EntityStyle.
+        ret.text.color = getTextColor(ret.color);
+        return ret;
+      },
     };
   }
 
@@ -146,6 +153,21 @@ export class EntityStyleStore {
    */
   public getValue(): EntityStyleProvider {
     return this.storeSubject.value;
+  }
+
+  private readonly greyScaleEdges = new BehaviorSubject<boolean>(false);
+
+  /**
+   * Getter for greyScaleEdges property
+   * @returns An Observable holding a boolean determining whether edges should be in greyscale or colored
+   */
+  public getGreyScaleEdges(): Observable<boolean> {
+    return this.greyScaleEdges.pipe();
+  }
+
+  public setGreyScaleEdges(greyScale: boolean): void {
+    this.greyScaleEdges.next(greyScale);
+    this.storeSubject.next(this.getEntityColorizer());
   }
 }
 
