@@ -9,7 +9,7 @@ import { QueryNodeResult, QueryEdgeResult } from '../../shared/queries';
 import getTextColor from './getTextColor';
 import EntityStyleStore from './EntityStyleStore';
 
-type EnityStyleIntersection = NodeStyle & EdgeStyle;
+type EntityStyleIntersection = NodeStyle & EdgeStyle;
 type QueryEntityResult = QueryNodeResult | QueryEdgeResult;
 
 const isEdgeDescriptor = (
@@ -32,8 +32,8 @@ export class EntityStyleProviderImpl implements EntityStyleProvider {
   protected readonly entityTypeColorMap = new Map<string, string>();
   public constructor(private readonly entityStyleStore: EntityStyleStore) {}
 
-  public getStyle(entity: QueryEntityResult): EnityStyleIntersection {
-    const ret: EnityStyleIntersection = {
+  public getStyle(entity: QueryEntityResult): EntityStyleIntersection {
+    const ret: EntityStyleIntersection = {
       color: common.black,
       text: { color: common.black },
       stroke: {
