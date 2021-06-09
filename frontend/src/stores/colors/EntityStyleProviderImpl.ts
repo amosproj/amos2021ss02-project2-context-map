@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { common } from '@material-ui/core/colors';
+import { inject, injectable } from 'inversify';
 import { NodeStyle, EdgeStyle } from './EntityStyle';
 import { EntityStyleProvider } from './EntityStyleProvider';
 import getNthColor from './getNthColor';
@@ -7,9 +8,9 @@ import { EdgeDescriptor, NodeDescriptor } from '../../shared/entities';
 import { ArgumentError } from '../../shared/errors';
 import { QueryNodeResult, QueryEdgeResult } from '../../shared/queries';
 import getTextColor from './getTextColor';
-import EntityStyleStore from './EntityStyleStore';
+import { EntityStyleStateStore } from './EntityStyleStateStore';
 
-type EnityStyleIntersection = NodeStyle & EdgeStyle;
+type EntityStyleIntersection = NodeStyle & EdgeStyle;
 type QueryEntityResult = QueryNodeResult | QueryEdgeResult;
 
 const isEdgeDescriptor = (
@@ -27,13 +28,25 @@ const isNodeDescriptor = (
  *   If entity is Node: colored border, white background
  *   If entity is Edge: black edge
  */
+
+@injectable()
 // eslint-disable-next-line import/prefer-default-export
 export class EntityStyleProviderImpl implements EntityStyleProvider {
   protected readonly entityTypeColorMap = new Map<string, string>();
-  public constructor(private readonly entityStyleStore: EntityStyleStore) {}
 
-  public getStyle(entity: QueryEntityResult): EnityStyleIntersection {
-    const ret: EnityStyleIntersection = {
+  @inject(EntityStyleStateStore)
+  private entityStyleStateStore!: EntityStyleStateStore;
+
+  public static create(
+    entityStyleStateStore: EntityStyleStateStore
+  ): EntityStyleProviderImpl {
+    const result = new EntityStyleProviderImpl();
+    result.entityStyleStateStore = entityStyleStateStore;
+    return result;
+  }
+
+  public getStyle(entity: QueryEntityResult): EntityStyleIntersection {
+    const ret: EntityStyleIntersection = {
       color: common.black,
       text: { color: common.black },
       stroke: {
@@ -47,7 +60,7 @@ export class EntityStyleProviderImpl implements EntityStyleProvider {
     let mainColor;
     if (
       isEdgeDescriptor(entity) &&
-      this.entityStyleStore.getGreyScaleEdgesValue()
+      this.entityStyleStateStore.getValue().greyScaleEdges
     ) {
       mainColor = common.black;
     } else {

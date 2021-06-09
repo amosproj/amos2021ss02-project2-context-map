@@ -1,3 +1,4 @@
-export * from './EntityStyleStore';
+export * from './EntityStyleMonitor';
 export * from './EntityStyle';
 export * from './EntityStyleProvider';
+export * from './EntityStyleStateStore';

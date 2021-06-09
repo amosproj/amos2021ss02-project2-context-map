@@ -12,11 +12,14 @@ import QueryResultStore from './stores/QueryResultStore';
 import FilterQueryStore from './stores/FilterQueryStore';
 import ErrorStore from './stores/ErrorStore';
 import LoadingStore from './stores/LoadingStore';
-import EntityStyleStore from './stores/colors/EntityStyleStore';
+import EntityStyleMonitor from './stores/colors/EntityStyleMonitor';
 import FilterStateStore from './stores/filterState/FilterStateStore';
 import ShortestPathService from './services/shortest-path/ShortestPathService';
 import ShortestPathServiceImpl from './services/shortest-path/ShortestPathServiceImpl';
 import { ShortestPathStateStore } from './stores/shortest-path/ShortestPathStateStore';
+import { EntityStyleProvider } from './stores/colors';
+import { EntityStyleProviderImpl } from './stores/colors/EntityStyleProviderImpl';
+import { EntityStyleStateStore } from './stores/colors/EntityStyleStateStore';
 
 /**
  * Configures all services in the frontend app.
@@ -56,12 +59,18 @@ export default function configureServices(container: Container): void {
     .to(ShortestPathServiceImpl)
     .inSingletonScope();
 
+  container
+    .bind(EntityStyleProvider)
+    .to(EntityStyleProviderImpl)
+    .inSingletonScope();
+
   // stores: use inSingletonScope so only one instance of each store exists
   container.bind(ErrorStore).to(ErrorStore).inSingletonScope();
   container.bind(LoadingStore).to(LoadingStore).inSingletonScope();
   container.bind(FilterStateStore).to(FilterStateStore).inSingletonScope();
   container.bind(FilterQueryStore).to(FilterQueryStore).inSingletonScope();
   container.bind(QueryResultStore).to(QueryResultStore).inSingletonScope();
-  container.bind(EntityStyleStore).to(EntityStyleStore).inSingletonScope();
+  container.bind(EntityStyleMonitor).to(EntityStyleMonitor).inSingletonScope();
   container.bind(ShortestPathStateStore).toSelf().inSingletonScope();
+  container.bind(EntityStyleStateStore).toSelf().inSingletonScope();
 }

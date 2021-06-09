@@ -9,7 +9,7 @@ import { ContainerSize } from '../utils/useSize';
 import useObservable from '../utils/useObservable';
 import QueryResultStore from '../stores/QueryResultStore';
 import convertQueryResult from './shared-ops/convertQueryResult';
-import { EntityStyleStore } from '../stores/colors';
+import { EntityStyleMonitor } from '../stores/colors';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -53,14 +53,14 @@ function Graph(props: GraphProps): JSX.Element {
   const classes = useStyles();
 
   const queryResultStore = useService(QueryResultStore);
-  const entityColorStore = useService(EntityStyleStore);
+  const entityStyleMonitor = useService(EntityStyleMonitor);
 
   const graphData = useObservable(
     // When one emits, the whole observable emits with the last emitted value from the other inputs
     // Example: New query result comes in => emits it with the most recent values from entityColorStore
     combineLatest([
       queryResultStore.getState(),
-      entityColorStore.getState(),
+      entityStyleMonitor.getState(),
     ]).pipe(map((next) => convertQueryResult(next[0], next[1]))),
     { edges: [], nodes: [] }
   );

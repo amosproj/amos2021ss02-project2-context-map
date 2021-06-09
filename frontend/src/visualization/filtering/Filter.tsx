@@ -29,9 +29,10 @@ import SubsidiaryNodesToggle from './SubsidiaryNodesToggle';
 import EdgeGreyScaleToggle from './EdgeGreyScaleToggle';
 import FilterStateStore from '../../stores/filterState/FilterStateStore';
 import { FilterLineState } from '../../stores/filterState/FilterState';
-import { EntityStyleStore } from '../../stores/colors';
+import { EntityStyleMonitor } from '../../stores/colors';
 import ShortestPathMenu from './ShortestPathMenu';
 import { QueryEdgeResult, QueryNodeResult } from '../../shared/queries';
+import useMonitor from '../../utils/useMonitor';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -88,12 +89,11 @@ const Filter = (): JSX.Element => {
 
   const filterStateStore = useService<FilterStateStore>(FilterStateStore);
 
-  const entityStyleStore = useService(EntityStyleStore);
+  const entityStyleMonitor = useService(EntityStyleMonitor);
   const styleProvider = useObservable(
-    entityStyleStore.getState(),
-    entityStyleStore.getValue()
+    entityStyleMonitor.getState(),
+    entityStyleMonitor.getValue()
   );
-
   const schemaService = useService(SchemaService, null);
 
   const [schema, setSchema] = useState<{
