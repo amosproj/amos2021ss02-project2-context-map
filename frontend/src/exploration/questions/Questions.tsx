@@ -14,7 +14,6 @@ import {
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { createStyles } from '@material-ui/core/styles';
-import { StarOutlined } from '@material-ui/icons';
 import ExplorationStore from '../../stores/exploration/ExplorationStore';
 import useService from '../../dependency-injection/useService';
 import explorationQuestions from '../../stores/exploration/ExplorationQuestions';
