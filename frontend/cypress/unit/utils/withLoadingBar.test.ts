@@ -31,28 +31,29 @@ context('withLoadingBar', () => {
           // When delay is finished, source starts
           delay: '          ------|',
           // Start with 0 active loaders, then expect one when source is subscribed to, then expect 0 when source is done
-          loading: '        0-----1---0',
+          expectedStore: '  0-----1---0',
         };
 
+        // Arrange
         // Create dummy observable with these states
         const obs = cold(marbles.source);
+        // Create actual observable that starts dummy observable after a delay
+        const actual = timer(time(marbles.delay)).pipe(
+          // Start obs with loading bar when timer is over
+          switchMap(() => obs.pipe(withLoadingBar({ loadingStore })))
+        );
+        // Get actual store observable
+        const actualStore = loadingStore.getNumActiveLoaders().pipe(
+          // Map incoming numbers to strings since marbles represent strings
+          map((x) => x.toString())
+        );
 
         // Act
         // Just start observable without tests
-        expectObservable(
-          timer(time(marbles.delay)).pipe(
-            // Start obs with loading bar when timer is over
-            switchMap(() => obs.pipe(withLoadingBar({ loadingStore })))
-          )
-        );
+        expectObservable(actual);
 
         // Assert
-        expectObservable(
-          loadingStore.getNumActiveLoaders().pipe(
-            // Map incoming numbers to strings since marbles represent strings
-            map((x) => x.toString())
-          )
-        ).toBe(marbles.loading);
+        expectObservable(actualStore).toBe(marbles.expectedStore);
       });
     });
 
@@ -66,28 +67,27 @@ context('withLoadingBar', () => {
           // When delay is finished, source starts
           delay: '          ------|',
           // Start with 0 active loaders, then expect one when source is subscribed to, then expect 0 when source is done
-          loading: '        0-----1---0',
+          expectedStore: '  0-----1---0',
         };
 
+        // Arrange
         // Create dummy observable with these states
         const obs = cold(marbles.source);
+        const actual = timer(time(marbles.delay)).pipe(
+          // Start obs with loading bar when timer is over
+          switchMap(() => obs.pipe(withLoadingBar({ loadingStore })))
+        );
+        const actualStore = loadingStore.getNumActiveLoaders().pipe(
+          // Map incoming numbers to strings since marbles represent strings
+          map((x) => x.toString())
+        );
 
         // Act
         // Just start observable without tests
-        expectObservable(
-          timer(time(marbles.delay)).pipe(
-            // Start obs with loading bar when timer is over
-            switchMap(() => obs.pipe(withLoadingBar({ loadingStore })))
-          )
-        );
+        expectObservable(actual);
 
         // Assert
-        expectObservable(
-          loadingStore.getNumActiveLoaders().pipe(
-            // Map incoming numbers to strings since marbles represent strings
-            map((x) => x.toString())
-          )
-        ).toBe(marbles.loading);
+        expectObservable(actualStore).toBe(marbles.expectedStore);
       });
     });
 
@@ -99,28 +99,27 @@ context('withLoadingBar', () => {
           // Source throws error after 4 ticks
           source: '         ----#',
           expected: '       ----|',
-          loading: '        1---0',
+          expectedStore: '  1---0',
         };
 
+        // Arrange
         // Create dummy observable with these states
         const obs = cold(marbles.source);
+        const actual = obs.pipe(
+          // Maps error to Cancellation Error
+          catchError(() => throwError(() => new CancellationError())),
+          withLoadingBar({ loadingStore })
+        );
+        const actualStore = loadingStore.getNumActiveLoaders().pipe(
+          // Map incoming numbers to strings since marbles represent strings
+          map((x) => x.toString())
+        );
 
         // Act
-        expectObservable(
-          obs.pipe(
-            // Maps error to Cancellation Error
-            catchError(() => throwError(() => new CancellationError())),
-            withLoadingBar({ loadingStore })
-          )
-        ).toBe(marbles.expected);
+        expectObservable(actual).toBe(marbles.expected);
 
         // Assert
-        expectObservable(
-          loadingStore.getNumActiveLoaders().pipe(
-            // Map incoming numbers to strings since marbles represent strings
-            map((x) => x.toString())
-          )
-        ).toBe(marbles.loading);
+        expectObservable(actualStore).toBe(marbles.expectedStore);
       });
     });
 
@@ -131,28 +130,27 @@ context('withLoadingBar', () => {
         const marbles = {
           source: '               -abc-d-e-f-|',
           delay: '          ------|',
-          loading: '        0-----1----------0',
+          expectedStore: '  0-----1----------0',
         };
 
+        // Arrange
         // Create dummy observable with these states
         const obs = cold(marbles.source);
+        const actual = timer(time(marbles.delay)).pipe(
+          // Start obs with loading bar when timer is over
+          switchMap(() => obs.pipe(withLoadingBar({ loadingStore })))
+        );
+        const actualStore = loadingStore.getNumActiveLoaders().pipe(
+          // Map incoming numbers to strings since marbles represent strings
+          map((x) => x.toString())
+        );
 
         // Act
         // Just start observable without tests
-        expectObservable(
-          timer(time(marbles.delay)).pipe(
-            // Start obs with loading bar when timer is over
-            switchMap(() => obs.pipe(withLoadingBar({ loadingStore })))
-          )
-        );
+        expectObservable(actual);
 
         // Assert
-        expectObservable(
-          loadingStore.getNumActiveLoaders().pipe(
-            // Map incoming numbers to strings since marbles represent strings
-            map((x) => x.toString())
-          )
-        ).toBe(marbles.loading);
+        expectObservable(actualStore).toBe(marbles.expectedStore);
       });
     });
 
@@ -171,18 +169,21 @@ context('withLoadingBar', () => {
           sub1: '           ^-------!----',
           expected2: '      --abc-d---f- ',
           sub2: '           ^-----------!',
-          loading: '        1-------0----',
+          expectedStore: '  1-------0----',
         };
 
+        // Arrange
         // Create dummy observable
         const source = cold(marbles.source);
+        const actual = source.pipe(withLoadingBar({ loadingStore }));
+        const actualStore = loadingStore.getNumActiveLoaders().pipe(
+          // Map incoming numbers to strings since marbles represent strings
+          map((x) => x.toString())
+        );
 
         // Acts & Assert
         // Start short obs1 with loading bar
-        expectObservable(
-          source.pipe(withLoadingBar({ loadingStore })),
-          marbles.sub1
-        ).toBe(marbles.expected1);
+        expectObservable(actual, marbles.sub1).toBe(marbles.expected1);
 
         // Start longer obs2 without loading bar
         expectObservable(source, marbles.sub2).toBe(marbles.expected2);
@@ -195,12 +196,7 @@ context('withLoadingBar', () => {
         ]);
 
         // Validate that the loading bar removes the loader when unsubscribed
-        expectObservable(
-          loadingStore.getNumActiveLoaders().pipe(
-            // Map incoming numbers to strings since marbles represent strings
-            map((x) => x.toString())
-          )
-        ).toBe(marbles.loading);
+        expectObservable(actualStore).toBe(marbles.expectedStore);
       });
     });
   });
@@ -213,39 +209,40 @@ context('withLoadingBar', () => {
         const marbles = {
           operations: [
             {
-              source: '      ----|      ',
-              delay: ' ------|          ',
+              source: '            ----|      ',
+              delay: '       ------|          ',
             },
             {
-              source: '       --------| ',
-              delay: ' -------|         ',
+              source: '             --------| ',
+              delay: '       -------|         ',
             },
             {
-              source: '        -----|   ',
-              delay: ' --------|        ',
+              source: '              -----|   ',
+              delay: '       --------|        ',
             },
           ],
-          loading: '   0-----123-2--1-0 ',
+          expectedStore: '   0-----123-2--1-0 ',
         };
 
-        // Act
+        // Arrange store
+        const actualStore = loadingStore.getNumActiveLoaders().pipe(
+          // Map incoming numbers to strings since marbles represent strings
+          map((x) => x.toString())
+        );
+
         for (const operation of marbles.operations) {
+          // Arrange
           const obs = cold(operation.source);
-          expectObservable(
-            timer(time(operation.delay)).pipe(
-              // eslint-disable-next-line no-loop-func
-              switchMap(() => obs.pipe(withLoadingBar({ loadingStore })))
-            )
+          const actual = timer(time(operation.delay)).pipe(
+            // eslint-disable-next-line no-loop-func
+            switchMap(() => obs.pipe(withLoadingBar({ loadingStore })))
           );
+          // Act (no need for assert here since only the loading store is tested)
+          expectObservable(actual);
         }
 
         // Assert
-        expectObservable(
-          loadingStore.getNumActiveLoaders().pipe(
-            // Map incoming numbers to strings since marbles represent strings
-            map((x) => x.toString())
-          )
-        ).toBe(marbles.loading);
+        expectObservable(actualStore).toBe(marbles.expectedStore);
       });
     });
 
@@ -256,39 +253,40 @@ context('withLoadingBar', () => {
         const marbles = {
           operations: [
             {
-              source: '      ----#      ',
-              delay: ' ------|          ',
+              source: '            ----#      ',
+              delay: '       ------|          ',
             },
             {
-              source: '       --------# ',
-              delay: ' -------|         ',
+              source: '             --------# ',
+              delay: '       -------|         ',
             },
             {
-              source: '        -----|   ',
-              delay: ' --------|        ',
+              source: '              -----|   ',
+              delay: '       --------|        ',
             },
           ],
-          loading: '   0-----123-2--1-0 ',
+          expectedStore: '   0-----123-2--1-0 ',
         };
 
-        // Act
+        // Arrange store
+        const actualStore = loadingStore.getNumActiveLoaders().pipe(
+          // Map incoming numbers to strings since marbles represent strings
+          map((x) => x.toString())
+        );
+
         for (const operation of marbles.operations) {
+          // Arrange
           const obs = cold(operation.source);
-          expectObservable(
-            timer(time(operation.delay)).pipe(
-              // eslint-disable-next-line no-loop-func
-              switchMap(() => obs.pipe(withLoadingBar({ loadingStore })))
-            )
+          const actual = timer(time(operation.delay)).pipe(
+            // eslint-disable-next-line no-loop-func
+            switchMap(() => obs.pipe(withLoadingBar({ loadingStore })))
           );
+          // Act (no need for assert here since only the loading store is tested)
+          expectObservable(actual);
         }
 
         // Assert
-        expectObservable(
-          loadingStore.getNumActiveLoaders().pipe(
-            // Map incoming numbers to strings since marbles represent strings
-            map((x) => x.toString())
-          )
-        ).toBe(marbles.loading);
+        expectObservable(actualStore).toBe(marbles.expectedStore);
       });
     });
   });

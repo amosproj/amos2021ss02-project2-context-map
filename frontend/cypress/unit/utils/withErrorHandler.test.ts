@@ -31,22 +31,25 @@ context('withErrorHandler', () => {
       // "#" = error
       const marbles = {
         // First emit a, then emit b after 2 steps of pause, then throw error after 2 more steps of pause
-        source: '      -a--b--#',
+        source: '       -a--b--#',
         // Expect a, then b (no error!)
-        expected: '    -a--b---',
+        expected: '     -a--b---',
         // Expect null (standard init), then e when source throws error
-        error: '       n------e---',
+        expectedStore: 'n------e---',
       };
 
+      // Arrange
       // Create dummy observable with these states
       const obs = cold(marbles.source);
+      // Create actual observable with error handler
+      const actual = obs.pipe(withErrorHandler({ errorStore }));
+      // Get actual store observable
+      const actualStore = errorStore.getState();
 
       // Act & Assert obs
-      expectObservable(obs.pipe(withErrorHandler({ errorStore }))).toBe(
-        marbles.expected
-      );
+      expectObservable(actual).toBe(marbles.expected);
       // Assert error state
-      expectObservable(errorStore.getState()).toBe(marbles.error, {
+      expectObservable(actualStore).toBe(marbles.expectedStore, {
         n: null,
         e: 'error',
       });
@@ -59,29 +62,29 @@ context('withErrorHandler', () => {
 
       const marbles = {
         // First emit a, then emit b after 2 steps of pause, then throw error after 2 more steps of pause
-        source: '      -a--b--#',
+        source: '       -a--b--#',
         // Expect a, then b, then an error
-        expected: '    -a--b--#',
+        expected: '     -a--b--#',
         // Expect null (standard init), then e when source throws error
-        error: '       n------e---',
+        expectedStore: 'n------e---',
       };
 
-      // Create dummy observable with these states
+      // Arrange
       const obs = cold(marbles.source);
+      const actual = obs.pipe(withErrorHandler({ errorStore, rethrow: true }));
+      const actualStore = errorStore.getState();
 
       // Act & Assert obs
-      expectObservable(
-        obs.pipe(withErrorHandler({ errorStore, rethrow: true }))
-      ).toBe(marbles.expected);
+      expectObservable(actual).toBe(marbles.expected);
       // Assert error state
-      expectObservable(errorStore.getState()).toBe(marbles.error, {
+      expectObservable(actualStore).toBe(marbles.expectedStore, {
         n: null,
         e: 'error',
       });
     });
   });
 
-  it('should change error state when CancellationError is thrown', () => {
+  it('should not change error state when CancellationError is thrown', () => {
     testScheduler().run((helpers) => {
       const { cold, expectObservable } = helpers;
 
@@ -91,22 +94,22 @@ context('withErrorHandler', () => {
         // Expect a, then b, then an error
         expected: '    -a--b---',
         // Expect null (standard init), then nothing anymore (although cancel error is thrown)
-        error: '       n-------',
+        actualStore: ' n-------',
       };
 
-      // Create dummy observable with these states
+      // Arrange
       const obs = cold(marbles.source);
+      const actual = obs.pipe(
+        // Swap error to cancellation error
+        catchError(() => throwError(() => new CancellationError())),
+        withErrorHandler({ errorStore })
+      );
+      const actualStore = errorStore.getState();
 
       // Act & Assert obs
-      expectObservable(
-        obs.pipe(
-          // Swap error to cancellation error
-          catchError(() => throwError(() => new CancellationError())),
-          withErrorHandler({ errorStore })
-        )
-      ).toBe(marbles.expected);
+      expectObservable(actual).toBe(marbles.expected);
       // Assert error state
-      expectObservable(errorStore.getState()).toBe(marbles.error, {
+      expectObservable(actualStore).toBe(marbles.actualStore, {
         n: null,
         e: 'error',
       });
