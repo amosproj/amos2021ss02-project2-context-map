@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -14,6 +14,7 @@ import {
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { createStyles } from '@material-ui/core/styles';
+import { StarOutlined } from '@material-ui/icons';
 import ExplorationStore from '../../stores/exploration/ExplorationStore';
 import useService from '../../dependency-injection/useService';
 import explorationQuestions from '../../stores/exploration/ExplorationQuestions';
@@ -36,8 +37,8 @@ function Questions(): JSX.Element {
 
   const explorationStore = useService(ExplorationStore);
 
-  // Map answers to string of questionIndex-answerIndex, in order to add and remove
-  // them from the explorationStore in handleChange
+  // Map answers to string made of questionIndex and answerIndex, in order to add and
+  // remove them from the explorationStore in handleChange
   const answers: Record<string, ExplorationAnswer> = {};
   explorationQuestions.forEach((q, qIndex) => {
     q.answers.forEach((a, aIndex) => {
@@ -85,6 +86,7 @@ function Questions(): JSX.Element {
                         <Checkbox
                           onChange={handleChange}
                           name={`explorationAnswer-${qIndex}-${aIndex}`}
+                          color="primary"
                         />
                       }
                       label={answer.text}
