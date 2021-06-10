@@ -24,10 +24,10 @@ function Exploration(): JSX.Element {
         justifyContent="space-around"
       >
         <Box flex={3}>
-          <Previews />
+          <Questions />
         </Box>
         <Box flex={2}>
-          <Questions />
+          <Previews />
         </Box>
       </Box>
     </>
