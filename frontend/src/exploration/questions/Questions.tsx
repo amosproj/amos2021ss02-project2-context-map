@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -17,6 +17,7 @@ import { createStyles } from '@material-ui/core/styles';
 import ExplorationStore from '../../stores/exploration/ExplorationStore';
 import useService from '../../dependency-injection/useService';
 import explorationQuestions from '../../stores/exploration/ExplorationQuestions';
+import useObservable from '../../utils/useObservable';
 import { ExplorationAnswer } from '../../stores/exploration';
 
 const useStyle = makeStyles((theme: Theme) =>
@@ -31,24 +32,6 @@ const useStyle = makeStyles((theme: Theme) =>
   })
 );
 
-// Interface to keep track of checked answers in component state.
-interface ExplorationSelection {
-  answer: ExplorationAnswer;
-  checked: boolean;
-}
-
-// Map answers to string made of questionIndex and answerIndex, in order to add and
-// remove them from the explorationStore in handleChange.
-const selections: Record<string, ExplorationSelection> = {};
-explorationQuestions.forEach((q, qIndex) => {
-  q.answers.forEach((a, aIndex) => {
-    selections[`explorationAnswer-${qIndex}-${aIndex}`] = {
-      answer: a,
-      checked: false,
-    };
-  });
-});
-
 /**
  * Creates the questions of the exploration page.
  * @returns a JSX Element containing the questions of the exploration page.
@@ -56,7 +39,10 @@ explorationQuestions.forEach((q, qIndex) => {
 function Questions(): JSX.Element {
   const classes = useStyle();
   const explorationStore = useService(ExplorationStore);
-  const [state, setState] = useState(selections);
+  const answers = useObservable(
+    explorationStore.getState(),
+    explorationStore.getValue()
+  );
 
   /**
    * Handles change event of the exploration questions,
@@ -64,15 +50,10 @@ function Questions(): JSX.Element {
    * removing de-selected answers from the ExplorationStore.
    * @param event the changeEvent emitting this function.
    */
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = event.target;
-    const { answer } = state[name];
-
-    setState({
-      ...state,
-      [name]: { answer, checked },
-    });
-
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    answer: ExplorationAnswer
+  ) => {
     if (event.target.checked) {
       explorationStore.addAnswer(answer);
     } else {
@@ -101,12 +82,8 @@ function Questions(): JSX.Element {
                     <FormControlLabel
                       control={
                         <Checkbox
-                          checked={
-                            state[`explorationAnswer-${qIndex}-${aIndex}`]
-                              .checked
-                          }
-                          onChange={handleChange}
-                          name={`explorationAnswer-${qIndex}-${aIndex}`}
+                          checked={answers.some((a) => a === answer)}
+                          onChange={(event) => handleChange(event, answer)}
                           color="primary"
                         />
                       }
