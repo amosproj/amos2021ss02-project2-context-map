@@ -49,6 +49,10 @@ explorationQuestions.forEach((q, qIndex) => {
   });
 });
 
+/**
+ * Creates the questions of the exploration page.
+ * @returns a JSX Element containing the questions of the exploration page.
+ */
 function Questions(): JSX.Element {
   const classes = useStyle();
   const explorationStore = useService(ExplorationStore);
