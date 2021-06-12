@@ -1,14 +1,12 @@
 import React from 'react';
-import { Box, List, ListItem, makeStyles, Paper } from '@material-ui/core';
+import { Box, List, makeStyles, Paper } from '@material-ui/core';
 import { createStyles } from '@material-ui/core/styles';
-import Layout from './Layout';
-import layoutsData from './layoutsData';
+import LayoutCard from './LayoutCard';
 import useService from '../../dependency-injection/useService';
 import ExplorationStore from '../../stores/exploration/ExplorationStore';
 import useObservable from '../../utils/useObservable';
 import routes from '../../routing/routes';
-import createCard from '../../visualization/dashboard-card/cardContents';
-import DashboardCard from '../../visualization/dashboard-card/DashboardCard';
+import createLayoutCard, { layoutsData } from './layoutsData';
 
 const useStyle = makeStyles(() =>
   createStyles({
@@ -28,8 +26,6 @@ function Previews(): JSX.Element {
   if (tabs === undefined) {
     return <></>;
   }
-
-  const cards = tabs.map((tab) => createCard(tab));
 
   const explorationStore = useService(ExplorationStore);
 
@@ -66,25 +62,14 @@ function Previews(): JSX.Element {
     return 0;
   });
 
-  const layoutsTemplate = layoutsArray.map((elem) => Layout(elem));
+  const layoutsTemplateData = layoutsArray.map((elem) =>
+    createLayoutCard(elem, tabs)
+  );
 
   return (
     <Box className={`${classes.container} Previews`}>
       <Paper style={{ maxHeight: '100%', overflow: 'auto' }}>
-        <List>
-          {cards.map((card) => (
-            <ListItem>
-              <DashboardCard
-                label={card.label}
-                path={card.path}
-                content={card.content}
-                description={card.description}
-                subLabel={card.subLabel}
-                icon={card.icon}
-              />
-            </ListItem>
-          ))}
-        </List>
+        <List>{layoutsTemplateData.map((elem) => LayoutCard(elem))}</List>
       </Paper>
     </Box>
   );
