@@ -1,16 +1,9 @@
-import TabDefinition from '../../routing/TabDefinition';
-
 /**
- * Data that is used to construct the {@link LayoutCard}s.
+ * Used to construct the {@link LayoutCard}s.
  */
-export default interface LayoutDefinition extends TabDefinition {
+export default interface LayoutDefinition {
   /**
-   * Used for searching the corresponding tab label.
-   */
-  label: string;
-
-  /**
-   * Name of the image file without file extension.
+   * Name of the image file.
    */
   filename: string;
 
@@ -18,4 +11,9 @@ export default interface LayoutDefinition extends TabDefinition {
    * Description that is placed under the image.
    */
   description: string;
+
+  /**
+   * Path the preview routes to.
+   */
+  path: string;
 }

@@ -7,6 +7,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { createStyles } from '@material-ui/core/styles';
 import LayoutDefinition from './LayoutDefinition';
 
@@ -14,10 +15,6 @@ const useStyle = makeStyles(() =>
   createStyles({
     card: {
       width: '100%',
-    },
-    media: {
-      height: 0,
-      paddingTop: '56.25%', // 16:9
     },
   })
 );
@@ -29,21 +26,25 @@ const useStyle = makeStyles(() =>
 function LayoutCard(layout: LayoutDefinition): JSX.Element {
   const classes = useStyle();
 
-  const { path, filename, description } = layout;
+  const { filename, description, path } = layout;
 
-  const imagePath = '/exploration-preview/'.concat(filename, '.png');
+  const imagePath = `/exploration-preview/${filename}`;
 
   return (
-    <a href={path} style={{ textDecoration: 'none' }}>
-      <ListItem>
+    <Link to={path} style={{ textDecoration: 'none' }}>
+      <ListItem key={description}>
         <Card className={classes.card}>
-          <CardMedia className={classes.media} image={imagePath} />
+          <CardMedia
+            component="img"
+            image={imagePath}
+            alt={`Preview of ${description}`}
+          />
           <CardContent>
             <Typography variant="h6">{description}</Typography>
           </CardContent>
         </Card>
       </ListItem>
-    </a>
+    </Link>
   );
 }
 

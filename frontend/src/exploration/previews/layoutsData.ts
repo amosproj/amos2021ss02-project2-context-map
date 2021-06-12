@@ -1,78 +1,42 @@
-import TabDefinition from '../../routing/TabDefinition';
+import { ExplorationWeight } from '../../stores/exploration';
 import LayoutDefinition from './LayoutDefinition';
 
-type LayoutData = {
-  label: string;
-  filename: string;
-  description: string;
-  weight: number;
-};
-
-export const layoutsData: {
-  [key: string]: LayoutData;
-} = {
+const layoutsData: Record<keyof ExplorationWeight, LayoutDefinition> = {
   C: {
-    label: 'Graph',
-    filename: 'structural layout',
+    filename: 'structural-layout.png',
     description: 'Structural Layout',
-    weight: 0,
+    path: '/visualization/graph',
   },
   BC: {
-    label: 'Schema', // TODO: change when Betweenness Centrality is added
-    filename: 'empty layout',
+    filename: 'empty-layout.png',
     description: 'Betweenness Centrality',
-    weight: 0,
+    path: '/visualization/schema', // TODO: change when layout added
   },
   H: {
-    label: 'Hierarchies',
-    filename: 'hierarchical layout',
+    filename: 'hierarchical-layout.png',
     description: 'Hierarchical Layout',
-    weight: 0,
+    path: '/visualization/hierarchical',
   },
   R: {
-    label: 'Schema', // TODO: change when Radial Layout is added
-    filename: 'empty layout',
+    filename: 'empty-layout.png',
     description: 'Radial Layout',
-    weight: 0,
+    path: '/visualization/schema', // TODO: change when layout added
   },
   SP: {
-    label: 'Graph',
-    filename: 'empty layout',
+    filename: 'empty-layout.png',
     description: 'Shortest Path',
-    weight: 0,
+    path: '/visualization/graph',
   },
   L: {
-    label: 'Schema', // TODO: change when List Layout is added
-    filename: 'empty layout',
+    filename: 'empty-layout.png',
     description: 'List Layout',
-    weight: 0,
+    path: '/visualization/schema', // TODO: change when layout added
   },
   P: {
-    label: 'Schema', // TODO: change when Pie Chart is added
-    filename: 'empty layout',
+    filename: 'empty-layout.png',
     description: 'Pie Chart',
-    weight: 0,
+    path: '/visualization/schema', // TODO: change when layout added
   },
 };
 
-const createLayoutCard = (
-  layoutData: LayoutData,
-  tabs: TabDefinition[]
-): LayoutDefinition => {
-  const tab = tabs.find((curTab) => curTab.label === layoutData.label);
-
-  /* istanbul ignore if */
-  if (tab === undefined) {
-    throw new Error(`No tab found to label ${layoutData.label}`);
-  }
-
-  return {
-    label: tab.label,
-    path: tab.path,
-    content: tab.content,
-    description: layoutData.description,
-    filename: layoutData.filename,
-  };
-};
-
-export default createLayoutCard;
+export default layoutsData;
