@@ -21,23 +21,40 @@ function Previews(): JSX.Element {
 
   const explorationStore = useService(ExplorationStore);
 
-  const weights = useObservable(explorationStore.getScoreState(), {
-    C: 0,
-    BC: 0,
-    H: 0,
-    R: 0,
-    SP: 0,
-    L: 0,
-    P: 0,
-  });
+  const weights: { [key: string]: number } = useObservable(
+    explorationStore.getScoreState(),
+    {
+      C: 0,
+      BC: 0,
+      H: 0,
+      R: 0,
+      SP: 0,
+      L: 0,
+      P: 0,
+    }
+  );
 
-  for (const weightKeys of Object.keys(typeof weights)) {
-    // layoutsData[weightKeys].weight = weights[weightsKeys];
+  for (const weightKeys of Object.keys(weights)) {
+    layoutsData[weightKeys].weight = weights[weightKeys];
   }
 
-  const layoutsTemplate = Object.values(layoutsData).map((elem) =>
-    Layout(elem)
-  );
+  const layoutsArray = [];
+
+  for (const elem of Object.values(layoutsData)) {
+    layoutsArray.push(elem);
+  }
+
+  layoutsArray.sort((a, b) => {
+    if (a.weight > b.weight) {
+      return -1;
+    }
+    if (a.weight < b.weight) {
+      return 1;
+    }
+    return 0;
+  });
+
+  const layoutsTemplate = layoutsArray.map((elem) => Layout(elem));
 
   return (
     <Box className={`${classes.container} Previews`}>
