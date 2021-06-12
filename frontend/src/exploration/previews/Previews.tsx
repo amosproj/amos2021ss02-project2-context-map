@@ -17,6 +17,9 @@ const useStyle = makeStyles(() =>
   })
 );
 
+/**
+ * List of {@link LayoutCard}s with ordering based on a {@link ExplorationWeight} from {@link ExplorationStore}.
+ */
 function Previews(): JSX.Element {
   const classes = useStyle();
 
@@ -29,6 +32,7 @@ function Previews(): JSX.Element {
 
   const explorationStore = useService(ExplorationStore);
 
+  // weights from the store as a hashmap so it can be used as an iterable.
   const weights: { [key: string]: number } = useObservable(
     explorationStore.getScoreState(),
     {
@@ -42,10 +46,12 @@ function Previews(): JSX.Element {
     }
   );
 
+  // align the layoutsData weights with the weights from the store.
   for (const weightKeys of Object.keys(weights)) {
     layoutsData[weightKeys].weight = weights[weightKeys];
   }
 
+  // convert layoutsData to an array so it can get sorted.
   const layoutsArray = [];
 
   for (const elem of Object.values(layoutsData)) {
@@ -62,6 +68,7 @@ function Previews(): JSX.Element {
     return 0;
   });
 
+  // create LayoutCards from the sorted layoutsData.
   const layoutsTemplateData = layoutsArray.map((elem) =>
     createLayoutCard(elem, tabs)
   );

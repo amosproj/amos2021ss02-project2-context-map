@@ -4,6 +4,7 @@ import {
   CardMedia,
   ListItem,
   makeStyles,
+  Typography,
 } from '@material-ui/core';
 import React from 'react';
 import { createStyles } from '@material-ui/core/styles';
@@ -11,10 +12,6 @@ import LayoutDefinition from './LayoutDefinition';
 
 const useStyle = makeStyles(() =>
   createStyles({
-    container: {
-      height: '75vh',
-      width: '35vh',
-    },
     card: {
       width: '100%',
     },
@@ -25,6 +22,10 @@ const useStyle = makeStyles(() =>
   })
 );
 
+/**
+ * A Preview of a Layout that routes to the tab path from the input parameter.
+ * @param layout
+ */
 function LayoutCard(layout: LayoutDefinition): JSX.Element {
   const classes = useStyle();
 
@@ -37,7 +38,9 @@ function LayoutCard(layout: LayoutDefinition): JSX.Element {
       <ListItem>
         <Card className={classes.card}>
           <CardMedia className={classes.media} image={imagePath} />
-          <CardContent>{description}</CardContent>
+          <CardContent>
+            <Typography variant="h6">{description}</Typography>
+          </CardContent>
         </Card>
       </ListItem>
     </a>
