@@ -25,7 +25,6 @@ function Previews(): JSX.Element {
 
   const explorationStore = useService(ExplorationStore);
 
-  // weights from the store as a hashmap so it can be used as an iterable.
   const weights = useObservable(
     explorationStore.getScoreState(),
     explorationStore.getScoreValue()

@@ -21,7 +21,7 @@ const useStyle = makeStyles(() =>
 
 /**
  * A Preview of a Layout that routes to the tab path from the input parameter.
- * @param layout
+ * @param layout - Data used to construct the card
  */
 function LayoutCard(layout: LayoutDefinition): JSX.Element {
   const classes = useStyle();
