@@ -33,7 +33,7 @@ function LayoutCard(layout: LayoutDefinition): JSX.Element {
   return (
     <Link to={path} style={{ textDecoration: 'none' }}>
       <ListItem key={description}>
-        <Card className={classes.card}>
+        <Card className={`${classes.card} LayoutPreview`}>
           <CardMedia
             component="img"
             image={imagePath}
