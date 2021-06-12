@@ -7,6 +7,7 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { createStyles } from '@material-ui/core/styles';
+import LayoutDefinition from './LayoutDefinition';
 
 const useStyle = makeStyles(() =>
   createStyles({
@@ -24,26 +25,23 @@ const useStyle = makeStyles(() =>
   })
 );
 
-function Layout(layout: {
-  text: string;
-  description: string;
-  weight: number;
-}): JSX.Element {
+function LayoutCard(layout: LayoutDefinition): JSX.Element {
   const classes = useStyle();
 
-  const { text, description } = layout;
-  const imagePath = '/exploration-preview/'.concat(text, '.png');
+  const { path, filename, description } = layout;
+
+  const imagePath = '/exploration-preview/'.concat(filename, '.png');
 
   return (
-    <>
+    <a href={path} style={{ textDecoration: 'none' }}>
       <ListItem>
         <Card className={classes.card}>
           <CardMedia className={classes.media} image={imagePath} />
           <CardContent>{description}</CardContent>
         </Card>
       </ListItem>
-    </>
+    </a>
   );
 }
 
-export default Layout;
+export default LayoutCard;
