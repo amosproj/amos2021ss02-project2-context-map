@@ -44,8 +44,8 @@ async function tryConnect() {
       tryConnect();
     }, timeout);
   } finally {
-    await session?.close();
-    await driver?.close();
+    if (session) await session.close();
+    if (driver) await driver.close();
   }
 }
 
