@@ -11,7 +11,7 @@ const useStyle = makeStyles((theme) =>
       gap: theme.spacing(4),
     },
     preview: {
-      height: '75vh',
+      height: '66vh',
     },
   })
 );

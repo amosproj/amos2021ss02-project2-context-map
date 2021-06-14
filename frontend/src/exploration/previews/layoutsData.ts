@@ -1,6 +1,9 @@
 import { ExplorationWeight } from '../../stores/exploration';
 import LayoutDefinition from './LayoutDefinition';
 
+/**
+ * Gives a {@link LayoutDefinition} to every attribute of an {@link ExplorationWeight}.
+ */
 const layoutsData: Record<keyof ExplorationWeight, LayoutDefinition> = {
   C: {
     filename: 'structural-layout.png',
@@ -10,7 +13,7 @@ const layoutsData: Record<keyof ExplorationWeight, LayoutDefinition> = {
   BC: {
     filename: 'empty-layout.png',
     description: 'Betweenness Centrality',
-    path: '/visualization/schema', // TODO: change when layout added
+    path: '/visualization/schema', // TODO #299: Add missing visualisation preview links
   },
   H: {
     filename: 'hierarchical-layout.png',
@@ -20,7 +23,7 @@ const layoutsData: Record<keyof ExplorationWeight, LayoutDefinition> = {
   R: {
     filename: 'empty-layout.png',
     description: 'Radial Layout',
-    path: '/visualization/schema', // TODO: change when layout added
+    path: '/visualization/schema', // TODO #299: Add missing visualisation preview links
   },
   SP: {
     filename: 'empty-layout.png',
@@ -30,12 +33,12 @@ const layoutsData: Record<keyof ExplorationWeight, LayoutDefinition> = {
   L: {
     filename: 'empty-layout.png',
     description: 'List Layout',
-    path: '/visualization/schema', // TODO: change when layout added
+    path: '/visualization/schema', // TODO #299: Add missing visualisation preview links
   },
   P: {
     filename: 'empty-layout.png',
     description: 'Pie Chart',
-    path: '/visualization/schema', // TODO: change when layout added
+    path: '/visualization/schema', // TODO #299: Add missing visualisation preview links
   },
 };
 

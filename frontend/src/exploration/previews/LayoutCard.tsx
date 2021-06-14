@@ -31,8 +31,8 @@ function LayoutCard(layout: LayoutDefinition): JSX.Element {
   const imagePath = `/exploration-preview/${filename}`;
 
   return (
-    <Link to={path} style={{ textDecoration: 'none' }}>
-      <ListItem key={description}>
+    <ListItem key={description}>
+      <Link to={path} style={{ textDecoration: 'none' }}>
         <Card className={`${classes.card} LayoutPreview`}>
           <CardMedia
             component="img"
@@ -43,8 +43,8 @@ function LayoutCard(layout: LayoutDefinition): JSX.Element {
             <Typography variant="h6">{description}</Typography>
           </CardContent>
         </Card>
-      </ListItem>
-    </Link>
+      </Link>
+    </ListItem>
   );
 }
 

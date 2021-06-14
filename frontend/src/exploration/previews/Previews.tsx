@@ -14,6 +14,10 @@ const useStyle = makeStyles(() =>
       height: '100%',
       width: '100%',
     },
+    paper: {
+      maxHeight: '100%',
+      overflow: 'auto',
+    },
   })
 );
 
@@ -38,7 +42,8 @@ function Previews(): JSX.Element {
 
   return (
     <Box className={`${classes.container} Previews`}>
-      <Paper style={{ maxHeight: '100%', overflow: 'auto' }}>
+      <h1>Recommended Visualisations</h1>
+      <Paper className={classes.paper}>
         <List>{layoutsPreviewData.map((elem) => LayoutCard(elem))}</List>
       </Paper>
     </Box>
