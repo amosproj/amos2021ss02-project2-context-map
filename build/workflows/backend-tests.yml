@@ -26,6 +26,9 @@ jobs:
         run: cp .env.test .env
         working-directory: ${{ env.working-directory }}
 
+      - name: debug open ports
+        run: docker ps && echo "" && netstat -tunlp | grep 7687
+
       - name: Wait on DB Server
         run: node backend/wait-on-db
         timeout-minutes: 3
