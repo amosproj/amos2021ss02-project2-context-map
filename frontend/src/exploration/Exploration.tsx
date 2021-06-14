@@ -10,6 +10,9 @@ const useStyle = makeStyles((theme) =>
       margin: theme.spacing(4),
       gap: theme.spacing(4),
     },
+    preview: {
+      height: '66vh',
+    },
   })
 );
 
@@ -26,7 +29,7 @@ function Exploration(): JSX.Element {
         <Box flex={3}>
           <Questions />
         </Box>
-        <Box flex={2}>
+        <Box flex={2} className={classes.preview}>
           <Previews />
         </Box>
       </Box>

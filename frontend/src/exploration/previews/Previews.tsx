@@ -1,48 +1,50 @@
 import React from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  CardMedia,
-  makeStyles,
-  Paper,
-} from '@material-ui/core';
+import { Box, List, makeStyles, Paper } from '@material-ui/core';
 import { createStyles } from '@material-ui/core/styles';
+import LayoutCard from './LayoutCard';
+import useService from '../../dependency-injection/useService';
+import ExplorationStore from '../../stores/exploration/ExplorationStore';
+import useObservable from '../../utils/useObservable';
+import layoutsData from './layoutsData';
+import { ExplorationWeight } from '../../stores/exploration';
 
 const useStyle = makeStyles(() =>
   createStyles({
     container: {
-      height: '75vh', // TODO change/remove
-      width: '35vh',
+      height: '100%',
+      width: '100%',
     },
-    media: {
-      height: 0,
-      paddingTop: '56.25%', // 16:9
+    paper: {
+      maxHeight: '100%',
+      overflow: 'auto',
     },
   })
 );
 
+/**
+ * List of {@link LayoutCard}s with ordering based on a {@link ExplorationWeight} from {@link ExplorationStore}.
+ */
 function Previews(): JSX.Element {
   const classes = useStyle();
+
+  const explorationStore = useService(ExplorationStore);
+
+  const weights = useObservable(
+    explorationStore.getScoreState(),
+    explorationStore.getScoreValue()
+  );
+
+  const layoutsPreviewData = (
+    Object.keys(weights) as (keyof ExplorationWeight)[]
+  )
+    .sort((a, b) => weights[a] - weights[b])
+    .map((layout) => layoutsData[layout]);
+
   return (
     <Box className={`${classes.container} Previews`}>
-      <Paper style={{ maxHeight: '100%', overflow: 'auto' }}>
-        <Card>
-          <CardMedia
-            className={classes.media}
-            image="/exploration-preview/structural layout.png"
-            title="Paella dish"
-          />
-          <CardContent>Structural Layout</CardContent>
-        </Card>
-        <Card>
-          <CardMedia
-            className={classes.media}
-            image="/exploration-preview/hierarchical layout.png"
-            title="Paella dish"
-          />
-          <CardContent>Hierarchical Layout</CardContent>
-        </Card>
+      <h1>Recommended Visualisations</h1>
+      <Paper className={classes.paper}>
+        <List>{layoutsPreviewData.map((elem) => LayoutCard(elem))}</List>
       </Paper>
     </Box>
   );
