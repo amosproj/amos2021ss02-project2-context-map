@@ -19,6 +19,9 @@ const config = {
   password: process.env.NEO4J_PASSWORD,
 };
 
+// eslint-disable-next-line no-console
+console.log(config);
+
 async function tryConnect() {
   let driver;
   let session;
