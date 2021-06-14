@@ -1,3 +1,6 @@
+/*
+Starts the database docker container with the testing dump.
+ */
 
 const path = require("path");
 const { execSync } = require("child_process");

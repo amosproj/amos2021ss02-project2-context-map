@@ -27,16 +27,6 @@ jobs:
         working-directory: ${{ env.working-directory }}
 
       - name: Wait on DB Server
-        run: npx wait-on http://localhost:7474 tcp:7687
-        timeout-minutes: 2
-
-      - name: debug open ports
-        run: docker ps && echo "" && netstat -tunlp | grep 7687
-
-      - name: debug docker
-        run: docker cp neo4j-db:logs/debug.log debug.log && cat debug.log
-
-      - name: Wait on DB Server
         run: node backend/wait-on-db
         timeout-minutes: 3
 

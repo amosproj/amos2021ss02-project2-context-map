@@ -43,12 +43,12 @@ jobs:
       - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
         working-directory: ./backend
 
+      - name: Start Frontend Dev Server (detached)
+        run: pm2 start ./build/start-frontend-detached.js
+
       - name: Wait on DB Server
         run: node backend/wait-on-db
         timeout-minutes: 3
-
-      - name: Start Frontend Dev Server (detached)
-        run: pm2 start ./build/start-frontend-detached.js
       - name: Start Backend Dev Server (detached)
         run: pm2 start ./build/start-backend-detached.js
 
