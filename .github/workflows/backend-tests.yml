@@ -75,13 +75,13 @@ jobs:
       - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
         working-directory: ${{ env.working-directory }}
 
-      - name: Wait on DB Server
-        run: node backend/wait-on-db
-        timeout-minutes: 3
-
       - name: Add .env file
         run: cp .env.test .env
         working-directory: ${{ env.working-directory }}
+
+      - name: Wait on DB Server
+        run: node backend/wait-on-db
+        timeout-minutes: 3
 
       - run: yarn run test:cov
         working-directory: ${{ env.working-directory }}
