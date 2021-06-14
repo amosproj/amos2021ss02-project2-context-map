@@ -1,89 +1,31 @@
 import React from 'react';
 import SearchResultList from './SearchResultList';
-import { ExpandedSearchResult } from '../shared/search/ExpandedSearchResult';
+import {
+  SearchEdgeResult,
+  SearchNodeResult,
+  SearchResult,
+} from '../shared/search';
 import NodeTypeComponent from './helper/NodeTypeComponent';
 import EdgeTypeComponent from './helper/EdgeTypeComponent';
-import { Node } from '../shared/entities/Node';
-import { Edge } from '../shared/entities/Edge';
-import { Property } from '../shared/entities/Property';
+import { EntityColorizer } from '../stores/colors';
 
-/**
- * This is an first approach to find the attribute that contains `searchString`.
- */
-function findSearchStringInProperties(
-  searchString: string,
-  entity: Node | Edge
-) {
-  const search = searchString.toLocaleLowerCase();
-  let foundValue: string | undefined;
-  const idString = `[${entity.id}]`;
+function formatEntry(resultEntry: SearchNodeResult | SearchEdgeResult) {
+  let result = `[${resultEntry.id}]`;
 
-  const format = (propName: string, propValue: string) =>
-    `{ ${propName}: ${propValue} }`;
-
-  /**
-   * Returns `value.toString()` if `search` was found in `value`
-   */
-  function findInPrimitive(value: string | number | unknown) {
-    if (
-      (typeof value === 'string' &&
-        value.toLocaleLowerCase().search(search) >= 0) || // strings
-      (typeof value === 'number' && value.toString().search(search) >= 0) // numbers
-    ) {
-      return value.toString();
+  if (resultEntry.properties) {
+    for (const key of Object.keys(resultEntry.properties)) {
+      const value = resultEntry.properties[key];
+      result += ` { ${key}: ${value} }`;
     }
-    return undefined;
   }
 
-  /**
-   * Returns a formatted string ({@link format}) if `search` was found
-   * somewhere in the (nested) object `props`
-   */
-  function findInProperties(props: {
-    [key: string]: Property;
-  }): string | undefined {
-    for (const propName of Object.keys(props)) {
-      const propValue = props[propName];
-
-      foundValue = findInPrimitive(propValue);
-      if (foundValue) {
-        // String or Number value found
-        return format(propName, foundValue);
-      }
-
-      /* istanbul ignore if */
-      if (Array.isArray(propValue)) {
-        const foundValues = propValue
-          .map((x) => findInPrimitive(x)) // Returns string if found
-          .filter((x) => x !== undefined); // Returns only "found" items
-
-        if (foundValues?.length > 0) {
-          const allValuesMatch = foundValues.length === propValue.length;
-          return format(
-            propName,
-            `[${foundValues.join(', ')}${allValuesMatch ? ', ...' : ''}]`
-          );
-        }
-      }
-
-      /* istanbul ignore if */
-      if (typeof propValue === 'object' && propValue != null) {
-        foundValue = findInProperties(propValue as Record<string, unknown>);
-        if (foundValue) {
-          return format(propName, foundValue);
-        }
-      }
-    }
-    return undefined;
-  }
-
-  foundValue = findInProperties(entity.properties);
-  return `${idString} ${foundValue ?? ''}`;
+  return result;
 }
 
 export default function convertSearchResultToSearchResultList(
   searchString: string,
-  result: ExpandedSearchResult | undefined
+  result: SearchResult | undefined,
+  colorizer: EntityColorizer
 ): SearchResultList[] {
   /* istanbul ignore if */
   if (result === undefined) {
@@ -99,10 +41,10 @@ export default function convertSearchResultToSearchResultList(
         element: (
           <div>
             {n.types.map((t) => (
-              <NodeTypeComponent name={t} />
+              <NodeTypeComponent name={t} color={colorizer.colorize(n).color} />
             ))}
             &nbsp;
-            {findSearchStringInProperties(searchString, n)}
+            {formatEntry(n)}
           </div>
         ),
         href: `/data/node/${n.id}`,
@@ -111,33 +53,49 @@ export default function convertSearchResultToSearchResultList(
     {
       key: 'Edges',
       header: 'Edges',
-      elements: result.edges.map((n) => ({
-        key: n.id,
+      elements: result.edges.map((e) => ({
+        key: e.id,
         element: (
           <div>
-            <EdgeTypeComponent type={n.type} />
-            &nbsp;{findSearchStringInProperties(searchString, n)}
+            <EdgeTypeComponent
+              type={e.type}
+              color={colorizer.colorize(e).color}
+            />
+            &nbsp;{formatEntry(e)}
           </div>
         ),
-        href: `/data/edge/${n.id}`,
+        href: `/data/edge/${e.id}`,
       })),
     },
     {
       key: 'Node Types',
       header: 'Node Types',
-      elements: result.nodeTypes.map((n) => ({
-        key: n.name,
-        element: <NodeTypeComponent name={n.name} />,
-        href: `/data/node-type/${n.name}`,
+      elements: result.nodeTypes.map((t) => ({
+        key: t.name,
+        element: (
+          <NodeTypeComponent
+            name={t.name}
+            color={colorizer.colorize({ id: -1, types: [t.name] }).color}
+          />
+        ),
+        href: `/data/node-type/${t.name}`,
       })),
     },
     {
       key: 'Edge Types',
       header: 'Edge Types',
-      elements: result.edgeTypes.map((n) => ({
-        key: n.name,
-        element: <EdgeTypeComponent type={n.name} />,
-        href: `/data/edge-type/${n.name}`,
+      elements: result.edgeTypes.map((t) => ({
+        key: t.name,
+        element: (
+          <EdgeTypeComponent
+            type={t.name}
+            color={
+              colorizer.colorize({ id: -1, from: -1, to: -1, type: t.name })
+                .color
+            }
+          />
+        ),
+        href: `/data/edge-type/${t.name}`,
       })),
     },
   ]

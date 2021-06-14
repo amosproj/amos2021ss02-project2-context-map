@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
-import { Node } from './shared/entities/Node';
-import { EdgeDescriptor } from './shared/entities/EdgeDescriptor';
-import { Edge } from './shared/entities/Edge';
-import { QueryBase, QueryResult } from './shared/queries';
-import { NodeDescriptor } from './shared/entities/NodeDescriptor';
-import consolidateQueryResult from './utils/consolidateQueryResult';
+import { Node, EdgeDescriptor, Edge, NodeDescriptor } from './shared/entities';
+import { CountQueryResult, QueryBase, QueryResult } from './shared/queries';
+import { consolidateQueryResult } from './utils';
 import {
   neo4jReturnEdge,
   neo4jReturnEdgeDescriptor,
@@ -28,14 +25,17 @@ export class AppService {
       nodes:
         query?.limits?.nodes === 0
           ? []
-          : await this.getAllNodes(query?.limits?.nodes),
+          : await this.queryNodes(query?.limits?.nodes),
       edges:
         query?.limits?.edges === 0
           ? []
-          : await this.getAllEdges(query?.limits?.edges),
+          : await this.queryEdges(query?.limits?.edges),
     };
 
-    return consolidateQueryResult(queryResult);
+    return consolidateQueryResult(
+      queryResult,
+      query?.includeSubsidiary ?? false
+    );
   }
 
   /**
@@ -44,7 +44,7 @@ export class AppService {
    * @param nodeLimit  limit number of nodes to be queried
    * @return NodeDescriptor as a result of the Query
    */
-  private async getAllNodes(nodeLimit?: number): Promise<NodeDescriptor[]> {
+  private async queryNodes(nodeLimit?: number): Promise<NodeDescriptor[]> {
     // toInteger required, since apparently it converts int to double...
     const result = await this.neo4jService.read(
       `
@@ -60,15 +60,27 @@ export class AppService {
   }
 
   /**
-   * Queries nodes for a given array of ids
+   * Queries nodes for a given array of ids.
    *
-   * @param ids  node-ids that are being searched for
+   * @param ids node-ids that are being searched for.
    * @return array of nodes having the input-ids as id ordered by id
    */
-  async getNodesById(ids: number[]): Promise<Node[]> {
+  public async getNodesById(ids: number[]): Promise<Node[]> {
     const result = await this.neo4jService.read(
       `MATCH (n) WHERE ID(n) IN $ids RETURN ${neo4jReturnNode('n')}`,
       { ids }
+    );
+
+    return result.records.map((record) => record.toObject() as Node);
+  }
+
+  /**
+   * Queries all node details
+   * @return Array of all node details present in the database.
+   */
+  public async getNodes(): Promise<Node[]> {
+    const result = await this.neo4jService.read(
+      `MATCH (n) RETURN ${neo4jReturnNode('n')}`
     );
 
     return result.records.map((record) => record.toObject() as Node);
@@ -80,7 +92,7 @@ export class AppService {
    * @param edgeLimit  limit number of edges to be queried
    * @return EdgeDescriptor as a result of the Query
    */
-  private async getAllEdges(edgeLimit?: number): Promise<EdgeDescriptor[]> {
+  private async queryEdges(edgeLimit?: number): Promise<EdgeDescriptor[]> {
     // toInteger required, since apparently it converts int to double...
     const result = await this.neo4jService.read(
       `
@@ -97,13 +109,12 @@ export class AppService {
   }
 
   /**
-   * Queries edges for a given array of ids
+   * Queries edges for a given array of idsd.
    *
-   * @example call it with /getEdgesById?ids=1&ids=2
-   * @param ids  edge-ids that are being searched for
+   * @param ids  edge-ids that are being searched for.
    * @return array of edges having the input-ids as id ordered by id
    */
-  async getEdgesById(ids: number[]): Promise<Edge[]> {
+  public async getEdgesById(ids: number[]): Promise<Edge[]> {
     const result = await this.neo4jService.read(
       `
       MATCH (from)-[e]->(to) 
@@ -115,5 +126,42 @@ export class AppService {
     );
 
     return result.records.map((r) => r.toObject() as Edge);
+  }
+
+  /**
+   * Queries all edge details.
+   * @return Array of all edge details present in the database.
+   */
+  public async getEdges(): Promise<Edge[]> {
+    const result = await this.neo4jService.read(
+      `
+      MATCH (from)-[e]->(to) 
+      RETURN ${neo4jReturnEdge('e', 'from', 'to')}
+      ORDER BY id, from
+      `
+    );
+
+    return result.records.map((r) => r.toObject() as Edge);
+  }
+
+  /**
+   * Returns the number of nodes and edges in the graph
+   */
+  async getNumberOfEntities(): Promise<CountQueryResult> {
+    const result = await this.neo4jService.read(
+      `
+        CALL {
+            MATCH (n)
+            RETURN count(n) as nodes
+        }
+        CALL {
+            MATCH ()-[e]->()
+            RETURN count(e) as edges
+        }
+        return nodes, edges
+    `
+    );
+
+    return result.records[0].toObject() as CountQueryResult;
   }
 }

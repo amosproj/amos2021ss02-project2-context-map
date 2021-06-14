@@ -2,7 +2,7 @@
 
 import { injectable } from 'inversify';
 import 'reflect-metadata';
-import { SearchResult } from '../../shared/search/SearchResult';
+import { SearchResult } from '../../shared/search';
 import { CancellationToken } from '../../utils/CancellationToken';
 
 /**

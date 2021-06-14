@@ -46,11 +46,16 @@ describe('FilterController', () => {
     it(`returns everything if no filter specified`, async () => {
       // Arrange
       const expected: QueryResult = {
-        nodes: [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
+        nodes: [
+          { id: 0, types: ['Movie'] },
+          { id: 1, types: ['Person'] },
+          { id: 2, types: ['Person'] },
+          { id: 3, types: ['Person'] },
+        ],
         edges: [
-          { id: 0, from: 1, to: 0 },
-          { id: 1, from: 2, to: 0 },
-          { id: 2, from: 3, to: 0 },
+          { id: 0, from: 1, to: 0, type: 'ACTED_IN' },
+          { id: 1, from: 2, to: 0, type: 'ACTED_IN' },
+          { id: 2, from: 3, to: 0, type: 'DIRECTED' },
         ],
       };
 
@@ -70,7 +75,7 @@ describe('FilterController', () => {
       };
 
       const expected: QueryResult = {
-        nodes: [{ id: 0 }],
+        nodes: [{ id: 0, types: ['Movie'] }],
         edges: [],
       };
 
@@ -91,8 +96,13 @@ describe('FilterController', () => {
       };
 
       const expected: QueryResult = {
-        nodes: [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
-        edges: [{ id: 2, from: 3, to: 0 }],
+        nodes: [
+          { id: 0, types: ['Movie'] },
+          { id: 1, types: ['Person'] },
+          { id: 2, types: ['Person'] },
+          { id: 3, types: ['Person'] },
+        ],
+        edges: [{ id: 2, from: 3, to: 0, type: 'DIRECTED' }],
       };
 
       // Act
@@ -112,7 +122,7 @@ describe('FilterController', () => {
       };
 
       const expected: QueryResult = {
-        nodes: [{ id: 1 }],
+        nodes: [{ id: 1, types: ['Person'] }],
         edges: [],
       };
 
@@ -139,7 +149,7 @@ describe('FilterController', () => {
       };
 
       const expected: QueryResult = {
-        nodes: [{ id: 1 }],
+        nodes: [{ id: 1, types: ['Person'] }],
         edges: [],
       };
 
@@ -163,7 +173,11 @@ describe('FilterController', () => {
       };
 
       const expected: QueryResult = {
-        nodes: [{ id: 1 }, { id: 2 }, { id: 3 }],
+        nodes: [
+          { id: 1, types: ['Person'] },
+          { id: 2, types: ['Person'] },
+          { id: 3, types: ['Person'] },
+        ],
         edges: [],
       };
 
@@ -187,11 +201,16 @@ describe('FilterController', () => {
       };
 
       const expected: QueryResult = {
-        nodes: [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
+        nodes: [
+          { id: 0, types: ['Movie'] },
+          { id: 1, types: ['Person'] },
+          { id: 2, types: ['Person'] },
+          { id: 3, types: ['Person'] },
+        ],
         edges: [
-          { id: 0, from: 1, to: 0 },
-          { id: 1, from: 2, to: 0 },
-          { id: 2, from: 3, to: 0 },
+          { id: 0, type: 'ACTED_IN', from: 1, to: 0 },
+          { id: 1, type: 'ACTED_IN', from: 2, to: 0 },
+          { id: 2, type: 'DIRECTED', from: 3, to: 0 },
         ],
       };
 

@@ -1,5 +1,5 @@
 {
-  "name": "kmap.backend",
+  "name": "amos-kmap.backend",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -30,6 +30,7 @@
     "@nestjs/config": "^0.6.3",
     "@nestjs/core": "^7.6.15",
     "@nestjs/platform-express": "^7.6.15",
+    "dotenv": "^10.0.0",
     "minisearch": "^3.0.2",
     "neo4j-driver": "^4.2.3",
     "nest-neo4j": "^0.1.4",

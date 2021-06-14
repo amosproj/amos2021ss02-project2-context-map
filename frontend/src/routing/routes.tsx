@@ -1,80 +1,56 @@
 import React from 'react';
 import Archetypes from '../archetypes/Archetypes';
 import Data from '../data/Data';
-import ErrorBoundary from '../errors/ErrorBoundary';
 import Exploration from '../exploration/Exploration';
 import Home from '../home/Home';
-import Graph from '../visualization/Graph';
 import Schema from '../visualization/Schema';
 import Visualization from '../visualization/Visualization';
 import RouteDefinition from './RouteDefinition';
+import GraphPage from '../visualization/GraphPage';
 
 const routes: Record<string, RouteDefinition> = {
   Home: {
     path: '/home',
     label: 'Home',
-    content: () => (
-      <ErrorBoundary>
-        <Home />
-      </ErrorBoundary>
-    ),
+    content: () => <Home />,
   },
   Visualization: {
     path: '/visualization',
     label: 'Visualization',
     exact: true,
-    content: () => (
-      <ErrorBoundary>
-        <Visualization />
-      </ErrorBoundary>
-    ),
+    content: () => <Visualization />,
     tabs: [
       {
         path: '/visualization/graph',
         label: 'Graph',
-        content: () => (
-          <ErrorBoundary>
-            <Graph />
-          </ErrorBoundary>
-        ),
+        content: () => <GraphPage />,
       },
       {
         path: '/visualization/schema',
         label: 'Schema',
-        content: () => (
-          <ErrorBoundary>
-            <Schema />
-          </ErrorBoundary>
-        ),
+        content: () => <Schema />,
+      },
+      {
+        path: '/visualization/hierarchical',
+        label: 'Hierarchies',
+        content: () => <GraphPage layout="hierarchical" />,
       },
     ],
   },
   Exploration: {
     path: '/exploration',
     label: 'Exploration',
-    content: () => (
-      <ErrorBoundary>
-        <Exploration />
-      </ErrorBoundary>
-    ),
+    content: () => <Exploration />,
   },
   Data: {
     path: '/data',
     label: 'Data',
-    content: () => (
-      <ErrorBoundary>
-        <Data />
-      </ErrorBoundary>
-    ),
+    content: () => <Data />,
   },
   Archetypes: {
     path: '/archetypes',
     label: 'Archetypes',
-    content: () => (
-      <ErrorBoundary>
-        <Archetypes />
-      </ErrorBoundary>
-    ),
+    content: () => <Archetypes />,
   },
 };
 

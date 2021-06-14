@@ -1,7 +1,7 @@
-import { EdgeDescriptor } from '../entities/EdgeDescriptor';
-import { NodeDescriptor } from '../entities/NodeDescriptor';
 import { EdgeTypeDescriptor } from '../schema/EdgeTypeDescriptor';
 import { NodeTypeDescriptor } from '../schema/NodeTypeDescriptor';
+import { SearchEdgeResult } from './SearchEdgeResult';
+import { SearchNodeResult } from './SearchNodeResult';
 
 /**
  * Represents the result of a search request.
@@ -10,14 +10,14 @@ import { NodeTypeDescriptor } from '../schema/NodeTypeDescriptor';
  */
 export interface SearchResult {
   /**
-   * NodeDescriptors (array of node-ids) as result of the search operation
+   * Search node results (array of node-ids) as result of the search operation
    */
-  nodes: NodeDescriptor[];
+  nodes: SearchNodeResult[];
 
   /**
-   * EdgeDescriptors (array of node-ids, from-ids and edge-ids) as result of the search operation
+   * Search edge results (array of node-ids, from-ids and edge-ids) as result of the search operation
    */
-  edges: EdgeDescriptor[];
+  edges: SearchEdgeResult[];
 
   /**
    * NodeTypeDescriptor (array of node type names) as result of the search operation

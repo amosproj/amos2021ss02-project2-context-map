@@ -21,13 +21,18 @@ const cardContents: Array<CardPresentationContent> = [
     description: 'Take a deeper look into the database structure',
     icon: 'account_tree',
   },
+  {
+    label: 'Hierarchies',
+    subLabel: 'Node relations',
+    description: 'Display queried data in a hierarchically structured graph.',
+    icon: 'device_hub',
+  },
 ];
 
 /**
- * Creates a new card definition with icon, description and subtitle
- * for the dashboard from a TabDefinition.
- * @param {TabDefinition} tab TabDefinition (based on the routes)
- * @return {CardDefinition} the created card definition.
+ * Creates a new card definition with icon, description and subtitle for the dashboard from a TabDefinition.
+ * @param tab A {@link TabDefinition} (based on the routes)
+ * @returns the created card definition.
  */
 const createCard = function createCardBasedOnTab(
   tab: TabDefinition

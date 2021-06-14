@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Neo4jService } from 'nest-neo4j/dist';
+import { ConfigModule } from '@nestjs/config';
 import { FilterService } from '../../../src/filter/filter.service';
 import { KmapNeo4jModule } from '../../../src/config/neo4j/KmapNeo4jModule';
-import { AppModule } from '../../../src/app.module';
 import {
   getEdgeTypeFilterModelResult,
   getNodeTypeFilterModelResult,
@@ -23,8 +23,15 @@ describe('FilterService', () => {
   // Global Setup
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, KmapNeo4jModule],
-      providers: [],
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: '.env.test',
+        }),
+        KmapNeo4jModule.fromEnv({
+          disableLosslessIntegers: true,
+        }),
+      ],
+      providers: [FilterService],
     }).compile();
 
     service = module.get<FilterService>(FilterService);
@@ -48,11 +55,15 @@ describe('FilterService', () => {
           nodes: OfTypeCondition('Movie'),
           edges: OfTypeCondition('DIRECTED'),
         },
+        includeSubsidiary: true,
       };
 
       const expectedQueryResult: QueryResult = {
-        nodes: [{ id: 0 }, { id: 3, subsidiary: true }],
-        edges: [{ id: 2, from: 3, to: 0 }],
+        nodes: [
+          { id: 0, types: ['Movie'] },
+          { id: 3, types: [], subsidiary: true },
+        ],
+        edges: [{ id: 2, type: 'DIRECTED', from: 3, to: 0 }],
       };
 
       // Act

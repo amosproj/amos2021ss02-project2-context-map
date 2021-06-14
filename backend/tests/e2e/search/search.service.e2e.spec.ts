@@ -1,8 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Neo4jService } from 'nest-neo4j/dist';
+import { ConfigModule } from '@nestjs/config';
 import { SearchService } from '../../../src/search/search.service';
 import { KmapNeo4jModule } from '../../../src/config/neo4j/KmapNeo4jModule';
-import { AppModule } from '../../../src/app.module';
+import { SearchIndexBuilder } from '../../../src/search/SearchIndexBuilder';
+import { SearchResult } from '../../../src/shared/search';
+import { AppService } from '../../../src/app.service';
+import { SchemaService } from '../../../src/schema/schema.service';
+
+function normalizeSearchResult(searchResult: SearchResult): void {
+  searchResult.nodes.sort((a, b) => b.id - a.id);
+  searchResult.edges.sort((a, b) => b.id - a.id);
+
+  searchResult.nodeTypes.sort((a, b) => b.name.localeCompare(a.name));
+  searchResult.edgeTypes.sort((a, b) => b.name.localeCompare(a.name));
+}
 
 describe('SearchService', () => {
   let service: SearchService;
@@ -11,8 +23,15 @@ describe('SearchService', () => {
   // Global Setup
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, KmapNeo4jModule],
-      providers: [SearchService],
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: '.env.test',
+        }),
+        KmapNeo4jModule.fromEnv({
+          disableLosslessIntegers: true,
+        }),
+      ],
+      providers: [SearchService, SearchIndexBuilder, AppService, SchemaService],
     }).compile();
 
     service = module.get<SearchService>(SearchService);
@@ -29,7 +48,9 @@ describe('SearchService', () => {
       // Arrange
       const expected = {
         edges: [],
-        nodes: [{ id: 3 }],
+        nodes: [
+          { id: 3, properties: { name: 'Lana Wachowski' }, types: ['Person'] },
+        ],
         nodeTypes: [],
         edgeTypes: [],
       };
@@ -38,6 +59,7 @@ describe('SearchService', () => {
       const result = await service.search('lana');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -45,7 +67,9 @@ describe('SearchService', () => {
       // Arrange
       const expected = {
         edges: [],
-        nodes: [{ id: 1 }],
+        nodes: [
+          { id: 1, properties: { name: 'Keanu Reeves' }, types: ['Person'] },
+        ],
         nodeTypes: [],
         edgeTypes: [],
       };
@@ -54,6 +78,7 @@ describe('SearchService', () => {
       const result = await service.search('reev');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -61,7 +86,11 @@ describe('SearchService', () => {
       // Arrange
       const expected = {
         edges: [],
-        nodes: [{ id: 3 }, { id: 2 }, { id: 1 }],
+        nodes: [
+          { id: 3, types: ['Person'] },
+          { id: 2, types: ['Person'] },
+          { id: 1, types: ['Person'] },
+        ],
         nodeTypes: [
           {
             name: 'Person',
@@ -74,6 +103,7 @@ describe('SearchService', () => {
       const result = await service.search('person');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -81,7 +111,11 @@ describe('SearchService', () => {
       // Arrange
       const expected = {
         edges: [],
-        nodes: [{ id: 3 }, { id: 2 }, { id: 1 }],
+        nodes: [
+          { id: 3, types: ['Person'] },
+          { id: 2, types: ['Person'] },
+          { id: 1, types: ['Person'] },
+        ],
         nodeTypes: [
           {
             name: 'Person',
@@ -94,33 +128,21 @@ describe('SearchService', () => {
       const result = await service.search('pers');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
-    it('finds nodes and node-types by node type', async () => {
+    it('finds node-types by node type', async () => {
       // Arrange
       const expected = {
         edges: [],
-        nodes: [
-          {
-            id: 3,
-          },
-          {
-            id: 2,
-          },
-          {
-            id: 1,
-          },
-          {
-            id: 0,
-          },
-        ],
+        nodes: [],
         nodeTypes: [
           {
-            name: 'Movie',
+            name: 'Person',
           },
           {
-            name: 'Person',
+            name: 'Movie',
           },
         ],
         edgeTypes: [],
@@ -130,29 +152,14 @@ describe('SearchService', () => {
       const result = await service.search('node');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
-    it('finds edges and edge types by entity type', async () => {
+    it('finds edge types by entity type', async () => {
       // Arrange
       const expected = {
-        edges: [
-          {
-            from: 3,
-            id: 2,
-            to: 0,
-          },
-          {
-            from: 2,
-            id: 1,
-            to: 0,
-          },
-          {
-            from: 1,
-            id: 0,
-            to: 0,
-          },
-        ],
+        edges: [],
         nodes: [],
         nodeTypes: [],
         edgeTypes: [
@@ -169,6 +176,7 @@ describe('SearchService', () => {
       const result = await service.search('edge');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -180,6 +188,7 @@ describe('SearchService', () => {
             from: 3,
             id: 2,
             to: 0,
+            type: 'DIRECTED',
           },
         ],
         nodes: [],
@@ -195,6 +204,7 @@ describe('SearchService', () => {
       const result = await service.search('directed');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -206,6 +216,10 @@ describe('SearchService', () => {
             from: 2,
             id: 1,
             to: 0,
+            properties: {
+              roles: 'Trinity',
+            },
+            type: 'ACTED_IN',
           },
         ],
         nodes: [],
@@ -217,6 +231,7 @@ describe('SearchService', () => {
       const result = await service.search('trinity');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -228,6 +243,10 @@ describe('SearchService', () => {
             from: 2,
             id: 1,
             to: 0,
+            properties: {
+              roles: 'Trinity',
+            },
+            type: 'ACTED_IN',
           },
         ],
         nodes: [],
@@ -239,6 +258,7 @@ describe('SearchService', () => {
       const result = await service.search('trini');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -259,6 +279,7 @@ describe('SearchService', () => {
       const result = await service.search('roles');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
 
@@ -279,6 +300,7 @@ describe('SearchService', () => {
       const result = await service.search('released');
 
       // Assert
+      normalizeSearchResult(result);
       expect(result).toEqual(expected);
     });
   });

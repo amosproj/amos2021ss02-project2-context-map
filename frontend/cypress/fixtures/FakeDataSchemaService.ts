@@ -1,9 +1,12 @@
 import { injectable } from 'inversify';
 import 'reflect-metadata';
-import { EdgeType } from '../../src/shared/schema/EdgeType';
-import { EntityType } from '../../src/shared/schema/EntityType';
-import { EntityTypeProperty } from '../../src/shared/schema/EntityTypeProperty';
-import { NodeType } from '../../src/shared/schema/NodeType';
+import {
+  EdgeType,
+  EntityType,
+  EntityTypeProperty,
+  NodeType,
+} from '../../src/shared/schema';
+
 import { CancellationToken } from '../../src/utils/CancellationToken';
 import delay from '../../src/utils/delay';
 import nouns from '../../src/utils/nouns';

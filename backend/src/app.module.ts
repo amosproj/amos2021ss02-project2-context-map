@@ -10,6 +10,8 @@ import { SchemaController } from './schema/schema.controller';
 import { SchemaService } from './schema/schema.service';
 import { SearchController } from './search/search.controller';
 import { SearchService } from './search/search.service';
+import { SearchIndexBuilder } from './search/SearchIndexBuilder';
+import { ShortestPathService } from './shortest-path/shortest-path.service';
 
 @Module({
   imports: [
@@ -29,6 +31,13 @@ import { SearchService } from './search/search.service';
     SearchController,
     FilterController,
   ],
-  providers: [AppService, SchemaService, SearchService, FilterService],
+  providers: [
+    AppService,
+    SchemaService,
+    SearchService,
+    FilterService,
+    SearchIndexBuilder,
+    ShortestPathService,
+  ],
 })
 export class AppModule {}

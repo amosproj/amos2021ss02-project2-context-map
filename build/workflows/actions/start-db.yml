@@ -1,8 +1,1 @@
-- run: |
-    docker run -d -p 7474:7474 -p 7687:7687 \
-    	-v ${GITHUB_WORKSPACE}/backend/docker/mount:/mnt/amos \
-    	--env NEO4J_ACCEPT_LICENSE_AGREEMENT=yes \
-    	--env DB_PASSWORD=amos \
-    	--env DB_PATH=/mnt/amos/dumps/testing-dump.dump \
-    	--name neo4j-DB neo4j:enterprise \
-    	/mnt/amos/load-dump.sh
+- run: node build/start-database

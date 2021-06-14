@@ -1,9 +1,8 @@
 import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
-import { Node } from './shared/entities/Node';
-import { Edge } from './shared/entities/Edge';
+import { Node, Edge } from './shared/entities';
 import { ParseIntArrayPipe } from './pipes/ParseIntArrayPipe';
 import { AppService } from './app.service';
-import { QueryBase, QueryResult } from './shared/queries';
+import { CountQueryResult, QueryBase, QueryResult } from './shared/queries';
 
 /**
  * Main App Controller.
@@ -49,5 +48,13 @@ export class AppController {
     @Query('ids', ParseIntArrayPipe) ids: number[]
   ): Promise<Edge[]> {
     return this.appService.getEdgesById(ids);
+  }
+
+  /**
+   * Returns the number of nodes and edges of the graph
+   */
+  @Get('getNumberOfEntities')
+  async getNumberOfEntities(): Promise<CountQueryResult> {
+    return this.appService.getNumberOfEntities();
   }
 }

@@ -1,0 +1,81 @@
+name: Frontend tests
+on: [ push ]
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        node-version: [ 12.x, 14.x ]
+        browser: [ chrome, firefox ]
+    env:
+      working-directory: ./frontend
+      cache-frontend: true
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - run: npm install -g yarn
+      - run: npm install -g wait-on
+      - name: npm install -g pm2 # used to start server in parallel
+        run: npm install -g pm2
+
+      # kmap.import-action.cache #
+
+      - name: Copy .env file (frontend)
+        run: cp .env.example .env
+        working-directory: ${{ env.working-directory }}
+      - name: Copy .env file (backend)
+        run: cp .env.test .env
+        working-directory: ./backend
+
+      - name: Increase file watches
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
+      # kmap.import-action.start-db #
+
+      - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
+        working-directory: ${{ env.working-directory }}
+      - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
+        working-directory: ./backend
+
+      - name: Start Frontend Dev Server (detached)
+        run: pm2 start ./build/start-frontend-detached.js
+
+      - name: Wait on DB Server
+        run: node backend/wait-on-db
+        timeout-minutes: 3
+      - name: Start Backend Dev Server (detached)
+        run: pm2 start ./build/start-backend-detached.js
+
+      - name: Wait on Frontend Dev Server
+        run: wait-on http://localhost:3000
+        timeout-minutes: 3
+      - name: Wait on Backend Dev Server
+        run: wait-on tcp:8080
+        timeout-minutes: 3
+
+      - name: Run e2e tests
+        if: ${{ success() || failure() }} # run tests even if one step has failed (not on cancel)
+        run: yarn run cy:run:e2e --browser ${{ matrix.browser }} --headless
+        working-directory: ${{ env.working-directory }}
+
+      - name: Run unit tests
+        if: ${{ success() || failure() }} # run tests even if one step has failed (not on cancel)
+        run: yarn run cy:run:unit
+        working-directory: ${{ env.working-directory }}
+
+      - name: Print coverage
+        if: ${{ success() || failure() }} # print coverage even if one step has failed (not on cancel)
+        run: yarn run coverage:print
+        working-directory: ${{ env.working-directory }}
+      - name: Check coverage
+        run: yarn run coverage:check
+        working-directory: ${{ env.working-directory }}
+
+      - name: Stop Dev Server
+        run: pm2 delete all

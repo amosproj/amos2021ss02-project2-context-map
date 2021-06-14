@@ -17,22 +17,22 @@ import { SearchService } from '../services/search';
 import './SearchResultList.scss';
 import SearchResultList from './SearchResultList';
 import convertSearchResultToSearchResultList from './SearchEntryConverter';
-
 import './Searchbar.scss';
 import LimitListSizeComponent from './helper/LimitListSizeComponent';
-import { QueryService } from '../services/query';
 import { CancellationTokenSource } from '../utils/CancellationToken';
 import CancellationError from '../utils/CancellationError';
 import ErrorComponent from '../errors/ErrorComponent';
+import EntityColorStore from '../stores/colors/EntityColorStore';
+import useObservable from '../utils/useObservable';
+import { SearchResult } from '../shared/search';
 
 export default function Searchbar(): JSX.Element {
   const searchService = useService(SearchService);
+  const entityColorStore = useService(EntityColorStore);
   /**
    * Contains all the active cancel tokens.
    */
   const searchServiceCancelTokens = useRef<CancellationTokenSource[]>([]);
-
-  const queryService = useService(QueryService);
 
   /**
    * Fires, when the search input is changes
@@ -48,7 +48,31 @@ export default function Searchbar(): JSX.Element {
 
   const [searchOngoing, setSearchOngoing] = useState(false);
 
+  const [searchResult, setSearchResult] = useState<{
+    searchString: string;
+    result: SearchResult;
+  }>({
+    searchString: '',
+    result: { nodes: [], edges: [], nodeTypes: [], edgeTypes: [] },
+  });
+
   const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const colorize = useObservable(
+    entityColorStore.getState(),
+    entityColorStore.getValue()
+  );
+
+  useEffect(() => {
+    const result = convertSearchResultToSearchResultList(
+      searchResult.searchString,
+      searchResult.result,
+      colorize
+    );
+    setSearchOngoing(false);
+    setSearchResults(result);
+    setError(undefined);
+  }, [colorize, searchResult]);
 
   function loadSearchResults(searchString: string) {
     if (searchString?.length > 0) {
@@ -57,25 +81,7 @@ export default function Searchbar(): JSX.Element {
       setSearchOngoing(true);
       searchService
         .fullTextSearch(searchString, cancelToken.token)
-        .then(async (result) =>
-          convertSearchResultToSearchResultList(searchString, {
-            edges:
-              result.edges.length > 0
-                ? await queryService.getEdgesById(result.edges)
-                : [],
-            nodes:
-              result.nodes.length > 0
-                ? await queryService.getNodesById(result.nodes)
-                : [],
-            edgeTypes: result.edgeTypes,
-            nodeTypes: result.nodeTypes,
-          })
-        )
-        .then((result) => {
-          setSearchOngoing(false);
-          setSearchResults(result);
-          setError(undefined);
-        })
+        .then(async (result) => setSearchResult({ searchString, result }))
         .catch((err) => {
           if (err instanceof CancellationError) return;
           setSearchOngoing(false);
@@ -138,12 +144,12 @@ export default function Searchbar(): JSX.Element {
                   <ErrorComponent jsError={error} />
                 ) : (
                   <List className="list" subheader={<li />}>
-                    {searchResults.map((searchResult) => (
-                      <li className="listSection" key={searchResult.key}>
+                    {searchResults.map((result) => (
+                      <li className="listSection" key={result.key}>
                         <ul className="SubList">
-                          <ListSubheader>{searchResult.header}</ListSubheader>
+                          <ListSubheader>{result.header}</ListSubheader>
                           <LimitListSizeComponent
-                            list={searchResult.elements.map((element) => (
+                            list={result.elements.map((element) => (
                               <ListItem
                                 key={element.key}
                                 button

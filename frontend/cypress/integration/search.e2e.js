@@ -1,4 +1,8 @@
-import { customSearch, emptySearch } from '../fixtures/search/search';
+import {
+  customSearch,
+  emptySearch,
+  longSearch,
+} from '../fixtures/search/search';
 
 // TODO: Remove interception when real e2e tests are done
 context('Searchbar', () => {
@@ -20,28 +24,22 @@ context('Searchbar', () => {
     // Arrange
     /* eslint-disable no-unused-expressions -- expect(..).to.Be.Called return can be ignored */
     const spySearch = cy.spy((req) => req.continue());
-    const spyGetNodesById = cy.spy((req) => req.continue());
 
     cy.intercept(`${apiBaseUrl}/search/all*`, spySearch).as('searchQuery');
-    cy.intercept(`${apiBaseUrl}/getNodesById*`, spyGetNodesById).as(
-      'getNodesQuery'
-    );
 
     // Act 1
     cy.get('.SearchBar').type('keanu');
 
     // Assert 1
-    cy.wait(['@searchQuery', '@getNodesQuery']).then(() => {
+    cy.wait(['@searchQuery']).then(() => {
       expect(spySearch).to.be.calledOnce;
-      expect(spyGetNodesById).to.be.calledOnce;
     });
 
     // Act 2
     cy.get('.SearchBar').type(' reeves');
     // Assert 2
-    cy.wait(['@searchQuery', '@getNodesQuery']).then(() => {
+    cy.wait(['@searchQuery']).then(() => {
       expect(spySearch).to.be.calledTwice;
-      expect(spyGetNodesById).to.be.calledTwice;
     });
     /* eslint-enable */
   });
@@ -49,8 +47,6 @@ context('Searchbar', () => {
   it('Shows Nodes, NodeTypes, Edges, EdgeTypes', () => {
     // Arrange
     cy.intercept(`${apiBaseUrl}/search/all*`, customSearch.search);
-    cy.intercept(`${apiBaseUrl}/getNodesById*`, customSearch.getNodesById);
-    cy.intercept(`${apiBaseUrl}/getEdgesById*`, customSearch.getEdgesById);
 
     // Act
     cy.get('.SearchBar').type('Hello');
@@ -114,6 +110,20 @@ context('Searchbar', () => {
     cy.get('.SearchBar').type('keanu');
 
     // Assert
-    cy.contains('error occured');
+    cy.contains('error occurred');
+  });
+
+  it('Shows expandable list if result list is too long', () => {
+    // Arrange
+    cy.intercept(`${apiBaseUrl}/search/all*`, longSearch.search);
+
+    // Act
+    cy.get('.SearchBar').type('Hello');
+
+    // Assert
+    cy.get('.SubList .MuiListItem-root').should('have.length', 6);
+    cy.contains(/show more/i).click();
+    cy.get('.SubList .MuiListItem-root').should('have.length', 8);
+    cy.contains(/show more/i).should('not.exist');
   });
 });

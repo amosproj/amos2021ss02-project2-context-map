@@ -7,9 +7,11 @@ import FilterQuery, {
   MatchAllCondition,
   MatchAnyCondition,
 } from './FilterQuery';
-import NodeResultDescriptor from './NodeResultDescriptor';
+import { QueryEdgeResult } from './QueryEdgeResult';
+import QueryNodeResult from './QueryNodeResult';
 import QueryBase from './QueryBase';
 import QueryResult from './QueryResult';
+import CountQueryResult from './CountQueryResult';
 
 export {
   OfTypeCondition,
@@ -21,7 +23,11 @@ export {
 export type {
   FilterQuery,
   FilterCondition,
-  NodeResultDescriptor,
+  QueryEdgeResult,
+  QueryNodeResult,
   QueryBase,
   QueryResult,
+  CountQueryResult,
 };
+
+export type { ShortestPathQuery } from './ShortestPathQuery';

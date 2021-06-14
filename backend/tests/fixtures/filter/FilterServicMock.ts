@@ -9,8 +9,8 @@ import {
   getNodeTypeFilterModelResult,
 } from './FilterQueryResults';
 import { NodeFilterConditionExecutor } from '../../../src/filter/NodeFilterConditionExecutor';
-import { EdgeFilterConditionExecutor } from '../../../src/filter/EntityFilterConditionExecutor';
-import consolidateQueryResult from '../../../src/utils/consolidateQueryResult';
+import { EdgeFilterConditionExecutor } from '../../../src/filter/EdgeFilterConditionExecutor';
+import { consolidateQueryResult } from '../../../src/utils';
 
 const nodes = [
   {
@@ -72,11 +72,12 @@ export default class FilterServiceMock implements FilterServiceBase {
       : edges;
 
     const result = {
-      nodes: filteredNodes.map((node) => ({ id: node.id })),
+      nodes: filteredNodes.map((node) => ({ id: node.id, types: node.types })),
       edges: filteredEdges.map((edge) => ({
         id: edge.id,
         from: edge.from,
         to: edge.to,
+        type: edge.type,
       })),
     };
     return Promise.resolve(consolidateQueryResult(result));

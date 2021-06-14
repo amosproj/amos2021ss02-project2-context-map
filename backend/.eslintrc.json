@@ -24,6 +24,10 @@
         "singleQuote": true
       }
     ],
+    "no-restricted-syntax" : [
+      "off",
+      "ForOfStatement"
+  ],
     "no-use-before-define": "off",
     "@typescript-eslint/no-use-before-define": ["error"],
     "import/extensions": "off",
