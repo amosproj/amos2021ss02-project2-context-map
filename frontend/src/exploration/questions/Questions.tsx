@@ -78,7 +78,7 @@ function Questions(): JSX.Element {
             <AccordionDetails id={`question-${qIndex}-content`}>
               <FormControl className={classes.formControl}>
                 <FormGroup>
-                  {question.answers.map((answer, aIndex) => (
+                  {question.answers.map((answer) => (
                     <FormControlLabel
                       control={
                         <Checkbox
