@@ -27,7 +27,7 @@ async function main() {
       --env 'NEO4J_dbms_security_procedures_unrestricted=apoc.*,gds.*' \\
       --env 'NEO4J_dbms_security_procedures_allowlist=apoc.*,gds.*' \\
       --env NEO4J_apoc_import_file_enabled=true \\
-      --name ${containerName} neo4j:enterprise \\
+      --name ${containerName} neo4j:4.2-enterprise \\
       /mnt/amos/load-dump.sh
 `
 
