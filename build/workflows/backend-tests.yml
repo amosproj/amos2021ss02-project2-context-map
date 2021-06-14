@@ -23,7 +23,7 @@ jobs:
         working-directory: ${{ env.working-directory }}
 
       - name: Wait on DB Server
-        run: npx wait-on http://localhost:7474
+        run: npx wait-on http://localhost:7474 tcp:7687
         timeout-minutes: 3
 
       - name: Add .env file

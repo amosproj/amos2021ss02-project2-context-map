@@ -97,7 +97,7 @@ jobs:
         working-directory: ./backend
 
       - name: Wait on DB Server
-        run: wait-on tcp:7687
+        run: wait-on http://localhost:7474 tcp:7687
         timeout-minutes: 3
 
       - name: Start Frontend Dev Server (detached)
