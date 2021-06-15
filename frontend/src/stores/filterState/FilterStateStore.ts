@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 import { injectable } from 'inversify';
 import SimpleStore from '../SimpleStore';
 import {
@@ -101,6 +100,7 @@ export default class FilterStateStore extends SimpleStore<FilterState> {
       }
     }
 
+    /* istanbul ignore next */
     return undefined;
   }
 

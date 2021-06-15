@@ -90,6 +90,27 @@ context('Filter', () => {
       cy.get('.AddButton:first').click();
       cy.get('.AddButton:first').click();
     });
+
+    it('overwrites property state in FilterStateStore', () => {
+      cy.get('.Filter').click();
+      cy.get('.FilterButton:first').click();
+      cy.get('.FilterDialog');
+      cy.get('.FilterSelect:last').click();
+
+      cy.contains('Keanu Reeves').click();
+
+      cy.get('body').click(0, 0);
+      cy.get('.ApplyFilter').click();
+
+      cy.get('.FilterButton:first').click();
+      cy.get('.FilterDialog');
+      cy.get('.FilterSelect:last').click();
+
+      cy.contains('Carrie-Anne Moss').click();
+
+      cy.get('body').click(0, 0);
+      cy.get('.ApplyFilter').click();
+    });
   });
 
   context('Edges', () => {
