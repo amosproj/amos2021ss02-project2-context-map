@@ -16,20 +16,20 @@ context('Exploration', () => {
       cy.get('.Previews');
 
       const layoutsDataValues = Object.values(layoutsData);
-      cy.get('.LayoutPreview').each(($el, index) => {
-        cy.wrap($el).should('have.text', layoutsDataValues[index].description);
-      });
+      for (const layoutsDataValue of layoutsDataValues) {
+        cy.get('.LayoutPreview').contains(layoutsDataValue.description);
+      }
     });
 
     it('routes to graph page', () => {
       cy.get('.Previews');
-      cy.get('.LayoutPreview').eq(0).click();
+      cy.get('.LayoutPreview').contains('Structural Layout').click();
       cy.url().should('eq', `http://localhost:3000${layoutsData.C.path}`);
     });
 
     it('routes to hierarchical page', () => {
       cy.get('.Previews');
-      cy.get('.LayoutPreview').eq(2).click();
+      cy.get('.LayoutPreview').contains('Hierarchical Layout').click();
       cy.url().should('eq', `http://localhost:3000${layoutsData.H.path}`);
     });
 
