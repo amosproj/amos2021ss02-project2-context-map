@@ -97,7 +97,7 @@ export default class FilterQueryStore extends SimpleStore<FilterQuery> {
       // collect from dialog
       // There is a filter specified for the property
 
-      if (propertyFilter.values !== null && propertyFilter.values.length > 0) {
+      if (propertyFilter.values?.length > 0) {
         // If only a single value is specified in the filter, add this directly
         // Example: name=Peter
         if (propertyFilter.values.length === 1) {
