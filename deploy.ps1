@@ -1,3 +1,7 @@
+function CopyFilesToFolder ($fromFolder, $toFolder) {
+    xcopy /S /I /Q /Y /F $fromFolder $toFolder
+}
+
 # Deploy the backend to a docker container
 # First copy the shared files, as this is not done during the build process when running in docker
 New-Item -ItemType Directory -Force -Path "./backend/src/shared" | Out-Null
@@ -11,10 +15,21 @@ docker build -t kmap.backend ./backend
 New-Item -ItemType Directory -Force -Path "./frontend/src/shared" | Out-Null
 xcopy /S /I /Q /Y /F ".\shared\src" ".\frontend\src\shared" | Out-Null
 
-# TODO: Remove the .env file, if it is present.
+# Remove the .env file, if it is present.
+if (Test-Path .\frontend\.env) {
+  Remove-Item .\frontend\.env
+}
 
 # Now build the container as spec'ed by the backend dockerfile
 docker build -t kmap.frontend ./frontend
 
-# Create the output folder
-# New-Item -ItemType Directory -Force -Path "./artifacts" | Out-Null
+# Compose the output folder
+if (Test-Path .\artifacts ) {
+  Remove-Item -Recurse -Force .\artifacts 
+}
+New-Item -ItemType Directory -Force -Path .\artifacts | Out-Null
+CopyFilesToFolder ".\deploy" ".\artifacts"
+CopyFilesToFolder ".\database" ".\artifacts\database"
+New-Item -ItemType Directory -Force -Path .\artifacts\images | Out-Null
+docker save -o .\artifacts\images\kmap.backend kmap.backend
+docker save -o .\artifacts\images\kmap.frontend kmap.frontend

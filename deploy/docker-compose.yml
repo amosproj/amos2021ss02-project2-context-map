@@ -4,9 +4,8 @@ services:
     image: neo4j:4.2-enterprise
     restart: always
     command: /mnt/amos/load-dump.sh
-    ports:
-      - 7474:7474
-      - 7687:7687
+    expose:
+      - "7687"
     working_dir: /mnt/amos
     volumes:
       - ./database/mount:/mnt/amos
@@ -18,13 +17,15 @@ services:
       - NEO4J_dbms_security_procedures_unrestricted=apoc.*,gds.*
       - NEO4J_dbms_security_procedures_allowlist=apoc.*,gds.*
       - NEO4J_apoc_import_file_enabled=true
+    networks:
+      - kmap-network
   kmap.backend:
     image: kmap.backend
     restart: always
     expose:
       - "8080"
     environment:
-      NEO4J_HOST: localhost
+      NEO4J_HOST: neo4j-db
       NEO4J_PORT: 7687
       NEO4J_USERNAME: neo4j
       NEO4J_PASSWORD: amos
@@ -35,7 +36,7 @@ services:
     image: kmap.frontend
     restart: always
     ports:
-      - 8000:80
+      - 80:80
     networks:
       - kmap-network
 networks:
