@@ -52,8 +52,7 @@ context('Filter', () => {
       cy.get('.FilterButton:first').click();
       cy.get('.FilterDialog');
 
-      // eslint-disable-next-line cypress/no-force
-      cy.get('.ApplyFilter').focus().click({ force: true });
+      cy.get('.ApplyFilter').click();
 
       cy.get('.AddButton:first').click();
     });
@@ -69,8 +68,8 @@ context('Filter', () => {
       cy.contains('Carrie-Anne Moss').click();
       cy.contains('Lana Wachowski').click();
 
-      // eslint-disable-next-line cypress/no-force
-      cy.get('.ApplyFilter').focus().click({ force: true });
+      cy.get('body').click(0, 0);
+      cy.get('.ApplyFilter').click();
     });
 
     it('adds nodes to view', () => {
@@ -84,8 +83,9 @@ context('Filter', () => {
       cy.contains('Keanu Reeves').click();
       cy.contains('Carrie-Anne Moss').click();
       cy.contains('Lana Wachowski').click();
-      // eslint-disable-next-line cypress/no-force
-      cy.get('.ApplyFilter').focus().click({ force: true });
+
+      cy.get('body').click(0, 0);
+      cy.get('.ApplyFilter').click();
 
       cy.get('.AddButton:first').click();
       cy.get('.AddButton:first').click();
@@ -126,8 +126,9 @@ context('Filter', () => {
 
       // Assert
       cy.contains('Error: No string').click();
-      // eslint-disable-next-line cypress/no-force
-      cy.get('.ApplyFilter').focus().click({ force: true });
+
+      cy.get('body').click(0, 0);
+      cy.get('.ApplyFilter').click();
     });
 
     it('adds edges to view', () => {
@@ -140,8 +141,9 @@ context('Filter', () => {
 
       // Assert
       cy.contains('Error: No string').click();
-      // eslint-disable-next-line cypress/no-force
-      cy.get('.ApplyFilter').focus().click({ force: true });
+
+      cy.get('body').click(0, 0);
+      cy.get('.ApplyFilter').click();
 
       cy.get('.AddButton').eq(2).click();
       cy.get('.AddButton').eq(2).click();
