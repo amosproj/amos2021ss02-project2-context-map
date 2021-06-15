@@ -5,11 +5,11 @@ import useResizeObserver from '@react-hook/resize-observer';
 import Previews from './previews/Previews';
 import Questions from './questions/Questions';
 
-type ThemeProps = {
+type StyleProps = {
   previewHeaderHeight: number;
 };
 
-const useStyle = makeStyles<Theme, ThemeProps>((theme) =>
+const useStyle = makeStyles<Theme, StyleProps>((theme) =>
   createStyles({
     container: {
       margin: theme.spacing(10),
