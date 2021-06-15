@@ -11,5 +11,10 @@ docker build -t kmap.backend ./backend
 New-Item -ItemType Directory -Force -Path "./frontend/src/shared" | Out-Null
 xcopy /S /I /Q /Y /F ".\shared\src" ".\frontend\src\shared" | Out-Null
 
+# TODO: Remove the .env file, if it is present.
+
 # Now build the container as spec'ed by the backend dockerfile
 docker build -t kmap.frontend ./frontend
+
+# Create the output folder
+# New-Item -ItemType Directory -Force -Path "./artifacts" | Out-Null
