@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/amos-ss2021-project2-context-map.iml" filepath="$PROJECT_DIR$/.idea/amos-ss2021-project2-context-map.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/KMAP.iml" filepath="$PROJECT_DIR$/.idea/KMAP.iml" />
       <module fileurl="file://$PROJECT_DIR$/backend/backend.iml" filepath="$PROJECT_DIR$/backend/backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/build/build.iml" filepath="$PROJECT_DIR$/build/build.iml" />
       <module fileurl="file://$PROJECT_DIR$/frontend/frontend.iml" filepath="$PROJECT_DIR$/frontend/frontend.iml" />
     </modules>
   </component>

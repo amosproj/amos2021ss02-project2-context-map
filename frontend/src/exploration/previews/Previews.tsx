@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, List, makeStyles, Paper } from '@material-ui/core';
+import React, { createRef } from 'react';
+import { Box, makeStyles, Paper } from '@material-ui/core';
 import { createStyles } from '@material-ui/core/styles';
 import LayoutCard from './LayoutCard';
 import useService from '../../dependency-injection/useService';
@@ -7,6 +7,7 @@ import ExplorationStore from '../../stores/exploration/ExplorationStore';
 import useObservable from '../../utils/useObservable';
 import layoutsData from './layoutsData';
 import { ExplorationWeight } from '../../stores/exploration';
+import AnimatedList from '../../common/AnimatedList/AnimatedList';
 
 const useStyle = makeStyles(() =>
   createStyles({
@@ -17,6 +18,12 @@ const useStyle = makeStyles(() =>
     paper: {
       maxHeight: '100%',
       overflow: 'auto',
+      maxWidth: '22em',
+      margin: 'auto',
+    },
+    header: {
+      margin: 0,
+      textAlign: 'center',
     },
   })
 );
@@ -37,14 +44,24 @@ function Previews(): JSX.Element {
   const layoutsPreviewData = (
     Object.keys(weights) as (keyof ExplorationWeight)[]
   )
-    .sort((a, b) => weights[a] - weights[b])
+    .sort((a, b) => weights[a] - weights[b] || a.localeCompare(b))
     .map((layout) => layoutsData[layout]);
 
   return (
     <Box className={`${classes.container} Previews`}>
-      <h1>Recommended Visualisations</h1>
+      <h1 className={classes.header}>Recommended Visualisations</h1>
       <Paper className={classes.paper}>
-        <List>{layoutsPreviewData.map((elem) => LayoutCard(elem))}</List>
+        <AnimatedList>
+          {layoutsPreviewData.map((preview) => (
+            <div key={preview.description} ref={createRef()}>
+              <LayoutCard
+                filename={preview.filename}
+                description={preview.description}
+                path={preview.path}
+              />
+            </div>
+          ))}
+        </AnimatedList>
       </Paper>
     </Box>
   );
