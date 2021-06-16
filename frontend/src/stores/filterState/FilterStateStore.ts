@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { injectable } from 'inversify';
 import SimpleStore from '../SimpleStore';
 import {
