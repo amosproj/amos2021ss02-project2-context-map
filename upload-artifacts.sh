@@ -18,7 +18,7 @@ cat $KEY_FILE > $SSH_KEY_PATH
 sudo chmod 600 $SSH_KEY_PATH
 touch $SSH_KNOWN_HOSTS_PATH
 cat $HOST_PUB_KEY_FILE >> $SSH_KNOWN_HOSTS_PATH
-ssh -i $SSH_KEY_PATH $USER@$HOST 'docker compose down && rm -rf ~/amos'
+ssh -i $SSH_KEY_PATH $USER@$HOST 'cd ~/amos/ && docker-compose down && cd ~ && rm -rf amos'
 scp -i $SSH_KEY_PATH -r $ARTIFACTS_DIR $USER@$HOST:~/amos/
 ssh -i $SSH_KEY_PATH $USER@$HOST 'cd ~/amos/ && ./kmap.sh'
 # read x
