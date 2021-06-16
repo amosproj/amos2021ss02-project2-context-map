@@ -26,6 +26,10 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+/**
+ * View where properties of the corresponding EntityType, specified in {@link FilterLine},
+ * can be selected. A selection is made in a {@link FilterLineProperty}.
+ */
 const FilterLineProperties = (props: {
   filterOpen: boolean;
   handleCloseFilter: () => void;

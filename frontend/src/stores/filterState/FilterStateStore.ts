@@ -25,7 +25,7 @@ export default class FilterStateStore extends SimpleStore<FilterState> {
     filterLineType: string,
     entity: 'node' | 'edge'
   ): void {
-    const line: FilterLineState | undefined = this.searchForLineState(
+    const line: FilterLineState | undefined = this.getLineFromFilterState(
       filterLineType,
       entity
     );
@@ -50,7 +50,7 @@ export default class FilterStateStore extends SimpleStore<FilterState> {
     filterLineType: string,
     entity: 'node' | 'edge'
   ): void {
-    const lineState: FilterLineState | undefined = this.searchForLineState(
+    const lineState: FilterLineState | undefined = this.getLineFromFilterState(
       filterLineType,
       entity
     );
@@ -84,10 +84,10 @@ export default class FilterStateStore extends SimpleStore<FilterState> {
     const propertyState: FilterPropertyState | undefined =
       this.searchForPropertyState(filterLineType, filterPropertyName, entity);
 
-    return propertyState ? propertyState.values : undefined;
+    return propertyState?.values;
   }
 
-  private searchForLineState(
+  private getLineFromFilterState(
     filterLineType: string,
     entity: 'node' | 'edge'
   ): FilterLineState | undefined {
@@ -101,6 +101,7 @@ export default class FilterStateStore extends SimpleStore<FilterState> {
       }
     }
 
+    /* istanbul ignore next */
     return undefined;
   }
 
@@ -109,7 +110,7 @@ export default class FilterStateStore extends SimpleStore<FilterState> {
     filterPropertyName: string,
     entity: 'node' | 'edge'
   ) {
-    const line: FilterLineState | undefined = this.searchForLineState(
+    const line: FilterLineState | undefined = this.getLineFromFilterState(
       filterLineType,
       entity
     );
