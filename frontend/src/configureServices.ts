@@ -15,6 +15,7 @@ import LoadingStore from './stores/LoadingStore';
 import EntityColorStore from './stores/colors/EntityColorStore';
 import FilterStateStore from './stores/filterState/FilterStateStore';
 import ExplorationStore from './stores/exploration/ExplorationStore';
+import SearchSelectionStore from './stores/SearchSelectionStore';
 
 /**
  * Configures all services in the frontend app.
@@ -57,4 +58,5 @@ export default function configureServices(container: Container): void {
   container.bind(QueryResultStore).to(QueryResultStore).inSingletonScope();
   container.bind(EntityColorStore).to(EntityColorStore).inSingletonScope();
   container.bind(ExplorationStore).toSelf().inSingletonScope();
+  container.bind(SearchSelectionStore).toSelf().inSingletonScope();
 }
