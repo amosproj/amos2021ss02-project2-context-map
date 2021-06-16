@@ -103,7 +103,7 @@ const Filter = (): JSX.Element => {
       from(schemaService.getEdgeTypes()),
     ]).pipe(
       withLoadingBar({ loadingStore }),
-      withErrorHandler({ errorStore }),
+      withErrorHandler({ rethrow: true, errorStore }),
       map((schemaFromService) => ({
         nodes: schemaFromService[0],
         edges: schemaFromService[1],
