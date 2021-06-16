@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { SchemaService } from './schema.service';
-import { NodeType, EdgeType } from '../shared/schema';
+import { NodeType, EdgeType, NodeTypeConnectionInfo } from '../shared/schema';
 
 @Controller('schema')
 export class SchemaController {
@@ -20,5 +20,14 @@ export class SchemaController {
   @Get('node-types')
   getNodeTypes(): Promise<NodeType[]> {
     return this.schemaService.getNodeTypes();
+  }
+
+  /**
+   * Returns information about all nodes of a graph.
+   * @see {@link SchemaService.getEntityConnectionInfo}
+   */
+  @Get('node-type-connection-info')
+  getNodeTypeConnectionInformation(): Promise<NodeTypeConnectionInfo[]> {
+    return this.schemaService.getNodeTypeConnectionInformation();
   }
 }
