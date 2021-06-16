@@ -63,10 +63,7 @@ const FilterLine = (props: {
       entity === 'node'
         ? filterService.getNodeTypeFilterModel(type)
         : filterService.getEdgeTypeFilterModel(type)
-    ).pipe(
-      withLoadingBar({ loadingStore }),
-      withErrorHandler({ rethrow: true, errorStore })
-    ),
+    ).pipe(withLoadingBar({ loadingStore }), withErrorHandler({ errorStore })),
     {
       name: '',
       properties: [],
