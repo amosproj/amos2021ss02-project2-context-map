@@ -76,27 +76,29 @@ function usePrevious<T>(value: T) {
  * @param className react standard className attribute
  */
 function AnimatedList({ children, className }: Props): JSX.Element {
-  const [currBoundingBox, setCurrBoundingBox] = useState<ItemGuiInformation>({
-    boxes: new Map(),
-    scrollY: 0,
-  });
-  const prevBoundingBox = usePrevious(currBoundingBox);
+  const [currItemGuiInformation, setCurrItemGuiInformation] =
+    useState<ItemGuiInformation>({
+      boxes: new Map(),
+      scrollY: 0,
+    });
+  const prevItemGuiInformation = usePrevious(currItemGuiInformation);
 
+  // calculates the boxes while blocking the next render => consistent result
   useLayoutEffect(() => {
     // When children change (e.g. reorder) => update item information
-    setCurrBoundingBox(createItemGuiInformation(children));
+    setCurrItemGuiInformation(createItemGuiInformation(children));
   }, [children]);
 
   useEffect(() => {
-    // if prevBoundingBox exists (=> no animation on first draw)
-    if (prevBoundingBox && prevBoundingBox.boxes.size > 0) {
+    // if prevItemGuiInformation exists ... (else no animation on first draw)
+    if (prevItemGuiInformation && prevItemGuiInformation.boxes.size > 0) {
       // Check each child for changed position
       React.Children.forEach(children, (child) => {
         const domNode = child.ref?.current;
         // current/new bounding box for that child
-        const currBox = currBoundingBox.boxes.get(child.key ?? '');
+        const currBox = currItemGuiInformation.boxes.get(child.key ?? '');
         // previous bounding box
-        const prevBox = prevBoundingBox.boxes.get(child.key ?? '');
+        const prevBox = prevItemGuiInformation.boxes.get(child.key ?? '');
 
         // If box/box-position does not exists (e.g. on new item) => stop
         if (domNode == null || currBox === undefined || prevBox === undefined)
@@ -104,8 +106,8 @@ function AnimatedList({ children, className }: Props): JSX.Element {
 
         // y-positions with cleaned scrolling (y independent of scrolling)
         // e.g. pos = 50, then 25px scrolling => normal y would be 75, cleaned is still 50
-        const currScrollCleanedY = prevBox.top - currBoundingBox.scrollY;
-        const prevScrollCleanedY = currBox.top - prevBoundingBox.scrollY;
+        const currScrollCleanedY = prevBox.top - currItemGuiInformation.scrollY;
+        const prevScrollCleanedY = currBox.top - prevItemGuiInformation.scrollY;
 
         // difference of prev and curr position
         const deltaY = currScrollCleanedY - prevScrollCleanedY;
@@ -126,7 +128,7 @@ function AnimatedList({ children, className }: Props): JSX.Element {
         }
       });
     }
-  }, [currBoundingBox, children]);
+  }, [currItemGuiInformation, children]);
 
   return <List className={className}>{children}</List>;
 }

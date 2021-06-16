@@ -30,6 +30,9 @@ function Exploration(): JSX.Element {
   // height of the header of the preview
   const [previewHeaderHeight, setPreviewHeaderHeight] = useState<number>(0);
 
+  // Whenever the document resizes, calculate the height of the the header of the previews
+  // so that the questions are on the same height as the preview card.
+  // Used in favor to fixes pixels in order to react on a possible multi lined header.
   useResizeObserver(containerRef, () => {
     setPreviewHeaderHeight(
       document.querySelector('.Previews h1')?.getBoundingClientRect().height ??
