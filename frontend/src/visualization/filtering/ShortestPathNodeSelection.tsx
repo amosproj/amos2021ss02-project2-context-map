@@ -6,14 +6,17 @@ import useService from '../../dependency-injection/useService';
 import QueryResultStore from '../../stores/QueryResultStore';
 import useObservable from '../../utils/useObservable';
 
+type NodeChangedCallback = (id: number | null) => void;
+
 /**
  * Selection of a start or an end node using a {@link Autocomplete}.
  */
 export default function ShortestPathNodeSelection(props: {
   tail: 'start' | 'end';
-  setNode: React.Dispatch<React.SetStateAction<number | null>>;
+  node: number | null;
+  nodeChanged: NodeChangedCallback;
 }): JSX.Element {
-  const { tail, setNode } = props;
+  const { tail, node, nodeChanged } = props;
 
   const queryResultStore = useService(QueryResultStore);
 
@@ -28,7 +31,7 @@ export default function ShortestPathNodeSelection(props: {
     event: ChangeEvent<Record<string, unknown>>,
     newValue: number | null
   ) => {
-    setNode(newValue);
+    nodeChanged(newValue);
   };
 
   // used to display selection in the foreground and placement on top of component
@@ -45,6 +48,7 @@ export default function ShortestPathNodeSelection(props: {
     <>
       <Autocomplete
         className="StartEndNode"
+        value={node}
         onChange={handleSetNode}
         options={nodeIds}
         getOptionLabel={(option) => option.toString()}

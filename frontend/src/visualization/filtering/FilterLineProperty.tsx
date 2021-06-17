@@ -15,11 +15,15 @@ import { FilterModelEntry } from '../../shared/filter';
 const useStyles = makeStyles(() =>
   createStyles({
     select: {
-      width: 500,
+      width: '25vw',
     },
   })
 );
 
+/**
+ * Allows the user to select property values of given property names and writes
+ * these to the {@link FilterStateStore}.
+ */
 const FilterLineProperty = (props: {
   filterModelEntry: FilterModelEntry;
   filterLineType: string;
@@ -36,7 +40,7 @@ const FilterLineProperty = (props: {
     setApplyFilter,
   } = props;
 
-  const filterStateStore = useService<FilterStateStore>(FilterStateStore);
+  const filterStateStore = useService(FilterStateStore);
 
   const [selectedValues, setSelectedValues] = React.useState<string[]>(
     filterStateStore.getPropertyStateValues(
