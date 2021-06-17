@@ -1,5 +1,4 @@
 import React from 'react';
-import Archetypes from '../archetypes/Archetypes';
 import Data from '../data/Data';
 import Exploration from '../exploration/Exploration';
 import Home from '../home/Home';
@@ -46,11 +45,6 @@ const routes: Record<string, RouteDefinition> = {
     path: '/data',
     label: 'Data',
     content: () => <Data />,
-  },
-  Archetypes: {
-    path: '/archetypes',
-    label: 'Archetypes',
-    content: () => <Archetypes />,
   },
 };
 
