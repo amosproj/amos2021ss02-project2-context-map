@@ -61,7 +61,7 @@ jobs:
 
       - name: Run e2e tests
         if: ${{ success() || failure() }} # run tests even if one step has failed (not on cancel)
-        run: yarn run cy:run:e2e --browser ${{ matrix.browser }} --headless
+        run: yarn run cy:run:e2e --browser ${{ matrix.browser }}
         working-directory: ${{ env.working-directory }}
 
       - name: Run unit tests
