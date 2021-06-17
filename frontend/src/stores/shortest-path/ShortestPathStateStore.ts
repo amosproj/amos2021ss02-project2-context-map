@@ -1,6 +1,9 @@
 import SimpleStore from '../SimpleStore';
 import { ShortestPathState } from './ShortestPathState';
 
+/**
+ * A state store that manages the shortest path state.
+ */
 export class ShortestPathStateStore extends SimpleStore<ShortestPathState> {
   protected getInitialValue(): ShortestPathState {
     return {
