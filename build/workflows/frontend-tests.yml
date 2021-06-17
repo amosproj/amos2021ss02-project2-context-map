@@ -4,6 +4,7 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     container:
+      image: ubuntu:latest
       options: --user 1001
     strategy:
       matrix:
@@ -19,6 +20,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@latest
+        if: ${{ matrix.browser == 'chrome' }}
 
       - run: npm install -g yarn
       - run: npm install -g wait-on
