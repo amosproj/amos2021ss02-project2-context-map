@@ -36,9 +36,9 @@ const layoutsData: Record<keyof ExplorationWeight, LayoutDefinition> = {
     path: '/visualization/schema', // TODO #299: Add missing visualisation preview links
   },
   P: {
-    filename: 'empty-layout.png',
-    description: 'Pie Chart',
-    path: '/visualization/schema', // TODO #299: Add missing visualisation preview links
+    filename: 'empty-layout.png', // TODO: add screenshot of chord diagram
+    description: 'Chord Diagram',
+    path: '/visualization/chord',
   },
 };
 
