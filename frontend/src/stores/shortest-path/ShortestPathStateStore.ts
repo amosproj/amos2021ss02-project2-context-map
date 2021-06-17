@@ -1,7 +1,6 @@
 import SimpleStore from '../SimpleStore';
 import { ShortestPathState } from './ShortestPathState';
 
-// eslint-disable-next-line import/prefer-default-export
 export class ShortestPathStateStore extends SimpleStore<ShortestPathState> {
   protected getInitialValue(): ShortestPathState {
     return {
@@ -23,3 +22,5 @@ export class ShortestPathStateStore extends SimpleStore<ShortestPathState> {
     this.mergeState({ ignoreEdgeDirections });
   }
 }
+
+export default ShortestPathStateStore;

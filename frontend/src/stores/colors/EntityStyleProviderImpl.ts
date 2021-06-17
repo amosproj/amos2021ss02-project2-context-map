@@ -27,7 +27,6 @@ const isNodeDescriptor = (
  *   If entity is Node: colored border, white background
  *   If entity is Edge: black edge
  */
-// eslint-disable-next-line import/prefer-default-export
 export class EntityStyleProviderImpl implements EntityStyleProvider {
   protected readonly entityTypeColorMap = new Map<string, string>();
   public constructor(private readonly entityStyleStore: EntityStyleStore) {}
@@ -123,3 +122,5 @@ export class EntityStyleProviderImpl implements EntityStyleProvider {
     return entity.virtual === true;
   }
 }
+
+export default EntityStyleProviderImpl;
