@@ -6,7 +6,7 @@ import useService from '../../dependency-injection/useService';
 import QueryResultStore from '../../stores/QueryResultStore';
 import useObservable from '../../utils/useObservable';
 
-type nodeChangedCallback = (id: number | null) => void;
+type NodeChangedCallback = (id: number | null) => void;
 
 /**
  * Selection of a start or an end node using a {@link Autocomplete}.
@@ -14,7 +14,7 @@ type nodeChangedCallback = (id: number | null) => void;
 export default function ShortestPathNodeSelection(props: {
   tail: 'start' | 'end';
   node: number | null;
-  nodeChanged: nodeChangedCallback;
+  nodeChanged: NodeChangedCallback;
 }): JSX.Element {
   const { tail, node, nodeChanged } = props;
 
