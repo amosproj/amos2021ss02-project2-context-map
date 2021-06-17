@@ -22,8 +22,4 @@ context('Routes', () => {
     cy.contains('Data').click();
     cy.get('header').contains('Data');
   });
-  it('has an accessible archetypes route', () => {
-    cy.contains('Archetypes').click();
-    cy.get('header').contains('Archetypes');
-  });
 });
