@@ -7,6 +7,7 @@ import Schema from '../visualization/Schema';
 import Visualization from '../visualization/Visualization';
 import RouteDefinition from './RouteDefinition';
 import GraphPage from '../visualization/GraphPage';
+import ChordPage from '../visualization/ChordPage';
 
 const routes: Record<string, RouteDefinition> = {
   Home: {
@@ -34,6 +35,11 @@ const routes: Record<string, RouteDefinition> = {
         path: '/visualization/hierarchical',
         label: 'Hierarchies',
         content: () => <GraphPage layout="hierarchical" />,
+      },
+      {
+        path: '/visualization/chord',
+        label: 'Chord Diagram',
+        content: () => <ChordPage />,
       },
     ],
   },
