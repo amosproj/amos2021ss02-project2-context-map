@@ -55,4 +55,21 @@ describe('SchemaService', () => {
       expect(result).toEqual(edgeInfo.expected);
     });
   });
+
+  describe('Method getEntityConnectionInfo', () => {
+    it('should return entry for each possible connection (cross product)', async () => {
+      const numNodeTypes = 2;
+      const result = await service.getNodeTypeConnectionInformation();
+      expect(result).toHaveLength(numNodeTypes ** 2);
+    });
+
+    it('should return correct connections', async () => {
+      const result = await service.getNodeTypeConnectionInformation();
+      const personToMovie = result.filter(
+        (r) => r.from === 'Person' && r.to === 'Movie'
+      );
+      expect(personToMovie).toHaveLength(1);
+      expect(personToMovie[0].numConnections).toBe(3);
+    });
+  });
 });

@@ -1,24 +1,28 @@
-import React, { useState } from 'react';
-import { Box, Button } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import React from 'react';
+import { Box, Checkbox, FormControlLabel } from '@material-ui/core';
 import ShortestPathNodeSelection from './ShortestPathNodeSelection';
+import useService from '../../dependency-injection/useService';
+import { ShortestPathStateStore } from '../../stores/shortest-path/ShortestPathStateStore';
+import useObservable from '../../utils/useObservable';
 
 /**
  * Menu where start and end node for shortest path can be selected
  */
 export default function ShortestPathMenu(): JSX.Element {
-  const [errorSpecified, setErrorSpecified] = useState(false);
+  const stateStore = useService(ShortestPathStateStore);
+  const state = useObservable(stateStore.getState(), stateStore.getValue());
 
-  const [startNode, setStartNode] = useState<number | null>(null);
-  const [endNode, setEndNode] = useState<number | null>(null);
+  // Updates the state
+  const startNodeChanged = (val: number | null): void => {
+    stateStore.setStartNode(val);
+  };
 
-  const handleStartShortestPath = () => {
-    if (startNode !== null && endNode !== null) {
-      setErrorSpecified(false);
-      // TODO: compute shortest path. Use startNode and endNode.
-    } else {
-      setErrorSpecified(true);
-    }
+  const endNodeChanged = (val: number | null): void => {
+    stateStore.setEndNode(val);
+  };
+
+  const ignoreEdgeDirectionsChanged = (val: boolean) => {
+    stateStore.setIgnoreEdgeDirections(val);
   };
 
   return (
@@ -27,27 +31,31 @@ export default function ShortestPathMenu(): JSX.Element {
         Find shortest path
       </Box>
       <Box display="flex" p={1}>
-        <ShortestPathNodeSelection tail="start" setNode={setStartNode} />
+        <ShortestPathNodeSelection
+          tail="start"
+          node={state.startNode}
+          nodeChanged={startNodeChanged}
+        />
       </Box>
       <Box display="flex" p={1}>
-        <ShortestPathNodeSelection tail="end" setNode={setEndNode} />
+        <ShortestPathNodeSelection
+          tail="end"
+          node={state.endNode}
+          nodeChanged={endNodeChanged}
+        />
       </Box>
       <Box display="flex" p={1}>
-        <Button
-          className="StartShortestPath"
-          variant="contained"
-          color="primary"
-          onClick={handleStartShortestPath}
-        >
-          Search
-        </Button>
-      </Box>
-      <Box display="flex" p={1}>
-        {errorSpecified && (
-          <Alert className="ShortestPathNodesNotSpecified" severity="error">
-            Specify start and end node!
-          </Alert>
-        )}
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={state.ignoreEdgeDirections}
+              onChange={(_, val) => ignoreEdgeDirectionsChanged(val)}
+              name="ignore-edge-directions"
+              color="primary"
+            />
+          }
+          label="Ignore edge directions"
+        />
       </Box>
     </>
   );

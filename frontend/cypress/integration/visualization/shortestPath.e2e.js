@@ -67,41 +67,4 @@ context('Shortest Path Menu', () => {
     cy.get('.StartEndNode:last').type('156');
     cy.contains('156').should('not.exist');
   });
-
-  it('appears alert when no nodes are selected', () => {
-    // Act
-    cy.get('.Filter').click();
-    cy.get('.StartShortestPath').click();
-
-    // Assert
-    cy.get('.ShortestPathNodesNotSpecified').then(($alert) =>
-      $alert.is(':visible')
-    );
-  });
-
-  it('appears alert when only one node is selected', () => {
-    // Act
-    cy.get('.Filter').click();
-    cy.get('.StartEndNode:first').click();
-    cy.contains('1').click();
-    cy.get('.StartShortestPath').click();
-
-    // Assert
-    cy.get('.ShortestPathNodesNotSpecified').then(($alert) =>
-      $alert.is(':visible')
-    );
-  });
-
-  it('appears no alert when both nodes are selected', () => {
-    // Act
-    cy.get('.Filter').click();
-    cy.get('.StartEndNode:first').click();
-    cy.contains('1').click();
-    cy.get('.StartEndNode:last').click();
-    cy.contains('2').click();
-    cy.get('.StartShortestPath').click();
-
-    // Assert
-    cy.get('.ShortestPathNodesNotSpecified').should('not.exist');
-  });
 });

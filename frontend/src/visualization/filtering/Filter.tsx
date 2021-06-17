@@ -28,8 +28,9 @@ import SubsidiaryNodesToggle from './SubsidiaryNodesToggle';
 import EdgeGreyScaleToggle from './EdgeGreyScaleToggle';
 import FilterStateStore from '../../stores/filterState/FilterStateStore';
 import { FilterLineState } from '../../stores/filterState/FilterState';
-import { EntityColorStore } from '../../stores/colors';
+import { EntityStyleStore } from '../../stores/colors';
 import ShortestPathMenu from './ShortestPathMenu';
+import { QueryEdgeResult, QueryNodeResult } from '../../shared/queries';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -86,10 +87,10 @@ const Filter = (): JSX.Element => {
 
   const filterStateStore = useService(FilterStateStore);
 
-  const entityColorStore = useService(EntityColorStore);
-  const colorizer = useObservable(
-    entityColorStore.getState(),
-    entityColorStore.getValue()
+  const entityStyleStore = useService(EntityStyleStore);
+  const styleProvider = useObservable(
+    entityStyleStore.getState(),
+    entityStyleStore.getValue()
   );
 
   const schemaService = useService(SchemaService, null);
@@ -143,7 +144,11 @@ const Filter = (): JSX.Element => {
     <>
       {schema.nodes.map((type) =>
         EntityTypeTemplate(
-          colorizer.colorize({ id: -1, types: [type.name] }).color,
+          styleProvider.getStyle({
+            id: -1,
+            types: [type.name],
+            virtual: true,
+          } as QueryNodeResult).color,
           type.name,
           'node'
         )
@@ -155,8 +160,13 @@ const Filter = (): JSX.Element => {
     <>
       {schema.edges.map((type) =>
         EntityTypeTemplate(
-          colorizer.colorize({ id: -1, type: type.name, from: -1, to: -1 })
-            .color,
+          styleProvider.getStyle({
+            id: -1,
+            type: type.name,
+            from: -1,
+            to: -1,
+            virtual: true,
+          } as QueryEdgeResult).color,
           type.name,
           'edge'
         )

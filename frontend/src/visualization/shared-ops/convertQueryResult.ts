@@ -1,52 +1,70 @@
 import { GraphData } from 'react-graph-vis';
 import * as vis from 'vis-network';
-import { EdgeDescriptor } from '../../shared/entities';
-import { QueryNodeResult, QueryResult } from '../../shared/queries';
-import { EntityColorizer } from '../../stores/colors';
+import {
+  QueryEdgeResult,
+  QueryNodeResult,
+  QueryResult,
+} from '../../shared/queries';
+import { EntityStyleProvider } from '../../stores/colors';
 
 function convertNode(
   node: QueryNodeResult,
-  colorizer: EntityColorizer
+  styleProvider: EntityStyleProvider
 ): vis.Node {
-  return {
+  const style = styleProvider.getStyle(node);
+
+  const result: vis.Node = {
     id: node.id,
     label: node.id.toString(),
-    color: colorizer.colorize(node).color,
+    color: {
+      border: style.stroke.color,
+      background: style.color,
+    },
+    borderWidth: style.stroke.width,
+    shapeProperties: {
+      borderDashes: style.stroke.dashes,
+    },
   };
+
+  return result;
 }
 
 function convertNodes(
   nodes: QueryNodeResult[],
-  colorize: EntityColorizer
+  styleProvider: EntityStyleProvider
 ): vis.Node[] {
-  return nodes.map((node) => convertNode(node, colorize));
+  return nodes.map((node) => convertNode(node, styleProvider));
 }
 
 function convertEdge(
-  edge: EdgeDescriptor,
-  colorizer: EntityColorizer
+  edge: QueryEdgeResult,
+  styleProvider: EntityStyleProvider
 ): vis.Edge {
+  const style = styleProvider.getStyle(edge);
+
   return {
     id: edge.id,
     from: edge.from,
     to: edge.to,
-    color: colorizer.colorize(edge).color,
+    color: style.color,
+    dashes: style.stroke.dashes,
+    width: style.stroke.width,
   };
 }
 
 function convertEdges(
-  edges: EdgeDescriptor[],
-  colorize: EntityColorizer
+  edges: QueryEdgeResult[],
+  styleProvider: EntityStyleProvider
 ): vis.Edge[] {
-  return edges.map((edge) => convertEdge(edge, colorize));
+  return edges.map((edge) => convertEdge(edge, styleProvider));
 }
 
 export default function convertQueryResult(
   queryResult: QueryResult,
-  colorize: EntityColorizer
+  styleProvider: EntityStyleProvider
 ): GraphData {
   return {
-    nodes: convertNodes(queryResult.nodes, colorize),
-    edges: convertEdges(queryResult.edges, colorize),
+    nodes: convertNodes(queryResult.nodes, styleProvider),
+    edges: convertEdges(queryResult.edges, styleProvider),
   };
 }
