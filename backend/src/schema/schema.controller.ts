@@ -23,7 +23,7 @@ export class SchemaController {
   }
 
   /**
-   * Returns information about all nodes of a graph.
+   * Returns information about the number of connections between node types.
    * @see {@link SchemaService.getEntityConnectionInfo}
    */
   @Get('node-type-connection-info')
