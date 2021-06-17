@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
 import TuneIcon from '@material-ui/icons/Tune';
 import AddIcon from '@material-ui/icons/Add';
 import { from } from 'rxjs';
-import { tap } from 'rxjs/operators';
 import FilterLineProperties from './FilterLineProperties';
 import useService from '../../dependency-injection/useService';
 import { FilterService } from '../../services/filter';
-import { EdgeTypeFilterModel, NodeTypeFilterModel } from '../../shared/filter';
 import FilterQueryStore from '../../stores/FilterQueryStore';
 import FilterStateStore from '../../stores/filterState/FilterStateStore';
 import useObservable from '../../utils/useObservable';
@@ -17,8 +15,6 @@ import withLoadingBar from '../../utils/withLoadingBar';
 import withErrorHandler from '../../utils/withErrorHandler';
 import LoadingStore from '../../stores/LoadingStore';
 import ErrorStore from '../../stores/ErrorStore';
-
-type EntityTypeFilterModel = NodeTypeFilterModel | EdgeTypeFilterModel;
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -37,6 +33,10 @@ const useStyles = makeStyles(() =>
   })
 );
 
+/**
+ * Used to filter elements of the specified EntityType. Consists of a button that adds the filter to the display,
+ * a button that opens the {@link FilterLineProperties} and a box coloured with backgroundColor and the type written on it.
+ */
 const FilterLine = (props: {
   backgroundColor: string;
   type: string;
@@ -58,23 +58,16 @@ const FilterLine = (props: {
   const loadingStore = useService<LoadingStore>(LoadingStore);
   const errorStore = useService<ErrorStore>(ErrorStore);
 
-  const [filterModel, setFilterModel] = useState<EntityTypeFilterModel>({
-    name: '',
-    properties: [],
-  });
-
-  useObservable(
+  const filterModel = useObservable(
     from(
       entity === 'node'
         ? filterService.getNodeTypeFilterModel(type)
         : filterService.getEdgeTypeFilterModel(type)
-    ).pipe(
-      withLoadingBar({ loadingStore }),
-      withErrorHandler({ rethrow: true, errorStore }),
-      tap((model) => {
-        setFilterModel(model);
-      })
-    )
+    ).pipe(withLoadingBar({ loadingStore }), withErrorHandler({ errorStore })),
+    {
+      name: '',
+      properties: [],
+    }
   );
 
   function updateBoxShadow() {

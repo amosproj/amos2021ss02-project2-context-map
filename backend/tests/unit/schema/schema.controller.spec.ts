@@ -14,6 +14,7 @@ describe('SchemaController', () => {
       useFactory: () => ({
         getEdgeTypes: jest.fn(() => []),
         getNodeTypes: jest.fn(() => []),
+        getNodeTypeConnectionInformation: jest.fn(() => []),
       }),
     };
 
@@ -47,6 +48,14 @@ describe('SchemaController', () => {
         // Act
         await request(app.getHttpServer())
           .get(`${baseUrl}/node-types`)
+          // Assert
+          .expect(200);
+      });
+
+      it('should not fail when node type connections info queried', async () => {
+        // Act
+        await request(app.getHttpServer())
+          .get(`${baseUrl}/node-type-connection-info`)
           // Assert
           .expect(200);
       });

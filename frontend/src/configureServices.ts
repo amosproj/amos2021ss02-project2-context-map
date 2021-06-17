@@ -17,6 +17,7 @@ import FilterStateStore from './stores/filterState/FilterStateStore';
 import ShortestPathService from './services/shortest-path/ShortestPathService';
 import ShortestPathServiceImpl from './services/shortest-path/ShortestPathServiceImpl';
 import { ShortestPathStateStore } from './stores/shortest-path/ShortestPathStateStore';
+import ExplorationStore from './stores/exploration/ExplorationStore';
 
 /**
  * Configures all services in the frontend app.
@@ -64,4 +65,5 @@ export default function configureServices(container: Container): void {
   container.bind(QueryResultStore).to(QueryResultStore).inSingletonScope();
   container.bind(EntityStyleStore).to(EntityStyleStore).inSingletonScope();
   container.bind(ShortestPathStateStore).toSelf().inSingletonScope();
+  container.bind(ExplorationStore).toSelf().inSingletonScope();
 }

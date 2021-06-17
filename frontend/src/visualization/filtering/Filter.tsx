@@ -9,16 +9,15 @@ import {
   Tabs,
   Typography,
 } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { forkJoin, from } from 'rxjs';
 import useService from '../../dependency-injection/useService';
 import { SchemaService } from '../../services/schema';
 import MaxEntitiesSlider from './MaxEntitiesSlider';
-import { EdgeType, NodeType } from '../../shared/schema';
 import EntityTypeTemplate from './helpers/EntityTypeTemplate';
 import useObservable from '../../utils/useObservable';
 import withLoadingBar from '../../utils/withLoadingBar';
@@ -74,7 +73,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 /**
- * The filtering sidebar component used to filter specific elements of the {@link Graph}.
+ * The filtering sidebar component used to update the {@link FilterStateStore}.
  * The filter is divided into node and edge types sections. Each entity section consists of
  * {@link FilterLine}s where the user can further specify which properties the chosen entity
  * shall have. The properties are managed in {@link FilterLineProperties} and a single Property in
@@ -86,7 +85,7 @@ const Filter = (): JSX.Element => {
   const [tabIndex, setTabIndex] = React.useState(0);
   const [open, setOpen] = React.useState(false);
 
-  const filterStateStore = useService<FilterStateStore>(FilterStateStore);
+  const filterStateStore = useService(FilterStateStore);
 
   const entityStyleStore = useService(EntityStyleStore);
   const styleProvider = useObservable(
@@ -96,28 +95,25 @@ const Filter = (): JSX.Element => {
 
   const schemaService = useService(SchemaService, null);
 
-  const [schema, setSchema] = useState<{
-    nodes: NodeType[];
-    edges: EdgeType[];
-  }>({ nodes: [], edges: [] });
+  const loadingStore = useService(LoadingStore);
+  const errorStore = useService(ErrorStore);
 
-  const loadingStore = useService<LoadingStore>(LoadingStore);
-  const errorStore = useService<ErrorStore>(ErrorStore);
-
-  useObservable(
+  const schema = useObservable(
     forkJoin([
       from(schemaService.getNodeTypes()),
       from(schemaService.getEdgeTypes()),
     ]).pipe(
       withLoadingBar({ loadingStore }),
-      withErrorHandler({ rethrow: true, errorStore }),
-      tap((schemaFromService) => {
-        setSchema({ nodes: schemaFromService[0], edges: schemaFromService[1] });
-      })
-    )
+      withErrorHandler({ errorStore }),
+      map((schemaFromService) => ({
+        nodes: schemaFromService[0],
+        edges: schemaFromService[1],
+      }))
+    ),
+    { nodes: [], edges: [] }
   );
 
-  // filterStore will only be initialized on the first render
+  // filterStore will only be filled with initial FilterLineStates on the first render.
   useEffect(() => {
     const nodeLineStates: FilterLineState[] = [];
     const edgeLineStates: FilterLineState[] = [];
