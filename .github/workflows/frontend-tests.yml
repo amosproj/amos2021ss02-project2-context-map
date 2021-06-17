@@ -4,6 +4,8 @@ on: [ push ]
 jobs:
   test:
     runs-on: ${{ matrix.os }}
+    container:
+      options: --user 1001
     strategy:
       matrix:
         os: [ ubuntu-latest ]
