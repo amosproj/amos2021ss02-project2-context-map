@@ -28,6 +28,7 @@
   },
   "include": [
     "src", 
-    "cypress"  
+    "cypress",
+    "./typings-custom/**/*.ts"  
   ]
 }
