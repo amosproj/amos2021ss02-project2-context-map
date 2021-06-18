@@ -148,6 +148,7 @@ const Filter = (): JSX.Element => {
             id: -1,
             types: [type.name],
             virtual: true,
+            searched: false,
           } as QueryNodeResult).color,
           type.name,
           'node'
@@ -166,6 +167,7 @@ const Filter = (): JSX.Element => {
             from: -1,
             to: -1,
             virtual: true,
+            searched: false,
           } as QueryEdgeResult).color,
           type.name,
           'edge'

@@ -20,4 +20,9 @@ export interface QueryEdgeResult extends EdgeDescriptor {
    * A boolean that specified whether the edge is part of the path that shall be highlighted.
    */
   isPath?: boolean;
+
+  /**
+   * Specifies whether this node was searched for.
+   */
+  searched?: boolean;
 }

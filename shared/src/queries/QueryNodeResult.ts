@@ -20,4 +20,9 @@ export default interface QueryNodeResult extends NodeDescriptor {
    * A boolean that specified whether the node is part of the path that shall be highlighted.
    */
   isPath?: boolean;
+
+  /**
+   * Specifies whether this node was searched for.
+   */
+  searched?: boolean;
 }
