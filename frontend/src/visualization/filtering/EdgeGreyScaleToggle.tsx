@@ -1,17 +1,17 @@
 import React from 'react';
 import { Box, Checkbox, FormControlLabel } from '@material-ui/core';
 import useService from '../../dependency-injection/useService';
-import { EntityColorStore } from '../../stores/colors';
+import { EntityStyleStore } from '../../stores/colors';
 import useObservable from '../../utils/useObservable';
 
 /**
  * Control that toggles colorization of the edges.
  */
 export default function EdgeGreyScaleToggle(): JSX.Element {
-  const entityColorStore = useService(EntityColorStore);
+  const entityStyleStore = useService(EntityStyleStore);
 
   // toggle greyScale
-  const greyScale = useObservable(entityColorStore.getGreyScaleEdges());
+  const greyScale = useObservable(entityStyleStore.getGreyScaleEdges());
 
   return (
     <Box>
@@ -19,7 +19,7 @@ export default function EdgeGreyScaleToggle(): JSX.Element {
         control={
           <Checkbox
             checked={!greyScale}
-            onChange={(_, val) => entityColorStore.setGreyScaleEdges(!val)}
+            onChange={(_, val) => entityStyleStore.setGreyScaleEdges(!val)}
             name="colorize-graph"
             color="primary"
           />

@@ -7,3 +7,5 @@ export type { EntityTypeProperty } from './EntityTypeProperty';
 
 export type { NodeType } from './NodeType';
 export type { NodeTypeDescriptor } from './NodeTypeDescriptor';
+
+export type { NodeTypeConnectionInfo } from './NodeTypeConnectionInfo';

@@ -11,6 +11,7 @@ import { SchemaService } from './schema/schema.service';
 import { SearchController } from './search/search.controller';
 import { SearchService } from './search/search.service';
 import { SearchIndexBuilder } from './search/SearchIndexBuilder';
+import { ShortestPathController } from './shortest-path/shortest-path.controller';
 import { ShortestPathService } from './shortest-path/shortest-path.service';
 
 @Module({
@@ -30,6 +31,7 @@ import { ShortestPathService } from './shortest-path/shortest-path.service';
     SchemaController,
     SearchController,
     FilterController,
+    ShortestPathController,
   ],
   providers: [
     AppService,

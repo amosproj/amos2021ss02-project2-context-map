@@ -7,7 +7,7 @@ import {
 } from '../shared/search';
 import NodeTypeComponent from './helper/NodeTypeComponent';
 import EdgeTypeComponent from './helper/EdgeTypeComponent';
-import { EntityColorizer } from '../stores/colors';
+import { EntityStyleProvider } from '../stores/colors';
 
 function formatEntry(resultEntry: SearchNodeResult | SearchEdgeResult) {
   let result = `[${resultEntry.id}]`;
@@ -25,7 +25,7 @@ function formatEntry(resultEntry: SearchNodeResult | SearchEdgeResult) {
 export default function convertSearchResultToSearchResultList(
   searchString: string,
   result: SearchResult | undefined,
-  colorizer: EntityColorizer
+  styleProvider: EntityStyleProvider
 ): SearchResultList[] {
   /* istanbul ignore if */
   if (result === undefined) {
@@ -41,13 +41,16 @@ export default function convertSearchResultToSearchResultList(
         element: (
           <div>
             {n.types.map((t) => (
-              <NodeTypeComponent name={t} color={colorizer.colorize(n).color} />
+              <NodeTypeComponent
+                name={t}
+                color={styleProvider.getStyle(n).color}
+              />
             ))}
             &nbsp;
             {formatEntry(n)}
           </div>
         ),
-        href: `/data/node/${n.id}`,
+        entity: n,
       })),
     },
     {
@@ -59,12 +62,12 @@ export default function convertSearchResultToSearchResultList(
           <div>
             <EdgeTypeComponent
               type={e.type}
-              color={colorizer.colorize(e).color}
+              color={styleProvider.getStyle(e).color}
             />
             &nbsp;{formatEntry(e)}
           </div>
         ),
-        href: `/data/edge/${e.id}`,
+        entity: e,
       })),
     },
     {
@@ -75,10 +78,10 @@ export default function convertSearchResultToSearchResultList(
         element: (
           <NodeTypeComponent
             name={t.name}
-            color={colorizer.colorize({ id: -1, types: [t.name] }).color}
+            color={styleProvider.getStyle({ id: -1, types: [t.name] }).color}
           />
         ),
-        href: `/data/node-type/${t.name}`,
+        entity: t,
       })),
     },
     {
@@ -90,12 +93,12 @@ export default function convertSearchResultToSearchResultList(
           <EdgeTypeComponent
             type={t.name}
             color={
-              colorizer.colorize({ id: -1, from: -1, to: -1, type: t.name })
+              styleProvider.getStyle({ id: -1, from: -1, to: -1, type: t.name })
                 .color
             }
           />
         ),
-        href: `/data/edge-type/${t.name}`,
+        entity: t,
       })),
     },
   ]

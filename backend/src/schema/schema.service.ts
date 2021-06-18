@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
 import { parseNeo4jEntityInfo } from './parseNeo4jEntityInfo';
-import { EdgeType, NodeType } from '../shared/schema';
+import { EdgeType, NodeType, NodeTypeConnectionInfo } from '../shared/schema';
 
 @Injectable()
 export class SchemaService {
@@ -25,5 +25,45 @@ export class SchemaService {
       `CALL db.schema.nodeTypeProperties`
     );
     return parseNeo4jEntityInfo(result.records, 'node');
+  }
+
+  /**
+   * Returns information about the number of connections between node types.
+   * Nodes with n labels are considered as n nodes of a single label (e.g. node
+   * :Person:Customer is considered as node :Person and node :Customer).
+   * This information can be visualized in a Chord diagram.
+   */
+  async getNodeTypeConnectionInformation(): Promise<NodeTypeConnectionInfo[]> {
+    const result = await this.neo4jService.read(`
+      CALL db.schema.nodeTypeProperties() YIELD nodeLabels AS result
+      // flatten ["Person", ["Person", "Customer"]] => ["Person", "Person", "Customer"]
+      UNWIND result as nodeTypes
+      // remove duplicates => ["Person", "Customer"]
+      WITH DISTINCT nodeTypes as nodeTypes
+      
+      // make List
+      WITH collect(nodeTypes) as nodeTypes
+      
+      // build cross product of list => [{from: "Person", to: "Person"}, {from: "Person", to: "Customer"}, ...]
+      WITH REDUCE(ret = [], A in nodeTypes |
+          ret + REDUCE(ret2 = [], B in nodeTypes | ret2 + {from: A, to: B})
+      ) as nodeTypes
+      
+      // each list entry as row
+      UNWIND nodeTypes as possibleConnections
+      
+      // get number of connections between nodes
+      CALL {
+          WITH possibleConnections
+          MATCH (a)-->(b)
+          WHERE possibleConnections['from'] in labels(a) AND possibleConnections['to'] in labels(b)
+          RETURN count(*)
+          as numConnections
+      }
+      
+      RETURN possibleConnections['from'] as from, possibleConnections['to'] as to, numConnections
+    `);
+
+    return result.records.map((x) => x.toObject() as NodeTypeConnectionInfo);
   }
 }
