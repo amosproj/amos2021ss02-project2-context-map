@@ -36,7 +36,7 @@ export class EntityStyleProviderImpl implements EntityStyleProvider {
       color: common.black,
       text: { color: common.black },
       stroke: {
-        width: this.isSearched(entity) ? 5 : 1,
+        width: this.isSelected(entity) ? 5 : 1,
         dashes: false,
         color: common.black,
       },
@@ -122,8 +122,8 @@ export class EntityStyleProviderImpl implements EntityStyleProvider {
     return entity.virtual === true;
   }
 
-  private isSearched(entity: QueryEntityResult): boolean {
-    return entity.searched === true;
+  private isSelected(entity: QueryEntityResult): boolean {
+    return entity.selected === true;
   }
 }
 

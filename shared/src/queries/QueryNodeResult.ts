@@ -22,7 +22,7 @@ export default interface QueryNodeResult extends NodeDescriptor {
   isPath?: boolean;
 
   /**
-   * Specifies whether this node was searched for.
+   * Specifies whether this node was selected after search.
    */
-  searched?: boolean;
+  selected?: boolean;
 }

@@ -2,12 +2,15 @@ import SimpleStore from './SimpleStore';
 import { EdgeDescriptor, NodeDescriptor } from '../shared/entities';
 import { EdgeTypeDescriptor, NodeTypeDescriptor } from '../shared/schema';
 
-export type SelectedSearchResult =
-  | EdgeDescriptor
-  | EdgeTypeDescriptor
-  | NodeDescriptor
-  | NodeTypeDescriptor
-  | undefined;
+export type SelectedSearchResult = {
+  key?: string | number;
+  content:
+    | EdgeDescriptor
+    | EdgeTypeDescriptor
+    | NodeDescriptor
+    | NodeTypeDescriptor
+    | undefined;
+};
 
 /**
  * Contains the selected search result (if any).
@@ -15,6 +18,6 @@ export type SelectedSearchResult =
  */
 export default class SearchSelectionStore extends SimpleStore<SelectedSearchResult> {
   protected getInitialValue(): SelectedSearchResult {
-    return undefined;
+    return { content: undefined };
   }
 }
