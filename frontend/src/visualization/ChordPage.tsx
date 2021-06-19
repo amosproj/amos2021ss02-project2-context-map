@@ -1,46 +1,56 @@
 import React from 'react';
-import { from } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import ChordDiagram from 'react-chord-diagram';
 import { map } from 'rxjs/operators';
 import useService from '../dependency-injection/useService';
 import { SchemaService } from '../services/schema';
 import { NodeTypeConnectionInfo } from '../shared/schema';
-import ErrorStore from '../stores/ErrorStore';
-import LoadingStore from '../stores/LoadingStore';
 import useObservable from '../utils/useObservable';
-import withErrorHandler from '../utils/withErrorHandler';
-import withLoadingBar from '../utils/withLoadingBar';
-import { EntityStyleStore } from '../stores/colors';
+import { EntityStyleProvider, EntityStyleStore } from '../stores/colors';
+
+type ChordData = {
+  matrix: number[][];
+  names: string[];
+  colors: string[];
+};
 
 /**
- * Generate a matrix with node connections, and an array with node names in the matrix.
+ * Generate a matrix with node connections, and a Record mapping node types to their index in the matrix and their color.
  * @param nodeTypeConnectionInfo data source to generate the matrix from.
  * @returns A tuple of [matrix, nodes], where
  * matrix is of size n*n, with each element matrix[i] being an array of n numbers,
- * and each matrix[i][j] represents the flow from the ith node in the network
- * to the jth node, and
- * nodes[i] contains the name of the node in matrix[i]
+ * and each matrix[i][j] represents and edge from the ith node in the graph
+ * to the jth node,
+ * nodes maps the node typenames to their indices in the matrix and their color.
  */
-function generateNodesAndMatrix(
-  nodeTypeConnectionInfo: NodeTypeConnectionInfo[]
-): [number[][], Record<string, number>] {
-  // empty input
+function convertToChordData(
+  nodeTypeConnectionInfo: NodeTypeConnectionInfo[],
+  styleProvider: EntityStyleProvider
+): ChordData {
+  const ret: ChordData = { matrix: [], names: [], colors: [] };
+  // early exit on empty input
   if (nodeTypeConnectionInfo.length === 0) {
-    return [[], {}];
+    return ret;
   }
 
-  const matrix: number[][] = [];
-  // maps node names to their index in the matrix.
+  // map node names to their index in the matrix.
   const nodes: Record<string, number> = {};
-
+  // fill names and colors array.
   let counter = 0;
   nodeTypeConnectionInfo.forEach((node) => {
     if (nodes[node.from] === undefined) {
+      // save node index.
       nodes[node.from] = counter;
       counter += 1;
+      // fill names and colors arrays.
+      const fakeNode = { id: -1, types: [node.from] };
+      ret.names.push(node.from);
+      ret.colors.push(styleProvider.getStyle(fakeNode).color);
     }
   });
 
+  // i*j matrix containing number of connection from node i to j.
+  const matrix: number[][] = [];
   // initialize empty n*n matrix where n is number of nodes.
   for (let i = 0; i < counter; i += 1) {
     matrix.push(new Array(counter).fill(0));
@@ -53,33 +63,29 @@ function generateNodesAndMatrix(
     matrix[i][j] += node.numConnections;
   }
 
-  return [matrix, nodes];
+  ret.matrix = matrix;
+
+  return ret;
 }
 
 export default function ChordPage(): JSX.Element {
   const schemaService = useService(SchemaService, null);
   const entityColorStore = useService(EntityStyleStore);
 
-  const loadingStore = useService(LoadingStore);
-  const errorStore = useService(ErrorStore);
-
-  const matrix = useObservable(
-    from(schemaService.getNodeTypeConnectionInfo()).pipe(
-      withLoadingBar({ loadingStore }),
-      withErrorHandler({ errorStore }),
-      map((nodeTypeConnectionInfo) =>
-        generateNodesAndMatrix(nodeTypeConnectionInfo)
-      )
-    ),
-    [[], {}]
+  const chordData = useObservable(
+    combineLatest([
+      schemaService.getNodeTypeConnectionInfo(),
+      entityColorStore.getState(),
+    ]).pipe(map((next) => convertToChordData(next[0], next[1]))),
+    { matrix: [], names: [], colors: [] }
   );
 
   return (
     <ChordDiagram
-      matrix={matrix[0]}
+      matrix={chordData.matrix}
       componentId={1}
-      groupLabels={Object.keys(matrix[1])}
-      groupColors={['#000000', '#FFDD89', '#957244', '#F26223']}
+      groupLabels={chordData.names}
+      groupColors={chordData.colors}
     />
   );
 }
