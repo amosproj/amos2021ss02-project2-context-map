@@ -8,5 +8,5 @@ export interface EdgeTypeDescriptor extends EntityTypeDescriptor {
   /**
    * Used to identify if an object of this type corresponds to an EdgeTypeDescriptor
    */
-  edge: undefined
+  edge: undefined;
 }

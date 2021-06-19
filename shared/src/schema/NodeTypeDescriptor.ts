@@ -8,5 +8,5 @@ export interface NodeTypeDescriptor extends EntityTypeDescriptor {
   /**
    * Used to identify if an object of this type corresponds to an NodeTypeDescriptor
    */
-  node: undefined
+  node: undefined;
 }
