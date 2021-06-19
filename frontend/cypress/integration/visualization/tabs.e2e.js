@@ -29,4 +29,9 @@ context('Visualization Tabs', () => {
     cy.get('.MuiTabs-root').contains('Schema').click();
     cy.get('main').contains('Schema');
   });
+
+  it('has chord tab', () => {
+    cy.get('.MuiTabs-root').contains('Chord Diagram').click();
+    cy.get('main').get('.svg-container');
+  });
 });
