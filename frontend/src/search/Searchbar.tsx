@@ -163,12 +163,7 @@ export default function Searchbar(): JSX.Element {
                                 key={element.key}
                                 button
                                 component="a"
-                                onClick={() =>
-                                  onCardSelected({
-                                    key: result.key,
-                                    content: element.entity,
-                                  })
-                                }
+                                onClick={() => onCardSelected(element.entity)}
                               >
                                 {element.element}
                               </ListItem>
