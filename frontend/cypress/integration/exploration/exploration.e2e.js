@@ -33,6 +33,12 @@ context('Exploration', () => {
       cy.url().should('eq', `http://localhost:3000${layoutsData.H.path}`);
     });
 
+    it('routes to chord page', () => {
+      cy.get('.Previews');
+      cy.get('.LayoutPreview').contains('Chord Diagram').click();
+      cy.url().should('eq', `http://localhost:3000${layoutsData.P.path}`);
+    });
+
     // TODO: add more tests when combined with questions
   });
 });
