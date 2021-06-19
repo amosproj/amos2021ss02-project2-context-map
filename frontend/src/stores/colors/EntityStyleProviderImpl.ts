@@ -7,7 +7,7 @@ import { EdgeDescriptor, NodeDescriptor } from '../../shared/entities';
 import { ArgumentError } from '../../shared/errors';
 import { QueryNodeResult, QueryEdgeResult } from '../../shared/queries';
 import getTextColor from './getTextColor';
-import EntityStyleStore from './EntityStyleStore';
+import EntityStyleStore, { SelectionInfo } from './EntityStyleStore';
 
 type EntityStyleIntersection = NodeStyle & EdgeStyle;
 type QueryEntityResult = QueryNodeResult | QueryEdgeResult;
@@ -36,7 +36,12 @@ export class EntityStyleProviderImpl implements EntityStyleProvider {
       color: common.black,
       text: { color: common.black },
       stroke: {
-        width: this.isSelected(entity) ? 5 : 1,
+        width: this.isSelected(
+          entity,
+          this.entityStyleStore.getEntitySelection()
+        )
+          ? 5
+          : 1,
         dashes: false,
         color: common.black,
       },
@@ -122,8 +127,33 @@ export class EntityStyleProviderImpl implements EntityStyleProvider {
     return entity.virtual === true;
   }
 
-  private isSelected(entity: QueryEntityResult): boolean {
-    return entity.selected === true;
+  /**
+   * Returns true if entity corresponds to the entity that is selected via search.
+   * @param entity - is compared with the selection
+   * @param selection - represents the entity that is selected via search
+   * @private
+   */
+  private isSelected(
+    entity: QueryEntityResult,
+    selection: SelectionInfo
+  ): boolean {
+    if (selection === undefined) {
+      return false;
+    }
+
+    if (this.getTypeOfEntity(entity).includes(selection.kind)) {
+      if ('id' in selection) {
+        // selection is single entity
+        return entity.id === selection.id;
+      }
+      if ('type' in selection) {
+        // selection is type -> multiple entites
+        return isNodeDescriptor(entity)
+          ? selection.type === entity.types[0]
+          : selection.type === entity.type;
+      }
+    }
+    return false;
   }
 }
 

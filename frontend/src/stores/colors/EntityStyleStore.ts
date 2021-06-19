@@ -1,8 +1,19 @@
 import 'reflect-metadata';
-import { injectable } from 'inversify';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { inject, injectable } from 'inversify';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { EntityStyleProvider } from './EntityStyleProvider';
 import { EntityStyleProviderImpl } from './EntityStyleProviderImpl';
+import SearchSelectionStore, {
+  isEdgeDescriptor,
+  isEdgeTypeDescriptor,
+  isNodeDescriptor,
+  isNodeTypeDescriptor,
+  SelectedSearchResult,
+} from '../SearchSelectionStore';
+
+export type SelectionInfo =
+  | { kind: 'NODE' | 'EDGE'; id: number }
+  | { kind: 'NODE' | 'EDGE'; type: string };
 
 /**
  * A simple store contains a single state.
@@ -11,6 +22,11 @@ import { EntityStyleProviderImpl } from './EntityStyleProviderImpl';
  */
 @injectable()
 export class EntityStyleStore {
+  private searchSelectionStoreSubscription?: Subscription;
+
+  @inject(SearchSelectionStore)
+  private readonly searchSelectionStore!: SearchSelectionStore;
+
   /**
    * Contains the state.
    * Returns the current state immediately after subscribing.
@@ -27,11 +43,18 @@ export class EntityStyleStore {
   protected getEntityColorizer(): EntityStyleProvider {
     return new EntityStyleProviderImpl(this);
   }
+  /**
+   * Updates the current filter by replacing it completely.
+   */
+  public setState(newState: EntityStyleProvider): void {
+    this.storeSubject.next(newState);
+  }
 
   /**
    * Returns an observable that outputs the stored value.
    */
   public getState(): Observable<EntityStyleProvider> {
+    this.ensureInit();
     return this.storeSubject.pipe();
   }
 
@@ -40,6 +63,13 @@ export class EntityStyleStore {
    */
   public getValue(): EntityStyleProvider {
     return this.storeSubject.value;
+  }
+
+  protected ensureInit(): void {
+    if (this.searchSelectionStoreSubscription == null) {
+      this.searchSelectionStoreSubscription =
+        this.subscribeToSearchSelectionStore();
+    }
   }
 
   private readonly greyScaleEdges = new BehaviorSubject<boolean>(false);
@@ -59,6 +89,64 @@ export class EntityStyleStore {
   public setGreyScaleEdges(greyScale: boolean): void {
     this.greyScaleEdges.next(greyScale);
     this.storeSubject.next(this.getEntityColorizer());
+  }
+
+  private entitySelection!: SelectionInfo;
+
+  /**
+   * An adapted {@link SelectedSearchResult} that is used in the {@link EntityStyleProvider}.
+   */
+  public getEntitySelection(): SelectionInfo {
+    return this.entitySelection;
+  }
+
+  /**
+   * Updates the store using a {@link SelectedSearchResult}
+   * @param selectionResult - the {@link SelectedSearchResult} that is used for updating
+   * @private
+   */
+  private update(selectionResult: SelectedSearchResult) {
+    const entitySelection = this.convertToSelectionInfo(selectionResult);
+
+    if (entitySelection !== undefined) {
+      this.entitySelection = entitySelection;
+    }
+
+    this.setState(this.getValue());
+  }
+
+  /**
+   * Converts a {@link SelectedSearchResult} to a {@link SelectionInfo}
+   * @param selectionResult - {@link SelectedSearchResult} that is converted
+   * @private
+   */
+  private convertToSelectionInfo(
+    selectionResult: SelectedSearchResult
+  ): SelectionInfo | undefined {
+    let entitySelection: SelectionInfo | undefined;
+    if (isNodeDescriptor(selectionResult)) {
+      entitySelection = { kind: 'NODE', id: selectionResult.id };
+    } else if (isEdgeDescriptor(selectionResult)) {
+      entitySelection = { kind: 'EDGE', id: selectionResult.id };
+    } else if (isNodeTypeDescriptor(selectionResult)) {
+      entitySelection = { kind: 'NODE', type: selectionResult.name };
+    } else if (isEdgeTypeDescriptor(selectionResult)) {
+      entitySelection = { kind: 'EDGE', type: selectionResult.name };
+    }
+
+    return entitySelection;
+  }
+
+  /**
+   * Subscribes to the state of the {@link searchSelectionStore} so that the state
+   * of this store is updated when the {@link searchSelectionStore} updates.
+   * @returns subscription of the {@link searchSelectionStore} state
+   * @private
+   */
+  private subscribeToSearchSelectionStore(): Subscription {
+    return this.searchSelectionStore.getState().subscribe({
+      next: (selectionResult) => this.update(selectionResult),
+    });
   }
 }
 
