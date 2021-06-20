@@ -79,7 +79,7 @@ function convertToChordData(
 export default function ChordPage(): JSX.Element {
   const classes = useStyles();
 
-  const schemaService = useService(SchemaService, null);
+  const schemaService = useService(SchemaService);
   const entityStyleStore = useService(EntityStyleStore);
 
   const chordData = useObservable(
