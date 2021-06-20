@@ -80,12 +80,12 @@ export default function ChordPage(): JSX.Element {
   const classes = useStyles();
 
   const schemaService = useService(SchemaService, null);
-  const entityColorStore = useService(EntityStyleStore);
+  const entityStyleStore = useService(EntityStyleStore);
 
   const chordData = useObservable(
     combineLatest([
       schemaService.getNodeTypeConnectionInfo(),
-      entityColorStore.getState(),
+      entityStyleStore.getState(),
     ]).pipe(map((next) => convertToChordData(next[0], next[1]))),
     { matrix: [], names: [], colors: [] }
   );
