@@ -24,6 +24,7 @@ const useStyles = makeStyles({
 /**
  * Generate a matrix with node connections, and a Record mapping node types to their index in the matrix and their color.
  * @param nodeTypeConnectionInfo data source to generate the matrix from.
+ * @param styleProvider {@link EntityStyleProvider} instance.
  * @returns A tuple of [matrix, nodes], where
  * matrix is of size n*n, with each element matrix[i] being an array of n numbers,
  * and each matrix[i][j] represents and edge from the ith node in the graph
