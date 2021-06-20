@@ -29,16 +29,6 @@ import SearchSelectionStore, {
   SelectedSearchResult,
 } from '../stores/SearchSelectionStore';
 
-export type EntityIdentifier = 'Nodes' | 'Edges' | 'Node Types' | 'Edge Types';
-
-function isEntityIdentifier(
-  header: string | number
-): header is EntityIdentifier {
-  return ['Nodes', 'Edges', 'Node Types', 'Edge Types'].some(
-    (e) => e === header
-  );
-}
-
 export default function Searchbar(): JSX.Element {
   const searchService = useService(SearchService);
   const searchSelectionStore = useService(SearchSelectionStore);
@@ -173,15 +163,7 @@ export default function Searchbar(): JSX.Element {
                                 key={element.key}
                                 button
                                 component="a"
-                                onClick={() =>
-                                  onCardSelected(
-                                    isEntityIdentifier(result.header)
-                                      ? Object.assign(element.entity, {
-                                          kind: result.header,
-                                        })
-                                      : undefined
-                                  )
-                                }
+                                onClick={() => onCardSelected(element.entity)}
                               >
                                 {element.element}
                               </ListItem>

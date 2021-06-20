@@ -1,13 +1,13 @@
 import 'reflect-metadata';
 import { common } from '@material-ui/core/colors';
-import { NodeStyle, EdgeStyle } from './EntityStyle';
+import { EdgeStyle, NodeStyle } from './EntityStyle';
 import { EntityStyleProvider } from './EntityStyleProvider';
 import getNthColor from './getNthColor';
 import { EdgeDescriptor, NodeDescriptor } from '../../shared/entities';
 import { ArgumentError } from '../../shared/errors';
-import { QueryNodeResult, QueryEdgeResult } from '../../shared/queries';
+import { QueryEdgeResult, QueryNodeResult } from '../../shared/queries';
 import getTextColor from './getTextColor';
-import EntityStyleStore, { SelectionInfo } from './EntityStyleStore';
+import EntityStyleStore from './EntityStyleStore';
 
 type EntityStyleIntersection = NodeStyle & EdgeStyle;
 type QueryEntityResult = QueryNodeResult | QueryEdgeResult;
@@ -36,12 +36,7 @@ export class EntityStyleProviderImpl implements EntityStyleProvider {
       color: common.black,
       text: { color: common.black },
       stroke: {
-        width: this.isSelected(
-          entity,
-          this.entityStyleStore.getEntitySelection()
-        )
-          ? 5
-          : 1,
+        width: this.isSelected(entity) ? 5 : 1,
         dashes: false,
         color: common.black,
       },
@@ -130,29 +125,39 @@ export class EntityStyleProviderImpl implements EntityStyleProvider {
   /**
    * Returns true if entity corresponds to the entity that is selected via search.
    * @param entity - is compared with the selection
-   * @param selection - represents the entity that is selected via search
    * @private
    */
-  private isSelected(
-    entity: QueryEntityResult,
-    selection: SelectionInfo
-  ): boolean {
+  private isSelected(entity: QueryEntityResult): boolean {
+    const selection = this.entityStyleStore.getEntitySelectionInfo();
     if (selection === undefined) {
       return false;
     }
 
-    if (this.getTypeOfEntity(entity).includes(selection.kind)) {
-      if ('id' in selection) {
-        // selection is single entity
-        return entity.id === selection.id;
+    // check entity type
+    if (
+      !(
+        (selection.kind === 'EDGE' && isEdgeDescriptor(entity)) ||
+        (selection.kind === 'NODE' && isNodeDescriptor(entity))
+      )
+    ) {
+      return false;
+    }
+
+    if ('id' in selection) {
+      // single entity selected => check if entity is that entity
+      return entity.id === selection.id;
+    }
+
+    if ('type' in selection) {
+      // type selected => check if entity is of that type
+      if (isNodeDescriptor(entity)) {
+        return entity.types.some((type) => type === selection.type);
       }
-      if ('type' in selection) {
-        // selection is type -> multiple entites
-        return isNodeDescriptor(entity)
-          ? selection.type === entity.types[0]
-          : selection.type === entity.type;
+      if (isEdgeDescriptor(entity)) {
+        return entity.type === selection.type;
       }
     }
+
     return false;
   }
 }

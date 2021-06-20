@@ -1,39 +1,35 @@
 import SimpleStore from './SimpleStore';
 import { EdgeDescriptor, NodeDescriptor } from '../shared/entities';
 import { EdgeTypeDescriptor, NodeTypeDescriptor } from '../shared/schema';
-import { EntityIdentifier } from '../search/Searchbar';
+
+// enables discriminated union types https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html#discriminating-unions
+interface TypedEdgeDescriptor extends EdgeDescriptor {
+  interfaceType: 'EdgeDescriptor';
+}
+interface TypedEdgeTypeDescriptor extends EdgeTypeDescriptor {
+  interfaceType: 'EdgeTypeDescriptor';
+}
+interface TypedNodeDescriptor extends NodeDescriptor {
+  interfaceType: 'NodeDescriptor';
+}
+interface TypedNodeTypeDescriptor extends NodeTypeDescriptor {
+  interfaceType: 'NodeTypeDescriptor';
+}
 
 export type SelectedSearchResult =
-  | ((
-      | EdgeDescriptor
-      | EdgeTypeDescriptor
-      | NodeDescriptor
-      | NodeTypeDescriptor
-    ) & { kind: EntityIdentifier })
-  | undefined;
-
-export const isEdgeDescriptor = (
-  e: SelectedSearchResult
-): e is EdgeDescriptor & { kind: EntityIdentifier } =>
-  e === undefined ? false : e.kind === 'Edges';
-
-export const isNodeDescriptor = (
-  e: SelectedSearchResult
-): e is NodeDescriptor & { kind: EntityIdentifier } =>
-  e === undefined ? false : e.kind === 'Nodes';
-
-export const isEdgeTypeDescriptor = (e: SelectedSearchResult): boolean =>
-  e === undefined ? false : e.kind === 'Edge Types';
-
-export const isNodeTypeDescriptor = (e: SelectedSearchResult): boolean =>
-  e === undefined ? false : e.kind === 'Node Types';
+  | TypedEdgeDescriptor
+  | TypedEdgeTypeDescriptor
+  | TypedNodeDescriptor
+  | TypedNodeTypeDescriptor;
 
 /**
  * Contains the selected search result (if any).
  * It's the search result that was clicked on in the search bar.
  */
-export default class SearchSelectionStore extends SimpleStore<SelectedSearchResult> {
-  protected getInitialValue(): SelectedSearchResult {
+export default class SearchSelectionStore extends SimpleStore<
+  SelectedSearchResult | undefined
+> {
+  protected getInitialValue(): SelectedSearchResult | undefined {
     return undefined;
   }
 }

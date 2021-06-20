@@ -4,17 +4,37 @@ import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { EntityStyleProvider } from './EntityStyleProvider';
 import { EntityStyleProviderImpl } from './EntityStyleProviderImpl';
 import SearchSelectionStore, {
-  isEdgeDescriptor,
-  isEdgeTypeDescriptor,
-  isNodeDescriptor,
-  isNodeTypeDescriptor,
   SelectedSearchResult,
 } from '../SearchSelectionStore';
-import { EdgeTypeDescriptor, NodeTypeDescriptor } from '../../shared/schema';
+import { ArgumentError } from '../../shared/errors';
 
 export type SelectionInfo =
   | { kind: 'NODE' | 'EDGE'; id: number }
   | { kind: 'NODE' | 'EDGE'; type: string };
+
+/**
+ * Converts a {@link SelectedSearchResult} to a {@link SelectionInfo}
+ * @param selectionResult - {@link SelectedSearchResult} that is converted
+ * @private
+ */
+function createSelectionInfo(
+  selectionResult?: SelectedSearchResult
+): SelectionInfo | undefined {
+  if (selectionResult === undefined) return undefined;
+
+  switch (selectionResult.interfaceType) {
+    case 'EdgeDescriptor':
+      return { kind: 'EDGE', id: selectionResult.id };
+    case 'NodeDescriptor':
+      return { kind: 'NODE', id: selectionResult.id };
+    case 'EdgeTypeDescriptor':
+      return { kind: 'EDGE', type: selectionResult.name };
+    case 'NodeTypeDescriptor':
+      return { kind: 'NODE', type: selectionResult.name };
+    default:
+      throw new ArgumentError(`Unknown selection`);
+  }
+}
 
 /**
  * A simple store contains a single state.
@@ -36,6 +56,16 @@ export class EntityStyleStore {
   protected readonly storeSubject = new BehaviorSubject<EntityStyleProvider>(
     this.getEntityColorizer()
   );
+
+  /**
+   * Contains information about the current selected entity.
+   * @private
+   */
+  private entitySelectionInfo?: SelectionInfo;
+
+  public getEntitySelectionInfo(): SelectionInfo | undefined {
+    return this.entitySelectionInfo;
+  }
 
   /**
    * Returns the entity colorizing function.
@@ -63,6 +93,7 @@ export class EntityStyleStore {
    * Returns the current value of the stored value.
    */
   public getValue(): EntityStyleProvider {
+    this.ensureInit();
     return this.storeSubject.value;
   }
 
@@ -92,56 +123,14 @@ export class EntityStyleStore {
     this.storeSubject.next(this.getEntityColorizer());
   }
 
-  private entitySelection!: SelectionInfo;
-
-  /**
-   * An adapted {@link SelectedSearchResult} that is used in the {@link EntityStyleProvider}.
-   */
-  public getEntitySelection(): SelectionInfo {
-    return this.entitySelection;
-  }
-
   /**
    * Updates the store using a {@link SelectedSearchResult}
    * @param selectionResult - the {@link SelectedSearchResult} that is used for updating
    * @private
    */
-  private update(selectionResult: SelectedSearchResult) {
-    const entitySelection = this.convertToSelectionInfo(selectionResult);
-
-    if (entitySelection !== undefined) {
-      this.entitySelection = entitySelection;
-    }
-
-    this.setState(this.getValue());
-  }
-
-  /**
-   * Converts a {@link SelectedSearchResult} to a {@link SelectionInfo}
-   * @param selectionResult - {@link SelectedSearchResult} that is converted
-   * @private
-   */
-  private convertToSelectionInfo(
-    selectionResult: SelectedSearchResult
-  ): SelectionInfo | undefined {
-    let entitySelection: SelectionInfo | undefined;
-    if (isNodeDescriptor(selectionResult)) {
-      entitySelection = { kind: 'NODE', id: selectionResult.id };
-    } else if (isEdgeDescriptor(selectionResult)) {
-      entitySelection = { kind: 'EDGE', id: selectionResult.id };
-    } else if (isEdgeTypeDescriptor(selectionResult)) {
-      entitySelection = {
-        kind: 'EDGE',
-        type: (selectionResult as EdgeTypeDescriptor).name,
-      };
-    } else if (isNodeTypeDescriptor(selectionResult)) {
-      entitySelection = {
-        kind: 'NODE',
-        type: (selectionResult as NodeTypeDescriptor).name,
-      };
-    }
-
-    return entitySelection;
+  private nextSelectionResult(selectionResult?: SelectedSearchResult) {
+    this.entitySelectionInfo = createSelectionInfo(selectionResult);
+    this.storeSubject.next(this.getEntityColorizer());
   }
 
   /**
@@ -152,7 +141,7 @@ export class EntityStyleStore {
    */
   private subscribeToSearchSelectionStore(): Subscription {
     return this.searchSelectionStore.getState().subscribe({
-      next: (selectionResult) => this.update(selectionResult),
+      next: (selectionResult) => this.nextSelectionResult(selectionResult),
     });
   }
 }
