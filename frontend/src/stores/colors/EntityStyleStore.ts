@@ -10,6 +10,7 @@ import SearchSelectionStore, {
   isNodeTypeDescriptor,
   SelectedSearchResult,
 } from '../SearchSelectionStore';
+import { EdgeTypeDescriptor, NodeTypeDescriptor } from '../../shared/schema';
 
 export type SelectionInfo =
   | { kind: 'NODE' | 'EDGE'; id: number }
@@ -128,10 +129,16 @@ export class EntityStyleStore {
       entitySelection = { kind: 'NODE', id: selectionResult.id };
     } else if (isEdgeDescriptor(selectionResult)) {
       entitySelection = { kind: 'EDGE', id: selectionResult.id };
-    } else if (isNodeTypeDescriptor(selectionResult)) {
-      entitySelection = { kind: 'NODE', type: selectionResult.name };
     } else if (isEdgeTypeDescriptor(selectionResult)) {
-      entitySelection = { kind: 'EDGE', type: selectionResult.name };
+      entitySelection = {
+        kind: 'EDGE',
+        type: (selectionResult as EdgeTypeDescriptor).name,
+      };
+    } else if (isNodeTypeDescriptor(selectionResult)) {
+      entitySelection = {
+        kind: 'NODE',
+        type: (selectionResult as NodeTypeDescriptor).name,
+      };
     }
 
     return entitySelection;
