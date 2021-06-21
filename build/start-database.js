@@ -1,7 +1,3 @@
-/*
-Starts the database docker container with the testing dump.
- */
-
 const path = require("path");
 const { execSync } = require("child_process");
 const { parseArgs } = require("./parse-args");
@@ -26,20 +22,20 @@ const args = [
 ];
 
 function buildCommand(args) {
-  return `
-    docker run ${args.detached ? '-d' : ''} -p 7474:7474 -p 7687:7687 \\
-      -v ${args.mountPath}:/mnt/amos \\
-      -v ${args.pluginsPath}:/plugins \\
-      --env NEO4J_ACCEPT_LICENSE_AGREEMENT=yes \\
-      --env DB_PASSWORD=${args.dbPassword} \\
-      --env DB_PATH=/mnt/amos/dumps/testing-dump.dump \\
-      --env 'NEO4JLABS_PLUGINS=["apoc", "graph-data-science"]' \\
-      --env 'NEO4J_dbms_security_procedures_unrestricted=apoc.*,gds.*' \\
-      --env 'NEO4J_dbms_security_procedures_allowlist=apoc.*,gds.*' \\
-      --env NEO4J_apoc_import_file_enabled=true \\
-      --name ${args.containerName} neo4j:4.2-enterprise \\
-      /mnt/amos/load-dump.sh
-`
+  let command = `docker run ${args.detached ? '-d' : ''} -p 7474:7474 -p 7687:7687`;
+  command += ` -v ${args.mountPath}:/mnt/amos`;
+  command += ` -v ${args.pluginsPath}:/plugins`;
+  command += ` --env NEO4J_ACCEPT_LICENSE_AGREEMENT=yes`;
+  command += ` --env DB_PASSWORD=${args.dbPassword}`;
+  command += ` --env DB_PATH=/mnt/amos/dumps/testing-dump.dump`;
+  command += ` --env 'NEO4JLABS_PLUGINS=["apoc", "graph-data-science"]'`;
+  command += ` --env 'NEO4J_dbms_security_procedures_unrestricted=apoc.*,gds.*'`;
+  command += ` --env 'NEO4J_dbms_security_procedures_allowlist=apoc.*,gds.*'`;
+  command += ` --env NEO4J_apoc_import_file_enabled=true`;
+  command += ` --name ${args.containerName} neo4j:4.2-enterprise`;
+  command += ` /mnt/amos/load-dump.sh`;
+
+  return command;
 }
 
 function postProcessArgs(args) {
@@ -64,21 +60,35 @@ function postProcessArgs(args) {
   return result;
 }
 
+function execCMDAndCatchErrors(cmd) {
+  const isWin = process.platform === "win32";
+  let execOptions = { stdio: 'inherit' };
+
+  if (isWin) {
+    execOptions.shell = 'powershell.exe';
+  }
+
+  try {
+    execSync(cmd, execOptions)
+  } catch(e) {
+    console.log("Error executing command.");
+    console.log(e);
+  }
+}
+
+/*
+ * Starts the database docker container with the testing dump.
+ */
 async function main() {
   const input = process.argv.slice(2);
   const parsedArgs = parseArgs(input, flags, args);
   const postProcessedArgs = postProcessArgs(parsedArgs);
 
-  try {
-    execSync(`docker container stop ${postProcessedArgs.containerName}`, {stdio: 'inherit'})
-  } catch(e) {}
-
-  try {
-    execSync(`docker container rm ${postProcessedArgs.containerName}`, {stdio: 'inherit'})
-  } catch(e) {}
+  execCMDAndCatchErrors(`docker container stop ${postProcessedArgs.containerName}`);
+  execCMDAndCatchErrors(`docker container rm ${postProcessedArgs.containerName}`);
 
   const command = buildCommand(postProcessedArgs);
-  execSync(command, {stdio: 'inherit'});
+  execCMDAndCatchErrors(command);
 }
 
 main();
