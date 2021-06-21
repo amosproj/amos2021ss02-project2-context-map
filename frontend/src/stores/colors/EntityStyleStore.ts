@@ -45,8 +45,10 @@ function createSelectionInfo(
 export class EntityStyleStore {
   private searchSelectionStoreSubscription?: Subscription;
 
-  @inject(SearchSelectionStore)
-  private readonly searchSelectionStore!: SearchSelectionStore;
+  constructor(
+    @inject(SearchSelectionStore)
+    private readonly searchSelectionStore: SearchSelectionStore
+  ) {}
 
   /**
    * Contains the state.

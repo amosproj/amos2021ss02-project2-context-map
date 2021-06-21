@@ -3,20 +3,23 @@ import {
   NodeDescriptor,
 } from '../../../../src/shared/entities';
 import { EntityStyleStore } from '../../../../src/stores/colors';
+import SearchSelectionStore from '../../../../src/stores/SearchSelectionStore';
 
 describe('EntityColorStore', () => {
-  let entityColorStore: EntityStyleStore;
+  let entityStyleStore: EntityStyleStore;
+  let searchSelectionStore: SearchSelectionStore;
   const dummies: (EdgeDescriptor | NodeDescriptor)[] = [
     { id: 1, type: 'HELLO', from: 1, to: 1 },
     { id: 1, types: ['HELLO'] },
   ];
 
   beforeEach(() => {
-    entityColorStore = new EntityStyleStore();
+    searchSelectionStore = new SearchSelectionStore();
+    entityStyleStore = new EntityStyleStore(searchSelectionStore);
   });
 
   it('should return different colors for different entity types', () => {
-    const styleProvider = entityColorStore.getValue();
+    const styleProvider = entityStyleStore.getValue();
     const color1 = styleProvider.getStyle(dummies[0] as EdgeDescriptor);
     const color2 = styleProvider.getStyle(dummies[1] as NodeDescriptor);
 

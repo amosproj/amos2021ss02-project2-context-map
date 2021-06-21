@@ -64,7 +64,14 @@ export default function configureServices(container: Container): void {
   container.bind(FilterStateStore).to(FilterStateStore).inSingletonScope();
   container.bind(FilterQueryStore).to(FilterQueryStore).inSingletonScope();
   container.bind(QueryResultStore).to(QueryResultStore).inSingletonScope();
-  container.bind(EntityStyleStore).to(EntityStyleStore).inSingletonScope();
+  container
+    .bind(EntityStyleStore)
+    .toDynamicValue(
+      (context) =>
+        new EntityStyleStore(context.container.get(SearchSelectionStore))
+    )
+    .inSingletonScope();
+
   container.bind(ShortestPathStateStore).toSelf().inSingletonScope();
   container.bind(ExplorationStore).toSelf().inSingletonScope();
   container.bind(SearchSelectionStore).toSelf().inSingletonScope();
