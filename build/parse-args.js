@@ -8,6 +8,12 @@ function camelize(str) {
   ).join("");
 }
 
+function logFound(arg, key, value) {
+  if (debug) {
+    console.log("Found argument '" + arg + "'. Writing property '" + key + "' with value '" + value + "' to args object.");
+  }
+}
+
 const parseArgs = function(input, flags, args) {
   const result = {};
 
@@ -21,9 +27,7 @@ const parseArgs = function(input, flags, args) {
 
           const camelizedName = camelize(flag.name);
 
-          if (debug) {
-            console.log("Found flag '" + flag.name + "'. Writing property '" + camelizedName + "' with value of true to args object.");
-          }
+          logFound(flag.name, camelizedName, 'true');
 
           result[camelizedName] = true;
           argProcessed = true;
@@ -31,21 +35,19 @@ const parseArgs = function(input, flags, args) {
       }
     }
     
-    if(!argProcessed && args) {
+    if (!argProcessed && args) {
       for (const arg of args) {
         if ('--' + arg.name === key) {
           i++;
 
-          if(i >= input.length) {
+          if (i >= input.length) {
             throw new Error('No value present for command-line argument:' + key);
           }
 
           const value = input[i];
           const camelizedName = camelize(arg.name);
 
-          if (debug) {
-            console.log("Found argument '" + arg.name + "'. Writing property '" + camelizedName + "' with value '" + value +"' to args object.");
-          }
+          logFound(arg.name, camelizedName, value);
 
           result[camelizedName] = value;
           argProcessed = true;
@@ -53,7 +55,7 @@ const parseArgs = function(input, flags, args) {
       }
     }
 
-    if(!argProcessed) {
+    if (!argProcessed) {
       throw new Error('Unknown command-line argument: ' + key);
     }
   }
