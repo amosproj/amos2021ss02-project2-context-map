@@ -4,8 +4,8 @@
 # This can be done by running "git update-index --chmod=+x .\backend-prebuild.sh" in the build directory
 
 # Goto the backend dir
-parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
-cd "$parent_path"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+cd "$SCRIPT_DIR"/..
 
 # Only execute if not running inside a docker container
 if [ "$DOCKER" != "DOCKER" ]; then
