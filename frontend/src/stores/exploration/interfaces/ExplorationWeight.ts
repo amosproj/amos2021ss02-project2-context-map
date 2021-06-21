@@ -27,7 +27,7 @@ export interface ExplorationWeight {
    */
   L: number;
   /**
-   * Pie Chart
+   * Chord Diagram
    */
   P: number;
 }
