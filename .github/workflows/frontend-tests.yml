@@ -76,7 +76,7 @@ jobs:
         run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 
       # kmap.import-action.start-db #
-      - run: node build/start-database
+      - run: node build/start-database -d
       
 
       - run: yarn install --frozen-lockfile --prefer-offline --network-timeout 1000000
