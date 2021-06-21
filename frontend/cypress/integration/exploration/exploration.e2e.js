@@ -3,6 +3,7 @@ import layoutsData from '../../../src/exploration/previews/layoutsData';
 context('Exploration', () => {
   // Global setup
   beforeEach(() => {
+    cy.wait(5000);
     cy.visit('http://localhost:3000/exploration');
   });
 
@@ -31,6 +32,12 @@ context('Exploration', () => {
       cy.get('.Previews');
       cy.get('.LayoutPreview').contains('Hierarchical Layout').click();
       cy.url().should('eq', `http://localhost:3000${layoutsData.H.path}`);
+    });
+
+    it('routes to chord page', () => {
+      cy.get('.Previews');
+      cy.get('.LayoutPreview').contains('Chord Diagram').click();
+      cy.url().should('eq', `http://localhost:3000${layoutsData.P.path}`);
     });
 
     // TODO: add more tests when combined with questions

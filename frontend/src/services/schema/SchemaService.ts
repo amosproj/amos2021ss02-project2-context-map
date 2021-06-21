@@ -2,7 +2,11 @@
 
 import { injectable } from 'inversify';
 import 'reflect-metadata';
-import { EdgeType, NodeType } from '../../shared/schema';
+import {
+  EdgeType,
+  NodeType,
+  NodeTypeConnectionInfo,
+} from '../../shared/schema';
 import { CancellationToken } from '../../utils/CancellationToken';
 
 /**
@@ -27,4 +31,13 @@ export default abstract class SchemaService {
   public abstract getNodeTypes(
     cancellation?: CancellationToken
   ): Promise<NodeType[]>;
+
+  /**
+   * Retrieves the connections between node types together with their count.
+   * @param cancellation A CancellationToken used to cancel the asynchronous operation.
+   * @returns A promise that represents the asynchronous operations. When evaluated, the promise result contains an array of node connections.
+   */
+  public abstract getNodeTypeConnectionInfo(
+    cancellation?: CancellationToken
+  ): Promise<NodeTypeConnectionInfo[]>;
 }

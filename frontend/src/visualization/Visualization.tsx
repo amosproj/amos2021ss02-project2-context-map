@@ -17,7 +17,7 @@ function Visualization(): JSX.Element {
 
   // TODO: remove placeholder grids and fill cards with existing tabs
   const schemaCard = cards[cards.length - 1];
-  const placeholders = Array<CardDefinition>(3).fill(schemaCard);
+  const placeholders = Array<CardDefinition>(2).fill(schemaCard);
 
   return (
     <>

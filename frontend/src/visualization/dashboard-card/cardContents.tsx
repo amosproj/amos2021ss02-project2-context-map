@@ -27,6 +27,12 @@ const cardContents: Array<CardPresentationContent> = [
     description: 'Display queried data in a hierarchically structured graph.',
     icon: 'device_hub',
   },
+  {
+    label: 'Chord Diagram',
+    subLabel: 'Edge visualization',
+    description: 'Get an overview of how nodes are connected to each other.',
+    icon: 'donut_large',
+  },
 ];
 
 /**
