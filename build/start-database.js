@@ -4,8 +4,8 @@ const { parseArgs } = require("./parse-args");
 
 const containerName="neo4j-db"
 const repoPath = path.join(__dirname, "..");
-const mountPath = path.join(repoPath, "backend", "docker", "mount");
-const pluginsPath = path.join(repoPath, "backend", "docker", "plugins");
+const mountPath = path.join(repoPath, "database", "mount");
+const pluginsPath = path.join(repoPath, "database", "plugins");
 
 const flags = [
   {

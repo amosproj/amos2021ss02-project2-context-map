@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  neo4j-db:
+    image: neo4j:4.2-enterprise
+    restart: always
+    command: /mnt/amos/load-dump.sh
+    expose:
+      - "7687"
+    working_dir: /mnt/amos
+    volumes:
+      - ./database/mount:/mnt/amos
+    env_file:
+      - ./database.env
+    networks:
+      - kmap-network
+  kmap.backend:
+    image: kmap.backend
+    restart: always
+    expose:
+      - "8080"
+    env_file:
+      - ./backend.env
+    networks:
+      - kmap-network
+  kmap.frontend:
+    image: kmap.frontend
+    restart: always
+    ports:
+      - 80:80
+    env_file:
+      - ./frontend.env
+    networks:
+      - kmap-network
+networks:
+  kmap-network:
