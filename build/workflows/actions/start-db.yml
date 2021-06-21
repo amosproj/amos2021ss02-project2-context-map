@@ -1,1 +1,1 @@
-- run: node build/start-database
+- run: node build/start-database -d
