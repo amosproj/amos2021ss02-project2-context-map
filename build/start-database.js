@@ -19,6 +19,7 @@ const args = [
   { name: 'plugin-path' },
   { name: 'db-password' },
   { name: 'container-name' },
+  { name: 'dump' },
 ];
 
 function buildCommand(args) {
@@ -27,7 +28,7 @@ function buildCommand(args) {
   command += ` -v ${args.pluginsPath}:/plugins`;
   command += ` --env NEO4J_ACCEPT_LICENSE_AGREEMENT=yes`;
   command += ` --env DB_PASSWORD=${args.dbPassword}`;
-  command += ` --env DB_PATH=/mnt/amos/dumps/testing-dump.dump`;
+  command += ` --env DB_PATH=/mnt/amos/dumps/${args.dump}.dump`;
   command += ` --env 'NEO4JLABS_PLUGINS=["apoc", "graph-data-science"]'`;
   command += ` --env 'NEO4J_dbms_security_procedures_unrestricted=apoc.*,gds.*'`;
   command += ` --env 'NEO4J_dbms_security_procedures_allowlist=apoc.*,gds.*'`;
@@ -55,6 +56,10 @@ function postProcessArgs(args) {
 
   if (result.containerName === undefined) {
     result.containerName = containerName;
+  }
+
+  if (result.dump === undefined) {
+    result.dump = 'testing-dump';
   }
 
   return result;
