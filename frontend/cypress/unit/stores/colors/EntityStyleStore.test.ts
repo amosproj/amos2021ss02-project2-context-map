@@ -39,7 +39,7 @@ describe('EntityStyleStore', () => {
     expect(color1).not.to.be.deep.eq(color2);
   });
 
-  context('change stroke width', () => {
+  describe('change stroke width', () => {
     it('should change stroke width for a single edge search selection update', () => {
       searchSelectionStore.setState(searchSelectionDummies[0]);
 

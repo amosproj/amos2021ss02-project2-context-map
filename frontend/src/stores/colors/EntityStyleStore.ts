@@ -31,6 +31,7 @@ function createSelectionInfo(
       return { kind: 'EDGE', type: selectionResult.name };
     case 'NodeTypeDescriptor':
       return { kind: 'NODE', type: selectionResult.name };
+    /* istanbul ignore next */
     default:
       throw new ArgumentError(`Unknown selection`);
   }
@@ -76,13 +77,8 @@ export class EntityStyleStore {
   protected getEntityColorizer(): EntityStyleProvider {
     return new EntityStyleProviderImpl(this);
   }
-  /**
-   * Updates the current filter by replacing it completely.
-   */
-  public setState(newState: EntityStyleProvider): void {
-    this.storeSubject.next(newState);
-  }
 
+  /* istanbul ignore next */
   /**
    * Returns an observable that outputs the stored value.
    */
@@ -108,6 +104,7 @@ export class EntityStyleStore {
 
   private readonly greyScaleEdges = new BehaviorSubject<boolean>(false);
 
+  /* istanbul ignore next */
   /**
    * Getter for greyScaleEdges property
    * @returns An Observable holding a boolean determining whether edges should be in greyscale or colored
