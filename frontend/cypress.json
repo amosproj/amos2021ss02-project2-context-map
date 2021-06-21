@@ -1,5 +1,6 @@
 {
   "video": false,
   "experimentalFetchPolyfill": true,
-  "componentFolder": "cypress/unit"
+  "componentFolder": "cypress/unit",
+  "baseUrl": "http://localhost:3000"
 }
