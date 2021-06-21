@@ -8,7 +8,7 @@ parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 cd "$parent_path"
 
 # Only execute if not running inside a docker container
-if [[ ${DOCKER} != DOCKER ]]; then
+if [ "$DOCKER" != "DOCKER" ]; then
     # Copy shared files
     cp -a ../shared/src/. ./src/shared/
 
