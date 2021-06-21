@@ -50,7 +50,7 @@ export default function convertSearchResultToSearchResultList(
             {formatEntry(n)}
           </div>
         ),
-        href: `/data/node/${n.id}`,
+        entity: n,
       })),
     },
     {
@@ -67,7 +67,7 @@ export default function convertSearchResultToSearchResultList(
             &nbsp;{formatEntry(e)}
           </div>
         ),
-        href: `/data/edge/${e.id}`,
+        entity: e,
       })),
     },
     {
@@ -81,7 +81,7 @@ export default function convertSearchResultToSearchResultList(
             color={styleProvider.getStyle({ id: -1, types: [t.name] }).color}
           />
         ),
-        href: `/data/node-type/${t.name}`,
+        entity: t,
       })),
     },
     {
@@ -98,7 +98,7 @@ export default function convertSearchResultToSearchResultList(
             }
           />
         ),
-        href: `/data/edge-type/${t.name}`,
+        entity: t,
       })),
     },
   ]

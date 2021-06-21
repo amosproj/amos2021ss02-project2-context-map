@@ -25,9 +25,14 @@ import ErrorComponent from '../errors/ErrorComponent';
 import { EntityStyleStore } from '../stores/colors';
 import useObservable from '../utils/useObservable';
 import { SearchResult } from '../shared/search';
+import SearchSelectionStore, {
+  SelectedSearchResult,
+} from '../stores/SearchSelectionStore';
 
 export default function Searchbar(): JSX.Element {
   const searchService = useService(SearchService);
+  const searchSelectionStore = useService(SearchSelectionStore);
+
   const entityStyleStore = useService(EntityStyleStore);
   /**
    * Contains all the active cancel tokens.
@@ -109,6 +114,10 @@ export default function Searchbar(): JSX.Element {
     searchInput$.current.next(event.target.value);
   };
 
+  const onCardSelected = (card: SelectedSearchResult) => {
+    searchSelectionStore.setState(card);
+  };
+
   return (
     <div className="SearchBar">
       <ClickAwayListener onClickAway={() => setMenuOpen(false)}>
@@ -154,7 +163,7 @@ export default function Searchbar(): JSX.Element {
                                 key={element.key}
                                 button
                                 component="a"
-                                href={element.href}
+                                onClick={() => onCardSelected(element.entity)}
                               >
                                 {element.element}
                               </ListItem>
