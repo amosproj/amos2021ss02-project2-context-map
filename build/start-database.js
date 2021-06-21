@@ -81,7 +81,9 @@ function execCMDAndCatchErrors(cmd) {
   }
 }
 
-
+/*
+ * Starts the database docker container with the testing dump.
+ */
 async function main() {
   const input = process.argv.slice(2);
   const parsedArgs = parseArgs(input, flags, args);
