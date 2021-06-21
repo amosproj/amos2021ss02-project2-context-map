@@ -93,7 +93,7 @@ const Filter = (): JSX.Element => {
     entityStyleStore.getValue()
   );
 
-  const schemaService = useService(SchemaService, null);
+  const schemaService = useService(SchemaService);
 
   const loadingStore = useService(LoadingStore);
   const errorStore = useService(ErrorStore);
