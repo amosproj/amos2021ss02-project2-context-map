@@ -23,7 +23,7 @@ export default class SchemaServiceImpl extends SchemaService {
     defer(() => this.http.get<EdgeType[]>('/api/schema/edge-types'))
   );
   private readonly nodeTypesCache = new SingleValueCachedObservable<NodeType[]>(
-    defer(() => this.http.get<NodeType[]>('/api/schema/edge-types'))
+    defer(() => this.http.get<NodeType[]>('/api/schema/node-types'))
   );
   private readonly nodeTypeConnectionInfoCache =
     new SingleValueCachedObservable<NodeTypeConnectionInfo[]>(

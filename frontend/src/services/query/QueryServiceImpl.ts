@@ -1,8 +1,7 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { Observable, of, ReplaySubject, Subject } from 'rxjs';
+import { defer, Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { filter, map, mergeMap, startWith, tap } from 'rxjs/operators';
-import { ajax } from 'rxjs/ajax';
 import { CountQueryResult, QueryBase, QueryResult } from '../../shared/queries';
 import {
   Edge,
@@ -73,8 +72,7 @@ function buildCache<T extends Edge | Node>(
 export default class QueryServiceImpl extends QueryService {
   private readonly numberOfEntities: SingleValueCachedObservable<CountQueryResult> =
     new SingleValueCachedObservable<CountQueryResult>(
-      ajax.getJSON<CountQueryResult>('/api/getNumberOfEntities')
-      // () => this.http.get<CountQueryResult>('/api/getNumberOfEntities')
+      defer(() => this.http.get<CountQueryResult>('/api/getNumberOfEntities'))
     );
 
   private readonly edgesById = buildCache<Edge>(this.http, 'Edges');
