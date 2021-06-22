@@ -11,6 +11,7 @@ import HttpRequest from './HttpRequest';
 import HttpGetRequest from './HttpGetRequest';
 import HttpPostRequest from './HttpPostRequest';
 import appendQuery from './appendQuery';
+import NetworkError from './NetworkError';
 
 /**
  * Builds the query service options.
@@ -78,6 +79,9 @@ export default class HttpService {
       catchError((error) => {
         // In case of an error: Throw it
         if (error instanceof AjaxError) {
+          if (error.status === 0) {
+            return throwError(() => new NetworkError());
+          }
           return throwError(() => new HttpError(error.status, error.message));
         }
         return throwError(() => error);
