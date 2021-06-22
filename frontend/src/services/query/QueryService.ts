@@ -2,6 +2,8 @@
 
 import { injectable } from 'inversify';
 import 'reflect-metadata';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { CountQueryResult, QueryBase, QueryResult } from '../../shared/queries';
 import {
   Edge,
@@ -9,8 +11,6 @@ import {
   Node,
   NodeDescriptor,
 } from '../../shared/entities';
-
-import { CancellationToken } from '../../utils/CancellationToken';
 
 /**
  * A service that can be used to perform graph queries.
@@ -20,85 +20,59 @@ export default abstract class QueryService {
   /**
    * Performs a query for all nodes and edges available within the specified limits.
    * @param query A query that contains limits on the max number of node and edge to deliver.
-   * @param cancellation A CancellationToken used to cancel the asynchronous operation.
-   * @returns A promise that represents the asynchronous operations. When evaluated, the promise result contains the query result of nodes and edges.
+   * @returns An observable that represents the asynchronous operations. When evaluated, the observable emits the query result of nodes and edges and completes.
    */
-  public abstract queryAll(
-    query?: QueryBase,
-    cancellation?: CancellationToken
-  ): Promise<QueryResult>;
+  public abstract queryAll(query?: QueryBase): Observable<QueryResult>;
+
+  public getEdgeById(id: number): Observable<Edge | null>;
+
+  public getEdgeById(descriptor: EdgeDescriptor): Observable<Edge | null>;
 
   public getEdgeById(
-    id: number,
-    cancellation?: CancellationToken
-  ): Promise<Edge | null>;
-
-  public getEdgeById(
-    descriptor: EdgeDescriptor,
-    cancellation?: CancellationToken
-  ): Promise<Edge | null>;
-
-  public async getEdgeById(
-    idOrDescriptor: number | EdgeDescriptor,
-    cancellation?: CancellationToken
-  ): Promise<Edge | null> {
+    idOrDescriptor: number | EdgeDescriptor
+  ): Observable<Edge | null> {
     const id =
       typeof idOrDescriptor === 'number' ? idOrDescriptor : idOrDescriptor.id;
-    const resultArray = await this.getEdgesById([id], cancellation);
-
-    if (resultArray.length === 0) {
-      return null;
-    }
-
-    return resultArray[0];
+    return this.getEdgesById([id]).pipe(
+      map((resultArray) => {
+        if (resultArray.length === 0) {
+          return null;
+        }
+        return resultArray[0];
+      })
+    );
   }
 
-  public abstract getEdgesById(
-    ids: number[],
-    cancellation?: CancellationToken
-  ): Promise<Edge[]>;
+  public abstract getEdgesById(ids: number[]): Observable<Edge[]>;
 
   public abstract getEdgesById(
-    descriptors: EdgeDescriptor[],
-    cancellation?: CancellationToken
-  ): Promise<Edge[]>;
+    descriptors: EdgeDescriptor[]
+  ): Observable<Edge[]>;
+
+  public getNodeById(id: number): Observable<Node | null>;
+
+  public getNodeById(descriptor: NodeDescriptor): Observable<Node | null>;
 
   public getNodeById(
-    id: number,
-    cancellation?: CancellationToken
-  ): Promise<Node | null>;
-
-  public getNodeById(
-    descriptor: NodeDescriptor,
-    cancellation?: CancellationToken
-  ): Promise<Node | null>;
-
-  public async getNodeById(
-    idOrDescriptor: number | NodeDescriptor,
-    cancellation?: CancellationToken
-  ): Promise<Node | null> {
+    idOrDescriptor: number | NodeDescriptor
+  ): Observable<Node | null> {
     const id =
       typeof idOrDescriptor === 'number' ? idOrDescriptor : idOrDescriptor.id;
-    const resultArray = await this.getNodesById([id], cancellation);
-
-    if (resultArray.length === 0) {
-      return null;
-    }
-
-    return resultArray[0];
+    return this.getNodesById([id]).pipe(
+      map((resultArray) => {
+        if (resultArray.length === 0) {
+          return null;
+        }
+        return resultArray[0];
+      })
+    );
   }
 
-  public abstract getNodesById(
-    ids: number[],
-    cancellation?: CancellationToken
-  ): Promise<Node[]>;
+  public abstract getNodesById(ids: number[]): Observable<Node[]>;
 
   public abstract getNodesById(
-    descriptors: NodeDescriptor[],
-    cancellation?: CancellationToken
-  ): Promise<Node[]>;
+    descriptors: NodeDescriptor[]
+  ): Observable<Node[]>;
 
-  public abstract getNumberOfEntities(
-    cancellation?: CancellationToken
-  ): Promise<CountQueryResult>;
+  public abstract getNumberOfEntities(): Observable<CountQueryResult>;
 }
