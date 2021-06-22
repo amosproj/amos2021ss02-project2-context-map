@@ -1,0 +1,25 @@
+name: Deploy
+on: [ push ]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        node-version: [ 12.x ]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy
+        run: sh ./deploy.sh
+      - name: Create keyfiles
+        run: |
+          echo "$SSH_PRIVATE_KEY" > ~/amos-fau-proj2@group.riehle.org
+          echo "$SSH_KNOWN_HOSTS" > ~/Server_Keyscan.txt
+        shell: bash
+        env:
+          SSH_PRIVATE_KEY: ${{secrets.CD_SSH_PRIVATE_KEY}}
+          SSH_KNOWN_HOSTS: ${{secrets.CD_SSH_HOST_KEYS}}
+      - name: Upload to Server
+        run: sh ./upload-artifacts.sh
+
+
