@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { firstValueFrom, from, of, ReplaySubject, Subject } from 'rxjs';
+import { defer, Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { filter, map, mergeMap, startWith, tap } from 'rxjs/operators';
 import { CountQueryResult, QueryBase, QueryResult } from '../../shared/queries';
 import {
@@ -9,11 +9,9 @@ import {
   Node,
   NodeDescriptor,
 } from '../../shared/entities';
-import { CancellationToken } from '../../utils/CancellationToken';
 import HttpService, { HttpGetRequest } from '../http';
 import QueryService from './QueryService';
 import KeyedCacheObservable from '../../utils/KeyedCacheObservable';
-import withCancellation from '../../utils/withCancellation';
 import SingleValueCachedObservable from '../../utils/SingleValueCachedObservable';
 
 const MAX_BATCH_SIZE = 90;
@@ -58,9 +56,7 @@ function buildCache<T extends Edge | Node>(
       startWith([]),
       mergeMap((batch) => {
         if (batch.length === 0) return of([]);
-        return from(
-          http.get<T[]>(`/api/get${type}ById`, buildDetailsRequest(batch))
-        );
+        return http.get<T[]>(`/api/get${type}ById`, buildDetailsRequest(batch));
       })
     )
   );
@@ -75,8 +71,8 @@ function buildCache<T extends Edge | Node>(
 @injectable()
 export default class QueryServiceImpl extends QueryService {
   private readonly numberOfEntities: SingleValueCachedObservable<CountQueryResult> =
-    new SingleValueCachedObservable<CountQueryResult>(() =>
-      this.http.get<CountQueryResult>('/api/getNumberOfEntities')
+    new SingleValueCachedObservable<CountQueryResult>(
+      defer(() => this.http.get<CountQueryResult>('/api/getNumberOfEntities'))
     );
 
   private readonly edgesById = buildCache<Edge>(this.http, 'Edges');
@@ -90,46 +86,40 @@ export default class QueryServiceImpl extends QueryService {
   }
 
   /* istanbul ignore next */
-  public queryAll(
-    query?: QueryBase,
-    cancellation?: CancellationToken
-  ): Promise<QueryResult> {
+  public queryAll(query?: QueryBase): Observable<QueryResult> {
     const url = `/api/queryAll`;
 
-    return this.http.post<QueryResult>(url, query, cancellation);
+    return this.http.post<QueryResult>(url, query);
   }
 
   // TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
   /* istanbul ignore next */
-  public async getEdgesById(
-    idsOrDescriptors: number[] | EdgeDescriptor[],
-    cancellation?: CancellationToken
-  ): Promise<Edge[]> {
+  public getEdgesById(
+    idsOrDescriptors: number[] | EdgeDescriptor[]
+  ): Observable<Edge[]> {
     const ids = idsOrDescriptors.map((x: number | EdgeDescriptor) =>
       typeof x === 'number' ? x : x.id
     );
-    return this.getEntitiesById(this.edgesById, ids, cancellation);
+    return this.getEntitiesById(this.edgesById, ids);
   }
 
   // TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
   /* istanbul ignore next */
-  public async getNodesById(
-    idsOrDescriptors: number[] | NodeDescriptor[],
-    cancellation?: CancellationToken
-  ): Promise<Node[]> {
+  public getNodesById(
+    idsOrDescriptors: number[] | NodeDescriptor[]
+  ): Observable<Node[]> {
     const ids = idsOrDescriptors.map((x: number | NodeDescriptor) =>
       typeof x === 'number' ? x : x.id
     );
-    return this.getEntitiesById(this.nodesById, ids, cancellation);
+    return this.getEntitiesById(this.nodesById, ids);
   }
 
   // TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
   /* istanbul ignore next */
   private getEntitiesById<T = Node | Edge>(
     entitiesById: BatchCache<T>,
-    idsOrDescriptors: number[],
-    cancellation?: CancellationToken
-  ): Promise<T[]> {
+    idsOrDescriptors: number[]
+  ): Observable<T[]> {
     const cache = entitiesById.entities.getState();
 
     // Ids as number.
@@ -157,40 +147,30 @@ export default class QueryServiceImpl extends QueryService {
       entitiesById.batches.next(batch);
     }
 
-    return withCancellation(
-      firstValueFrom(
-        entitiesById.entities.get().pipe(
-          // Called on each new state of the cache.
-          // Puts the found values in `foundValues` and removes them from `missingIds`.
-          tap((newCache) => {
-            missingIds = missingIds.reduce((stillMissing, id) => {
-              if (newCache.has(id)) {
-                // If missing item was found => put them in `foundValues`
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                foundValues.push(newCache.get(id)!);
-              } else {
-                // If missing item is not found => mark them as still missing.
-                stillMissing.push(id);
-              }
-              return stillMissing;
-            }, [] as number[]);
-          }),
-          // Only continue if all missing values are found
-          filter(() => missingIds.length === 0),
-          // Return the found values.
-          map(() => foundValues)
-        )
-      ),
-      cancellation
+    return entitiesById.entities.get().pipe(
+      // Called on each new state of the cache.
+      // Puts the found values in `foundValues` and removes them from `missingIds`.
+      tap((newCache) => {
+        missingIds = missingIds.reduce((stillMissing, id) => {
+          if (newCache.has(id)) {
+            // If missing item was found => put them in `foundValues`
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            foundValues.push(newCache.get(id)!);
+          } else {
+            // If missing item is not found => mark them as still missing.
+            stillMissing.push(id);
+          }
+          return stillMissing;
+        }, [] as number[]);
+      }),
+      // Only continue if all missing values are found
+      filter(() => missingIds.length === 0),
+      // Return the found values.
+      map(() => foundValues)
     );
   }
 
-  getNumberOfEntities(
-    cancellation?: CancellationToken
-  ): Promise<CountQueryResult> {
-    return withCancellation(
-      firstValueFrom(this.numberOfEntities.get()),
-      cancellation
-    );
+  getNumberOfEntities(): Observable<CountQueryResult> {
+    return this.numberOfEntities.get();
   }
 }

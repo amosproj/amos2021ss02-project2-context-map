@@ -1,6 +1,6 @@
 import React from 'react';
-import { from } from 'rxjs';
 import { Slider } from '@material-ui/core';
+import { filter } from 'rxjs/operators';
 import useService from '../../dependency-injection/useService';
 import { QueryService } from '../../services/query';
 import LoadingStore from '../../stores/LoadingStore';
@@ -28,9 +28,10 @@ export default function MaxEntitiesSlider({ entities }: Props): JSX.Element {
   // number of edges and nodes
   const counts = useObservable(
     // load max number of entities on mount
-    from(queryService.getNumberOfEntities()).pipe(
+    queryService.getNumberOfEntities().pipe(
       withLoadingBar({ loadingStore }),
-      withErrorHandler({ errorStore })
+      withErrorHandler({ errorStore }),
+      filter((next) => next !== null)
     ),
     { nodes: 150, edges: 150 }
   );

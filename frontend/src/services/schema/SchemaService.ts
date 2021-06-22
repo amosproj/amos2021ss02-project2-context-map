@@ -2,12 +2,12 @@
 
 import { injectable } from 'inversify';
 import 'reflect-metadata';
+import { Observable } from 'rxjs';
 import {
   EdgeType,
   NodeType,
   NodeTypeConnectionInfo,
 } from '../../shared/schema';
-import { CancellationToken } from '../../utils/CancellationToken';
 
 /**
  * A service that can be used to request information about the data schema.
@@ -16,28 +16,21 @@ import { CancellationToken } from '../../utils/CancellationToken';
 export default abstract class SchemaService {
   /**
    * Retrieves the types of edges that the schema of the dataset contains.
-   * @param cancellation A CancellationToken used to cancel the asynchronous operation.
-   * @returns A promise that represents the asynchronous operations. When evaluated, the promise result contains an array of edge types.
+   * @returns Observable that represents the asynchronous operations. When evaluated, an array of edge types is emitted and the observable completes.
    */
-  public abstract getEdgeTypes(
-    cancellation?: CancellationToken
-  ): Promise<EdgeType[]>;
+  public abstract getEdgeTypes(): Observable<EdgeType[]>;
 
   /**
    * Retrieves the types of nodes that the schema of the dataset contains.
-   * @param cancellation A CancellationToken used to cancel the asynchronous operation.
-   * @returns A promise that represents the asynchronous operations. When evaluated, the promise result contains an array of node types.
+   * @returns Observable that represents the asynchronous operations. When evaluated, an array of node types is emitted and the observable completes.
    */
-  public abstract getNodeTypes(
-    cancellation?: CancellationToken
-  ): Promise<NodeType[]>;
+  public abstract getNodeTypes(): Observable<NodeType[]>;
 
   /**
    * Retrieves the connections between node types together with their count.
-   * @param cancellation A CancellationToken used to cancel the asynchronous operation.
-   * @returns A promise that represents the asynchronous operations. When evaluated, the promise result contains an array of node connections.
+   * @returns Observable that represents the asynchronous operations. When evaluated, an array of node connections is emitted and the observable completes.
    */
-  public abstract getNodeTypeConnectionInfo(
-    cancellation?: CancellationToken
-  ): Promise<NodeTypeConnectionInfo[]>;
+  public abstract getNodeTypeConnectionInfo(): Observable<
+    NodeTypeConnectionInfo[]
+  >;
 }

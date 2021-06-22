@@ -1,14 +1,10 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { from, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { FilterQuery, QueryResult, ShortestPathQuery } from '../shared/queries';
 import SimpleStore from './SimpleStore';
 import FilterQueryStore from './FilterQueryStore';
 import { FilterService } from '../services/filter';
-import {
-  CancellationToken,
-  CancellationTokenSource,
-} from '../utils/CancellationToken';
 import withErrorHandler from '../utils/withErrorHandler';
 import ErrorStore from './ErrorStore';
 import LoadingStore from './LoadingStore';
@@ -27,7 +23,6 @@ export default class QueryResultStore extends SimpleStore<QueryResult> {
    * Active cancel token for the filter query.
    * @private
    */
-  private queryCancellationTokenSource?: CancellationTokenSource;
   private filterQueryStoreSubscription?: Subscription;
   private shortestPathStateStoreSubscription?: Subscription;
 
@@ -66,9 +61,8 @@ export default class QueryResultStore extends SimpleStore<QueryResult> {
 
   private executeQuery(
     filter: FilterQuery,
-    shortestPath: ShortestPathState,
-    cancellation: CancellationToken
-  ): Promise<QueryResult> {
+    shortestPath: ShortestPathState
+  ): Observable<QueryResult> {
     if (shortestPath.startNode !== null && shortestPath.endNode !== null) {
       const shortestPathQuery: ShortestPathQuery = {
         ...filter,
@@ -77,28 +71,19 @@ export default class QueryResultStore extends SimpleStore<QueryResult> {
         ignoreEdgeDirections: shortestPath.ignoreEdgeDirections,
       };
 
-      return this.shortestPathService.query(shortestPathQuery, cancellation);
+      return this.shortestPathService.query(shortestPathQuery);
     }
 
-    return this.filterService.query(filter, cancellation);
+    return this.filterService.query(filter);
   }
 
   private update(
     filter: FilterQuery | null,
     shortestPath: ShortestPathState | null
   ) {
-    // Cancel the current operation, if any.
-    this.queryCancellationTokenSource?.cancel();
-
-    // Allocate a new CTS
-    this.queryCancellationTokenSource = new CancellationTokenSource();
-
-    from(
-      this.executeQuery(
-        filter ?? this.filterQueryStore.getValue(),
-        shortestPath ?? this.shortestPathStateStore.getValue(),
-        this.queryCancellationTokenSource.token
-      )
+    this.executeQuery(
+      filter ?? this.filterQueryStore.getValue(),
+      shortestPath ?? this.shortestPathStateStore.getValue()
     )
       .pipe(
         withLoadingBar({ loadingStore: this.loadingStore }),

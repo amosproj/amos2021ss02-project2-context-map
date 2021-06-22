@@ -10,8 +10,8 @@ import {
   ListSubheader,
 } from '@material-ui/core';
 import { Autorenew, Search } from '@material-ui/icons';
-import { BehaviorSubject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 import useService from '../dependency-injection/useService';
 import { SearchService } from '../services/search';
 import './SearchResultList.scss';
@@ -19,7 +19,6 @@ import SearchResultList from './SearchResultList';
 import convertSearchResultToSearchResultList from './SearchEntryConverter';
 import './Searchbar.scss';
 import LimitListSizeComponent from './helper/LimitListSizeComponent';
-import { CancellationTokenSource } from '../utils/CancellationToken';
 import CancellationError from '../utils/CancellationError';
 import ErrorComponent from '../errors/ErrorComponent';
 import { EntityStyleStore } from '../stores/colors';
@@ -34,10 +33,12 @@ export default function Searchbar(): JSX.Element {
   const searchSelectionStore = useService(SearchSelectionStore);
 
   const entityStyleStore = useService(EntityStyleStore);
+
   /**
-   * Contains all the active cancel tokens.
+   * When next called, all ongoing searches are removed
    */
-  const searchServiceCancelTokens = useRef<CancellationTokenSource[]>([]);
+  const cancelSearchSubject = useRef(new Subject<void>());
+  const cancelOngoingSearch = () => cancelSearchSubject.current.next();
 
   /**
    * Fires, when the search input is changes
@@ -81,16 +82,17 @@ export default function Searchbar(): JSX.Element {
 
   function loadSearchResults(searchString: string) {
     if (searchString?.length > 0) {
-      const cancelToken = new CancellationTokenSource();
-      searchServiceCancelTokens.current.push(cancelToken);
       setSearchOngoing(true);
       searchService
-        .fullTextSearch(searchString, cancelToken.token)
-        .then(async (result) => setSearchResult({ searchString, result }))
-        .catch((err) => {
-          if (err instanceof CancellationError) return;
-          setSearchOngoing(false);
-          setError(err);
+        .fullTextSearch(searchString)
+        .pipe(takeUntil(cancelSearchSubject.current))
+        .subscribe({
+          next: (result) => setSearchResult({ searchString, result }),
+          error: (err) => {
+            if (err instanceof CancellationError) return;
+            setSearchOngoing(false);
+            setError(err);
+          },
         });
     } else {
       setSearchResults([]);
@@ -100,14 +102,15 @@ export default function Searchbar(): JSX.Element {
   useEffect(() => {
     const sub = searchInput$.current.pipe(debounceTime(300)).subscribe({
       next: (nextSearchString) => {
-        searchServiceCancelTokens.current.forEach((q) => q.cancel());
-        // noinspection StatementWithEmptyBodyJS -- Clear list
-        while (searchServiceCancelTokens.current.pop());
+        cancelOngoingSearch();
         loadSearchResults(nextSearchString);
       },
     });
 
-    return () => sub.unsubscribe();
+    return () => {
+      sub.unsubscribe();
+      cancelOngoingSearch();
+    };
   }, []);
 
   const onInputChanged = (event: ChangeEvent<HTMLInputElement>) => {

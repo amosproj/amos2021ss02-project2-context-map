@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
+import { Observable } from 'rxjs';
 import { SearchResult } from '../../shared/search';
-import { CancellationToken } from '../../utils/CancellationToken';
 import HttpService from '../http';
 import SearchService from './SearchService';
 
@@ -12,15 +12,10 @@ import SearchService from './SearchService';
 @injectable()
 export default class SearchServiceImpl extends SearchService {
   @inject(HttpService)
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  private readonly http: HttpService = null!;
+  private readonly http!: HttpService;
 
-  public fullTextSearch(
-    searchString: string,
-    cancellation?: CancellationToken
-  ): Promise<SearchResult> {
+  public fullTextSearch(searchString: string): Observable<SearchResult> {
     const url = `/api/search/all?filter=${searchString}`;
-
-    return this.http.get<SearchResult>(url, cancellation);
+    return this.http.get<SearchResult>(url);
   }
 }
