@@ -13,7 +13,7 @@ function Home(): JSX.Element {
       <header className="Home-header">
         <img src={logo} className="Home-logo" alt="logo" />
         <Button variant="contained" color="primary">
-          Hello World RELEASE {rnd.next(2, 3).toPrecision(3)}
+          Hello World {rnd.next(2, 3).toPrecision(3)}
         </Button>
       </header>
     </div>
