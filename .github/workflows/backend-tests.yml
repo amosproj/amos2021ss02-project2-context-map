@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       # kmap.import-action.start-db #
-      - run: node build/start-database
+      - run: node build/start-database -d
       
       - run: npm install -g yarn
       # kmap.import-action.cache #

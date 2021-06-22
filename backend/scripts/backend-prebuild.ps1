@@ -1,5 +1,5 @@
 # Goto the backend dir
-cd ../backend
+cd $PSScriptRoot\..
 
 # Copy shared files
 New-Item -ItemType Directory -Force -Path ".\src\shared"

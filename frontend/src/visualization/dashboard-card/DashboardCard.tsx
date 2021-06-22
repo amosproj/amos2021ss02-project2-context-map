@@ -5,6 +5,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Icon from '@material-ui/core/Icon';
+import { Link } from 'react-router-dom';
 import CardDefinition from './CardDefinition';
 
 const useStyles = makeStyles({
@@ -18,7 +19,7 @@ export default function DashboardCard(card: CardDefinition): JSX.Element {
   const classes = useStyles();
 
   return (
-    <a className={classes.root} href={path}>
+    <Link className={classes.root} to={path}>
       <Card>
         <CardHeader
           avatar={<Icon>{icon}</Icon>}
@@ -35,6 +36,6 @@ export default function DashboardCard(card: CardDefinition): JSX.Element {
           </Typography>
         </CardContent>
       </Card>
-    </a>
+    </Link>
   );
 }
