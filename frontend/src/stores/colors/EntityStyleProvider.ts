@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { NodeStyle, EdgeStyle } from './EntityStyle';
 import { EdgeDescriptor, NodeDescriptor } from '../../shared/entities';
 

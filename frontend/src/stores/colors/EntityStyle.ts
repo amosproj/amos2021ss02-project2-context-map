@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /**
  * Described the stroke style of an entity.
  */

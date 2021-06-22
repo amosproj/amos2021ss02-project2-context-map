@@ -1,5 +1,4 @@
-import { EdgeDescriptor, NodeDescriptor } from '../shared/entities';
-import { EdgeTypeDescriptor, NodeTypeDescriptor } from '../shared/schema';
+import { SelectedSearchResult } from '../stores/SearchSelectionStore';
 
 export default interface SearchResultList {
   key: number | string;
@@ -7,10 +6,6 @@ export default interface SearchResultList {
   elements: {
     key: number | string;
     element: JSX.Element;
-    entity:
-      | EdgeDescriptor
-      | EdgeTypeDescriptor
-      | NodeDescriptor
-      | NodeTypeDescriptor;
+    entity: SelectedSearchResult;
   }[];
 }

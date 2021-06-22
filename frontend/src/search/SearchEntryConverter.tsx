@@ -50,7 +50,7 @@ export default function convertSearchResultToSearchResultList(
             {formatEntry(n)}
           </div>
         ),
-        entity: n,
+        entity: { ...n, interfaceType: 'NodeDescriptor' as const },
       })),
     },
     {
@@ -67,7 +67,7 @@ export default function convertSearchResultToSearchResultList(
             &nbsp;{formatEntry(e)}
           </div>
         ),
-        entity: e,
+        entity: { ...e, interfaceType: 'EdgeDescriptor' as const },
       })),
     },
     {
@@ -81,7 +81,7 @@ export default function convertSearchResultToSearchResultList(
             color={styleProvider.getStyle({ id: -1, types: [t.name] }).color}
           />
         ),
-        entity: t,
+        entity: { ...t, interfaceType: 'NodeTypeDescriptor' as const },
       })),
     },
     {
@@ -98,7 +98,7 @@ export default function convertSearchResultToSearchResultList(
             }
           />
         ),
-        entity: t,
+        entity: { ...t, interfaceType: 'EdgeTypeDescriptor' as const },
       })),
     },
   ]
