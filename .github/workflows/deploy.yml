@@ -1,8 +1,7 @@
 name: Deploy
 on:
-  push:
-    tags:
-      - "sprint-**-release"
+  release:
+    types: [ published ]
 jobs:
   deploy:
     runs-on: ubuntu-latest
