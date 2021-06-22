@@ -20,5 +20,5 @@ touch $SSH_KNOWN_HOSTS_PATH
 cat $HOST_PUB_KEY_FILE >> $SSH_KNOWN_HOSTS_PATH
 ssh -i $SSH_KEY_PATH $USER@$HOST 'cd ~/amos/ && docker-compose down && cd ~ && rm -rf amos'
 scp -i $SSH_KEY_PATH -r $ARTIFACTS_DIR $USER@$HOST:~/amos/
-ssh -i $SSH_KEY_PATH $USER@$HOST 'cd ~/amos/ && ./kmap.sh'
+ssh -i $SSH_KEY_PATH $USER@$HOST 'cd ~/amos/ && sudo chmod +x ./kmap.sh && ./kmap.sh'
 # read x

@@ -31,5 +31,6 @@ fi
 CopyFilesToFolder ./deploy/ ./artifacts/
 CopyFilesToFolder ./database/ ./artifacts/database/
 
-docker save -o .\artifacts\images\kmap.backend kmap.backend
-docker save -o .\artifacts\images\kmap.frontend kmap.frontend
+mkdir ./artifacts/images
+docker save -o ./artifacts/images/kmap.backend kmap.backend
+docker save -o ./artifacts/images/kmap.frontend kmap.frontend
