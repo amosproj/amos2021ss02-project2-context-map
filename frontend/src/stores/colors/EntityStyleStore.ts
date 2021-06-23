@@ -15,9 +15,8 @@ export type SelectionInfo =
 /**
  * Converts a {@link SelectedSearchResult} to a {@link SelectionInfo}
  * @param selectionResult - {@link SelectedSearchResult} that is converted
- * @private
  */
-function createSelectionInfo(
+export function createSelectionInfo(
   selectionResult?: SelectedSearchResult
 ): SelectionInfo | undefined {
   if (selectionResult === undefined) return undefined;
