@@ -20,18 +20,28 @@ context('Visualization Tabs', () => {
     cy.get('main').get('.vis-network');
   });
 
-  it('has hierarchies tab', () => {
-    cy.get('.MuiTabs-root').contains('Hierarchies').click();
-    cy.get('main').get('.vis-network');
-  });
-
   it('has schema tab', () => {
     cy.get('.MuiTabs-root').contains('Schema').click();
     cy.get('main').contains('Schema');
   });
 
+  it('has hierarchies tab', () => {
+    cy.get('.MuiTabs-root').contains('Hierarchies').click();
+    cy.get('main').get('.vis-network');
+  });
+
   it('has chord tab', () => {
     cy.get('.MuiTabs-root').contains('Chord Diagram').click();
     cy.get('main').get('.svg-container');
+  });
+
+  it('has betweenness tab', () => {
+    cy.get('.MuiTabs-root').contains('Betweenness').click();
+    cy.get('main').contains('Betweenness');
+  });
+
+  it('has radial tab', () => {
+    cy.get('.MuiTabs-root').contains('Radial').click();
+    cy.get('main').contains('Radial');
   });
 });
