@@ -19,7 +19,7 @@ const cardContents: ReadonlyArray<DeepReadonly<CardPresentationContent>> = [
       link crossing and makes efficient use of available
       screen space.`,
     icon: 'timeline',
-    path: '/visualisation/graph',
+    path: '/visualization/graph',
   },
   {
     label: 'Schema',
@@ -28,7 +28,7 @@ const cardContents: ReadonlyArray<DeepReadonly<CardPresentationContent>> = [
       relationship-types available in your database
       and how they are connected.`,
     icon: 'account_tree',
-    path: '/visualisation/schema',
+    path: '/visualization/schema',
   },
   {
     label: 'Hierarchies',
@@ -40,7 +40,7 @@ const cardContents: ReadonlyArray<DeepReadonly<CardPresentationContent>> = [
       link crossing and makes efficient use of available
       screen space.`,
     icon: 'device_hub',
-    path: '/visualisation/hierarchical',
+    path: '/visualization/hierarchical',
   },
   {
     label: 'Chord Diagram',
@@ -51,7 +51,7 @@ const cardContents: ReadonlyArray<DeepReadonly<CardPresentationContent>> = [
     are drawn between the entities. The size of the arc is
     proportional to the importance of the flow.`,
     icon: 'donut_large',
-    path: '/visualisation/chord',
+    path: '/visualization/chord',
   },
   {
     label: 'Betweenness',
@@ -60,22 +60,22 @@ const cardContents: ReadonlyArray<DeepReadonly<CardPresentationContent>> = [
       This metric is measured with the number of
       shortest paths that pass through the target node.`,
     icon: 'bubble_chart',
-    path: '/visualisation/betweenness',
+    path: '/visualization/betweenness',
   },
   {
     label: 'Radial',
-    subLabel: '2D radial tree-based visualisation',
+    subLabel: '2D radial tree-based visualization',
     description: `Radial layout arranges nodes in concentric
       circles around the original subject in a 
       radial tree. If we have hierarchical data, 
       each generation of node becomes a new 
       orbit extending outwards, showing a dependency chain.`,
     icon: 'track_changes',
-    path: '/visualisation/radial',
+    path: '/visualization/radial',
   },
   {
     label: 'List',
-    subLabel: 'Tabular visualisation',
+    subLabel: 'Tabular visualization',
     description: `An ordered visualization of nodes with
       respective descriptive data in tabular format.`,
     icon: 'view_list',

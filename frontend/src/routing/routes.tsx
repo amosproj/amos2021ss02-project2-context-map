@@ -7,6 +7,8 @@ import Visualization from '../visualization/Visualization';
 import RouteDefinition from './RouteDefinition';
 import GraphPage from '../visualization/GraphPage';
 import ChordPage from '../visualization/ChordPage';
+import BetweennessPage from '../visualization/betweenness/BetweennessPage';
+import RadialPage from '../visualization/radial/RadialPage';
 
 const routes: Record<string, RouteDefinition> = {
   Home: {
@@ -33,12 +35,12 @@ const routes: Record<string, RouteDefinition> = {
       {
         path: '/visualization/betweenness',
         label: 'Betweenness',
-        content: () => <GraphPage layout="hierarchical" />, // TODO #299: Add missing visualisation preview page
+        content: () => <BetweennessPage />,
       },
       {
         path: '/visualization/radial',
         label: 'Radial',
-        content: () => <GraphPage layout="hierarchical" />, // TODO #299: Add missing visualisation preview page
+        content: () => <RadialPage />,
       },
       {
         path: '/visualization/schema',
