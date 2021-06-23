@@ -26,14 +26,24 @@ const routes: Record<string, RouteDefinition> = {
         content: () => <GraphPage />,
       },
       {
-        path: '/visualization/schema',
-        label: 'Schema',
-        content: () => <Schema />,
-      },
-      {
         path: '/visualization/hierarchical',
         label: 'Hierarchies',
         content: () => <GraphPage layout="hierarchical" />,
+      },
+      {
+        path: '/visualization/betweenness',
+        label: 'Betweenness',
+        content: () => <GraphPage layout="hierarchical" />, // TODO #299: Add missing visualisation preview page
+      },
+      {
+        path: '/visualization/radial',
+        label: 'Radial',
+        content: () => <GraphPage layout="hierarchical" />, // TODO #299: Add missing visualisation preview page
+      },
+      {
+        path: '/visualization/schema',
+        label: 'Schema',
+        content: () => <Schema />,
       },
       {
         path: '/visualization/chord',

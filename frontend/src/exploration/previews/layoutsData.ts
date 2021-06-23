@@ -13,7 +13,7 @@ const layoutsData: Record<keyof ExplorationWeight, LayoutDefinition> = {
   BC: {
     filename: 'betweenness-centrality.png',
     description: 'Betweenness Centrality',
-    path: '/visualization/schema', // TODO #299: Add missing visualisation preview links
+    path: '/visualization/betweenness',
   },
   H: {
     filename: 'hierarchical-layout.png',
@@ -23,7 +23,7 @@ const layoutsData: Record<keyof ExplorationWeight, LayoutDefinition> = {
   R: {
     filename: 'radial-layout.png',
     description: 'Radial Layout',
-    path: '/visualization/schema', // TODO #299: Add missing visualisation preview links
+    path: '/visualization/radial',
   },
   SP: {
     filename: 'empty-layout.png',
@@ -33,7 +33,7 @@ const layoutsData: Record<keyof ExplorationWeight, LayoutDefinition> = {
   L: {
     filename: 'data-table.png',
     description: 'List Layout',
-    path: '/visualization/schema', // TODO #299: Add missing visualisation preview links
+    path: '/data',
   },
   P: {
     filename: 'chord-diagram.png',
