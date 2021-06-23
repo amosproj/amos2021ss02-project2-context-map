@@ -73,14 +73,6 @@ const cardContents: ReadonlyArray<DeepReadonly<CardPresentationContent>> = [
     icon: 'track_changes',
     path: '/visualization/radial',
   },
-  {
-    label: 'List',
-    subLabel: 'Tabular visualization',
-    description: `An ordered visualization of nodes with
-      respective descriptive data in tabular format.`,
-    icon: 'view_list',
-    path: '/data',
-  },
 ];
 
 export default cardContents;
