@@ -44,7 +44,7 @@ function Previews(): JSX.Element {
   const layoutsPreviewData = (
     Object.keys(weights) as (keyof ExplorationWeight)[]
   )
-    .sort((a, b) => weights[a] - weights[b] || a.localeCompare(b))
+    .sort((a, b) => weights[b] - weights[a] || a.localeCompare(b))
     .map((layout) => layoutsData[layout]);
 
   return (
