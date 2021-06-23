@@ -20,11 +20,6 @@ context('Visualization Tabs', () => {
     cy.get('main').get('.vis-network');
   });
 
-  it('has schema tab', () => {
-    cy.get('.MuiTabs-root').contains('Schema').click();
-    cy.get('main').contains('Schema');
-  });
-
   it('has hierarchies tab', () => {
     cy.get('.MuiTabs-root').contains('Hierarchies').click();
     cy.get('main').get('.vis-network');
