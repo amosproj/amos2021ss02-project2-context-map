@@ -1,27 +1,47 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
-import logo from '../logo.svg';
+import { createStyles, Grid, makeStyles, Button } from '@material-ui/core';
 import './Home.css';
-import { RandomNumberGenerator } from '../services/random-number';
-import useService from '../dependency-injection/useService';
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    img: {
+      display: 'block',
+    },
+    centerColumn: {
+      display: 'flex',
+      justifyContent: 'center',
+    },
+  })
+);
 
 function Home(): JSX.Element {
-  const rnd = useService(RandomNumberGenerator);
+  const classes = useStyles();
 
   return (
-    <div className="Home">
-      <header className="Home-header">
-        <img src={logo} className="Home-logo" alt="logo" />
-        <Button variant="contained" color="primary">
-          Hello World {rnd.next(2, 3).toPrecision(3)}
-        </Button>
-      </header>
+    <div>
+      <Grid container spacing={1}>
+        <Grid item xs={4} direction="column" className={classes.centerColumn}>
+          <img className={classes.img} src="home.png" alt="no-src" />
+        </Grid>
+        <Grid item xs={1} />
+        <Grid item xs={6} direction="column" className={classes.centerColumn}>
+          <h2>WELCOME TO KMAP</h2>
+          <h1>FOR AUTOMATED INSIGHTS, AND CODELESS ANSWERS</h1>
+          <hr />
+          <p>
+            We are helping companies wordwide to automatically turn company data
+            into valuable insights. A responsive step-by-step exploration
+            facilitates quick access to the insights needed. KMAP furthers the
+            communication and transparency across companies and along the
+            value-chain.
+          </p>
+          <Button variant="contained" color="primary" href="#video">
+            Link
+          </Button>
+        </Grid>
+      </Grid>
     </div>
   );
 }
-
-Home.defaultProps = {
-  rnd: undefined,
-};
 
 export default Home;
