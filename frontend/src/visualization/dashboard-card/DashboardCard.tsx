@@ -6,7 +6,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Icon from '@material-ui/core/Icon';
 import { Link } from 'react-router-dom';
-import CardDefinition from './CardDefinition';
+import { CardPresentationContent } from './cardContents';
 
 const useStyles = makeStyles({
   root: {
@@ -14,7 +14,9 @@ const useStyles = makeStyles({
   },
 });
 
-export default function DashboardCard(card: CardDefinition): JSX.Element {
+export default function DashboardCard(
+  card: CardPresentationContent
+): JSX.Element {
   const { path, label, subLabel, description, icon } = card;
   const classes = useStyles();
 
