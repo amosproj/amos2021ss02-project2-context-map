@@ -7,7 +7,7 @@ import { EdgeDescriptor, NodeDescriptor } from '../../shared/entities';
 import { ArgumentError } from '../../shared/errors';
 import { QueryEdgeResult, QueryNodeResult } from '../../shared/queries';
 import getTextColor from './getTextColor';
-import EntityStyleStore from './EntityStyleStore';
+import EntityStyleStore, { SelectionInfo } from './EntityStyleStore';
 
 type EntityStyleIntersection = NodeStyle & EdgeStyle;
 type QueryEntityResult = QueryNodeResult | QueryEdgeResult;
@@ -19,6 +19,49 @@ const isEdgeDescriptor = (
 const isNodeDescriptor = (
   e: EdgeDescriptor | NodeDescriptor
 ): e is NodeDescriptor => 'types' in e;
+
+/**
+ * Returns true if entity corresponds to the entity that is selected via search.
+ * @param entity - is compared with the selection
+ * @param selectionInfo - info about selection
+ */
+const isSelected = (
+  entity: QueryEntityResult,
+  selectionInfo?: SelectionInfo
+): boolean => {
+  const selection = selectionInfo;
+  if (selection === undefined) {
+    return false;
+  }
+
+  // check entity type
+  if (
+    !(
+      (selection.kind === 'EDGE' && isEdgeDescriptor(entity)) ||
+      (selection.kind === 'NODE' && isNodeDescriptor(entity))
+    )
+  ) {
+    return false;
+  }
+
+  if ('id' in selection) {
+    // single entity selected => check if entity is that entity
+    return entity.id === selection.id;
+  }
+
+  if ('type' in selection) {
+    // type selected => check if entity is of that type
+    if (isNodeDescriptor(entity)) {
+      return entity.types.some((type) => type === selection.type);
+    }
+    if (isEdgeDescriptor(entity)) {
+      return entity.type === selection.type;
+    }
+  }
+
+  return false;
+};
+export { isSelected as isEntitySelected };
 
 /**
  * Defines the coloring definition for nodes and edges.
@@ -36,7 +79,12 @@ export class EntityStyleProviderImpl implements EntityStyleProvider {
       color: common.black,
       text: { color: common.black },
       stroke: {
-        width: this.isSelected(entity) ? 5 : 1,
+        width: isSelected(
+          entity,
+          this.entityStyleStore.getEntitySelectionInfo()
+        )
+          ? 5
+          : 1,
         dashes: false,
         color: common.black,
       },
@@ -120,45 +168,6 @@ export class EntityStyleProviderImpl implements EntityStyleProvider {
 
   private isVirtual(entity: QueryEntityResult): boolean {
     return entity.virtual === true;
-  }
-
-  /**
-   * Returns true if entity corresponds to the entity that is selected via search.
-   * @param entity - is compared with the selection
-   * @private
-   */
-  private isSelected(entity: QueryEntityResult): boolean {
-    const selection = this.entityStyleStore.getEntitySelectionInfo();
-    if (selection === undefined) {
-      return false;
-    }
-
-    // check entity type
-    if (
-      !(
-        (selection.kind === 'EDGE' && isEdgeDescriptor(entity)) ||
-        (selection.kind === 'NODE' && isNodeDescriptor(entity))
-      )
-    ) {
-      return false;
-    }
-
-    if ('id' in selection) {
-      // single entity selected => check if entity is that entity
-      return entity.id === selection.id;
-    }
-
-    if ('type' in selection) {
-      // type selected => check if entity is of that type
-      if (isNodeDescriptor(entity)) {
-        return entity.types.some((type) => type === selection.type);
-      }
-      if (isEdgeDescriptor(entity)) {
-        return entity.type === selection.type;
-      }
-    }
-
-    return false;
   }
 }
 
