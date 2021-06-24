@@ -1,17 +1,9 @@
 import { Box, Container, Grid } from '@material-ui/core';
 import React from 'react';
-import routes from '../routing/routes';
 import DashboardCard from './dashboard-card/DashboardCard';
 import cardContents from './dashboard-card/cardContents';
 
 function Visualization(): JSX.Element {
-  const { tabs } = routes.Visualization;
-
-  /* istanbul ignore if */
-  if (tabs === undefined) {
-    return <></>;
-  }
-
   const cards = cardContents;
 
   return (
