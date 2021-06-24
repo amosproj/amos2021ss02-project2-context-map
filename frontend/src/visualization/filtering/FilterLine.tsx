@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
 import TuneIcon from '@material-ui/icons/Tune';
-import AddIcon from '@material-ui/icons/Add';
 import { from } from 'rxjs';
+import { map } from 'rxjs/operators';
 import FilterLineProperties from './FilterLineProperties';
 import useService from '../../dependency-injection/useService';
 import { FilterService } from '../../services/filter';
@@ -15,6 +15,7 @@ import withLoadingBar from '../../utils/withLoadingBar';
 import withErrorHandler from '../../utils/withErrorHandler';
 import LoadingStore from '../../stores/LoadingStore';
 import ErrorStore from '../../stores/ErrorStore';
+import { FilterState } from '../../stores/filterState/FilterState';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -48,7 +49,6 @@ const FilterLine = (props: {
   // Indicates if filter-dialog is opened.
   const [filterOpen, setFilterOpen] = React.useState(false);
   const [boxShadow, setBoxShadow] = React.useState('None');
-  const isActive = React.useRef(false);
 
   const filterService = useService(FilterService, null);
 
@@ -70,13 +70,26 @@ const FilterLine = (props: {
     }
   );
 
-  function updateBoxShadow() {
-    if (isActive.current) {
+  const isActive = useObservable(
+    filterStateStore
+      .getState()
+      .pipe(
+        map((next) =>
+          new FilterState(next.edges, next.nodes).getFilterLineIsActive(
+            type,
+            entity
+          )
+        )
+      )
+  );
+
+  useEffect(() => {
+    if (isActive) {
       setBoxShadow('0 0 0 0.2rem rgba(0,123,255,.5)');
     } else {
       setBoxShadow('None');
     }
-  }
+  }, [isActive]);
 
   const handleOpenFilter = () => {
     setFilterOpen(true);
@@ -85,10 +98,7 @@ const FilterLine = (props: {
     setFilterOpen(false);
   };
 
-  const handleAddEntity = () => {
-    isActive.current = !isActive.current;
-
-    updateBoxShadow();
+  const handleClickButton = () => {
     filterStateStore.toggleFilterLineActive(type, entity);
     filterQueryStore.update();
   };
@@ -101,16 +111,13 @@ const FilterLine = (props: {
         style={{ backgroundColor, boxShadow }}
         variant="contained"
         color="primary"
-        disableRipple
         className={classes.root}
+        onClick={handleClickButton}
       >
         {type}
       </Button>
       <IconButton component="span" className="FilterButton">
         <TuneIcon onClick={handleOpenFilter} />
-      </IconButton>
-      <IconButton component="span" className="AddButton">
-        <AddIcon onClick={handleAddEntity} />
       </IconButton>
       <FilterLineProperties
         filterOpen={filterOpen}

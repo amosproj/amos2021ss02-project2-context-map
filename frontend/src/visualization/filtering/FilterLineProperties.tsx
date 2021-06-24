@@ -11,6 +11,9 @@ import {
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { FilterModelEntry } from '../../shared/filter';
 import FilterLineProperty from './FilterLineProperty';
+import useService from '../../dependency-injection/useService';
+import FilterQueryStore from '../../stores/FilterQueryStore';
+import FilterStateStore from '../../stores/filterState/FilterStateStore';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,6 +44,9 @@ const FilterLineProperties = (props: {
 
   const [applyFilter, setApplyFilter] = useState(false);
 
+  const filterQueryStore = useService<FilterQueryStore>(FilterQueryStore);
+  const filterStateStore = useService<FilterStateStore>(FilterStateStore);
+
   const {
     filterOpen,
     handleCloseFilter,
@@ -61,6 +67,9 @@ const FilterLineProperties = (props: {
 
   const handleApplyFilter = () => {
     setApplyFilter(true);
+    filterStateStore.setFilterLineActive(filterLineType, entity);
+    filterQueryStore.update();
+
     handleCloseFilter();
   };
 
