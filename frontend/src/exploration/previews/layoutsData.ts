@@ -26,7 +26,7 @@ const layoutsData: Record<keyof ExplorationWeight, LayoutDefinition> = {
     path: '/visualization/radial',
   },
   SP: {
-    filename: 'empty-layout.png',
+    filename: 'shortest-path.png',
     description: 'Shortest Path',
     path: '/visualization/graph',
   },
