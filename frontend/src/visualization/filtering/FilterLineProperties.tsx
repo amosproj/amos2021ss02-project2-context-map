@@ -42,8 +42,6 @@ const FilterLineProperties = (props: {
 }): JSX.Element => {
   const classes = useStyles();
 
-  const [applyFilter, setApplyFilter] = useState(false);
-
   const filterQueryStore = useService<FilterQueryStore>(FilterQueryStore);
   const filterStateStore = useService<FilterStateStore>(FilterStateStore);
 
@@ -55,19 +53,40 @@ const FilterLineProperties = (props: {
     entity,
   } = props;
 
+  const [filter, setFilter] = useState<{ name: string; values: string[] }[]>(
+    filterStateStore.getFilterPropertyStates(filterLineType, entity) ?? []
+  );
+
+  function setFilterProperty(key: string, values: string[]) {
+    const foundIndex = filter.findIndex((e) => e.name === key);
+
+    if (foundIndex !== -1) {
+      if (filter[foundIndex].values !== values) {
+        filter[foundIndex].values = values;
+      }
+    } else {
+      filter.push({ name: key, values });
+    }
+
+    setFilter(filter);
+  }
+
   const entitySelects = filterModelEntries.map((entry) => (
     <FilterLineProperty
       filterModelEntry={entry}
       filterLineType={filterLineType}
       entity={entity}
-      applyFilter={applyFilter}
-      setApplyFilter={setApplyFilter}
+      setFilterProperty={setFilterProperty}
     />
   ));
 
   const handleApplyFilter = () => {
-    setApplyFilter(true);
     filterStateStore.setFilterLineActive(filterLineType, entity);
+    filterStateStore.replaceFilterPropertyStates(
+      filter,
+      filterLineType,
+      entity
+    );
     filterQueryStore.update();
 
     handleCloseFilter();

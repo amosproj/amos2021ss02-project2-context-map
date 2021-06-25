@@ -108,15 +108,13 @@ export class FilterState {
   }
 
   /**
-   * Adds a new {@link FilterPropertyState} to the specified filter line. If there already
-   * exists a {@link FilterPropertyState} with the given name in the filter line, the
-   * {@link FilterPropertyState} is overwritten with the new one.
-   * @param stateToAdd - the {@link FilterPropertyState} to be added
+   * Replaces {@link FilterPropertyState}s of the specified filter line.
+   * @param statesToReplace - the {@link FilterPropertyState}s to be replaced
    * @param filterLineType - filter line which the {@link FilterPropertyState} is added to
    * @param entity - specifies whether this entity is a node or an edge
    */
-  public addFilterPropertyState(
-    stateToAdd: FilterPropertyState,
+  public replaceFilterPropertyStates(
+    statesToReplace: FilterPropertyState[],
     filterLineType: string,
     entity: 'node' | 'edge'
   ): void {
@@ -126,15 +124,25 @@ export class FilterState {
     );
 
     if (lineState) {
-      const propertyWithExistentName = lineState.propertyFilters.find(
-        (e) => e.name === stateToAdd.name
-      );
-      if (propertyWithExistentName) {
-        propertyWithExistentName.values = stateToAdd.values;
-      } else {
-        lineState.propertyFilters.push(stateToAdd);
-      }
+      lineState.propertyFilters = statesToReplace;
     }
+  }
+
+  /**
+   * Gets {@link FilterPropertyState}s of the specified filter line.
+   * @param filterLineType - filter line which the {@link FilterPropertyState} is added to
+   * @param entity - specifies whether this entity is a node or an edge
+   */
+  public getFilterPropertyStates(
+    filterLineType: string,
+    entity: 'node' | 'edge'
+  ): FilterPropertyState[] | undefined {
+    const lineState: FilterLineState | undefined = this.getLineFromFilterState(
+      filterLineType,
+      entity
+    );
+
+    return lineState?.propertyFilters;
   }
 
   /**

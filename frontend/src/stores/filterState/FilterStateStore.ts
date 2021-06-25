@@ -34,15 +34,25 @@ export default class FilterStateStore extends SimpleStore<FilterState> {
 
     this.setState(this.getValue());
   }
-
-  public addFilterPropertyState(
-    stateToAdd: FilterPropertyState,
+  public replaceFilterPropertyStates(
+    statesToReplace: FilterPropertyState[],
     filterLineType: string,
     entity: 'node' | 'edge'
   ): void {
-    this.getValue().addFilterPropertyState(stateToAdd, filterLineType, entity);
+    this.getValue().replaceFilterPropertyStates(
+      statesToReplace,
+      filterLineType,
+      entity
+    );
 
     this.setState(this.getValue());
+  }
+
+  public getFilterPropertyStates(
+    filterLineType: string,
+    entity: 'node' | 'edge'
+  ): FilterPropertyState[] | undefined {
+    return this.getValue().getFilterPropertyStates(filterLineType, entity);
   }
 
   public getPropertyStateValues(

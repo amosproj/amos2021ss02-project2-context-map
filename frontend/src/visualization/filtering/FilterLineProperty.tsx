@@ -28,17 +28,10 @@ const FilterLineProperty = (props: {
   filterModelEntry: FilterModelEntry;
   filterLineType: string;
   entity: 'node' | 'edge';
-  applyFilter: boolean;
-  setApplyFilter: React.Dispatch<React.SetStateAction<boolean>>;
+  setFilterProperty: (key: string, values: string[]) => void;
 }): JSX.Element => {
   const classes = useStyles();
-  const {
-    filterModelEntry,
-    filterLineType,
-    entity,
-    applyFilter,
-    setApplyFilter,
-  } = props;
+  const { filterModelEntry, filterLineType, entity, setFilterProperty } = props;
 
   const filterStateStore = useService(FilterStateStore);
 
@@ -52,18 +45,8 @@ const FilterLineProperty = (props: {
 
   // update filterStateStore here because selectedValues will first be updated in the next render
   useEffect(() => {
-    if (applyFilter) {
-      filterStateStore.addFilterPropertyState(
-        {
-          name: filterModelEntry.key,
-          values: selectedValues,
-        },
-        filterLineType,
-        entity
-      );
-      setApplyFilter(false);
-    }
-  }, [selectedValues, applyFilter]);
+    setFilterProperty(filterModelEntry.key, selectedValues);
+  }, [selectedValues]);
 
   // utils from material ui multiselect https://material-ui.com/components/selects/#select
   const ITEM_HEIGHT = 48;
