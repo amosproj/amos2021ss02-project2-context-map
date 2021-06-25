@@ -1,4 +1,6 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
+import Modal from '@material-ui/core/Modal';
 import {
   Button,
   createStyles,
@@ -8,6 +10,7 @@ import {
 } from '@material-ui/core';
 import './Home.css';
 import { deepPurple, pink, purple } from '@material-ui/core/colors';
+import HomeVideoModal from './HomeVideoModal';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -56,9 +59,11 @@ function Home(): JSX.Element {
           direction="row"
           alignContent="center"
         >
+          {/* Right side row, full width */}
           <Grid item xs={12}>
             <Typography variant="h3">WELCOME TO KMAP</Typography>
           </Grid>
+          {/* Right side row, full width */}
           <Grid item xs={12}>
             <Typography variant="h2" display="inline" className={classes.bold}>
               FOR{' '}
@@ -80,6 +85,7 @@ function Home(): JSX.Element {
               </Typography>
             </Typography>
           </Grid>
+          {/* Right side row, medium width */}
           <Grid item xs={7} direction="column" alignContent="flex-start">
             <Typography>
               We are helping companies wordwide to automatically turn company
@@ -89,14 +95,9 @@ function Home(): JSX.Element {
               value-chain.
             </Typography>
           </Grid>
+          {/* Right side row, medium width */}
           <Grid item xs={7}>
-            <Button
-              variant="contained"
-              className={classes.button}
-              href="#video"
-            >
-              Take a tour
-            </Button>
+            <HomeVideoModal />
           </Grid>
         </Grid>
       </Grid>
