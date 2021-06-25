@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStyles, Grid, makeStyles, Typography } from '@material-ui/core';
 import './Home.css';
-import { deepPurple, pink, purple } from '@material-ui/core/colors';
+import { pink, purple } from '@material-ui/core/colors';
 import HomeVideoModal from './HomeVideoModal';
 
 const useStyles = makeStyles(() =>
@@ -12,10 +12,6 @@ const useStyles = makeStyles(() =>
     },
     bold: {
       fontWeight: 400,
-    },
-    button: {
-      color: '#fff',
-      backgroundColor: deepPurple[500],
     },
     highlight1: {
       fontWeight: 400,
