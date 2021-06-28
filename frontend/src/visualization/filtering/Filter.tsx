@@ -91,6 +91,8 @@ const Filter = (): JSX.Element => {
   });
 
   useEffect(() => {
+    // only update the schemaStore on the very first time, the Filter is rendered.
+    // So no update happens when switching between tabs.
     if (!schemaStore.initialized) {
       schemaStore.update();
     }

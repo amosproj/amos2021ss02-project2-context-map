@@ -23,6 +23,10 @@ export default class SchemaStore extends SimpleStore<Schema> {
 
   private initializedInternal = false;
 
+  /**
+   * Used to identify whether this store has already been filled with data from
+   * the {@link schemaService}.
+   */
   public get initialized(): boolean {
     return this.initializedInternal;
   }
@@ -31,6 +35,10 @@ export default class SchemaStore extends SimpleStore<Schema> {
     return { nodeTypes: [], edgeTypes: [] };
   }
 
+  /**
+   * Updates the current state of this store with data fetched by
+   * the {@link schemaService}.
+   */
   public update(): void {
     this.initializedInternal = true;
     this.executeQuery().subscribe({
@@ -45,6 +53,10 @@ export default class SchemaStore extends SimpleStore<Schema> {
     });
   }
 
+  /**
+   * Queries the {@link Schema} with the {@link schemaService}.
+   * @private
+   */
   private executeQuery(): Observable<Schema> {
     return forkJoin([
       this.schemaService.getNodeTypes(),
