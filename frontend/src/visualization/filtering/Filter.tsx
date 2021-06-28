@@ -9,28 +9,20 @@ import {
   Tabs,
   Typography,
 } from '@material-ui/core';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { map } from 'rxjs/operators';
-import { forkJoin, from } from 'rxjs';
 import useService from '../../dependency-injection/useService';
-import { SchemaService } from '../../services/schema';
 import MaxEntitiesSlider from './MaxEntitiesSlider';
 import EntityTypeTemplate from './helpers/EntityTypeTemplate';
 import useObservable from '../../utils/useObservable';
-import withLoadingBar from '../../utils/withLoadingBar';
-import withErrorHandler from '../../utils/withErrorHandler';
-import LoadingStore from '../../stores/LoadingStore';
-import ErrorStore from '../../stores/ErrorStore';
 import SubsidiaryNodesToggle from './SubsidiaryNodesToggle';
 import EdgeGreyScaleToggle from './EdgeGreyScaleToggle';
-import FilterStateStore from '../../stores/filterState/FilterStateStore';
-import { FilterLineState } from '../../stores/filterState/FilterState';
 import { EntityStyleStore } from '../../stores/colors';
 import ShortestPathMenu from './ShortestPathMenu';
 import { QueryEdgeResult, QueryNodeResult } from '../../shared/queries';
+import SchemaStore from '../../stores/SchemaStore';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -85,7 +77,7 @@ const Filter = (): JSX.Element => {
   const [tabIndex, setTabIndex] = React.useState(0);
   const [open, setOpen] = React.useState(false);
 
-  const filterStateStore = useService(FilterStateStore);
+  const schemaStore = useService(SchemaStore);
 
   const entityStyleStore = useService(EntityStyleStore);
   const styleProvider = useObservable(
@@ -93,56 +85,14 @@ const Filter = (): JSX.Element => {
     entityStyleStore.getValue()
   );
 
-  const schemaService = useService(SchemaService);
-
-  const loadingStore = useService(LoadingStore);
-  const errorStore = useService(ErrorStore);
-
-  const schema = useObservable(
-    forkJoin([
-      from(schemaService.getNodeTypes()),
-      from(schemaService.getEdgeTypes()),
-    ]).pipe(
-      withLoadingBar({ loadingStore }),
-      withErrorHandler({ errorStore }),
-      map((schemaFromService) => ({
-        nodes: schemaFromService[0],
-        edges: schemaFromService[1],
-      }))
-    ),
-    { nodes: [], edges: [] }
-  );
-
-  // filterStore will only be filled with initial FilterLineStates on the first render.
-  useEffect(() => {
-    const nodeLineStates: FilterLineState[] = [];
-    const edgeLineStates: FilterLineState[] = [];
-
-    for (const nodeTypes of schema.nodes) {
-      nodeLineStates.push({
-        type: nodeTypes.name,
-        isActive: false,
-        propertyFilters: [],
-      });
-    }
-
-    for (const edgeTypes of schema.edges) {
-      edgeLineStates.push({
-        type: edgeTypes.name,
-        isActive: false,
-        propertyFilters: [],
-      });
-    }
-
-    filterStateStore.mergeState({
-      nodes: nodeLineStates,
-      edges: edgeLineStates,
-    });
-  }, [schema]);
+  const schema = useObservable(schemaStore.getState(), {
+    nodeTypes: [],
+    edgeTypes: [],
+  });
 
   const nodes = (
     <>
-      {schema.nodes.map((type) =>
+      {schema.nodeTypes.map((type) =>
         EntityTypeTemplate(
           styleProvider.getStyle({
             id: -1,
@@ -158,7 +108,7 @@ const Filter = (): JSX.Element => {
 
   const edges = (
     <>
-      {schema.edges.map((type) =>
+      {schema.edgeTypes.map((type) =>
         EntityTypeTemplate(
           styleProvider.getStyle({
             id: -1,
