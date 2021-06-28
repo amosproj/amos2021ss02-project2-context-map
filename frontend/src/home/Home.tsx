@@ -1,25 +1,35 @@
 import React from 'react';
 import { createStyles, Grid, makeStyles, Typography } from '@material-ui/core';
-import './Home.css';
-import { pink, purple } from '@material-ui/core/colors';
+import { common, pink, purple, grey } from '@material-ui/core/colors';
 import HomeVideoModal from './HomeVideoModal';
+import Typed from 'react-typed';
 
 const useStyles = makeStyles(() =>
   createStyles({
     img: {
       display: 'block',
-      margin: '3em 0 3em 0',
+      marginTop: 'auto',
+      marginBottom: 'auto',
+      width: '100%',
+      padding: '5px',
     },
     bold: {
       fontWeight: 400,
     },
     highlight1: {
-      fontWeight: 400,
       color: purple[500],
     },
     highlight2: {
-      fontWeight: 400,
       color: pink[500],
+    },
+    bgGrey: {
+      backgroundColor: grey[200],
+    },
+    bgWhite: {
+      backgroundColor: common.white,
+    },
+    h100: {
+      height: '100%',
     },
   })
 );
@@ -28,11 +38,11 @@ function Home(): JSX.Element {
   const classes = useStyles();
 
   return (
-    <div>
+    <div className={`${classes.h100} ${classes.bgWhite}`}>
       {/* Splits Page Horizontally */}
-      <Grid container spacing={1}>
+      <Grid container spacing={0} className={classes.h100}>
         {/* Left side */}
-        <Grid container item xs={4} direction="column">
+        <Grid container item xs={5} direction="column">
           <img className={classes.img} src="home.png" alt="no-src" />
         </Grid>
         {/* Spacer between left and right side */}
@@ -42,7 +52,7 @@ function Home(): JSX.Element {
         <Grid
           item
           container
-          xs={7}
+          xs={6}
           spacing={3}
           direction="row"
           alignContent="center"
