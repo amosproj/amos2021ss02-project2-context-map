@@ -13,8 +13,8 @@ const useStyles = makeStyles(() =>
       },
     },
     iframe: {
-      width: '1280',
-      height: '720',
+      width: '90vw',
+      height: 'calc(50.624vw)', // keeping the video's aspect ratio
     },
   })
 );
@@ -36,8 +36,6 @@ function HomeVideoModal(): JSX.Element {
       {/* youtube iFrame */}
       <iframe
         className={classes.iframe}
-        width="1280"
-        height="720"
         src="https://www.youtube.com/embed/dQw4w9WgXcQ"
         title="YouTube video player"
         frameBorder="0"
