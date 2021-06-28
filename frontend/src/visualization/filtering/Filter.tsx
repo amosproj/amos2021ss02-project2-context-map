@@ -9,7 +9,7 @@ import {
   Tabs,
   Typography,
 } from '@material-ui/core';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -89,14 +89,6 @@ const Filter = (): JSX.Element => {
     nodeTypes: [],
     edgeTypes: [],
   });
-
-  useEffect(() => {
-    // only update the schemaStore on the very first time, the Filter is rendered.
-    // So no update happens when switching between tabs.
-    if (!schemaStore.initialized) {
-      schemaStore.update();
-    }
-  }, []);
 
   const nodes = (
     <>

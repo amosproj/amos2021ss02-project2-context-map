@@ -1,5 +1,5 @@
 import { inject } from 'inversify';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import SimpleStore from './SimpleStore';
 import { EdgeType, NodeType } from '../shared/schema';
@@ -12,6 +12,12 @@ import LoadingStore from './LoadingStore';
 export type Schema = { nodeTypes: NodeType[]; edgeTypes: EdgeType[] };
 
 export default class SchemaStore extends SimpleStore<Schema> {
+  /**
+   * {@link Subscription} to the {@link Observable} that is built in {@link executeQuery}.
+   * @private
+   */
+  private schemaSubscription?: Subscription;
+
   @inject(SchemaService)
   private readonly schemaService!: SchemaService;
 
@@ -21,36 +27,24 @@ export default class SchemaStore extends SimpleStore<Schema> {
   @inject(LoadingStore)
   private readonly loadingStore!: LoadingStore;
 
-  private initializedInternal = false;
-
-  /**
-   * Used to identify whether this store has already been filled with data from
-   * the {@link schemaService}.
-   */
-  public get initialized(): boolean {
-    return this.initializedInternal;
-  }
-
   protected getInitialValue(): Schema {
     return { nodeTypes: [], edgeTypes: [] };
   }
 
   /**
-   * Updates the current state of this store with data fetched by
-   * the {@link schemaService}.
+   * @override
    */
-  public update(): void {
-    this.initializedInternal = true;
-    this.executeQuery().subscribe({
-      next: (res) => {
-        if (res) {
+  protected ensureInit(): void {
+    if (this.schemaSubscription == null) {
+      this.schemaSubscription = this.executeQuery().subscribe({
+        next: (res) => {
           this.setState(res);
-        }
-      },
-      error: () => {
-        this.setState(this.getInitialValue());
-      },
-    });
+        },
+        error: () => {
+          this.setState(this.getInitialValue());
+        },
+      });
+    }
   }
 
   /**
