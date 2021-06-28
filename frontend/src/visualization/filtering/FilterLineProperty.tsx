@@ -36,11 +36,10 @@ const FilterLineProperty = (props: {
   const filterStateStore = useService(FilterStateStore);
 
   const [selectedValues, setSelectedValues] = React.useState<string[]>(
-    filterStateStore.getPropertyStateValues(
-      filterLineType,
-      filterModelEntry.key,
-      entity
-    ) ?? []
+    filterStateStore
+      .getValue()
+      .getPropertyStateValues(filterLineType, filterModelEntry.key, entity) ??
+      []
   );
 
   // update filterStateStore here because selectedValues will first be updated in the next render

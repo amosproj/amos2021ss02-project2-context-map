@@ -75,7 +75,7 @@ const FilterLine = (props: {
       .getState()
       .pipe(
         map((next) =>
-          new FilterState(next.edges, next.nodes).getFilterLineIsActive(
+          new FilterState(next.edges, next.nodes).isFilterLineActive(
             type,
             entity
           )
@@ -99,7 +99,9 @@ const FilterLine = (props: {
   };
 
   const handleClickButton = () => {
-    filterStateStore.toggleFilterLineActive(type, entity);
+    filterStateStore.transformState((state) => {
+      state.toggleFilterLineActive(type, entity);
+    });
     filterQueryStore.update();
   };
 

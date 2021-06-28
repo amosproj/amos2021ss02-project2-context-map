@@ -54,7 +54,9 @@ const FilterLineProperties = (props: {
   } = props;
 
   const [filter, setFilter] = useState<{ name: string; values: string[] }[]>(
-    filterStateStore.getFilterPropertyStates(filterLineType, entity) ?? []
+    filterStateStore
+      .getValue()
+      .getFilterPropertyStates(filterLineType, entity) ?? []
   );
 
   function setFilterProperty(key: string, values: string[]) {
@@ -81,12 +83,10 @@ const FilterLineProperties = (props: {
   ));
 
   const handleApplyFilter = () => {
-    filterStateStore.setFilterLineActive(filterLineType, entity);
-    filterStateStore.replaceFilterPropertyStates(
-      filter,
-      filterLineType,
-      entity
-    );
+    filterStateStore.transformState((state) => {
+      state.setFilterLineActive(filterLineType, entity);
+      state.replaceFilterPropertyStates(filter, filterLineType, entity);
+    });
     filterQueryStore.update();
 
     handleCloseFilter();
