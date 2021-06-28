@@ -16,7 +16,7 @@ const useStyles = makeStyles(() =>
     bold: {
       fontWeight: 400,
     },
-    highlight: {
+    highlightText: {
       fontWeight: 400,
       color: pink[500],
     },
@@ -64,7 +64,7 @@ function Home(): JSX.Element {
               <Typography
                 variant="h2"
                 display="inline"
-                className={classes.highlight}
+                className={classes.highlightText}
               >
                 <Typed
                   strings={[
@@ -80,13 +80,7 @@ function Home(): JSX.Element {
             </Typography>
           </Grid>
           {/* Right side row, medium width */}
-          <Grid
-            container
-            item
-            xs={7}
-            direction="column"
-            alignContent="flex-start"
-          >
+          <Grid container item xs={7}>
             <Typography>
               We are helping companies wordwide to automatically turn company
               data into valuable insights. A responsive step-by-step exploration
@@ -96,8 +90,14 @@ function Home(): JSX.Element {
             </Typography>
           </Grid>
           {/* Right side row, medium width */}
-          <Grid item xs={7}>
-            <HomeVideoModal />
+          <Grid item xs={7} spacing={2} direction="row" justify="center">
+            <HomeVideoModal />{' '}
+            <img
+              style={{ marginLeft: '50px' }}
+              height="50"
+              src="homeArrowHeads.png"
+              alt="no-src"
+            />
           </Grid>
         </Grid>
       </Grid>

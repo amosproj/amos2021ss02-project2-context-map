@@ -53,6 +53,7 @@ function HomeVideoModal(): JSX.Element {
         variant="contained"
         className={classes.button}
         onClick={handleOpen}
+        style={{ marginBottom: '45px' }}
       >
         Take a tour
       </Button>
