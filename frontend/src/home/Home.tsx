@@ -1,8 +1,8 @@
 import React from 'react';
 import { createStyles, Grid, makeStyles, Typography } from '@material-ui/core';
-import { common, pink, purple, grey } from '@material-ui/core/colors';
-import HomeVideoModal from './HomeVideoModal';
+import { common, pink } from '@material-ui/core/colors';
 import Typed from 'react-typed';
+import HomeVideoModal from './HomeVideoModal';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -16,14 +16,9 @@ const useStyles = makeStyles(() =>
     bold: {
       fontWeight: 400,
     },
-    highlight1: {
-      color: purple[500],
-    },
-    highlight2: {
+    highlight: {
+      fontWeight: 400,
       color: pink[500],
-    },
-    bgGrey: {
-      backgroundColor: grey[200],
     },
     bgWhite: {
       backgroundColor: common.white,
@@ -59,16 +54,29 @@ function Home(): JSX.Element {
         >
           {/* Right side row, full width */}
           <Grid item xs={12}>
-            <Typography variant="h3">WELCOME TO KMAP</Typography>
+            <Typography variant="h4">WELCOME TO KMAP</Typography>
           </Grid>
           {/* Right side row, full width */}
           <Grid item xs={12}>
             <Typography variant="h2" display="inline" className={classes.bold}>
-              <span>FOR </span>
-              <span className={classes.highlight2}>AUTOMATED INSIGHTS</span>
-              ,<br />
-              <span>AND </span>
-              <span className={classes.highlight1}>CODELESS ANSWERS</span>
+              A CONTEXT MAP PROVIDING
+              <br />
+              <Typography
+                variant="h2"
+                display="inline"
+                className={classes.highlight}
+              >
+                <Typed
+                  strings={[
+                    'AUTOMATED INSIGHTS.',
+                    'CODELESS ANSWERS.',
+                    'MODULAR VISUALIZATIONS.',
+                    'STEP-BY-STEP EXPLORATION.',
+                  ]}
+                  typeSpeed={40}
+                  loop
+                />
+              </Typography>
             </Typography>
           </Grid>
           {/* Right side row, medium width */}

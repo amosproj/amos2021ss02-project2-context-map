@@ -51,6 +51,7 @@
     "react-graph-vis": "^1.0.7",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
+    "react-typed": "^1.2.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.1.0",
     "sass": "^1.32.12",
