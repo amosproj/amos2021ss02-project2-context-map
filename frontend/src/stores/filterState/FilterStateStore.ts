@@ -1,9 +1,10 @@
 /* istanbul ignore file */
-import { injectable } from 'inversify';
-import { Observable } from 'rxjs';
+import { inject, injectable } from 'inversify';
+import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import SimpleStore from '../SimpleStore';
-import { FilterState } from './FilterState';
+import { FilterLineState, FilterState } from './FilterState';
+import SchemaStore, { Schema } from '../SchemaStore';
 
 /**
  * Contains the current state of the filter. Note that the underlying {@link FilterState} contains
@@ -13,8 +14,19 @@ import { FilterState } from './FilterState';
  */
 @injectable()
 export default class FilterStateStore extends SimpleStore<FilterState> {
+  private schemaStoreSubscription?: Subscription;
+
+  @inject(SchemaStore)
+  private schemaStore!: SchemaStore;
+
   protected getInitialValue(): FilterState {
     return new FilterState([], []);
+  }
+
+  protected ensureInit(): void {
+    if (this.schemaStoreSubscription == null) {
+      this.schemaStoreSubscription = this.subscribeToSchemaStore();
+    }
   }
 
   public getValue(): FilterState {
@@ -40,5 +52,41 @@ export default class FilterStateStore extends SimpleStore<FilterState> {
     const transformedState =
       transformed instanceof Object ? transformed : localValue;
     this.setState(transformedState);
+  }
+
+  private update(schema: Schema) {
+    const nodeLineStates: FilterLineState[] = [];
+    const edgeLineStates: FilterLineState[] = [];
+
+    for (const nodeTypes of schema.nodeTypes) {
+      nodeLineStates.push({
+        type: nodeTypes.name,
+        isActive: false,
+        propertyFilters: [],
+      });
+    }
+
+    for (const edgeTypes of schema.edgeTypes) {
+      edgeLineStates.push({
+        type: edgeTypes.name,
+        isActive: false,
+        propertyFilters: [],
+      });
+    }
+
+    this.storeSubject.next(new FilterState(edgeLineStates, nodeLineStates));
+  }
+
+  /**
+   * Subscribes to the state of the {@link schemaStore} so that the state
+   * of this store is updated when the {@link schemaStore} updates.
+   * @returns subscription of the {@link schemaStore} state
+   * @private
+   */
+  private subscribeToSchemaStore(): Subscription {
+    // If the schema changes, the filter state will be updated automatically
+    return this.schemaStore.getState().subscribe({
+      next: (schema) => this.update(schema),
+    });
   }
 }
