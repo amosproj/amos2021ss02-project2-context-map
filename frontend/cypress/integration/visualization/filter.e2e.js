@@ -53,8 +53,6 @@ context('Filter', () => {
       cy.get('.FilterDialog');
 
       cy.get('.ApplyFilter').click();
-
-      cy.get('.AddButton:first').click();
     });
 
     it('applies filter', () => {
@@ -86,9 +84,6 @@ context('Filter', () => {
 
       cy.get('body').click(0, 0);
       cy.get('.ApplyFilter').click();
-
-      cy.get('.AddButton:first').click();
-      cy.get('.AddButton:first').click();
     });
 
     it('overwrites property state in FilterStateStore', () => {
@@ -165,9 +160,6 @@ context('Filter', () => {
 
       cy.get('body').click(0, 0);
       cy.get('.ApplyFilter').click();
-
-      cy.get('.AddButton').eq(2).click();
-      cy.get('.AddButton').eq(2).click();
     });
   });
 });

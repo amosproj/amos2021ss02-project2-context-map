@@ -11,6 +11,9 @@ import {
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { FilterModelEntry } from '../../shared/filter';
 import FilterLineProperty from './FilterLineProperty';
+import useService from '../../dependency-injection/useService';
+import FilterQueryStore from '../../stores/FilterQueryStore';
+import FilterStateStore from '../../stores/filterState/FilterStateStore';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,7 +42,8 @@ const FilterLineProperties = (props: {
 }): JSX.Element => {
   const classes = useStyles();
 
-  const [applyFilter, setApplyFilter] = useState(false);
+  const filterQueryStore = useService<FilterQueryStore>(FilterQueryStore);
+  const filterStateStore = useService<FilterStateStore>(FilterStateStore);
 
   const {
     filterOpen,
@@ -49,18 +53,42 @@ const FilterLineProperties = (props: {
     entity,
   } = props;
 
+  const [filter, setFilter] = useState<{ name: string; values: string[] }[]>(
+    filterStateStore
+      .getValue()
+      .getFilterPropertyStates(filterLineType, entity) ?? []
+  );
+
+  function setFilterProperty(key: string, values: string[]) {
+    const foundIndex = filter.findIndex((e) => e.name === key);
+
+    if (foundIndex !== -1) {
+      if (filter[foundIndex].values !== values) {
+        filter[foundIndex].values = values;
+      }
+    } else {
+      filter.push({ name: key, values });
+    }
+
+    setFilter(filter);
+  }
+
   const entitySelects = filterModelEntries.map((entry) => (
     <FilterLineProperty
       filterModelEntry={entry}
       filterLineType={filterLineType}
       entity={entity}
-      applyFilter={applyFilter}
-      setApplyFilter={setApplyFilter}
+      setFilterProperty={setFilterProperty}
     />
   ));
 
   const handleApplyFilter = () => {
-    setApplyFilter(true);
+    filterStateStore.transformState((state) => {
+      state.setFilterLineActive(filterLineType, entity);
+      state.replaceFilterPropertyStates(filter, filterLineType, entity);
+    });
+    filterQueryStore.update();
+
     handleCloseFilter();
   };
 
