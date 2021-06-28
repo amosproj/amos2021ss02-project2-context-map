@@ -19,6 +19,7 @@ import ShortestPathServiceImpl from './services/shortest-path/ShortestPathServic
 import { ShortestPathStateStore } from './stores/shortest-path/ShortestPathStateStore';
 import ExplorationStore from './stores/exploration/ExplorationStore';
 import SearchSelectionStore from './stores/SearchSelectionStore';
+import SchemaStore from './stores/SchemaStore';
 
 /**
  * Configures all services in the frontend app.
@@ -62,6 +63,7 @@ export default function configureServices(container: Container): void {
   container.bind(ErrorStore).to(ErrorStore).inSingletonScope();
   container.bind(LoadingStore).to(LoadingStore).inSingletonScope();
   container.bind(FilterStateStore).to(FilterStateStore).inSingletonScope();
+  container.bind(SchemaStore).to(SchemaStore).inSingletonScope();
   container.bind(FilterQueryStore).to(FilterQueryStore).inSingletonScope();
   container.bind(QueryResultStore).to(QueryResultStore).inSingletonScope();
   container
