@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { IconButton } from '@material-ui/core';
+import { Icon, IconButton } from '@material-ui/core';
 import TuneIcon from '@material-ui/icons/Tune';
 import { from } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -115,6 +115,7 @@ const FilterLine = (props: {
         color="primary"
         className={classes.root}
         onClick={handleClickButton}
+        endIcon={isActive ? <Icon>remove</Icon> : <Icon>add</Icon>}
       >
         {type}
       </Button>
