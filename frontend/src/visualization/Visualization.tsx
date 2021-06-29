@@ -9,26 +9,21 @@ function Visualization(): JSX.Element {
   return (
     <Box p={3}>
       <h1>Visualization Dashboard</h1>
-      <Box>
-        <Container maxWidth={false}>
-          <Box>
-            <Grid container spacing={3}>
-              {cards.map((card) => (
-                <Grid item key={card.label} lg={4} md={6} xs={12}>
-                  <DashboardCard
-                    label={card.label}
-                    path={card.path}
-                    description={card.description}
-                    subLabel={card.subLabel}
-                    icon={card.icon}
-                  />
-                </Grid>
-              ))}
+      <Container maxWidth={false}>
+        <Grid container spacing={3}>
+          {cards.map((card) => (
+            <Grid item key={card.label} lg={4} md={6} xs={12}>
+              <DashboardCard
+                label={card.label}
+                path={card.path}
+                description={card.description}
+                subLabel={card.subLabel}
+                icon={card.icon}
+              />
             </Grid>
-          </Box>
-          <Box />
-        </Container>
-      </Box>
+          ))}
+        </Grid>
+      </Container>
     </Box>
   );
 }
