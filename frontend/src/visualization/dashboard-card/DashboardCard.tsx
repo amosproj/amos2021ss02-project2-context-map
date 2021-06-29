@@ -11,7 +11,6 @@ import { CardPresentationContent } from './cardContents';
 const useStyles = makeStyles({
   root: {
     textDecoration: 'none',
-    height: '100%',
   },
   h100: {
     height: '100%',
