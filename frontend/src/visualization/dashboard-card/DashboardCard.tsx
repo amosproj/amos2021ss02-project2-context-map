@@ -11,6 +11,10 @@ import { CardPresentationContent } from './cardContents';
 const useStyles = makeStyles({
   root: {
     textDecoration: 'none',
+    height: '100%',
+  },
+  h100: {
+    height: '100%',
   },
 });
 
@@ -22,7 +26,7 @@ export default function DashboardCard(
 
   return (
     <Link className={classes.root} to={path}>
-      <Card>
+      <Card className={classes.h100}>
         <CardHeader
           avatar={<Icon>{icon}</Icon>}
           title={
