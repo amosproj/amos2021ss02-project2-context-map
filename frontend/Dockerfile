@@ -39,6 +39,7 @@ COPY docker docker
 
 # Copy the nginx configuration
 RUN mv docker/nginx.conf /etc/nginx/nginx.conf
+RUN mv docker/mime.types /etc/nginx/mime.types
 
 # Start
 RUN chmod +x docker/run.sh
