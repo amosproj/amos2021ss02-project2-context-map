@@ -47,10 +47,11 @@ When working on windows, execute the `deploy.ps1` script, on linux and MacOs, ru
 The deployment artifacts are copied to the `artifacts` folder in the repository root.   
 
 To execute the deployment artifacts on the target machine follow tese steps:  
-1. Make sure that docker is installed on the target machine. If not, install it as described in [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/)
-1. Copy the content of the `artifacts` folder to the target machine.
-1. Execute the `kmap.sh` script to run the software on the target machine.   
-> :warning: **The `kmap` script is currently only available for linux target machines. There is currently no support for windows target machines. See [#340](https://github.com/amosproj/amos-ss2021-project2-context-map/issues/340)**   
+1. Make sure that docker is installed on the target machine. If not, install it as described in [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/)  
+If the target machine runs with windows, make sure that docker is running with `Linux containers`. 
+3. Copy the content of the `artifacts` folder to the target machine.
+4. Execute the `kmap` script to run the software on the target machine.  
+On linux machines, execute the `kmap.sh` script, on windows machines the `kmap.ps1` script.
 
 ## Demo
 A public demo of the project is available at [http://5.183.20.2/](http://5.183.20.2/).
