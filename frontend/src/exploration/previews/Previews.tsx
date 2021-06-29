@@ -13,17 +13,11 @@ const useStyle = makeStyles(() =>
   createStyles({
     container: {
       height: '100%',
-      width: '100%',
     },
     paper: {
       maxHeight: '100%',
       overflow: 'auto',
       maxWidth: '22em',
-      margin: 'auto',
-    },
-    header: {
-      marginTop: 0,
-      textAlign: 'center',
     },
   })
 );
@@ -49,7 +43,7 @@ function Previews(): JSX.Element {
 
   return (
     <Box className={`${classes.container} Previews`}>
-      <h2 className={classes.header}>Recommended Visualisations</h2>
+      <h2>Recommended Visualisations</h2>
       <Paper className={classes.paper}>
         <AnimatedList>
           {layoutsPreviewData.map((preview) => (
