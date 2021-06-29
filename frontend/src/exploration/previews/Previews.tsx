@@ -22,7 +22,7 @@ const useStyle = makeStyles(() =>
       margin: 'auto',
     },
     header: {
-      margin: 0,
+      marginTop: 0,
       textAlign: 'center',
     },
   })
@@ -49,7 +49,7 @@ function Previews(): JSX.Element {
 
   return (
     <Box className={`${classes.container} Previews`}>
-      <h1 className={classes.header}>Recommended Visualisations</h1>
+      <h2 className={classes.header}>Recommended Visualisations</h2>
       <Paper className={classes.paper}>
         <AnimatedList>
           {layoutsPreviewData.map((preview) => (

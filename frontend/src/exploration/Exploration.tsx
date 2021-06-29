@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Box, makeStyles } from '@material-ui/core';
+import { Box, Grid, makeStyles } from '@material-ui/core';
 import { createStyles, Theme } from '@material-ui/core/styles';
 import useResizeObserver from '@react-hook/resize-observer';
 import Previews from './previews/Previews';
@@ -44,16 +44,14 @@ function Exploration(): JSX.Element {
   return (
     <Box p={3}>
       <h1 id="ExplorationHeader">Exploration</h1>
-      <div ref={containerRef}>
-        <Box className={classes.container} display="flex">
-          <Box flex={3} className={classes.questions}>
-            <Questions />
-          </Box>
-          <Box flex={2}>
-            <Previews />
-          </Box>
-        </Box>
-      </div>
+      <Grid container direction="row" justify="space-between">
+        <Grid item xs={7}>
+          <Questions />
+        </Grid>
+        <Grid item xs={4}>
+          <Previews />
+        </Grid>
+      </Grid>
     </Box>
   );
 }
