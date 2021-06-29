@@ -64,6 +64,7 @@ function Questions(): JSX.Element {
   return (
     <>
       <Box>
+        <h2>Please answer the following questions</h2>
         {explorationQuestions.map((question, qIndex) => (
           <Accordion>
             <AccordionSummary

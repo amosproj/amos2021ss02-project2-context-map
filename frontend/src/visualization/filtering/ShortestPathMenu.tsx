@@ -26,8 +26,8 @@ export default function ShortestPathMenu(): JSX.Element {
   };
 
   return (
-    <>
-      <Box display="flex" p={1} fontWeight={500} fontSize={16}>
+    <Box p={3}>
+      <Box display="flex" fontWeight={500} fontSize={16}>
         Find shortest path
       </Box>
       <Box display="flex" p={1}>
@@ -57,6 +57,6 @@ export default function ShortestPathMenu(): JSX.Element {
           label="Ignore edge directions"
         />
       </Box>
-    </>
+    </Box>
   );
 }

@@ -1,6 +1,12 @@
 import React from 'react';
-import { createStyles, Grid, makeStyles, Typography } from '@material-ui/core';
-import { common, pink } from '@material-ui/core/colors';
+import {
+  Box,
+  createStyles,
+  Grid,
+  makeStyles,
+  Typography,
+} from '@material-ui/core';
+import { pink } from '@material-ui/core/colors';
 import Typed from 'react-typed';
 import HomeVideoModal from './HomeVideoModal';
 
@@ -20,9 +26,6 @@ const useStyles = makeStyles(() =>
       fontWeight: 400,
       color: pink[500],
     },
-    bgWhite: {
-      backgroundColor: common.white,
-    },
     h100: {
       height: '100%',
     },
@@ -33,7 +36,7 @@ function Home(): JSX.Element {
   const classes = useStyles();
 
   return (
-    <div className={`${classes.h100} ${classes.bgWhite}`}>
+    <Box p={3} className={classes.h100}>
       {/* Splits Page Horizontally */}
       <Grid container spacing={0} className={classes.h100}>
         {/* Left side */}
@@ -101,7 +104,7 @@ function Home(): JSX.Element {
           </Grid>
         </Grid>
       </Grid>
-    </div>
+    </Box>
   );
 }
 

@@ -1,8 +1,9 @@
+import { Box } from '@material-ui/core';
 import React from 'react';
 
 function Data(): JSX.Element {
   return (
-    <>
+    <Box p={3}>
       <h1>Data</h1>
       <p>Coming soon...</p>
       <div style={{ width: '100%', textAlign: 'center' }}>
@@ -12,7 +13,7 @@ function Data(): JSX.Element {
           style={{ maxWidth: '100%', maxHeight: '75vh' }}
         />
       </div>{' '}
-    </>
+    </Box>
   );
 }
 
