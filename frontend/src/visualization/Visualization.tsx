@@ -7,7 +7,7 @@ function Visualization(): JSX.Element {
   const cards = cardContents;
 
   return (
-    <>
+    <Box p={3}>
       <h1>Visualization Dashboard</h1>
       <Box>
         <Container maxWidth={false}>
@@ -29,7 +29,7 @@ function Visualization(): JSX.Element {
           <Box />
         </Container>
       </Box>
-    </>
+    </Box>
   );
 }
 

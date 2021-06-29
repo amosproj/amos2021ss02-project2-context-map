@@ -42,7 +42,7 @@ function Exploration(): JSX.Element {
 
   const classes = useStyle({ previewHeaderHeight });
   return (
-    <>
+    <Box p={3}>
       <h1 id="ExplorationHeader">Exploration</h1>
       <div ref={containerRef}>
         <Box className={classes.container} display="flex">
@@ -54,7 +54,7 @@ function Exploration(): JSX.Element {
           </Box>
         </Box>
       </div>
-    </>
+    </Box>
   );
 }
 
