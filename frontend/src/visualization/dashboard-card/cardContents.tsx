@@ -12,10 +12,8 @@ const cardContents: ReadonlyArray<DeepReadonly<CardPresentationContent>> = [
   {
     label: 'Graph',
     subLabel: '2D network-based visualization',
-    description: `Displays a clear relationship between nodes, 
-      where the nodes also have a set tier or level that needs
-      to be communicated.
-      Takes multiple components into account, minimizes
+    description: `Clearly displays the relationships between 
+      nodes. Takes multiple components into account, minimizes
       link crossing and makes efficient use of available
       screen space.`,
     icon: 'timeline',
@@ -33,12 +31,10 @@ const cardContents: ReadonlyArray<DeepReadonly<CardPresentationContent>> = [
   {
     label: 'Hierarchies',
     subLabel: '2D tree-based visualization',
-    description: `Displays a clear relationship between nodes, 
-      where the nodes also have a set tier or level that needs
-      to be communicated.
-      Takes multiple components into account, minimizes
-      link crossing and makes efficient use of available
-      screen space.`,
+    description: `Aims to highlight the main direction within 
+      a directed graph. The nodes of a graph are placed in 
+      hierarchically arranged layers such that the edges of the 
+      graph show the same overall orientation`,
     icon: 'device_hub',
     path: '/visualization/hierarchical',
   },
