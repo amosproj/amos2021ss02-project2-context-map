@@ -12,6 +12,7 @@ import {
 import { Autorenew, Search } from '@material-ui/icons';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
+import { Link } from 'react-router-dom';
 import useService from '../dependency-injection/useService';
 import { SearchService } from '../services/search';
 import './SearchResultList.scss';
@@ -113,12 +114,42 @@ export default function Searchbar(): JSX.Element {
     };
   }, []);
 
+  const numSearchObservers = useObservable(
+    searchSelectionStore.getCountSubscribers(),
+    0
+  );
+
   const onInputChanged = (event: ChangeEvent<HTMLInputElement>) => {
     searchInput$.current.next(event.target.value);
   };
 
   const onCardSelected = (card: SelectedSearchResult) => {
     searchSelectionStore.setState(card);
+  };
+
+  const getListItemElement = (element: SearchResultList['elements'][0]) => {
+    if (numSearchObservers === 0) {
+      // TODO make URL react to different current URLs
+      const toUrl = '/visualization/graph';
+      return (
+        <Link key={element.key} to={toUrl}>
+          <ListItem button component="a">
+            {element.element}
+          </ListItem>
+        </Link>
+      );
+    }
+
+    return (
+      <ListItem
+        key={element.key}
+        button
+        component="a"
+        onClick={() => onCardSelected(element.entity)}
+      >
+        {element.element}
+      </ListItem>
+    );
   };
 
   return (
@@ -161,16 +192,9 @@ export default function Searchbar(): JSX.Element {
                         <ul className="SubList">
                           <ListSubheader>{result.header}</ListSubheader>
                           <LimitListSizeComponent
-                            list={result.elements.map((element) => (
-                              <ListItem
-                                key={element.key}
-                                button
-                                component="a"
-                                onClick={() => onCardSelected(element.entity)}
-                              >
-                                {element.element}
-                              </ListItem>
-                            ))}
+                            list={result.elements.map((element) =>
+                              getListItemElement(element)
+                            )}
                           />
                         </ul>
                       </li>

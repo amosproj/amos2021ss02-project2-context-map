@@ -1,3 +1,4 @@
+import { BehaviorSubject, Observable } from 'rxjs';
 import SimpleStore from './SimpleStore';
 import { EdgeDescriptor, NodeDescriptor } from '../shared/entities';
 import { EdgeTypeDescriptor, NodeTypeDescriptor } from '../shared/schema';
@@ -31,5 +32,43 @@ export default class SearchSelectionStore extends SimpleStore<
 > {
   protected getInitialValue(): SelectedSearchResult | undefined {
     return undefined;
+  }
+
+  /**
+   * Stores the number of active subscribers to this store (i.e. to the
+   * Observable returned from {@link getState}).
+   */
+  private countSubscribers = new BehaviorSubject<number>(0);
+
+  /**
+   * @override
+   */
+  getState(): Observable<SelectedSearchResult | undefined> {
+    return super.getState().pipe(this.withSubscriberCount());
+  }
+
+  /**
+   * Returns the number of active subscribers to this store (i.e. to the
+   * Observable returned from {@link getState}).
+   */
+  getCountSubscribers(): Observable<number> {
+    return this.countSubscribers.pipe();
+  }
+
+  /**
+   * Observable operator that updates {@link countSubscribers} if the source
+   * observable is subscribed to or unsubscribed.
+   */
+  private withSubscriberCount<T>() {
+    return (source: Observable<T>): Observable<T> =>
+      new Observable<T>((subscriber) => {
+        const sub = source.subscribe(subscriber);
+        this.countSubscribers.next(this.countSubscribers.getValue() + 1);
+
+        return () => {
+          sub.unsubscribe();
+          this.countSubscribers.next(this.countSubscribers.getValue() - 1);
+        };
+      });
   }
 }
