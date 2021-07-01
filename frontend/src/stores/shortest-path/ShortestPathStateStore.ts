@@ -13,6 +13,10 @@ export class ShortestPathStateStore extends SimpleStore<ShortestPathState> {
     };
   }
 
+  public reset(): void {
+    this.setState(this.getInitialValue());
+  }
+
   public setStartNode(startNode: number | null): void {
     this.mergeState({ startNode });
   }
