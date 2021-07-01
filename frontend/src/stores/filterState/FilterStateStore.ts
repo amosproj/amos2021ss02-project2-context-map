@@ -60,7 +60,7 @@ export default class FilterStateStore extends SimpleStore<FilterState> {
    * @param schema - the schema that is used for initialization of the {@link FilterLineState} types.
    * @private
    */
-  private initFromSchema(schema: Schema) {
+  public initFromSchema(schema: Schema): void {
     const nodeLineStates: FilterLineState[] = [];
     const edgeLineStates: FilterLineState[] = [];
 

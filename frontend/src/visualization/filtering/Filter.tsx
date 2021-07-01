@@ -23,6 +23,7 @@ import { EntityStyleStore } from '../../stores/colors';
 import ShortestPathMenu from './ShortestPathMenu';
 import { QueryEdgeResult, QueryNodeResult } from '../../shared/queries';
 import SchemaStore from '../../stores/SchemaStore';
+import Reset from './Reset';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -179,6 +180,8 @@ const Filter = (): JSX.Element => {
           </TabPanel>
           <Divider />
           <ShortestPathMenu />
+          <Divider />
+          <Reset />
         </List>
       </Drawer>
     </div>
