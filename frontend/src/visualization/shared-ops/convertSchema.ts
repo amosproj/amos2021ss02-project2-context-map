@@ -17,7 +17,7 @@ function convertNodeType(
     styleProvider.getStyle({ id: -1, types: [nodeType.name] })
   );
 
-  const nodeTypeInfo: vis.Node = {
+  const nodeTypeInfo = {
     id: nodeType.name,
     label: nodeType.name,
   };
@@ -41,13 +41,14 @@ function convertEdgeType(
     styleProvider.getStyle({ id: -1, type: edgeType.name, from: -1, to: -1 })
   );
 
-  const edgeInfo = {
+  const edgeTypeInfo = {
     id: edgeType.name,
+    label: edgeType.name,
     from: nodeTypeConnectionInfo.from,
     to: nodeTypeConnectionInfo.to,
   };
 
-  return { ...edgeInfo, ...style };
+  return { ...edgeTypeInfo, ...style };
 }
 
 function convertEdgeTypes(
