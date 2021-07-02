@@ -1,10 +1,7 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-import { useSize } from '../utils/useSize';
-import Filter from './filtering/Filter';
-
-import Graph from './Graph';
+import { ContainerSize, useSize } from '../utils/useSize';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -25,19 +22,16 @@ const useStyles = makeStyles(() =>
       right: 0,
       display: 'flex',
     },
-    Filter: {
-      // high zIndex so content is in the foreground
-      zIndex: 1500,
-    },
   })
 );
 
-type GraphProps = {
+export type GraphProps = {
   layout?: string;
+  content: (containerSize: ContainerSize, layout?: string) => JSX.Element;
 };
 
 function GraphPage(props: GraphProps): JSX.Element {
-  const { layout } = props;
+  const { layout, content } = props;
   const classes = useStyles();
 
   // A React ref to the container that is used to measure the available space for the graph.
@@ -53,12 +47,7 @@ function GraphPage(props: GraphProps): JSX.Element {
         className={classes.sizeMeasureContainer}
         ref={sizeMeasureContainerRef}
       />
-      <div className={classes.graphPage}>
-        <Graph layout={layout} containerSize={containerSize} />
-        <div className={classes.Filter}>
-          <Filter />
-        </div>
-      </div>
+      <div className={classes.graphPage}>{content(containerSize, layout)}</div>
     </>
   );
 }
