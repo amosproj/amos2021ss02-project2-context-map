@@ -7,6 +7,9 @@ import FilterQueryStore from '../../stores/FilterQueryStore';
 import ShortestPathStateStore from '../../stores/shortest-path/ShortestPathStateStore';
 import EntityCountsStore from '../../stores/EntityCountsStore';
 
+/**
+ * Reset button used to reset all the stores that are used in the filter.
+ */
 export default function Reset(): JSX.Element {
   const filterStateStore = useService(FilterStateStore);
   const filterQueryStore = useService(FilterQueryStore);
