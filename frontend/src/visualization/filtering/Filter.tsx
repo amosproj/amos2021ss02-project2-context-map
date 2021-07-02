@@ -88,6 +88,7 @@ const Filter = (): JSX.Element => {
   const schema = useObservable(schemaStore.getState(), {
     nodeTypes: [],
     edgeTypes: [],
+    nodeTypeConnectionInfos: [],
   });
 
   const nodes = (

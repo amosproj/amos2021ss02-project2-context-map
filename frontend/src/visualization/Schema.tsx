@@ -7,7 +7,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import useService from '../dependency-injection/useService';
 import SchemaStore from '../stores/SchemaStore';
 import useObservable from '../utils/useObservable';
-import { convertSchema } from './shared-ops/convertQueryResult';
+import convertSchema from './shared-ops/convertSchema';
 import { EntityStyleStore } from '../stores/colors/EntityStyleStore';
 import { ContainerSize } from '../utils/useSize';
 
