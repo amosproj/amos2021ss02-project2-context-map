@@ -1,6 +1,6 @@
 import React from 'react';
 import { Slider } from '@material-ui/core';
-import { filter, tap } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import useService from '../../dependency-injection/useService';
 import { QueryService } from '../../services/query';
 import LoadingStore from '../../stores/LoadingStore';
@@ -28,14 +28,6 @@ export default function MaxEntitiesSlider({ entities }: Props): JSX.Element {
   const errorStore = useService(ErrorStore);
 
   const [value, setValue] = React.useState<number>(150);
-
-  const selectedCounts = useObservable(
-    entityCountsStore.getState().pipe(tap((e) => setValue(e.nodes))),
-    {
-      nodes: 150,
-      edges: 150,
-    }
-  );
 
   // number of edges and nodes
   const counts = useObservable(
