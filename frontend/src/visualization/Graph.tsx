@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import VisGraph, { GraphData } from 'react-graph-vis';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { uuid } from 'uuidv4';
 import { map, tap } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
-import { Popover, Snackbar } from '@material-ui/core';
+import { Paper, Popper, Snackbar, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import useService from '../dependency-injection/useService';
 import { ContainerSize } from '../utils/useSize';
@@ -62,10 +62,7 @@ function Graph(props: GraphProps): JSX.Element {
   const onNoEntitiesFoundWarningSnackbarClose = () => {
     setNoEntitiesFoundWarningOpen(false);
   };
-  const [detailsPopoverOpen, setDetailsPopoverOpen] = useState(false);
-  const detailsPopoverClose = () => {
-    setDetailsPopoverOpen(false);
-  };
+  const [detailsPopperOpen, setDetailsPopperOpen] = useState(false);
 
   const queryResultStore = useService(QueryResultStore);
   const entityColorStore = useService(EntityStyleStore);
@@ -83,14 +80,18 @@ function Graph(props: GraphProps): JSX.Element {
 
   const events = {
     select: ({ nodes, edges }: GraphData) => {
-      if (nodes.length === 0) {
-        setDetailsPopoverOpen(false);
+      if (nodes.length === 0 && edges.length === 0) {
+        setDetailsPopperOpen(false);
         return;
       }
       const nodeId = nodes[0];
-      setDetailsPopoverOpen(true);
+      console.log(nodeId);
+      setDetailsPopperOpen(true);
+      console.log(detailsPopperOpen);
     },
   };
+
+  const graphRef = useRef(null);
 
   // When either the query result or the selected entity changes => check if
   // selection is in query result.
@@ -114,24 +115,40 @@ function Graph(props: GraphProps): JSX.Element {
 
   return (
     <>
-      <Popover
-        open={detailsPopoverOpen}
-        onClose={detailsPopoverClose}
-        anchorReference="anchorPosition"
-        anchorPosition={{ top: 125, left: 75 }}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-      >
-        Display node details here.
-      </Popover>
+      <Popper open={detailsPopperOpen} anchorEl={graphRef.current}>
+        <Paper>
+          <Typography>
+            The content of the Popper.
+            <br />
+            The content of the Popper.
+            <br />
+            The content of the Popper.
+            <br />
+            The content of the Popper. The content of the Popper.
+            <br />
+            The content of the Popper.
+            <br />
+            The content of the Popper.
+            <br />
+            The content of the Popper. The content of the Popper.
+            <br />
+            The content of the Popper.
+            <br />
+            The content of the Popper.
+            <br />
+            The content of the Popper. The content of the Popper.
+            <br />
+            The content of the Popper.
+            <br />
+            The content of the Popper.
+            <br />
+            The content of the Popper.
+          </Typography>
+        </Paper>
+      </Popper>
       <div className={classes.graphContainer}>
         <VisGraph
+          ref={graphRef}
           graph={graphData}
           options={buildOptions(
             containerSize.width,
