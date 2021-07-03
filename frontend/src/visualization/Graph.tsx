@@ -4,7 +4,15 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { uuid } from 'uuidv4';
 import { map, tap } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
-import { Paper, Popper, Snackbar, Typography } from '@material-ui/core';
+import {
+  Box,
+  List,
+  ListItem,
+  Paper,
+  Popper,
+  Snackbar,
+  Typography,
+} from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import useService from '../dependency-injection/useService';
 import { ContainerSize } from '../utils/useSize';
@@ -23,6 +31,11 @@ const useStyles = makeStyles(() =>
       flexGrow: 1,
       overflowY: 'hidden',
       overflowX: 'hidden',
+    },
+    popper: {
+      zIndex: 1201,
+      marginLeft: '60px',
+      marginTop: '115px',
     },
   })
 );
@@ -115,35 +128,21 @@ function Graph(props: GraphProps): JSX.Element {
 
   return (
     <>
-      <Popper open={detailsPopperOpen} anchorEl={graphRef.current}>
+      <Popper
+        className={classes.popper}
+        open={detailsPopperOpen}
+        anchorEl={graphRef.current}
+      >
         <Paper>
-          <Typography>
-            The content of the Popper.
-            <br />
-            The content of the Popper.
-            <br />
-            The content of the Popper.
-            <br />
-            The content of the Popper. The content of the Popper.
-            <br />
-            The content of the Popper.
-            <br />
-            The content of the Popper.
-            <br />
-            The content of the Popper. The content of the Popper.
-            <br />
-            The content of the Popper.
-            <br />
-            The content of the Popper.
-            <br />
-            The content of the Popper. The content of the Popper.
-            <br />
-            The content of the Popper.
-            <br />
-            The content of the Popper.
-            <br />
-            The content of the Popper.
-          </Typography>
+          <Box m={1}>
+            <Typography variant="h6">Node details</Typography>
+            <List>
+              <ListItem>Type: X</ListItem>
+              <ListItem>Category: Y</ListItem>
+              <ListItem>And: More</ListItem>
+              <ListItem>Details: edges?</ListItem>
+            </List>
+          </Box>
         </Paper>
       </Popper>
       <div className={classes.graphContainer}>
