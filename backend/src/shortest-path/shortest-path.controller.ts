@@ -36,11 +36,11 @@ export class ShortestPathController {
       throw new BadRequestException();
     }
 
-    if (!query.startNode) {
+    if (query.startNode == null) {
       throw new BadRequestException();
     }
 
-    if (!query.endNode) {
+    if (query.endNode == null) {
       throw new BadRequestException();
     }
 
