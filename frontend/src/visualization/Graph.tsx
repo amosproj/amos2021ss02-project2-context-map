@@ -101,13 +101,11 @@ function Graph(props: GraphProps): JSX.Element {
   const events = {
     select: ({ nodes, edges }: GraphData) => {
       if (nodes.length === 0 && edges.length === 0) {
-        setDetailsPopperOpen(false);
         return;
       }
       const nodeId = nodes[0];
       console.log(nodeId);
       setDetailsPopperOpen(true);
-      console.log(detailsPopperOpen);
     },
   };
 
@@ -144,7 +142,12 @@ function Graph(props: GraphProps): JSX.Element {
           <Card>
             <CardHeader
               action={
-                <IconButton aria-label="close">
+                <IconButton
+                  aria-label="close"
+                  onClick={() => {
+                    setDetailsPopperOpen(false);
+                  }}
+                >
                   <CloseIcon />
                 </IconButton>
               }
