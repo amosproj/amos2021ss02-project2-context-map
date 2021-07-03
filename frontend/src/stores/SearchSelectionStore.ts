@@ -41,9 +41,29 @@ export default class SearchSelectionStore extends SimpleStore<
   private countSubscribers = new BehaviorSubject<number>(0);
 
   /**
+   * @param [withoutSubscriberCount=false] if true, the subscriptions to the returned
+   * observable does not count to the number of subscribers (see
+   * {@link getCountSubscribers}). Use case: Stores.
    * @override
+   * @example
+   * // subscribe
+   * const searchSelection = useObservable(
+   *   searchSelectionStore.getState(),
+   *   searchSelectionStore.getValue()
+   * )
+   *
+   * // if search should be cleared when pages change:
+   * // clear search selection on unmount
+   * useEffect(() => {
+   *   return () => searchSelectionStore.setState(undefined);
+   * }, []);
    */
-  getState(): Observable<SelectedSearchResult | undefined> {
+  getState(
+    withoutSubscriberCount = false
+  ): Observable<SelectedSearchResult | undefined> {
+    if (withoutSubscriberCount) {
+      return super.getState();
+    }
     return super.getState().pipe(this.withSubscriberCount());
   }
 
