@@ -5,14 +5,17 @@ import { uuid } from 'uuidv4';
 import { map, tap } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
 import {
-  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  IconButton,
   List,
   ListItem,
   Paper,
   Popper,
   Snackbar,
-  Typography,
 } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
 import useService from '../dependency-injection/useService';
 import { ContainerSize } from '../utils/useSize';
@@ -36,6 +39,10 @@ const useStyles = makeStyles(() =>
       zIndex: 1201,
       marginLeft: '60px',
       marginTop: '115px',
+      minWidth: '250px',
+    },
+    closeIcon: {
+      float: 'right',
     },
   })
 );
@@ -134,15 +141,24 @@ function Graph(props: GraphProps): JSX.Element {
         anchorEl={graphRef.current}
       >
         <Paper>
-          <Box m={1}>
-            <Typography variant="h6">Node details</Typography>
-            <List>
-              <ListItem>Type: X</ListItem>
-              <ListItem>Category: Y</ListItem>
-              <ListItem>And: More</ListItem>
-              <ListItem>Details: edges?</ListItem>
-            </List>
-          </Box>
+          <Card>
+            <CardHeader
+              action={
+                <IconButton aria-label="close">
+                  <CloseIcon />
+                </IconButton>
+              }
+              title="Node Details"
+            />
+            <CardContent>
+              <List>
+                <ListItem>Type: X</ListItem>
+                <ListItem>Category: Y</ListItem>
+                <ListItem>And: More</ListItem>
+                <ListItem>Details: edges?</ListItem>
+              </List>
+            </CardContent>
+          </Card>
         </Paper>
       </Popper>
       <div className={classes.graphContainer}>
