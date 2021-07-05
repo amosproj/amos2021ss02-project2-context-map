@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   neo4j-db:
-    image: neo4j:4.2-enterprise
+    image: neo4j:4.2.8-enterprise
     restart: always
     command: /mnt/amos/load-dump.sh
     expose:
