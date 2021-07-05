@@ -9,7 +9,7 @@ import useObservable from '../../utils/useObservable';
 import withLoadingBar from '../../utils/withLoadingBar';
 import withErrorHandler from '../../utils/withErrorHandler';
 import FilterQueryStore from '../../stores/FilterQueryStore';
-import EntityCountsStore from '../../stores/EntityCountsStore';
+import EntityQueryLimitStore from '../../stores/EntityQueryLimitStore';
 
 type Props = {
   entities: 'nodes' | 'edges';
@@ -23,7 +23,7 @@ type Props = {
 export default function MaxEntitiesSlider({ entities }: Props): JSX.Element {
   const queryService = useService(QueryService);
   const filterQueryStore = useService(FilterQueryStore);
-  const entityCountsStore = useService(EntityCountsStore);
+  const entityCountsStore = useService(EntityQueryLimitStore);
   const loadingStore = useService(LoadingStore);
   const errorStore = useService(ErrorStore);
 
@@ -56,16 +56,10 @@ export default function MaxEntitiesSlider({ entities }: Props): JSX.Element {
 
   // Updates the state
   const update = (val: number) => {
-    const filterLimits = filterQueryStore.getValue().limits ?? {};
-
-    if (val >= max) {
-      // If selected filter >= max number of entities => delete that filter
-      delete filterLimits[entities];
-    } else {
-      // else add filter
-      filterLimits[entities] = val;
-    }
-    filterQueryStore.mergeState({ limits: filterLimits });
+    const filterLimits = entityCountsStore.getValue();
+    filterLimits[entities] = val;
+    entityCountsStore.setState(filterLimits);
+    filterQueryStore.mergeState(filterQueryStore.getValue());
   };
 
   return (
@@ -78,10 +72,6 @@ export default function MaxEntitiesSlider({ entities }: Props): JSX.Element {
         valueLabelDisplay="auto"
         valueLabelFormat={getLabel}
         onChange={(_, val) => {
-          entityCountsStore.setState({
-            nodes: val as number,
-            edges: val as number,
-          });
           setValue(val as number);
         }}
         onChangeCommitted={(_, val) => update(val as number)}
