@@ -54,13 +54,17 @@ export default class FilterStateStore extends SimpleStore<FilterState> {
     this.setState(transformedState);
   }
 
+  public reset(): void {
+    this.initFromSchema(this.schemaStore.getValue());
+  }
+
   /**
    * Initializes the {@link FilterState} with unactive {@link FilterLineState}s with types
    * from schema.
    * @param schema - the schema that is used for initialization of the {@link FilterLineState} types.
    * @private
    */
-  public initFromSchema(schema: Schema): void {
+  private initFromSchema(schema: Schema): void {
     const nodeLineStates: FilterLineState[] = [];
     const edgeLineStates: FilterLineState[] = [];
 

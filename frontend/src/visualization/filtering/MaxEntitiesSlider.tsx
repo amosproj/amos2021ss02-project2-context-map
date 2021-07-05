@@ -28,7 +28,9 @@ export default function MaxEntitiesSlider({ entities }: Props): JSX.Element {
   const errorStore = useService(ErrorStore);
 
   // current value of the slider
-  const [value, setValue] = React.useState<number>(150);
+  const [value, setValue] = React.useState<number>(
+    entityCountsStore.getValue().nodes
+  );
 
   // number of edges and nodes
   const counts = useObservable(
