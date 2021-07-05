@@ -2,7 +2,6 @@ import React from 'react';
 import { Box, Button, Icon } from '@material-ui/core';
 import useService from '../../dependency-injection/useService';
 import FilterStateStore from '../../stores/filterState/FilterStateStore';
-import SchemaStore from '../../stores/SchemaStore';
 import FilterQueryStore from '../../stores/FilterQueryStore';
 import ShortestPathStateStore from '../../stores/shortest-path/ShortestPathStateStore';
 import EntityCountsStore from '../../stores/EntityCountsStore';
