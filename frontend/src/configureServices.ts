@@ -66,10 +66,6 @@ export default function configureServices(container: Container): void {
   container.bind(FilterStateStore).to(FilterStateStore).inSingletonScope();
   container.bind(SchemaStore).to(SchemaStore).inSingletonScope();
   container.bind(FilterQueryStore).to(FilterQueryStore).inSingletonScope();
-  container
-    .bind(EntityQueryLimitStore)
-    .to(EntityQueryLimitStore)
-    .inRequestScope();
   container.bind(QueryResultStore).to(QueryResultStore).inSingletonScope();
   container
     .bind(EntityStyleStore)
