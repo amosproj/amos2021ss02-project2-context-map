@@ -20,6 +20,7 @@ import { ShortestPathStateStore } from './stores/shortest-path/ShortestPathState
 import ExplorationStore from './stores/exploration/ExplorationStore';
 import SearchSelectionStore from './stores/SearchSelectionStore';
 import SchemaStore from './stores/SchemaStore';
+import ChordDetailsStateStore from './stores/details/ChordDetailsStateStore';
 
 /**
  * Configures all services in the frontend app.
@@ -77,4 +78,5 @@ export default function configureServices(container: Container): void {
   container.bind(ShortestPathStateStore).toSelf().inSingletonScope();
   container.bind(ExplorationStore).toSelf().inSingletonScope();
   container.bind(SearchSelectionStore).toSelf().inSingletonScope();
+  container.bind(ChordDetailsStateStore).toSelf().inSingletonScope();
 }
