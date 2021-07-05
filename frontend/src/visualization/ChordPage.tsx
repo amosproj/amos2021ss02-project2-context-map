@@ -2,7 +2,7 @@ import React from 'react';
 import { combineLatest } from 'rxjs';
 import ChordDiagram from 'react-chord-diagram';
 import { map } from 'rxjs/operators';
-import { Grid, makeStyles } from '@material-ui/core';
+import { Box, Container, Grid, Paper } from '@material-ui/core';
 import useService from '../dependency-injection/useService';
 import { SchemaService } from '../services/schema';
 import { NodeTypeConnectionInfo } from '../shared/schema';
@@ -14,12 +14,6 @@ type ChordData = {
   names: string[];
   colors: string[];
 };
-
-const useStyles = makeStyles({
-  root: {
-    paddingTop: '80px', // otherwise page is hidden under header
-  },
-});
 
 /**
  * Generate a matrix with node connections, and a Record mapping node types to their index in the matrix and their color.
@@ -77,8 +71,6 @@ function convertToChordData(
 }
 
 export default function ChordPage(): JSX.Element {
-  const classes = useStyles();
-
   const schemaService = useService(SchemaService);
   const entityStyleStore = useService(EntityStyleStore);
 
@@ -91,19 +83,25 @@ export default function ChordPage(): JSX.Element {
   );
 
   return (
-    <Grid
-      container
-      className={classes.root}
-      alignItems="center"
-      justify="center"
-    >
-      <ChordDiagram
-        matrix={chordData.matrix}
-        componentId={1}
-        groupLabels={chordData.names}
-        groupColors={chordData.colors}
-        outerRadius={260} // workaround for labels being cut off
-      />
-    </Grid>
+    <Box p={3}>
+      <h1>Chord Diagram</h1>
+      <Container maxWidth={false}>
+        <Grid container spacing={0} justify="space-between">
+          <Grid item lg={5} md={12}>
+            <ChordDiagram
+              matrix={chordData.matrix}
+              componentId={1}
+              groupLabels={chordData.names}
+              groupColors={chordData.colors}
+              outerRadius={260} // workaround for labels being cut off
+            />
+          </Grid>
+          <Grid item lg={5} md={12}>
+            <h2>Details</h2>
+            Click a node type to display its details.
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
 }
