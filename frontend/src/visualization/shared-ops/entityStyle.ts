@@ -1,6 +1,6 @@
 import { EdgeStyle, NodeStyle } from '../../stores/colors';
 
-export function nodeStyle(style: NodeStyle) {
+export function nodeStyle(style: NodeStyle): unknown {
   return {
     color: {
       border: style.stroke.color,
@@ -13,7 +13,7 @@ export function nodeStyle(style: NodeStyle) {
   };
 }
 
-export function edgeStyle(style: EdgeStyle) {
+export function edgeStyle(style: EdgeStyle): unknown {
   return {
     color: style.color,
     dashes: style.stroke.dashes,
