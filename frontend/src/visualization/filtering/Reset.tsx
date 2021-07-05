@@ -4,7 +4,7 @@ import useService from '../../dependency-injection/useService';
 import FilterStateStore from '../../stores/filterState/FilterStateStore';
 import FilterQueryStore from '../../stores/FilterQueryStore';
 import ShortestPathStateStore from '../../stores/shortest-path/ShortestPathStateStore';
-import EntityCountsStore from '../../stores/EntityCountsStore';
+import EntityQueryLimitStore from '../../stores/EntityQueryLimitStore';
 
 /**
  * Reset button used to reset all the stores that are used in the filter.
@@ -12,7 +12,7 @@ import EntityCountsStore from '../../stores/EntityCountsStore';
 export default function Reset(): JSX.Element {
   const filterStateStore = useService(FilterStateStore);
   const filterQueryStore = useService(FilterQueryStore);
-  const entityCountsStore = useService(EntityCountsStore);
+  const entityCountsStore = useService(EntityQueryLimitStore);
   const shortestPathStore = useService(ShortestPathStateStore);
 
   const handleReset = () => {

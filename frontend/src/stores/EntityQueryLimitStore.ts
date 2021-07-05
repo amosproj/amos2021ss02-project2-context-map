@@ -1,12 +1,12 @@
+import { injectable } from 'inversify';
 import SimpleStore from './SimpleStore';
 import { CountQueryResult } from '../shared/queries';
-
-type EntityCounts = { nodes: number; edges: number };
 
 /**
  * Contains the current state of the number of entities to be displayed.
  */
-export default class EntityCountsStore extends SimpleStore<EntityCounts> {
+@injectable()
+export default class EntityQueryLimitStore extends SimpleStore<CountQueryResult> {
   protected getInitialValue(): CountQueryResult {
     return { nodes: 150, edges: 150 };
   }

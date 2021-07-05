@@ -20,7 +20,7 @@ import { ShortestPathStateStore } from './stores/shortest-path/ShortestPathState
 import ExplorationStore from './stores/exploration/ExplorationStore';
 import SearchSelectionStore from './stores/SearchSelectionStore';
 import SchemaStore from './stores/SchemaStore';
-import EntityCountsStore from './stores/EntityCountsStore';
+import EntityQueryLimitStore from './stores/EntityQueryLimitStore';
 
 /**
  * Configures all services in the frontend app.
@@ -64,9 +64,12 @@ export default function configureServices(container: Container): void {
   container.bind(ErrorStore).to(ErrorStore).inSingletonScope();
   container.bind(LoadingStore).to(LoadingStore).inSingletonScope();
   container.bind(FilterStateStore).to(FilterStateStore).inSingletonScope();
-  container.bind(EntityCountsStore).to(EntityCountsStore).inRequestScope();
   container.bind(SchemaStore).to(SchemaStore).inSingletonScope();
   container.bind(FilterQueryStore).to(FilterQueryStore).inSingletonScope();
+  container
+    .bind(EntityQueryLimitStore)
+    .to(EntityQueryLimitStore)
+    .inRequestScope();
   container.bind(QueryResultStore).to(QueryResultStore).inSingletonScope();
   container
     .bind(EntityStyleStore)
