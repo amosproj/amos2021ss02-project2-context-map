@@ -11,4 +11,9 @@ export interface ChordDetailsState {
    * A 2D array containing all edges of the graph
    */
   matrix: number[][] | null;
+
+  /**
+   * index of the node type in the matrix.
+   */
+  index: number | null;
 }
