@@ -8,12 +8,7 @@ import { SchemaService } from '../services/schema';
 import { NodeTypeConnectionInfo } from '../shared/schema';
 import useObservable from '../utils/useObservable';
 import { EntityStyleProvider, EntityStyleStore } from '../stores/colors';
-
-type ChordData = {
-  matrix: number[][];
-  names: string[];
-  colors: string[];
-};
+import ChordDetails, { updateChordDetails } from './ChordDetails';
 
 /**
  * Generate a matrix with node connections, and a Record mapping node types to their index in the matrix and their color.
@@ -89,16 +84,21 @@ export default function ChordPage(): JSX.Element {
         <Grid container spacing={0} justify="space-between">
           <Grid item lg={5} md={12}>
             <ChordDiagram
+              blurOnHover
+              ribbonOpacity="0.8"
+              ribbonBlurOpacity="0.2"
               matrix={chordData.matrix}
               componentId={1}
-              groupLabels={chordData.names}
               groupColors={chordData.colors}
+              groupLabels={chordData.names}
+              groupOnClick={(idx: number) => {
+                updateChordDetails(chordData, idx);
+              }}
               outerRadius={260} // workaround for labels being cut off
             />
           </Grid>
           <Grid item lg={5} md={12}>
-            <h2>Details</h2>
-            Click a node type to display its details.
+            <ChordDetails />
           </Grid>
         </Grid>
       </Container>
