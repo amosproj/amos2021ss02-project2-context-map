@@ -14,6 +14,10 @@ import { createSelectionInfo, EntityStyleStore } from '../stores/colors';
 import SearchSelectionStore from '../stores/SearchSelectionStore';
 import { isEntitySelected } from '../stores/colors/EntityStyleProviderImpl';
 
+/**
+ * Keys for the snackbar notifications.
+ * These keys are not readonly.
+ */
 const SNACKBAR_KEYS = {
   SHORTEST_PATH_NOT_FOUND: 'shortest-path-not-found',
   SEARCH_NOT_FOUND: 'search-not-found',
@@ -76,6 +80,7 @@ function Graph(props: GraphProps): JSX.Element {
       tap(([queryResult]) => {
         closeSnackbar(SNACKBAR_KEYS.SHORTEST_PATH_NOT_FOUND);
         if (queryResult.containsShortestPath === false) {
+          // assign new random id to avoid strange ui glitches
           SNACKBAR_KEYS.SHORTEST_PATH_NOT_FOUND = uuid();
           enqueueSnackbar(
             'No shortest path found, please adjust filter settings or ignore edge directions',
@@ -108,6 +113,7 @@ function Graph(props: GraphProps): JSX.Element {
           queryResult.edges.some((e) => isEntitySelected(e, selectionInfo)) ||
           queryResult.nodes.some((n) => isEntitySelected(n, selectionInfo));
         if (!entityFound) {
+          // assign new random id to avoid strange ui glitches
           SNACKBAR_KEYS.SEARCH_NOT_FOUND = uuid();
           enqueueSnackbar('Selected entity not found in the displayed graph', {
             variant: 'warning',
