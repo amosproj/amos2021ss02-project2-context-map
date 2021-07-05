@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Button,
   Card,
   CardContent,
   CardHeader,
@@ -19,7 +18,7 @@ import useObservable from '../utils/useObservable';
 import { EntityDetailsStore } from '../stores/details/EntityDetailsStore';
 import { Node, Edge } from '../shared/entities';
 import { EntityStyleStore } from '../stores/colors';
-import { QueryNodeResult } from '../shared/queries';
+import NodeTypeComponent from '../search/helper/NodeTypeComponent';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -62,21 +61,16 @@ export default function GraphDetails(): JSX.Element {
       : [(details as unknown as Edge).type];
 
     typesList = types.map((type) => {
-      const { color } = styleProvider.getStyle({
+      const n = {
         id: -1,
         types: [type],
         virtual: true,
-      } as QueryNodeResult);
-
+      };
       return (
-        <Button
-          style={{ backgroundColor: color }}
-          variant="contained"
-          color="primary"
-          disabled
-        >
-          {type}
-        </Button>
+        <NodeTypeComponent
+          name={type}
+          color={styleProvider.getStyle(n).color}
+        />
       );
     });
 
@@ -111,7 +105,7 @@ export default function GraphDetails(): JSX.Element {
           />
           <CardContent>
             <List>
-              <ListItem>{typesList}</ListItem>
+              {typesList}
               {propsList}
             </List>
           </CardContent>
