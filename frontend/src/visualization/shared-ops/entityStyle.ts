@@ -1,6 +1,18 @@
 import { EdgeStyle, NodeStyle } from '../../stores/colors';
 
-export function nodeStyle(style: NodeStyle): unknown {
+type NodeStyleProperties = {
+  color: { border: string; background: string };
+  borderWidth: number;
+  shapeProperties: { borderDashes: boolean | number[] };
+};
+
+type EdgeStyleProperties = {
+  color: string;
+  dashes: boolean | number[];
+  width: number;
+};
+
+export function nodeStyle(style: NodeStyle): NodeStyleProperties {
   return {
     color: {
       border: style.stroke.color,
@@ -13,7 +25,7 @@ export function nodeStyle(style: NodeStyle): unknown {
   };
 }
 
-export function edgeStyle(style: EdgeStyle): unknown {
+export function edgeStyle(style: EdgeStyle): EdgeStyleProperties {
   return {
     color: style.color,
     dashes: style.stroke.dashes,
