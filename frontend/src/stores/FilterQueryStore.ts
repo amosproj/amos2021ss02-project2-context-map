@@ -1,8 +1,6 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { Observable, Subscription } from 'rxjs';
 import {
-  CountQueryResult,
   FilterCondition,
   FilterQuery,
   MatchAllCondition,
@@ -17,67 +15,18 @@ import {
   FilterState,
 } from './filterState/FilterState';
 import FilterStateStore from './filterState/FilterStateStore';
-import { QueryService } from '../services/query';
-import withLoadingBar from '../utils/withLoadingBar';
-import withErrorHandler from '../utils/withErrorHandler';
-import ErrorStore from './ErrorStore';
-import LoadingStore from './LoadingStore';
-import EntityQueryLimitStore from './EntityQueryLimitStore';
 
 /**
  * Contains the current state of the filterQuery.
  */
 @injectable()
 export default class FilterQueryStore extends SimpleStore<FilterQuery> {
-  private queryServiceSubscription?: Subscription;
-
-  private entityQueryLimitStoreSubscription?: Subscription;
-
-  private max: CountQueryResult = { nodes: 150, edges: 150 };
-
-  @inject(QueryService)
-  private readonly queryService!: QueryService;
-
-  @inject(EntityQueryLimitStore)
-  private readonly entityQueryLimitStore!: EntityQueryLimitStore;
-
   @inject(FilterStateStore)
   private readonly filterStateStore!: FilterStateStore;
 
-  @inject(ErrorStore)
-  private readonly errorStore!: ErrorStore;
-
-  @inject(LoadingStore)
-  private readonly loadingStore!: LoadingStore;
-
-  /**
-   * @override
-   */
-  protected ensureInit(): void {
-    if (this.queryServiceSubscription == null) {
-      this.queryServiceSubscription = this.executeQuery().subscribe({
-        next: (max) => {
-          this.setLimits(max, this.entityQueryLimitStore.getValue());
-          this.max = max;
-        },
-        error: () => {
-          this.setLimits(
-            { nodes: -1, edges: -1 },
-            this.entityQueryLimitStore.getValue()
-          );
-        },
-      });
-    }
-
-    if (this.entityQueryLimitStoreSubscription == null) {
-      this.entityQueryLimitStoreSubscription =
-        this.subscribeToEntityQueryLimitStore();
-    }
-  }
-
   protected getInitialValue(): FilterQuery {
     return {
-      limits: { nodes: 150, edges: 150 },
+      limits: { edges: 150, nodes: 200 },
       includeSubsidiary: true,
     };
   }
@@ -91,42 +40,6 @@ export default class FilterQueryStore extends SimpleStore<FilterQuery> {
     this.mergeState(filterQuery);
   }
 
-  private getLimits(
-    max: CountQueryResult,
-    val: CountQueryResult
-  ): CountQueryResult {
-    return {
-      nodes: val.nodes >= max.nodes ? max.nodes : val.nodes,
-      edges: val.nodes >= max.edges ? max.edges : val.edges,
-    };
-  }
-
-  private setLimits(max: CountQueryResult, val: CountQueryResult): void {
-    const curValue = this.storeSubject.value;
-    curValue.limits = this.getLimits(max, val);
-
-    this.storeSubject.next(curValue);
-  }
-
-  private executeQuery(): Observable<CountQueryResult> {
-    return this.queryService
-      .getNumberOfEntities()
-      .pipe(
-        withLoadingBar({ loadingStore: this.loadingStore }),
-        withErrorHandler({ errorStore: this.errorStore })
-      );
-  }
-
-  private subscribeToEntityQueryLimitStore(): Subscription {
-    return this.entityQueryLimitStore.getState().subscribe({
-      next: (countQueryResult) => {
-        this.setLimits(this.max, countQueryResult);
-        const filter = this.filterStateStore.getValue();
-        const filterQuery = this.convertToFilterQuery(filter);
-        this.storeSubject.next({ ...this.storeSubject.value, ...filterQuery });
-      },
-    });
-  }
   /**
    * Converts a {@link FilterState} given from the users input to a {@link FilterQuery}.
    * @param filterState - the {@link FilterState} to be converted
