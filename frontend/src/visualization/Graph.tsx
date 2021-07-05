@@ -1,21 +1,10 @@
 import React, { useRef, useState } from 'react';
-import VisGraph, { GraphData } from 'react-graph-vis';
+import VisGraph, { EventParameters, GraphEvents } from 'react-graph-vis';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { uuid } from 'uuidv4';
 import { map, tap } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  IconButton,
-  List,
-  ListItem,
-  Paper,
-  Popper,
-  Snackbar,
-} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { Snackbar } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import useService from '../dependency-injection/useService';
 import { ContainerSize } from '../utils/useSize';
@@ -25,6 +14,8 @@ import convertQueryResult from './shared-ops/convertQueryResult';
 import { createSelectionInfo, EntityStyleStore } from '../stores/colors';
 import SearchSelectionStore from '../stores/SearchSelectionStore';
 import { isEntitySelected } from '../stores/colors/EntityStyleProviderImpl';
+import GraphDetails from './GraphDetails';
+import { EntityDetailsStateStore } from '../stores/details/EntityDetailsStateStore';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -34,15 +25,6 @@ const useStyles = makeStyles(() =>
       flexGrow: 1,
       overflowY: 'hidden',
       overflowX: 'hidden',
-    },
-    popper: {
-      zIndex: 1201,
-      marginLeft: '60px',
-      marginTop: '115px',
-      minWidth: '250px',
-    },
-    closeIcon: {
-      float: 'right',
     },
   })
 );
@@ -82,8 +64,8 @@ function Graph(props: GraphProps): JSX.Element {
   const onNoEntitiesFoundWarningSnackbarClose = () => {
     setNoEntitiesFoundWarningOpen(false);
   };
-  const [detailsPopperOpen, setDetailsPopperOpen] = useState(false);
 
+  const detailsStateStore = useService(EntityDetailsStateStore);
   const queryResultStore = useService(QueryResultStore);
   const entityColorStore = useService(EntityStyleStore);
   const searchSelectionStore = useService(SearchSelectionStore);
@@ -98,18 +80,26 @@ function Graph(props: GraphProps): JSX.Element {
     { edges: [], nodes: [] }
   );
 
-  const events = {
-    select: ({ nodes, edges }: GraphData) => {
-      if (nodes.length === 0 && edges.length === 0) {
+  const events: GraphEvents = {
+    select: (params: EventParameters) => {
+      const { nodes } = params;
+
+      if (!Array.isArray(nodes) || nodes.length === 0) {
+        detailsStateStore.clear();
         return;
       }
-      const nodeId = nodes[0];
-      console.log(nodeId);
-      setDetailsPopperOpen(true);
+
+      let node = nodes[0];
+
+      if (typeof node === 'string') {
+        node = Number.parseFloat(node);
+      }
+
+      detailsStateStore.showNode(node);
     },
   };
 
-  const graphRef = useRef(null);
+  const graphRef = useRef<HTMLDivElement | null>(null);
 
   // When either the query result or the selected entity changes => check if
   // selection is in query result.
@@ -133,40 +123,9 @@ function Graph(props: GraphProps): JSX.Element {
 
   return (
     <>
-      <Popper
-        className={classes.popper}
-        open={detailsPopperOpen}
-        anchorEl={graphRef.current}
-      >
-        <Paper>
-          <Card>
-            <CardHeader
-              action={
-                <IconButton
-                  aria-label="close"
-                  onClick={() => {
-                    setDetailsPopperOpen(false);
-                  }}
-                >
-                  <CloseIcon />
-                </IconButton>
-              }
-              title="Node Details"
-            />
-            <CardContent>
-              <List>
-                <ListItem>Type: X</ListItem>
-                <ListItem>Category: Y</ListItem>
-                <ListItem>And: More</ListItem>
-                <ListItem>Details: edges?</ListItem>
-              </List>
-            </CardContent>
-          </Card>
-        </Paper>
-      </Popper>
-      <div className={classes.graphContainer}>
+      <GraphDetails />
+      <div className={classes.graphContainer} ref={graphRef}>
         <VisGraph
-          ref={graphRef}
           graph={graphData}
           options={buildOptions(
             containerSize.width,

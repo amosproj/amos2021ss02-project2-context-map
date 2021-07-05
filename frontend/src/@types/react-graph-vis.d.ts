@@ -11,6 +11,7 @@ declare module 'react-graph-vis' {
     Node,
     Edge,
     DataSet,
+    IdType,
   } from 'vis-network';
   import { Component } from 'react';
 
@@ -23,12 +24,40 @@ declare module 'react-graph-vis' {
     DataSet,
   } from 'vis-network';
 
+  export interface EventParameters {
+    nodes: IdType[];
+    edges: IdType[];
+    event: unknown;
+    pointer: {
+      DOM: { x: number; y: number };
+      canvas: { x: number; y: number };
+    };
+  }
+
+  export interface NodeClickItem {
+    nodeId: IdType;
+    labelId?: number;
+  }
+
+  export interface EdgeClickItem {
+    edgeId: IdType;
+    labelId?: number;
+  }
+
+  export type ClickItem = NodeClickItem | EdgeClickItem;
+
+  export interface ClickEventParameters extends EventParameters {
+    items: ClickItem[];
+  }
+
   /**
    * An object that has event name as keys and their callback as values that can be passed to the NetworkGraph component.
    * For the events available, see: https://visjs.github.io/vis-network/docs/network/#Events
    */
   export interface GraphEvents {
-    [event: NetworkEvents]: (params?: unknown) => void;
+    [event: NetworkEvents]: ((params: unknown) => void) | undefined;
+    click?: (params: ClickEventParameters) => void;
+    select?: (params: EventParameters) => void;
   }
 
   /**
