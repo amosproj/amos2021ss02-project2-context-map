@@ -17,7 +17,6 @@ import SingleValueCachedObservable from '../../utils/SingleValueCachedObservable
 const MAX_BATCH_SIZE = 90;
 
 // TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
-/* istanbul ignore next */
 function createBatches(array: number[]) {
   const batches = [];
   for (let i = 0; i < array.length; i += MAX_BATCH_SIZE) {
@@ -27,7 +26,6 @@ function createBatches(array: number[]) {
 }
 
 // TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
-/* istanbul ignore next */
 function buildDetailsRequest(
   idsOrDescriptors: number[] | { id: number }[]
 ): HttpGetRequest {
@@ -44,7 +42,6 @@ type BatchCache<T> = {
 };
 
 // TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
-/* istanbul ignore next */
 function buildCache<T extends Edge | Node>(
   http: HttpService,
   type: 'Nodes' | 'Edges'
@@ -104,7 +101,6 @@ export default class QueryServiceImpl extends QueryService {
   }
 
   // TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
-  /* istanbul ignore next */
   public getNodesById(
     idsOrDescriptors: number[] | NodeDescriptor[]
   ): Observable<Node[]> {
@@ -115,7 +111,6 @@ export default class QueryServiceImpl extends QueryService {
   }
 
   // TODO #249: Re-add ignored functions in QueryServiceImpl.ts to coverage when used #249
-  /* istanbul ignore next */
   private getEntitiesById<T = Node | Edge>(
     entitiesById: BatchCache<T>,
     idsOrDescriptors: number[]

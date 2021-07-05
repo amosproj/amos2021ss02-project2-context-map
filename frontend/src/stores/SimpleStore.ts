@@ -9,6 +9,7 @@ import { injectable } from 'inversify';
  */
 @injectable()
 export default abstract class SimpleStore<T> {
+  private initialized = false;
   /**
    * Contains the state.
    * Returns the current state immediately after subscribing.
@@ -35,7 +36,11 @@ export default abstract class SimpleStore<T> {
    * Returns an observable that outputs the stored value.
    */
   public getState(): Observable<T> {
-    this.ensureInit();
+    if (!this.initialized) {
+      this.initialized = true;
+      this.ensureInit();
+    }
+
     return this.storeSubject.pipe();
   }
 
@@ -43,7 +48,10 @@ export default abstract class SimpleStore<T> {
    * Returns the current value of the stored value.
    */
   public getValue(): T {
-    this.ensureInit();
+    if (!this.initialized) {
+      this.initialized = true;
+      this.ensureInit();
+    }
     return this.storeSubject.value;
   }
 
@@ -51,7 +59,10 @@ export default abstract class SimpleStore<T> {
    * Updates the current filter by replacing it completely.
    */
   public setState(newState: T): void {
-    this.ensureInit();
+    if (!this.initialized) {
+      this.initialized = true;
+      this.ensureInit();
+    }
     this.storeSubject.next(newState);
   }
 
@@ -59,7 +70,10 @@ export default abstract class SimpleStore<T> {
    * Updates the current filter by merging it with the current value.
    */
   public mergeState(newState: Partial<T>): void {
-    this.ensureInit();
+    if (!this.initialized) {
+      this.initialized = true;
+      this.ensureInit();
+    }
     this.setState({ ...this.getValue(), ...newState });
   }
 }
