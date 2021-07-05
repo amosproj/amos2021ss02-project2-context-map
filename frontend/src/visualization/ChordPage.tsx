@@ -8,7 +8,8 @@ import { SchemaService } from '../services/schema';
 import { NodeTypeConnectionInfo } from '../shared/schema';
 import useObservable from '../utils/useObservable';
 import { EntityStyleProvider, EntityStyleStore } from '../stores/colors';
-import ChordDetails, { updateChordDetails } from './ChordDetails';
+import ChordDetails from './ChordDetails';
+import ChordDetailsStateStore from '../stores/details/ChordDetailsStateStore';
 
 /**
  * Generate a matrix with node connections, and a Record mapping node types to their index in the matrix and their color.
@@ -68,6 +69,7 @@ function convertToChordData(
 export default function ChordPage(): JSX.Element {
   const schemaService = useService(SchemaService);
   const entityStyleStore = useService(EntityStyleStore);
+  const chordDetailsStore = useService(ChordDetailsStateStore);
 
   const chordData = useObservable(
     combineLatest([
@@ -91,8 +93,8 @@ export default function ChordPage(): JSX.Element {
               componentId={1}
               groupColors={chordData.colors}
               groupLabels={chordData.names}
-              groupOnClick={(idx: number) => {
-                updateChordDetails(chordData, idx);
+              groupOnClick={(index: number) => {
+                chordDetailsStore.showDetails(chordData, index);
               }}
               outerRadius={260} // workaround for labels being cut off
             />
