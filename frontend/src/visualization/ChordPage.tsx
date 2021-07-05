@@ -2,7 +2,7 @@ import React from 'react';
 import { combineLatest } from 'rxjs';
 import ChordDiagram from 'react-chord-diagram';
 import { map } from 'rxjs/operators';
-import { Box, Container, Grid, Paper } from '@material-ui/core';
+import { Box, Container, Grid } from '@material-ui/core';
 import useService from '../dependency-injection/useService';
 import { SchemaService } from '../services/schema';
 import { NodeTypeConnectionInfo } from '../shared/schema';
