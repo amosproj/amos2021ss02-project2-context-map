@@ -1,6 +1,6 @@
 import React from 'react';
 import { Slider } from '@material-ui/core';
-import { filter } from 'rxjs/operators';
+import { filter, tap } from 'rxjs/operators';
 import useService from '../../dependency-injection/useService';
 import { QueryService } from '../../services/query';
 import LoadingStore from '../../stores/LoadingStore';
@@ -9,7 +9,6 @@ import useObservable from '../../utils/useObservable';
 import withLoadingBar from '../../utils/withLoadingBar';
 import withErrorHandler from '../../utils/withErrorHandler';
 import FilterQueryStore from '../../stores/FilterQueryStore';
-import EntityCountsStore from '../../stores/EntityCountsStore';
 
 type Props = {
   entities: 'nodes' | 'edges';
@@ -23,13 +22,24 @@ type Props = {
 export default function MaxEntitiesSlider({ entities }: Props): JSX.Element {
   const queryService = useService(QueryService);
   const filterQueryStore = useService(FilterQueryStore);
-  const entityCountsStore = useService(EntityCountsStore);
   const loadingStore = useService(LoadingStore);
   const errorStore = useService(ErrorStore);
 
   // current value of the slider
-  const [value, setValue] = React.useState<number>(
-    entityCountsStore.getValue().nodes
+  const [value, setValue] = React.useState<number>(150);
+
+  // Update value whenever the filterQueryStore updates
+  useObservable(
+    filterQueryStore.getState().pipe(
+      tap((filterQuery) => {
+        const { limits } = filterQuery;
+        if (limits !== undefined) {
+          setValue(limits[entities] ?? 42);
+        } else {
+          setValue(42);
+        }
+      })
+    )
   );
 
   // number of edges and nodes
@@ -78,10 +88,6 @@ export default function MaxEntitiesSlider({ entities }: Props): JSX.Element {
         valueLabelDisplay="auto"
         valueLabelFormat={getLabel}
         onChange={(_, val) => {
-          entityCountsStore.setState({
-            nodes: val as number,
-            edges: val as number,
-          });
           setValue(val as number);
         }}
         onChangeCommitted={(_, val) => update(val as number)}

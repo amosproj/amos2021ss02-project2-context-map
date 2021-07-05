@@ -20,7 +20,6 @@ import { ShortestPathStateStore } from './stores/shortest-path/ShortestPathState
 import ExplorationStore from './stores/exploration/ExplorationStore';
 import SearchSelectionStore from './stores/SearchSelectionStore';
 import SchemaStore from './stores/SchemaStore';
-import EntityQueryLimitStore from './stores/EntityQueryLimitStore';
 
 /**
  * Configures all services in the frontend app.
