@@ -3,17 +3,12 @@
  */
 export interface ChordDetailsState {
   /**
-   * Node type to show relations for.
+   * Chord diagram data: type names and edges.
    */
-  type: string | null;
+  chordData: ChordData;
 
   /**
-   * A 2D array containing all edges of the graph
+   * index of the node type to show relations of.
    */
-  matrix: number[][] | null;
-
-  /**
-   * index of the node type in the matrix.
-   */
-  index: number | null;
+  index?: number;
 }

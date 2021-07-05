@@ -6,15 +6,15 @@ import { ChordDetailsState } from './ChordDetailsState';
 @injectable()
 export class ChordDetailsStateStore extends SimpleStore<ChordDetailsState> {
   protected getInitialValue(): ChordDetailsState {
-    return { type: null, matrix: null, index: null };
+    return { chordData: { matrix: [], names: [], colors: [] } };
   }
 
   public clear(): void {
     this.setState(this.getInitialValue());
   }
 
-  public showDetails(type: string, matrix: number[][], index: number): void {
-    this.mergeState({ type, matrix, index });
+  public showDetails(chordData: ChordData, index: number): void {
+    this.mergeState({ chordData, index });
   }
 }
 
