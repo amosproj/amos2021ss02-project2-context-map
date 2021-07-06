@@ -17,7 +17,6 @@ import { isEntitySelected } from '../stores/colors/EntityStyleProviderImpl';
 import GraphDetails from './GraphDetails';
 import { EntityDetailsStateStore } from '../stores/details/EntityDetailsStateStore';
 import { EntityDetailsStore } from '../stores/details/EntityDetailsStore';
-import { Node } from '../shared/entities';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -153,7 +152,7 @@ function Graph(props: GraphProps): JSX.Element {
           getNetwork={(network) => {
             network.unselectAll();
             if (details !== null) {
-              if ((details as unknown as Node).types !== undefined) {
+              if (details.entityType === 'node') {
                 if (graphData.nodes.some((node) => node.id === details.id)) {
                   network.selectNodes([details.id], true);
                 }
