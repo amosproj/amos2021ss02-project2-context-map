@@ -41,13 +41,6 @@ export default class FilterQueryStore extends SimpleStore<FilterQuery> {
   }
 
   /**
-   * Resets the store to its initial state.
-   */
-  public reset(): void {
-    this.setState(this.getInitialValue());
-  }
-
-  /**
    * Converts a {@link FilterState} given from the users input to a {@link FilterQuery}.
    * @param filterState - the {@link FilterState} to be converted
    * @returns {@link FilterQuery} as conversion result

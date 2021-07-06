@@ -30,16 +30,11 @@ export default function MaxEntitiesSlider({ entities }: Props): JSX.Element {
 
   // Update value whenever the filterQueryStore updates
   useObservable(
-    filterQueryStore.getState().pipe(
-      tap((filterQuery) => {
-        const { limits } = filterQuery;
-        if (limits !== undefined) {
-          setValue(limits[entities] ?? 42);
-        } else {
-          setValue(42);
-        }
-      })
-    )
+    filterQueryStore
+      .getState()
+      .pipe(
+        tap((filterQuery) => setValue(filterQuery.limits?.[entities] ?? 42))
+      )
   );
 
   // number of edges and nodes

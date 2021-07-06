@@ -55,7 +55,7 @@ export default class FilterStateStore extends SimpleStore<FilterState> {
   }
 
   /**
-   * Resets the store to its initial state.
+   * @override
    */
   public reset(): void {
     this.initFromSchema(this.schemaStore.getValue());
