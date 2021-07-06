@@ -61,6 +61,13 @@ function convertEdgeTypes(
   );
 }
 
+/**
+ * Converts a {@link Schema}, given the styles provided by an {@link EntityStyleProvider}, to
+ * data, Vis can interpret.
+ *
+ * @param schema - schema to be converted.
+ * @param styleProvider - applies styles to the {@link GraphData} result.
+ */
 export default function convertSchema(
   schema: Schema,
   styleProvider: EntityStyleProvider
