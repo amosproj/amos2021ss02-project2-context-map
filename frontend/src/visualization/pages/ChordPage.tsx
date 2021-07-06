@@ -3,13 +3,14 @@ import { combineLatest } from 'rxjs';
 import ChordDiagram from 'react-chord-diagram';
 import { map } from 'rxjs/operators';
 import { Box, Container, Grid } from '@material-ui/core';
-import useService from '../dependency-injection/useService';
-import { SchemaService } from '../services/schema';
-import { NodeTypeConnectionInfo } from '../shared/schema';
-import useObservable from '../utils/useObservable';
-import { EntityStyleProvider, EntityStyleStore } from '../stores/colors';
-import ChordDetails from './ChordDetails';
-import ChordDetailsStateStore from '../stores/details/ChordDetailsStateStore';
+import { NodeTypeConnectionInfo } from '../../shared/schema';
+import { EntityStyleProvider } from '../../stores/colors';
+import useService from '../../dependency-injection/useService';
+import { SchemaService } from '../../services/schema';
+import ChordDetailsStateStore from '../../stores/details/ChordDetailsStateStore';
+import useObservable from '../../utils/useObservable';
+import ChordDetails from '../ChordDetails';
+import EntityStyleStore from '../../stores/colors/EntityStyleStore';
 
 /**
  * Generate a matrix with node connections, and a Record mapping node types to their index in the matrix and their color.

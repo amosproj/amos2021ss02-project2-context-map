@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box, Checkbox, FormControlLabel } from '@material-ui/core';
 import useService from '../../dependency-injection/useService';
-import { EntityStyleStore } from '../../stores/colors';
 import useObservable from '../../utils/useObservable';
+import EntityStyleStore from '../../stores/colors/EntityStyleStore';
 
 /**
  * Control that toggles colorization of the edges.

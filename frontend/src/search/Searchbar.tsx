@@ -22,12 +22,12 @@ import './Searchbar.scss';
 import LimitListSizeComponent from './helper/LimitListSizeComponent';
 import CancellationError from '../utils/CancellationError';
 import ErrorComponent from '../errors/ErrorComponent';
-import { EntityStyleStore } from '../stores/colors';
 import useObservable from '../utils/useObservable';
 import { SearchResult } from '../shared/search';
 import SearchSelectionStore, {
   SelectedSearchResult,
 } from '../stores/SearchSelectionStore';
+import EntityStyleStore from '../stores/colors/EntityStyleStore';
 
 export default function Searchbar(): JSX.Element {
   const searchService = useService(SearchService);

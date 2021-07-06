@@ -1,6 +1,6 @@
 import { EdgeDescriptor } from '../../../../src/shared/entities';
-import { EntityStyleStore } from '../../../../src/stores/colors';
 import SearchSelectionStore from '../../../../src/stores/SearchSelectionStore';
+import EntityStyleStore from '../../../../src/stores/colors/EntityStyleStore';
 
 describe('EdgeColorStore', () => {
   let entityStyleStore: EntityStyleStore;

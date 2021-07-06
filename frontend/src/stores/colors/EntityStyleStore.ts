@@ -42,7 +42,7 @@ export function createSelectionInfo(
  * and with {@link getState} (until unsubscribed).
  */
 @injectable()
-export class EntityStyleStore {
+export default class EntityStyleStore {
   private searchSelectionStoreSubscription?: Subscription;
 
   constructor(
@@ -143,5 +143,3 @@ export class EntityStyleStore {
     });
   }
 }
-
-export default EntityStyleStore;
