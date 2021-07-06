@@ -12,7 +12,7 @@ import {
   QueryResult,
   CountQueryResult,
 } from '../../src/shared/queries';
-import { dummies } from './entityDetails/entityDetails';
+import { dummyEdges, dummyNodes } from './entityDetails/entityDetails';
 
 @injectable()
 export default class QueryServiceFake extends QueryService {
@@ -38,7 +38,7 @@ export default class QueryServiceFake extends QueryService {
    */
   public getNodeById(id: number | NodeDescriptor): Observable<Node | null> {
     let node: Node | null = null;
-    for (const n of dummies) {
+    for (const n of dummyNodes) {
       if (typeof id === 'number' && n.id === id) {
         node = n;
         break;
@@ -50,5 +50,19 @@ export default class QueryServiceFake extends QueryService {
     }
 
     return from([node]);
+  }
+  public getEdgeById(id: number | EdgeDescriptor): Observable<Edge | null> {
+    let edge: Edge | null = null;
+    for (const e of dummyEdges) {
+      if (typeof id === 'number' && e.id === id) {
+        edge = e;
+        break;
+      }
+    }
+
+    if (!edge) {
+      return from([null]);
+    }
+    return from([edge]);
   }
 }

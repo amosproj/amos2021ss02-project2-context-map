@@ -1,4 +1,4 @@
-export const id1 = {
+export const nodeId1 = {
   id: 1,
   types: ['Customer'],
   properties: {
@@ -10,7 +10,7 @@ export const id1 = {
   entityType: 'node',
 };
 
-export const dummies = [
+export const dummyNodes = [
   {
     id: 1,
     types: ['Customer'],
@@ -57,5 +57,25 @@ export const dummies = [
       city: 'Cuxhaven',
     },
     entityType: 'node',
+  },
+];
+
+export const edgeId1 = {
+  id: 1,
+  type: 'supplies',
+  from: 1,
+  to: 0,
+  properties: {},
+  entityType: 'edge',
+};
+
+export const dummyEdges = [
+  {
+    id: 1,
+    type: 'supplies',
+    from: 1,
+    to: 0,
+    properties: {},
+    entityType: 'edge',
   },
 ];

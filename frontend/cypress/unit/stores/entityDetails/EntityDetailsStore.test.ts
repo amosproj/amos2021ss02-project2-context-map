@@ -1,4 +1,4 @@
-import { id1 } from '../../../fixtures/entityDetails/entityDetails';
+import { edgeId1, nodeId1 } from '../../../fixtures/entityDetails/entityDetails';
 import EntityDetails from '../../../../src/stores/details/EntityDetailsStore';
 import { createContainer } from '../../../../src/dependency-injection/DependencyInjectionContext';
 import EntityDetailsState from '../../../../src/stores/details/EntityDetailsStateStore';
@@ -35,7 +35,17 @@ describe('EntityDetailsStore', () => {
       const actual = entityDetails.getValue();
 
       // Assert
-      expect(actual).to.be.deep.eq(id1);
+      expect(actual).to.be.deep.eq(nodeId1);
+    });
+    it('should return details of the edge with id 1', () => {
+      // Arrange
+      entityDetailsState.setState({ node: null, edge: 1 });
+
+      // Act
+      const actual = entityDetails.getValue();
+
+      // Assert
+      expect(actual).to.be.deep.eq(edgeId1);
     });
   });
 });
