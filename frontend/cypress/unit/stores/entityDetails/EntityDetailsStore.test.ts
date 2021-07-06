@@ -1,4 +1,7 @@
-import { edgeId1, nodeId1 } from '../../../fixtures/entityDetails/entityDetails';
+import {
+  edgeId1,
+  nodeId1,
+} from '../../../fixtures/entityDetails/entityDetails';
 import EntityDetails from '../../../../src/stores/details/EntityDetailsStore';
 import { createContainer } from '../../../../src/dependency-injection/DependencyInjectionContext';
 import EntityDetailsState from '../../../../src/stores/details/EntityDetailsStateStore';
