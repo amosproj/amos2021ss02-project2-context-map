@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { combineLatest } from 'rxjs';
 import ChordDiagram from 'react-chord-diagram';
 import { map } from 'rxjs/operators';
-import { Box, Container, Grid } from '@material-ui/core';
+import { Box, Container, Grid, useTheme } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import { uuid } from 'uuidv4';
 import useService from '../dependency-injection/useService';
@@ -83,6 +83,8 @@ export default function ChordPage(): JSX.Element {
   const chordDetailsStore = useService(ChordDetailsStateStore);
   const searchSelectionStore = useService(SearchSelectionStore);
 
+  const theme = useTheme();
+
   const { closeSnackbar, enqueueSnackbar } = useSnackbar();
 
   const chordData = useObservable(
@@ -116,7 +118,9 @@ export default function ChordPage(): JSX.Element {
 
     // update colors
     const colors = chordData.names.map((name) =>
-      types?.some((type) => type === name) ? '#FF0000' : '#000000'
+      types?.some((type) => type === name)
+        ? theme.palette.primary.main
+        : '#000000'
     );
     setLabelColors(colors);
 
@@ -129,7 +133,7 @@ export default function ChordPage(): JSX.Element {
     } else {
       chordDetailsStore.clear();
     }
-  }, [selection, chordData]);
+  }, [selection, chordData, theme]);
 
   // clear selection when page left
   useEffect(() => () => searchSelectionStore.setState(undefined), []);
