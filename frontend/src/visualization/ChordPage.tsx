@@ -1,8 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { combineLatest } from 'rxjs';
 import ChordDiagram from 'react-chord-diagram';
 import { map } from 'rxjs/operators';
 import { Box, Container, Grid } from '@material-ui/core';
+import { useSnackbar } from 'notistack';
+import { uuid } from 'uuidv4';
 import useService from '../dependency-injection/useService';
 import { SchemaService } from '../services/schema';
 import { NodeTypeConnectionInfo } from '../shared/schema';
@@ -11,6 +13,14 @@ import { EntityStyleProvider, EntityStyleStore } from '../stores/colors';
 import ChordDetails from './ChordDetails';
 import ChordDetailsStateStore from '../stores/details/ChordDetailsStateStore';
 import SearchSelectionStore from '../stores/SearchSelectionStore';
+
+/**
+ * Keys for the snackbar notifications.
+ * These keys are not readonly.
+ */
+const SNACKBAR_KEYS = {
+  SEARCH_NOT_FOUND: 'search_not_found',
+};
 
 /**
  * Generate a matrix with node connections, and a Record mapping node types to their index in the matrix and their color.
@@ -73,6 +83,8 @@ export default function ChordPage(): JSX.Element {
   const chordDetailsStore = useService(ChordDetailsStateStore);
   const searchSelectionStore = useService(SearchSelectionStore);
 
+  const { closeSnackbar, enqueueSnackbar } = useSnackbar();
+
   const chordData = useObservable(
     combineLatest([
       schemaService.getNodeTypeConnectionInfo(),
@@ -83,22 +95,30 @@ export default function ChordPage(): JSX.Element {
 
   const selection = useObservable(searchSelectionStore.getState());
 
-  function getLabelColors() {
+  const [labelColors, setLabelColors] = useState<string[]>();
+
+  useEffect(() => {
     let types: string[] | undefined;
+    closeSnackbar(SNACKBAR_KEYS.SEARCH_NOT_FOUND);
     if (selection?.interfaceType === 'NodeDescriptor') {
       types = selection.types;
     } else if (selection?.interfaceType === 'NodeTypeDescriptor') {
       types = [selection.name];
+      closeSnackbar(SNACKBAR_KEYS.SEARCH_NOT_FOUND);
     } else if (selection !== undefined) {
-      // TODO Alert that only node (types) can be selected
+      // assign new random id to avoid strange ui glitches
+      SNACKBAR_KEYS.SEARCH_NOT_FOUND = uuid();
+      enqueueSnackbar('Only nodes and node types can be highlighted.', {
+        variant: 'warning',
+        key: SNACKBAR_KEYS.SEARCH_NOT_FOUND,
+      });
     }
 
-    return chordData.names.map((name) =>
+    const colors = chordData.names.map((name) =>
       types?.some((type) => type === name) ? '#FF0000' : '#000000'
     );
-  }
-
-  const labelColors = getLabelColors();
+    setLabelColors(colors);
+  }, [selection, chordData]);
 
   // clear selection when page left
   useEffect(() => () => searchSelectionStore.setState(undefined), []);
