@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { combineLatest } from 'rxjs';
 import ChordDiagram from 'react-chord-diagram';
 import { map } from 'rxjs/operators';
@@ -10,6 +10,7 @@ import useObservable from '../utils/useObservable';
 import { EntityStyleProvider, EntityStyleStore } from '../stores/colors';
 import ChordDetails from './ChordDetails';
 import ChordDetailsStateStore from '../stores/details/ChordDetailsStateStore';
+import SearchSelectionStore from '../stores/SearchSelectionStore';
 
 /**
  * Generate a matrix with node connections, and a Record mapping node types to their index in the matrix and their color.
@@ -70,6 +71,7 @@ export default function ChordPage(): JSX.Element {
   const schemaService = useService(SchemaService);
   const entityStyleStore = useService(EntityStyleStore);
   const chordDetailsStore = useService(ChordDetailsStateStore);
+  const searchSelectionStore = useService(SearchSelectionStore);
 
   const chordData = useObservable(
     combineLatest([
@@ -78,6 +80,28 @@ export default function ChordPage(): JSX.Element {
     ]).pipe(map((next) => convertToChordData(next[0], next[1]))),
     { matrix: [], names: [], colors: [] }
   );
+
+  const selection = useObservable(searchSelectionStore.getState());
+
+  function getLabelColors() {
+    let types: string[] | undefined;
+    if (selection?.interfaceType === 'NodeDescriptor') {
+      types = selection.types;
+    } else if (selection?.interfaceType === 'NodeTypeDescriptor') {
+      types = [selection.name];
+    } else if (selection !== undefined) {
+      // TODO Alert that only node (types) can be selected
+    }
+
+    return chordData.names.map((name) =>
+      types?.some((type) => type === name) ? '#FF0000' : '#000000'
+    );
+  }
+
+  const labelColors = getLabelColors();
+
+  // clear selection when page left
+  useEffect(() => () => searchSelectionStore.setState(undefined), []);
 
   return (
     <Box p={3}>
@@ -93,6 +117,7 @@ export default function ChordPage(): JSX.Element {
               componentId={1}
               groupColors={chordData.colors}
               groupLabels={chordData.names}
+              labelColors={labelColors}
               groupOnClick={(index: number) => {
                 chordDetailsStore.showDetails(chordData, index);
               }}
