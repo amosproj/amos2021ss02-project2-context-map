@@ -114,10 +114,21 @@ export default function ChordPage(): JSX.Element {
       });
     }
 
+    // update colors
     const colors = chordData.names.map((name) =>
       types?.some((type) => type === name) ? '#FF0000' : '#000000'
     );
     setLabelColors(colors);
+
+    // update details page
+    if (types && types.length > 0) {
+      chordDetailsStore.showDetails(
+        chordData,
+        chordData.names.indexOf(types[0])
+      );
+    } else {
+      chordDetailsStore.clear();
+    }
   }, [selection, chordData]);
 
   // clear selection when page left
