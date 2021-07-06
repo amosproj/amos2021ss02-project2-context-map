@@ -1,6 +1,4 @@
-import { Node } from '../../../src/shared/entities';
-
-export const id1: Node = {
+export const id1 = {
   id: 1,
   types: ['Customer'],
   properties: {
@@ -9,9 +7,10 @@ export const id1: Node = {
     address: 'Fauntleroy Circus',
     city: 'London',
   },
+  entityType: 'node',
 };
 
-export const dummies: Node[] = [
+export const dummies = [
   {
     id: 1,
     types: ['Customer'],
@@ -21,6 +20,7 @@ export const dummies: Node[] = [
       address: 'Fauntleroy Circus',
       city: 'London',
     },
+    entityType: 'node',
   },
   {
     id: 2,
@@ -32,6 +32,7 @@ export const dummies: Node[] = [
       supplierID: '17',
       productID: '73',
     },
+    entityType: 'node',
   },
   {
     id: 3,
@@ -43,6 +44,7 @@ export const dummies: Node[] = [
       requiredDate: '1998-02-05 00:00:00.000',
       employeeID: '4',
     },
+    entityType: 'node',
   },
   {
     id: 4,
@@ -54,5 +56,6 @@ export const dummies: Node[] = [
       supplierID: '13',
       city: 'Cuxhaven',
     },
+    entityType: 'node',
   },
 ];

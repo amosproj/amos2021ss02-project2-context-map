@@ -1,7 +1,9 @@
-import { id1, dummies } from '../../../fixtures/entityDetails/entityDetails';
+import { id1 } from '../../../fixtures/entityDetails/entityDetails';
 import EntityDetails from '../../../../src/stores/details/EntityDetailsStore';
 import { createContainer } from '../../../../src/dependency-injection/DependencyInjectionContext';
 import EntityDetailsState from '../../../../src/stores/details/EntityDetailsStateStore';
+import { QueryService } from '../../../../src/services/query';
+import QueryServiceFake from '../../../fixtures/QueryServiceFake';
 
 describe('EntityDetailsStore', () => {
   // Global setup
@@ -10,6 +12,8 @@ describe('EntityDetailsStore', () => {
   const container = createContainer();
 
   beforeEach(() => {
+    container.unbind(QueryService);
+    container.bind(QueryService).to(QueryServiceFake);
     entityDetails = container.get(EntityDetails);
     entityDetailsState = container.get(EntityDetailsState);
   });
@@ -25,15 +29,13 @@ describe('EntityDetailsStore', () => {
     });
     it('should return details of the node with id 1', () => {
       // Arrange
-      entityDetails = container.get(EntityDetails);
-      cy.intercept('http://localhost:8080/api/getNodesById*', id1);
       entityDetailsState.setState({ node: 1, edge: null });
 
       // Act
       const actual = entityDetails.getValue();
 
       // Assert
-      expect(actual).to.be.eq(id1);
+      expect(actual).to.be.deep.eq(id1);
     });
   });
 });
