@@ -10,7 +10,7 @@ import { SchemaService } from '../../services/schema';
 import { NodeTypeConnectionInfo } from '../../shared/schema';
 import useObservable from '../../utils/useObservable';
 import { EntityStyleProvider } from '../../stores/colors';
-import ChordDetails from '../ChordDetails';
+import ChordDetails from './ChordDetails';
 import ChordDetailsStateStore from '../../stores/details/ChordDetailsStateStore';
 import SearchSelectionStore from '../../stores/SearchSelectionStore';
 import EntityStyleStore from '../../stores/colors/EntityStyleStore';
@@ -143,7 +143,10 @@ export default function ChordPage(): JSX.Element {
     <Box p={3}>
       <h1>Chord Diagram</h1>
       <Container maxWidth={false}>
-        <Grid container spacing={0} justify="space-between">
+        <Grid container spacing={0}>
+          <Grid item lg={5} md={12}>
+            <ChordDetails />
+          </Grid>
           <Grid item lg={5} md={12}>
             <ChordDiagram
               blurOnHover
@@ -159,9 +162,6 @@ export default function ChordPage(): JSX.Element {
               }}
               outerRadius={260} // workaround for labels being cut off
             />
-          </Grid>
-          <Grid item lg={5} md={12}>
-            <ChordDetails />
           </Grid>
         </Grid>
       </Container>
