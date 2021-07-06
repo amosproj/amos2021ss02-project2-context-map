@@ -174,6 +174,8 @@ function Layout(props: LayoutProps): JSX.Element {
       <Tabs
         value={tabIdx}
         onChange={handleTabChange}
+        variant="scrollable"
+        scrollButtons="auto"
         aria-label="simple tabs example"
       >
         {tabs.map((tabC) => (
