@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
 import { Observable, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { FilterQuery, QueryResult, ShortestPathQuery } from '../shared/queries';
 import SimpleStore from './SimpleStore';
 import FilterQueryStore from './FilterQueryStore';
@@ -14,11 +15,25 @@ import ShortestPathService from '../services/shortest-path/ShortestPathService';
 import { ShortestPathState } from './shortest-path/ShortestPathState';
 
 /**
+ * Provides meta information about the query result
+ */
+export type QueryResultMeta = {
+  /**
+   * If undefined: no shortest path queried.
+   * If false: shortest path queried but is not in result
+   * If true: shortest path queried and is in result.
+   */
+  containsShortestPath?: boolean;
+};
+
+/**
  * Contains the current state of the fetched query.
  * Updates it's state automatically if the state of {@link FilterQueryStore} changes.
  */
 @injectable()
-export default class QueryResultStore extends SimpleStore<QueryResult> {
+export default class QueryResultStore extends SimpleStore<
+  QueryResult & QueryResultMeta
+> {
   /**
    * Active cancel token for the filter query.
    * @private
@@ -44,7 +59,7 @@ export default class QueryResultStore extends SimpleStore<QueryResult> {
   @inject(LoadingStore)
   private readonly loadingStore!: LoadingStore;
 
-  protected getInitialValue(): QueryResult {
+  protected getInitialValue(): QueryResult & QueryResultMeta {
     return { nodes: [], edges: [] };
   }
 
@@ -62,7 +77,7 @@ export default class QueryResultStore extends SimpleStore<QueryResult> {
   private executeQuery(
     filter: FilterQuery,
     shortestPath: ShortestPathState
-  ): Observable<QueryResult> {
+  ): Observable<QueryResult & QueryResultMeta> {
     if (shortestPath.startNode !== null && shortestPath.endNode !== null) {
       const shortestPathQuery: ShortestPathQuery = {
         ...filter,
@@ -71,7 +86,14 @@ export default class QueryResultStore extends SimpleStore<QueryResult> {
         ignoreEdgeDirections: shortestPath.ignoreEdgeDirections,
       };
 
-      return this.shortestPathService.query(shortestPathQuery);
+      return this.shortestPathService.query(shortestPathQuery).pipe(
+        map((result) => {
+          const containsShortestPath =
+            result.edges.some((e) => e.isPath) ||
+            result.nodes.some((n) => n.isPath);
+          return { ...result, containsShortestPath };
+        })
+      );
     }
 
     return this.filterService.query(filter);
