@@ -9,7 +9,8 @@ import useObservable from '../../utils/useObservable';
 import convertSchema from '../shared-ops/convertSchema';
 import { EntityStyleStore } from '../../stores/colors/EntityStyleStore';
 import { ContainerSize } from '../../utils/useSize';
-import { buildOptions, useStylesVisualization } from './shared-options';
+import useStylesVisualization from './useStylesVisualization';
+import visGraphBuildOptions from './visGraphBuildOptions';
 
 function Schema(props: { containerSize: ContainerSize }): JSX.Element {
   const { containerSize } = props;
@@ -30,7 +31,10 @@ function Schema(props: { containerSize: ContainerSize }): JSX.Element {
     <div className={classes.graphContainer}>
       <VisGraph
         graph={graphData}
-        options={buildOptions(containerSize.width, containerSize.height)}
+        options={visGraphBuildOptions(
+          containerSize.width,
+          containerSize.height
+        )}
         key={uuid()}
       />
     </div>

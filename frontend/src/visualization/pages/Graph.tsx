@@ -13,7 +13,8 @@ import convertQueryResult from '../shared-ops/convertQueryResult';
 import { createSelectionInfo, EntityStyleStore } from '../../stores/colors';
 import SearchSelectionStore from '../../stores/SearchSelectionStore';
 import { isEntitySelected } from '../../stores/colors/EntityStyleProviderImpl';
-import { buildOptions, useStylesVisualization } from './shared-options';
+import useStylesVisualization from './useStylesVisualization';
+import visGraphBuildOptions from './visGraphBuildOptions';
 
 type GraphProps = {
   layout?: string;
@@ -70,7 +71,7 @@ function Graph(props: GraphProps): JSX.Element {
       <div className={classes.graphContainer}>
         <VisGraph
           graph={graphData}
-          options={buildOptions(
+          options={visGraphBuildOptions(
             containerSize.width,
             containerSize.height,
             layout

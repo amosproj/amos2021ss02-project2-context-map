@@ -1,18 +1,10 @@
+import {
+  EdgeOptions,
+  NodeOptions,
+} from 'vis-network/declarations/network/Network';
 import { EdgeStyle, NodeStyle } from '../../stores/colors';
 
-type NodeStyleProperties = {
-  color: { border: string; background: string };
-  borderWidth: number;
-  shapeProperties: { borderDashes: boolean | number[] };
-};
-
-type EdgeStyleProperties = {
-  color: string;
-  dashes: boolean | number[];
-  width: number;
-};
-
-export function nodeStyle(style: NodeStyle): NodeStyleProperties {
+export function nodeStyle(style: NodeStyle): NodeOptions {
   return {
     color: {
       border: style.stroke.color,
@@ -25,7 +17,7 @@ export function nodeStyle(style: NodeStyle): NodeStyleProperties {
   };
 }
 
-export function edgeStyle(style: EdgeStyle): EdgeStyleProperties {
+export function edgeStyle(style: EdgeStyle): EdgeOptions {
   return {
     color: style.color,
     dashes: style.stroke.dashes,
