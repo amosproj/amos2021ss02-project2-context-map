@@ -1,18 +1,20 @@
 import React, { useEffect } from 'react';
 import VisGraph from 'react-graph-vis';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { uuid } from 'uuidv4';
 import { map, tap } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
 import { useSnackbar } from 'notistack';
-import useService from '../dependency-injection/useService';
-import { ContainerSize } from '../utils/useSize';
-import useObservable from '../utils/useObservable';
-import QueryResultStore from '../stores/QueryResultStore';
-import convertQueryResult from './shared-ops/convertQueryResult';
-import { createSelectionInfo, EntityStyleStore } from '../stores/colors';
-import SearchSelectionStore from '../stores/SearchSelectionStore';
-import { isEntitySelected } from '../stores/colors/EntityStyleProviderImpl';
+import useStylesVisualization from './useStylesVisualization';
+import visGraphBuildOptions from './visGraphBuildOptions';
+import useService from '../../dependency-injection/useService';
+import { ContainerSize } from '../../utils/useSize';
+import { createSelectionInfo } from '../../stores/colors';
+import QueryResultStore from '../../stores/QueryResultStore';
+import SearchSelectionStore from '../../stores/SearchSelectionStore';
+import useObservable from '../../utils/useObservable';
+import { isEntitySelected } from '../../stores/colors/EntityStyleProviderImpl';
+import convertQueryResult from '../shared-ops/convertQueryResult';
+import EntityStyleStore from '../../stores/colors/EntityStyleStore';
 
 /**
  * Keys for the snackbar notifications.
@@ -23,38 +25,6 @@ const SNACKBAR_KEYS = {
   SEARCH_NOT_FOUND: 'search-not-found',
 };
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    graphContainer: {
-      zIndex: 1200,
-      position: 'relative',
-      flexGrow: 1,
-      overflowY: 'hidden',
-      overflowX: 'hidden',
-    },
-  })
-);
-
-/**
- * Builds the graph options passed to react-graph-vis.
- * @param width The width of the graph.
- * @param height The height of the graph.
- * @param layout Possible values: "hierarchical", undefined
- * @returns The react-graph-vis options.
- */
-function buildOptions(width: number, height: number, layout?: string) {
-  return {
-    layout: {
-      hierarchical: layout === 'hierarchical',
-    },
-    edges: {
-      color: '#000000',
-    },
-    width: `${width}px`,
-    height: `${height}px`,
-  };
-}
-
 type GraphProps = {
   layout?: string;
   containerSize: ContainerSize;
@@ -62,7 +32,7 @@ type GraphProps = {
 
 function Graph(props: GraphProps): JSX.Element {
   const { layout, containerSize } = props;
-  const classes = useStyles();
+  const classes = useStylesVisualization();
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
@@ -132,7 +102,7 @@ function Graph(props: GraphProps): JSX.Element {
       <div className={classes.graphContainer}>
         <VisGraph
           graph={graphData}
-          options={buildOptions(
+          options={visGraphBuildOptions(
             containerSize.width,
             containerSize.height,
             layout

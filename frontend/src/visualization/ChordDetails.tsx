@@ -14,9 +14,9 @@ import {
 } from '@material-ui/core';
 import useObservable from '../utils/useObservable';
 import useService from '../dependency-injection/useService';
-import { EntityStyleStore } from '../stores/colors';
 import NodeTypeComponent from '../search/helper/NodeTypeComponent';
 import ChordDetailsStateStore from '../stores/details/ChordDetailsStateStore';
+import EntityStyleStore from '../stores/colors/EntityStyleStore';
 
 const useStyles = makeStyles({
   root: {
