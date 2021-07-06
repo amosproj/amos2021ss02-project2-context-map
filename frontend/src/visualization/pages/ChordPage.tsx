@@ -5,14 +5,15 @@ import { map } from 'rxjs/operators';
 import { Box, Container, Grid, useTheme } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import { uuid } from 'uuidv4';
-import useService from '../dependency-injection/useService';
-import { SchemaService } from '../services/schema';
-import { NodeTypeConnectionInfo } from '../shared/schema';
-import useObservable from '../utils/useObservable';
-import { EntityStyleProvider, EntityStyleStore } from '../stores/colors';
-import ChordDetails from './ChordDetails';
-import ChordDetailsStateStore from '../stores/details/ChordDetailsStateStore';
-import SearchSelectionStore from '../stores/SearchSelectionStore';
+import useService from '../../dependency-injection/useService';
+import { SchemaService } from '../../services/schema';
+import { NodeTypeConnectionInfo } from '../../shared/schema';
+import useObservable from '../../utils/useObservable';
+import { EntityStyleProvider } from '../../stores/colors';
+import ChordDetails from '../ChordDetails';
+import ChordDetailsStateStore from '../../stores/details/ChordDetailsStateStore';
+import SearchSelectionStore from '../../stores/SearchSelectionStore';
+import EntityStyleStore from '../../stores/colors/EntityStyleStore';
 
 /**
  * Keys for the snackbar notifications.
