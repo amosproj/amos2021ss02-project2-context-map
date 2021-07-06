@@ -1,6 +1,6 @@
 import { NodeDescriptor } from '../../../../src/shared/entities';
-import { EntityStyleStore } from '../../../../src/stores/colors';
 import SearchSelectionStore from '../../../../src/stores/SearchSelectionStore';
+import EntityStyleStore from '../../../../src/stores/colors/EntityStyleStore';
 
 describe('NodeColorStore', () => {
   let entityStyleStore: EntityStyleStore;
