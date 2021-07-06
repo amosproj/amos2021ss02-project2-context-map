@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import VisGraph from 'react-graph-vis';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { uuid } from 'uuidv4';
@@ -123,6 +123,9 @@ function Graph(props: GraphProps): JSX.Element {
       })
     )
   );
+
+  // on unmount: clear search
+  useEffect(() => () => searchSelectionStore.setState(undefined), []);
 
   return (
     <>

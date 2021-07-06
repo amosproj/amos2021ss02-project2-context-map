@@ -138,7 +138,7 @@ export class EntityStyleStore {
    * @private
    */
   private subscribeToSearchSelectionStore(): Subscription {
-    return this.searchSelectionStore.getState().subscribe({
+    return this.searchSelectionStore.getState(true).subscribe({
       next: (selectionResult) => this.nextSelectionResult(selectionResult),
     });
   }
