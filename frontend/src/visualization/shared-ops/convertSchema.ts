@@ -8,13 +8,15 @@ import {
 import { EntityStyleProvider } from '../../stores/colors';
 import { edgeStyle, nodeStyle } from './entityStyle';
 import { Schema } from '../../stores/SchemaStore';
+import createDummyEdgeFromType from './createDummyEdgeFromType';
+import createDummyNodeFromType from './createDummyNodeFromType';
 
 function convertNodeType(
   nodeType: NodeType,
   styleProvider: EntityStyleProvider
 ) {
   const style = nodeStyle(
-    styleProvider.getStyle({ id: -1, types: [nodeType.name] })
+    styleProvider.getStyle(createDummyNodeFromType(nodeType))
   );
 
   const nodeTypeInfo = {
@@ -38,7 +40,7 @@ function convertEdgeType(
   styleProvider: EntityStyleProvider
 ): vis.Edge {
   const style = edgeStyle(
-    styleProvider.getStyle({ id: -1, type: edgeType.name, from: -1, to: -1 })
+    styleProvider.getStyle(createDummyEdgeFromType(edgeType))
   );
 
   const edgeTypeInfo = {
