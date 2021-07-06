@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect,
+  useLocation,
 } from 'react-router-dom';
 import './App.scss';
 import Layout, { RenderTab } from './Layout';
@@ -13,6 +14,8 @@ import ErrorBoundary from './errors/ErrorBoundary';
 import LoadingBoundary from './loading/LoadingBoundary';
 import useService from './dependency-injection/useService';
 import ErrorStore from './stores/ErrorStore';
+import RoutingStateStoreSource from './RoutingStateStoreSource';
+import { RoutingStateStore } from './stores/routing/RoutingStateStore';
 
 interface RenderRoute {
   path: string;
@@ -74,35 +77,48 @@ function buildRenderRoutes(): RenderRoute[] {
   return result;
 }
 
-function App(): JSX.Element {
+function AppRouting(): JSX.Element {
   const renderRoutes = buildRenderRoutes();
   const errorStore = useService(ErrorStore);
 
+  const location = useLocation();
+  const routingStateStore = useService(RoutingStateStore);
+
+  useEffect(() => {
+    routingStateStore.mergeState({ location: location.pathname });
+  }, [location]);
+
+  return (
+    <Switch>
+      <Route exact path="/">
+        <Layout>
+          <Redirect to="/home" />
+        </Layout>
+      </Route>
+      {renderRoutes.map((route) => (
+        <Route key={route.path} path={route.path} exact={route.exact}>
+          <Layout tabs={route.tabs} label={route.label} tabIdx={route.tabIdx}>
+            <ErrorBoundary errorStore={errorStore}>
+              <LoadingBoundary>
+                <route.content />
+              </LoadingBoundary>
+            </ErrorBoundary>
+          </Layout>
+        </Route>
+      ))}
+      <Route path="*">
+        <Layout>
+          <ErrorComponent type={ErrorType.NotFound} />
+        </Layout>
+      </Route>
+    </Switch>
+  );
+}
+
+function App(): JSX.Element {
   return (
     <Router>
-      <Switch>
-        <Route exact path="/">
-          <Layout>
-            <Redirect to="/home" />
-          </Layout>
-        </Route>
-        {renderRoutes.map((route) => (
-          <Route key={route.path} path={route.path} exact={route.exact}>
-            <Layout tabs={route.tabs} label={route.label} tabIdx={route.tabIdx}>
-              <ErrorBoundary errorStore={errorStore}>
-                <LoadingBoundary>
-                  <route.content />
-                </LoadingBoundary>
-              </ErrorBoundary>
-            </Layout>
-          </Route>
-        ))}
-        <Route path="*">
-          <Layout>
-            <ErrorComponent type={ErrorType.NotFound} />
-          </Layout>
-        </Route>
-      </Switch>
+      <AppRouting />
     </Router>
   );
 }
