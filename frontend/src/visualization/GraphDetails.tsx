@@ -24,6 +24,7 @@ import { EntityDetailsStore } from '../stores/details/EntityDetailsStore';
 import { Node, Edge } from '../shared/entities';
 import { EntityStyleStore } from '../stores/colors';
 import NodeTypeComponent from '../search/helper/NodeTypeComponent';
+import EdgeTypeComponent from '../search/helper/EdgeTypeComponent';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -66,24 +67,41 @@ export default function GraphDetails(): JSX.Element {
   const open = details !== null;
   let typesList: JSX.Element[] = [];
   let propsList: JSX.Element[] = [];
+  let title = '';
 
   if (!details) {
     return <></>;
   }
-  const types = Array.isArray((details as unknown as Node)?.types)
-    ? (details as unknown as Node).types
-    : [(details as unknown as Edge).type];
 
-  typesList = types.map((type) => {
+  if (details.entityType === 'node') {
+    title = 'Node Details';
+    const { types } = details;
+    typesList = types.map((type) => {
+      const n = {
+        id: -1,
+        types: [type],
+        virtual: true,
+      };
+      return (
+        <NodeTypeComponent
+          name={type}
+          color={styleProvider.getStyle(n).color}
+        />
+      );
+    });
+  } else {
+    title = 'Edge Details';
+    const { type } = details;
     const n = {
       id: -1,
       types: [type],
       virtual: true,
     };
-    return (
-      <NodeTypeComponent name={type} color={styleProvider.getStyle(n).color} />
-    );
-  });
+
+    typesList = [
+      <EdgeTypeComponent type={type} color={styleProvider.getStyle(n).color} />,
+    ];
+  }
 
   const propKeys = Object.keys(details.properties);
   propsList = propKeys.map((propKey) => {
@@ -96,6 +114,16 @@ export default function GraphDetails(): JSX.Element {
       </TableRow>
     );
   });
+
+  const propertySection =
+    propsList.length > 0 ? (
+      <>
+        <ListSubheader>Properties</ListSubheader>
+        <Table size="small" className={classes.propsTable}>
+          <TableBody>{propsList}</TableBody>
+        </Table>
+      </>
+    ) : null;
 
   return (
     <Popper className={classes.popper} open={open}>
@@ -112,7 +140,7 @@ export default function GraphDetails(): JSX.Element {
                 <CloseIcon />
               </IconButton>
             }
-            title="Node Details"
+            title={title}
           />
           <CardContent>
             <List dense>
@@ -122,10 +150,7 @@ export default function GraphDetails(): JSX.Element {
               </ListItem>
               <ListSubheader>Type(s)</ListSubheader>
               <ListItem>{typesList}</ListItem>
-              <ListSubheader>Properties</ListSubheader>
-              <Table size="small" className={classes.propsTable}>
-                <TableBody>{propsList}</TableBody>
-              </Table>
+              {propertySection}
             </List>
           </CardContent>
         </Card>

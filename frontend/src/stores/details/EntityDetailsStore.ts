@@ -3,20 +3,23 @@ import 'reflect-metadata';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { QueryService } from '../../services/query';
-import { Edge, Node } from '../../shared/entities';
 import withErrorHandler from '../../utils/withErrorHandler';
 import withLoadingBar from '../../utils/withLoadingBar';
 import ErrorStore from '../ErrorStore';
 import LoadingStore from '../LoadingStore';
 import SimpleStore from '../SimpleStore';
+import { EdgeDetails } from './EdgeDetails';
 import { EntityDetailsState } from './EntityDetailsState';
 import { EntityDetailsStateStore } from './EntityDetailsStateStore';
+import { NodeDetails } from './NodeDetails';
+
+type EntityDetails = NodeDetails | EdgeDetails;
 
 @injectable()
-export class EntityDetailsStore extends SimpleStore<Node | Edge | null> {
+export class EntityDetailsStore extends SimpleStore<EntityDetails | null> {
   private stateStoreSubscription?: Subscription;
 
-  protected getInitialValue(): Node | Edge | null {
+  protected getInitialValue(): EntityDetails | null {
     return null;
   }
 
@@ -54,7 +57,19 @@ export class EntityDetailsStore extends SimpleStore<Node | Edge | null> {
           withErrorHandler({ rethrow: true, errorStore: this.errorStore })
         )
         .subscribe({
-          next: (res) => this.setState(res),
+          next: (res) => this.setState(NodeDetails(res)),
+          error: () => this.setState(null),
+        });
+    } else if (state.edge !== null) {
+      this.queryService
+        .getEdgeById(state.edge)
+        .pipe(
+          take(1), // TODO: Why is this necessary??
+          withLoadingBar({ loadingStore: this.loadingStore }),
+          withErrorHandler({ rethrow: true, errorStore: this.errorStore })
+        )
+        .subscribe({
+          next: (res) => this.setState(EdgeDetails(res)),
           error: () => this.setState(null),
         });
     } else {

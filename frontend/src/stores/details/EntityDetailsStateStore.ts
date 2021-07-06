@@ -10,7 +10,7 @@ export class EntityDetailsStateStore extends SimpleStore<EntityDetailsState> {
   private routingStateStoreSubscription?: Subscription;
 
   protected getInitialValue(): EntityDetailsState {
-    return { node: null };
+    return { node: null, edge: null };
   }
 
   @inject(RoutingStateStore)
@@ -21,7 +21,11 @@ export class EntityDetailsStateStore extends SimpleStore<EntityDetailsState> {
   }
 
   public showNode(node: number): void {
-    this.mergeState({ node });
+    this.mergeState({ node, edge: null });
+  }
+
+  public showEdge(edge: number): void {
+    this.mergeState({ node: null, edge });
   }
 
   protected ensureInit(): void {

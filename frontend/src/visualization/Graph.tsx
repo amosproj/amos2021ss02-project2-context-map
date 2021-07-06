@@ -91,20 +91,27 @@ function Graph(props: GraphProps): JSX.Element {
 
   const events: GraphEvents = {
     select: (params: EventParameters) => {
-      const { nodes } = params;
+      const { nodes, edges } = params;
 
-      if (!Array.isArray(nodes) || nodes.length === 0) {
+      if (Array.isArray(nodes) && nodes.length !== 0) {
+        let node = nodes[0];
+
+        if (typeof node === 'string') {
+          node = Number.parseFloat(node);
+        }
+
+        detailsStateStore.showNode(node);
+      } else if (Array.isArray(edges) && edges.length !== 0) {
+        let edge = edges[0];
+
+        if (typeof edge === 'string') {
+          edge = Number.parseFloat(edge);
+        }
+
+        detailsStateStore.showEdge(edge);
+      } else {
         detailsStateStore.clear();
-        return;
       }
-
-      let node = nodes[0];
-
-      if (typeof node === 'string') {
-        node = Number.parseFloat(node);
-      }
-
-      detailsStateStore.showNode(node);
     },
   };
 
@@ -150,6 +157,10 @@ function Graph(props: GraphProps): JSX.Element {
                 if (graphData.nodes.some((node) => node.id === details.id)) {
                   network.selectNodes([details.id], true);
                 }
+              } else if (
+                graphData.edges.some((edge) => edge.id === details.id)
+              ) {
+                network.selectEdges([details.id]);
               }
             }
           }}
