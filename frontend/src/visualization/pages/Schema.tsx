@@ -24,7 +24,6 @@ import createDummyNodeFromType from '../shared-ops/createDummyNodeFromType';
  * These keys are not readonly.
  */
 const SNACKBAR_KEYS = {
-  SHORTEST_PATH_NOT_FOUND: 'shortest-path-not-found',
   SEARCH_NOT_FOUND: 'search-not-found',
 };
 
