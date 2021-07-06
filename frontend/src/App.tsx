@@ -7,6 +7,7 @@ import {
   useLocation,
 } from 'react-router-dom';
 import './App.scss';
+import { SnackbarProvider } from 'notistack';
 import Layout, { RenderTab } from './Layout';
 import ErrorComponent, { ErrorType } from './errors/ErrorComponent';
 import routes from './routing/routes';
@@ -99,7 +100,9 @@ function AppRouting(): JSX.Element {
           <Layout tabs={route.tabs} label={route.label} tabIdx={route.tabIdx}>
             <ErrorBoundary errorStore={errorStore}>
               <LoadingBoundary>
-                <route.content />
+                <SnackbarProvider>
+                  <route.content />
+                </SnackbarProvider>
               </LoadingBoundary>
             </ErrorBoundary>
           </Layout>

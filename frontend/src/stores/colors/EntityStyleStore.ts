@@ -42,7 +42,7 @@ export function createSelectionInfo(
  * and with {@link getState} (until unsubscribed).
  */
 @injectable()
-export class EntityStyleStore {
+export default class EntityStyleStore {
   private searchSelectionStoreSubscription?: Subscription;
 
   constructor(
@@ -138,10 +138,8 @@ export class EntityStyleStore {
    * @private
    */
   private subscribeToSearchSelectionStore(): Subscription {
-    return this.searchSelectionStore.getState().subscribe({
+    return this.searchSelectionStore.getState(true).subscribe({
       next: (selectionResult) => this.nextSelectionResult(selectionResult),
     });
   }
 }
-
-export default EntityStyleStore;

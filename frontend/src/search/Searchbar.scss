@@ -16,6 +16,8 @@
 
 .SearchResultsCard {
 
+  z-index: 5000;
+
   .list {
     overflow: auto;
     max-height: 80vh;

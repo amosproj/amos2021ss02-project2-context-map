@@ -21,10 +21,9 @@ import { EntityDetailsStateStore } from '../stores/details/EntityDetailsStateSto
 import useService from '../dependency-injection/useService';
 import useObservable from '../utils/useObservable';
 import { EntityDetailsStore } from '../stores/details/EntityDetailsStore';
-import { Node, Edge } from '../shared/entities';
-import { EntityStyleStore } from '../stores/colors';
 import NodeTypeComponent from '../search/helper/NodeTypeComponent';
 import EdgeTypeComponent from '../search/helper/EdgeTypeComponent';
+import EntityStyleStore from '../stores/colors/EntityStyleStore';
 
 const useStyles = makeStyles(() =>
   createStyles({

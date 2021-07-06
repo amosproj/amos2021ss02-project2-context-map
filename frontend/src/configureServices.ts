@@ -23,6 +23,7 @@ import SchemaStore from './stores/SchemaStore';
 import { EntityDetailsStateStore } from './stores/details/EntityDetailsStateStore';
 import { EntityDetailsStore } from './stores/details/EntityDetailsStore';
 import { RoutingStateStore } from './stores/routing/RoutingStateStore';
+import ChordDetailsStateStore from './stores/details/ChordDetailsStateStore';
 
 /**
  * Configures all services in the frontend app.
@@ -83,4 +84,5 @@ export default function configureServices(container: Container): void {
   container.bind(EntityDetailsStateStore).toSelf().inSingletonScope();
   container.bind(EntityDetailsStore).toSelf().inSingletonScope();
   container.bind(RoutingStateStore).toSelf().inSingletonScope();
+  container.bind(ChordDetailsStateStore).toSelf().inSingletonScope();
 }

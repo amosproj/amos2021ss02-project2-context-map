@@ -2,13 +2,13 @@ import React from 'react';
 import Data from '../data/Data';
 import Exploration from '../exploration/Exploration';
 import Home from '../home/Home';
-import Schema from '../visualization/Schema';
 import Visualization from '../visualization/Visualization';
 import RouteDefinition from './RouteDefinition';
-import GraphPage from '../visualization/GraphPage';
-import ChordPage from '../visualization/ChordPage';
+import ChordPage from '../visualization/pages/ChordPage';
 import BetweennessPage from '../visualization/betweenness/BetweennessPage';
 import RadialPage from '../visualization/radial/RadialPage';
+import SchemaPage from '../visualization/pages/SchemaPage';
+import GraphEntityPage from '../visualization/pages/GraphEntityPage';
 
 const routes: Record<string, RouteDefinition> = {
   Home: {
@@ -25,12 +25,12 @@ const routes: Record<string, RouteDefinition> = {
       {
         path: '/visualization/graph',
         label: 'Graph',
-        content: () => <GraphPage />,
+        content: () => <GraphEntityPage />,
       },
       {
         path: '/visualization/hierarchical',
         label: 'Hierarchies',
-        content: () => <GraphPage layout="hierarchical" />,
+        content: () => <GraphEntityPage layout="hierarchical" />,
       },
       {
         path: '/visualization/betweenness',
@@ -45,7 +45,7 @@ const routes: Record<string, RouteDefinition> = {
       {
         path: '/visualization/schema',
         label: 'Schema',
-        content: () => <Schema />,
+        content: () => <SchemaPage />,
       },
       {
         path: '/visualization/chord',
