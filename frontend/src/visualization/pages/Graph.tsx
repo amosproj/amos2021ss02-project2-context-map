@@ -1,20 +1,29 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import VisGraph from 'react-graph-vis';
 import { uuid } from 'uuidv4';
 import { map, tap } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
-import { Snackbar } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import useService from '../../dependency-injection/useService';
-import { ContainerSize } from '../../utils/useSize';
-import useObservable from '../../utils/useObservable';
-import QueryResultStore from '../../stores/QueryResultStore';
-import convertQueryResult from '../shared-ops/convertQueryResult';
-import { createSelectionInfo, EntityStyleStore } from '../../stores/colors';
-import SearchSelectionStore from '../../stores/SearchSelectionStore';
-import { isEntitySelected } from '../../stores/colors/EntityStyleProviderImpl';
+import { useSnackbar } from 'notistack';
 import useStylesVisualization from './useStylesVisualization';
 import visGraphBuildOptions from './visGraphBuildOptions';
+import useService from '../../dependency-injection/useService';
+import { ContainerSize } from '../../utils/useSize';
+import { createSelectionInfo } from '../../stores/colors';
+import QueryResultStore from '../../stores/QueryResultStore';
+import SearchSelectionStore from '../../stores/SearchSelectionStore';
+import useObservable from '../../utils/useObservable';
+import { isEntitySelected } from '../../stores/colors/EntityStyleProviderImpl';
+import convertQueryResult from '../shared-ops/convertQueryResult';
+import EntityStyleStore from '../../stores/colors/EntityStyleStore';
+
+/**
+ * Keys for the snackbar notifications.
+ * These keys are not readonly.
+ */
+const SNACKBAR_KEYS = {
+  SHORTEST_PATH_NOT_FOUND: 'shortest-path-not-found',
+  SEARCH_NOT_FOUND: 'search-not-found',
+};
 
 type GraphProps = {
   layout?: string;
@@ -25,12 +34,7 @@ function Graph(props: GraphProps): JSX.Element {
   const { layout, containerSize } = props;
   const classes = useStylesVisualization();
 
-  // whether snackbar with hint that selected entity is not found is open or not
-  const [noEntitiesFoundWarningOpen, setNoEntitiesFoundWarningOpen] =
-    useState(false);
-  const onNoEntitiesFoundWarningSnackbarClose = () => {
-    setNoEntitiesFoundWarningOpen(false);
-  };
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const queryResultStore = useService(QueryResultStore);
   const entityColorStore = useService(EntityStyleStore);
@@ -42,7 +46,25 @@ function Graph(props: GraphProps): JSX.Element {
     combineLatest([
       queryResultStore.getState(),
       entityColorStore.getState(),
-    ]).pipe(map((next) => convertQueryResult(next[0], next[1]))),
+    ]).pipe(
+      tap(([queryResult]) => {
+        closeSnackbar(SNACKBAR_KEYS.SHORTEST_PATH_NOT_FOUND);
+        if (queryResult.containsShortestPath === false) {
+          // assign new random id to avoid strange ui glitches
+          SNACKBAR_KEYS.SHORTEST_PATH_NOT_FOUND = uuid();
+          enqueueSnackbar(
+            'No shortest path found, please adjust filter settings or ignore edge directions',
+            {
+              variant: 'warning',
+              key: SNACKBAR_KEYS.SHORTEST_PATH_NOT_FOUND,
+            }
+          );
+        }
+      }),
+      map(([queryResult, styleProvider]) =>
+        convertQueryResult(queryResult, styleProvider)
+      )
+    ),
     { edges: [], nodes: [] }
   );
 
@@ -54,17 +76,26 @@ function Graph(props: GraphProps): JSX.Element {
       searchSelectionStore.getState(),
     ]).pipe(
       tap(([queryResult, selection]) => {
+        closeSnackbar(SNACKBAR_KEYS.SEARCH_NOT_FOUND);
         if (selection === undefined) return;
         const selectionInfo = createSelectionInfo(selection);
         const entityFound =
           queryResult.edges.some((e) => isEntitySelected(e, selectionInfo)) ||
           queryResult.nodes.some((n) => isEntitySelected(n, selectionInfo));
         if (!entityFound) {
-          setNoEntitiesFoundWarningOpen(true);
+          // assign new random id to avoid strange ui glitches
+          SNACKBAR_KEYS.SEARCH_NOT_FOUND = uuid();
+          enqueueSnackbar('Selected entity not found in the displayed graph', {
+            variant: 'warning',
+            key: SNACKBAR_KEYS.SEARCH_NOT_FOUND,
+          });
         }
       })
     )
   );
+
+  // on unmount: clear search
+  useEffect(() => () => searchSelectionStore.setState(undefined), []);
 
   return (
     <>
@@ -79,16 +110,6 @@ function Graph(props: GraphProps): JSX.Element {
           key={uuid()}
         />
       </div>
-      <Snackbar
-        open={noEntitiesFoundWarningOpen}
-        autoHideDuration={4000}
-        onClose={onNoEntitiesFoundWarningSnackbarClose}
-        anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-      >
-        <Alert severity="warning">
-          Selected entity not found in the displayed graph.
-        </Alert>
-      </Snackbar>
     </>
   );
 }

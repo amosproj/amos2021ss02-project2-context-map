@@ -7,10 +7,10 @@ import useService from '../../dependency-injection/useService';
 import SchemaStore from '../../stores/SchemaStore';
 import useObservable from '../../utils/useObservable';
 import convertSchema from '../shared-ops/convertSchema';
-import { EntityStyleStore } from '../../stores/colors/EntityStyleStore';
 import { ContainerSize } from '../../utils/useSize';
 import useStylesVisualization from './useStylesVisualization';
 import visGraphBuildOptions from './visGraphBuildOptions';
+import EntityStyleStore from '../../stores/colors/EntityStyleStore';
 
 function Schema(props: { containerSize: ContainerSize }): JSX.Element {
   const { containerSize } = props;

@@ -19,10 +19,11 @@ import EntityTypeTemplate from './helpers/EntityTypeTemplate';
 import useObservable from '../../utils/useObservable';
 import SubsidiaryNodesToggle from './SubsidiaryNodesToggle';
 import EdgeGreyScaleToggle from './EdgeGreyScaleToggle';
-import { EntityStyleStore } from '../../stores/colors';
 import ShortestPathMenu from './ShortestPathMenu';
 import { QueryEdgeResult, QueryNodeResult } from '../../shared/queries';
 import SchemaStore from '../../stores/SchemaStore';
+import Reset from './Reset';
+import EntityStyleStore from '../../stores/colors/EntityStyleStore';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -180,6 +181,8 @@ const Filter = (): JSX.Element => {
           </TabPanel>
           <Divider />
           <ShortestPathMenu />
+          <Divider />
+          <Reset />
         </List>
       </Drawer>
     </div>

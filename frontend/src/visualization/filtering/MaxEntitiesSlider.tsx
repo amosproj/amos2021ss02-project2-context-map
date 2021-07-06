@@ -1,6 +1,6 @@
 import React from 'react';
 import { Slider } from '@material-ui/core';
-import { filter } from 'rxjs/operators';
+import { filter, tap } from 'rxjs/operators';
 import useService from '../../dependency-injection/useService';
 import { QueryService } from '../../services/query';
 import LoadingStore from '../../stores/LoadingStore';
@@ -24,6 +24,18 @@ export default function MaxEntitiesSlider({ entities }: Props): JSX.Element {
   const filterQueryStore = useService(FilterQueryStore);
   const loadingStore = useService(LoadingStore);
   const errorStore = useService(ErrorStore);
+
+  // current value of the slider
+  const [value, setValue] = React.useState<number>(150);
+
+  // Update value whenever the filterQueryStore updates
+  useObservable(
+    filterQueryStore
+      .getState()
+      .pipe(
+        tap((filterQuery) => setValue(filterQuery.limits?.[entities] ?? 42))
+      )
+  );
 
   // number of edges and nodes
   const counts = useObservable(
@@ -66,10 +78,13 @@ export default function MaxEntitiesSlider({ entities }: Props): JSX.Element {
       Number of {entities === 'edges' ? 'Edges' : 'Nodes'}
       <Slider
         aria-label="Max Nodes"
-        defaultValue={150}
+        value={value}
         max={max}
         valueLabelDisplay="auto"
         valueLabelFormat={getLabel}
+        onChange={(_, val) => {
+          setValue(val as number);
+        }}
         onChangeCommitted={(_, val) => update(val as number)}
         className={`${entities}-slider`}
       />

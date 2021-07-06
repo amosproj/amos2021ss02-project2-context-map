@@ -34,7 +34,7 @@ export default class FilterQueryStore extends SimpleStore<FilterQuery> {
   /**
    * Updates the state of the filterQuery by synchronizing it with the {@link FilterStateStore}.
    */
-  update(): void {
+  public update(): void {
     const filter = this.filterStateStore.getValue();
     const filterQuery = this.convertToFilterQuery(filter);
     this.mergeState(filterQuery);

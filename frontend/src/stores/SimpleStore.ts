@@ -40,6 +40,13 @@ export default abstract class SimpleStore<T> {
   }
 
   /**
+   * Resets the store to its initial state.
+   */
+  public reset(): void {
+    this.setState(this.getInitialValue());
+  }
+
+  /**
    * Returns the current value of the stored value.
    */
   public getValue(): T {
