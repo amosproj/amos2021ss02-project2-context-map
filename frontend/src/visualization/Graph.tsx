@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import VisGraph from 'react-graph-vis';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { uuid } from 'uuidv4';
