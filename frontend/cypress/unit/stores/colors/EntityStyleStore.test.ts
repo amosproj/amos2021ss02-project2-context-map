@@ -2,10 +2,10 @@ import {
   EdgeDescriptor,
   NodeDescriptor,
 } from '../../../../src/shared/entities';
-import { EntityStyleStore } from '../../../../src/stores/colors';
 import SearchSelectionStore, {
   SelectedSearchResult,
 } from '../../../../src/stores/SearchSelectionStore';
+import EntityStyleStore from '../../../../src/stores/colors/EntityStyleStore';
 
 describe('EntityStyleStore', () => {
   let entityStyleStore: EntityStyleStore;

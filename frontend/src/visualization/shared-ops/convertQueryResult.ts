@@ -6,27 +6,20 @@ import {
   QueryResult,
 } from '../../shared/queries';
 import { EntityStyleProvider } from '../../stores/colors';
+import { edgeStyle, nodeStyle } from './entityStyle';
 
 function convertNode(
   node: QueryNodeResult,
   styleProvider: EntityStyleProvider
 ): vis.Node {
-  const style = styleProvider.getStyle(node);
+  const style = nodeStyle(styleProvider.getStyle(node));
 
-  const result: vis.Node = {
+  const nodeInfo: vis.Node = {
     id: node.id,
     label: node.id.toString(),
-    color: {
-      border: style.stroke.color,
-      background: style.color,
-    },
-    borderWidth: style.stroke.width,
-    shapeProperties: {
-      borderDashes: style.stroke.dashes,
-    },
   };
 
-  return result;
+  return { ...nodeInfo, ...style };
 }
 
 function convertNodes(
@@ -40,16 +33,15 @@ function convertEdge(
   edge: QueryEdgeResult,
   styleProvider: EntityStyleProvider
 ): vis.Edge {
-  const style = styleProvider.getStyle(edge);
+  const style = edgeStyle(styleProvider.getStyle(edge));
 
-  return {
+  const edgeInfo = {
     id: edge.id,
     from: edge.from,
     to: edge.to,
-    color: style.color,
-    dashes: style.stroke.dashes,
-    width: style.stroke.width,
   };
+
+  return { ...edgeInfo, ...style };
 }
 
 function convertEdges(

@@ -1,54 +1,32 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import VisGraph, { EventParameters, GraphEvents } from 'react-graph-vis';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { uuid } from 'uuidv4';
 import { map, tap } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
-import { Snackbar } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import useService from '../dependency-injection/useService';
-import { ContainerSize } from '../utils/useSize';
-import useObservable from '../utils/useObservable';
-import QueryResultStore from '../stores/QueryResultStore';
-import convertQueryResult from './shared-ops/convertQueryResult';
-import { createSelectionInfo, EntityStyleStore } from '../stores/colors';
-import SearchSelectionStore from '../stores/SearchSelectionStore';
-import { isEntitySelected } from '../stores/colors/EntityStyleProviderImpl';
-import GraphDetails from './GraphDetails';
-import { EntityDetailsStateStore } from '../stores/details/EntityDetailsStateStore';
-import { EntityDetailsStore } from '../stores/details/EntityDetailsStore';
-
-const useStyles = makeStyles(() =>
-  createStyles({
-    graphContainer: {
-      zIndex: 1200,
-      position: 'relative',
-      flexGrow: 1,
-      overflowY: 'hidden',
-      overflowX: 'hidden',
-    },
-  })
-);
+import { useSnackbar } from 'notistack';
+import useStylesVisualization from './useStylesVisualization';
+import visGraphBuildOptions from './visGraphBuildOptions';
+import useService from '../../dependency-injection/useService';
+import { ContainerSize } from '../../utils/useSize';
+import { createSelectionInfo } from '../../stores/colors';
+import QueryResultStore from '../../stores/QueryResultStore';
+import SearchSelectionStore from '../../stores/SearchSelectionStore';
+import useObservable from '../../utils/useObservable';
+import { isEntitySelected } from '../../stores/colors/EntityStyleProviderImpl';
+import convertQueryResult from '../shared-ops/convertQueryResult';
+import EntityStyleStore from '../../stores/colors/EntityStyleStore';
+import GraphDetails from '../GraphDetails';
+import { EntityDetailsStateStore } from '../../stores/details/EntityDetailsStateStore';
+import { EntityDetailsStore } from '../../stores/details/EntityDetailsStore';
 
 /**
- * Builds the graph options passed to react-graph-vis.
- * @param width The width of the graph.
- * @param height The height of the graph.
- * @param layout Possible values: "hierarchical", undefined
- * @returns The react-graph-vis options.
+ * Keys for the snackbar notifications.
+ * These keys are not readonly.
  */
-function buildOptions(width: number, height: number, layout?: string) {
-  return {
-    layout: {
-      hierarchical: layout === 'hierarchical',
-    },
-    edges: {
-      color: '#000000',
-    },
-    width: `${width}px`,
-    height: `${height}px`,
-  };
-}
+const SNACKBAR_KEYS = {
+  SHORTEST_PATH_NOT_FOUND: 'shortest-path-not-found',
+  SEARCH_NOT_FOUND: 'search-not-found',
+};
 
 type GraphProps = {
   layout?: string;
@@ -57,14 +35,9 @@ type GraphProps = {
 
 function Graph(props: GraphProps): JSX.Element {
   const { layout, containerSize } = props;
-  const classes = useStyles();
+  const classes = useStylesVisualization();
 
-  // whether snackbar with hint that selected entity is not found is open or not
-  const [noEntitiesFoundWarningOpen, setNoEntitiesFoundWarningOpen] =
-    useState(false);
-  const onNoEntitiesFoundWarningSnackbarClose = () => {
-    setNoEntitiesFoundWarningOpen(false);
-  };
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const detailsStateStore = useService(EntityDetailsStateStore);
   const queryResultStore = useService(QueryResultStore);
@@ -77,7 +50,25 @@ function Graph(props: GraphProps): JSX.Element {
     combineLatest([
       queryResultStore.getState(),
       entityColorStore.getState(),
-    ]).pipe(map((next) => convertQueryResult(next[0], next[1]))),
+    ]).pipe(
+      tap(([queryResult]) => {
+        closeSnackbar(SNACKBAR_KEYS.SHORTEST_PATH_NOT_FOUND);
+        if (queryResult.containsShortestPath === false) {
+          // assign new random id to avoid strange ui glitches
+          SNACKBAR_KEYS.SHORTEST_PATH_NOT_FOUND = uuid();
+          enqueueSnackbar(
+            'No shortest path found, please adjust filter settings or ignore edge directions',
+            {
+              variant: 'warning',
+              key: SNACKBAR_KEYS.SHORTEST_PATH_NOT_FOUND,
+            }
+          );
+        }
+      }),
+      map(([queryResult, styleProvider]) =>
+        convertQueryResult(queryResult, styleProvider)
+      )
+    ),
     { edges: [], nodes: [] }
   );
 
@@ -124,17 +115,26 @@ function Graph(props: GraphProps): JSX.Element {
       searchSelectionStore.getState(),
     ]).pipe(
       tap(([queryResult, selection]) => {
+        closeSnackbar(SNACKBAR_KEYS.SEARCH_NOT_FOUND);
         if (selection === undefined) return;
         const selectionInfo = createSelectionInfo(selection);
         const entityFound =
           queryResult.edges.some((e) => isEntitySelected(e, selectionInfo)) ||
           queryResult.nodes.some((n) => isEntitySelected(n, selectionInfo));
         if (!entityFound) {
-          setNoEntitiesFoundWarningOpen(true);
+          // assign new random id to avoid strange ui glitches
+          SNACKBAR_KEYS.SEARCH_NOT_FOUND = uuid();
+          enqueueSnackbar('Selected entity not found in the displayed graph', {
+            variant: 'warning',
+            key: SNACKBAR_KEYS.SEARCH_NOT_FOUND,
+          });
         }
       })
     )
   );
+
+  // on unmount: clear search
+  useEffect(() => () => searchSelectionStore.setState(undefined), []);
 
   return (
     <>
@@ -142,7 +142,7 @@ function Graph(props: GraphProps): JSX.Element {
       <div className={classes.graphContainer} ref={graphRef}>
         <VisGraph
           graph={graphData}
-          options={buildOptions(
+          options={visGraphBuildOptions(
             containerSize.width,
             containerSize.height,
             layout
@@ -165,16 +165,6 @@ function Graph(props: GraphProps): JSX.Element {
           }}
         />
       </div>
-      <Snackbar
-        open={noEntitiesFoundWarningOpen}
-        autoHideDuration={4000}
-        onClose={onNoEntitiesFoundWarningSnackbarClose}
-        anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-      >
-        <Alert severity="warning">
-          Selected entity not found in the displayed graph.
-        </Alert>
-      </Snackbar>
     </>
   );
 }

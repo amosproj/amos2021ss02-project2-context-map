@@ -2,14 +2,18 @@ import { inject } from 'inversify';
 import { forkJoin, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import SimpleStore from './SimpleStore';
-import { EdgeType, NodeType } from '../shared/schema';
+import { EdgeType, NodeType, NodeTypeConnectionInfo } from '../shared/schema';
 import { SchemaService } from '../services/schema';
 import withLoadingBar from '../utils/withLoadingBar';
 import withErrorHandler from '../utils/withErrorHandler';
 import ErrorStore from './ErrorStore';
 import LoadingStore from './LoadingStore';
 
-export type Schema = { nodeTypes: NodeType[]; edgeTypes: EdgeType[] };
+export type Schema = {
+  nodeTypes: NodeType[];
+  edgeTypes: EdgeType[];
+  nodeTypeConnectionInfos: NodeTypeConnectionInfo[];
+};
 
 export default class SchemaStore extends SimpleStore<Schema> {
   /**
@@ -28,7 +32,7 @@ export default class SchemaStore extends SimpleStore<Schema> {
   private readonly loadingStore!: LoadingStore;
 
   protected getInitialValue(): Schema {
-    return { nodeTypes: [], edgeTypes: [] };
+    return { nodeTypes: [], edgeTypes: [], nodeTypeConnectionInfos: [] };
   }
 
   /**
@@ -55,12 +59,14 @@ export default class SchemaStore extends SimpleStore<Schema> {
     return forkJoin([
       this.schemaService.getNodeTypes(),
       this.schemaService.getEdgeTypes(),
+      this.schemaService.getNodeTypeConnectionInfo(),
     ]).pipe(
       withLoadingBar({ loadingStore: this.loadingStore }),
       withErrorHandler({ errorStore: this.errorStore }),
       map((schemaArray) => ({
         nodeTypes: schemaArray[0],
         edgeTypes: schemaArray[1],
+        nodeTypeConnectionInfos: schemaArray[2],
       }))
     );
   }
