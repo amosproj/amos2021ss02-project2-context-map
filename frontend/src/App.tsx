@@ -14,7 +14,6 @@ import ErrorBoundary from './errors/ErrorBoundary';
 import LoadingBoundary from './loading/LoadingBoundary';
 import useService from './dependency-injection/useService';
 import ErrorStore from './stores/ErrorStore';
-import RoutingStateStoreSource from './RoutingStateStoreSource';
 import { RoutingStateStore } from './stores/routing/RoutingStateStore';
 
 interface RenderRoute {

@@ -16,6 +16,8 @@ import SearchSelectionStore from '../stores/SearchSelectionStore';
 import { isEntitySelected } from '../stores/colors/EntityStyleProviderImpl';
 import GraphDetails from './GraphDetails';
 import { EntityDetailsStateStore } from '../stores/details/EntityDetailsStateStore';
+import { EntityDetailsStore } from '../stores/details/EntityDetailsStore';
+import { Node } from '../shared/entities';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -80,6 +82,13 @@ function Graph(props: GraphProps): JSX.Element {
     { edges: [], nodes: [] }
   );
 
+  const detailsStore = useService(EntityDetailsStore);
+
+  const details = useObservable(
+    detailsStore.getState(),
+    detailsStore.getValue()
+  );
+
   const events: GraphEvents = {
     select: (params: EventParameters) => {
       const { nodes } = params;
@@ -134,6 +143,16 @@ function Graph(props: GraphProps): JSX.Element {
           )}
           events={events}
           key={uuid()}
+          getNetwork={(network) => {
+            network.unselectAll();
+            if (details !== null) {
+              if ((details as unknown as Node).types !== undefined) {
+                if (graphData.nodes.some((node) => node.id === details.id)) {
+                  network.selectNodes([details.id], true);
+                }
+              }
+            }
+          }}
         />
       </div>
       <Snackbar
