@@ -12,6 +12,7 @@ import {
 import { Autorenew, Search } from '@material-ui/icons';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
+import { useHistory } from 'react-router-dom';
 import useService from '../dependency-injection/useService';
 import { SearchService } from '../services/search';
 import './SearchResultList.scss';
@@ -113,12 +114,24 @@ export default function Searchbar(): JSX.Element {
     };
   }, []);
 
+  const numSearchObservers = useObservable(
+    searchSelectionStore.getCountSubscribers(),
+    0
+  );
+
   const onInputChanged = (event: ChangeEvent<HTMLInputElement>) => {
     searchInput$.current.next(event.target.value);
   };
 
+  const history = useHistory();
   const onCardSelected = (card: SelectedSearchResult) => {
     searchSelectionStore.setState(card);
+    // If the current page does not listen to the selection search result
+    // (i.e. the current page does not know what to do with the selection)
+    // => route to default graph page
+    if (numSearchObservers === 0) {
+      history.push('/visualization/graph');
+    }
   };
 
   return (
