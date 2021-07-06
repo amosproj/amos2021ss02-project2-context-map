@@ -1,9 +1,9 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import GraphPage from './GraphPage';
-import { ContainerSize } from '../utils/useSize';
+import { ContainerSize } from '../../utils/useSize';
 import Graph from './Graph';
-import Filter from './filtering/Filter';
+import Filter from '../filtering/Filter';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -14,6 +14,9 @@ const useStyles = makeStyles(() =>
   })
 );
 
+/**
+ * Contains the main graph visualization.
+ */
 function GraphEntityPage(props: { layout?: string }): JSX.Element {
   const classes = useStyles();
   const { layout } = props;

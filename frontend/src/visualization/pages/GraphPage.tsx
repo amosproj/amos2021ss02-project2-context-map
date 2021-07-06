@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-import { ContainerSize, useSize } from '../utils/useSize';
+import { ContainerSize, useSize } from '../../utils/useSize';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -30,6 +30,9 @@ export type GraphProps = {
   content: (containerSize: ContainerSize, layout?: string) => JSX.Element;
 };
 
+/**
+ * Base element for elements that contain graph structures.
+ */
 function GraphPage(props: GraphProps): JSX.Element {
   const { layout, content } = props;
   const classes = useStyles();

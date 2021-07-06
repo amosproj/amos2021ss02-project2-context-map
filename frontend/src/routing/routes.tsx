@@ -4,11 +4,11 @@ import Exploration from '../exploration/Exploration';
 import Home from '../home/Home';
 import Visualization from '../visualization/Visualization';
 import RouteDefinition from './RouteDefinition';
-import ChordPage from '../visualization/ChordPage';
+import ChordPage from '../visualization/pages/ChordPage';
 import BetweennessPage from '../visualization/betweenness/BetweennessPage';
 import RadialPage from '../visualization/radial/RadialPage';
-import SchemaPage from '../visualization/SchemaPage';
-import GraphEntityPage from '../visualization/GraphEntityPage';
+import SchemaPage from '../visualization/pages/SchemaPage';
+import GraphEntityPage from '../visualization/pages/GraphEntityPage';
 
 const routes: Record<string, RouteDefinition> = {
   Home: {

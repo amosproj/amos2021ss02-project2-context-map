@@ -3,11 +3,11 @@ import { combineLatest } from 'rxjs';
 import ChordDiagram from 'react-chord-diagram';
 import { map } from 'rxjs/operators';
 import { Grid, makeStyles } from '@material-ui/core';
-import useService from '../dependency-injection/useService';
-import { SchemaService } from '../services/schema';
-import { NodeTypeConnectionInfo } from '../shared/schema';
-import useObservable from '../utils/useObservable';
-import { EntityStyleProvider, EntityStyleStore } from '../stores/colors';
+import useService from '../../dependency-injection/useService';
+import { SchemaService } from '../../services/schema';
+import { NodeTypeConnectionInfo } from '../../shared/schema';
+import useObservable from '../../utils/useObservable';
+import { EntityStyleProvider, EntityStyleStore } from '../../stores/colors';
 
 type ChordData = {
   matrix: number[][];
