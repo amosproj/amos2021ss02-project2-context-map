@@ -1,3 +1,5 @@
+import { iif } from 'rxjs';
+
 context('Chord Diagram', () => {
   // Global setup
   beforeEach(() => {
@@ -42,5 +44,16 @@ context('Chord Diagram', () => {
       .contains('Node Type') // find header "Node Types"
       .next() // next sibling
       .contains('Person'); // check if it contains 'Movie'
+  });
+
+  it('displays an error when trying to highlight an edge', () => {
+    cy.get('.SearchBar').type('directed');
+
+    // click search result
+    cy.get('.SubList').contains('DIRECTED').click();
+
+    cy.get('#notistack-snackbar').contains(
+      'Only nodes and node types can be highlighted.'
+    );
   });
 });
