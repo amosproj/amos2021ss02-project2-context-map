@@ -15,7 +15,7 @@ import useObservable from '../../utils/useObservable';
 import { isEntitySelected } from '../../stores/colors/EntityStyleProviderImpl';
 import convertQueryResult from '../shared-ops/convertQueryResult';
 import EntityStyleStore from '../../stores/colors/EntityStyleStore';
-import GraphDetails from '../GraphDetails';
+import GraphDetails from './GraphDetails';
 import { EntityDetailsStateStore } from '../../stores/details/EntityDetailsStateStore';
 import { EntityDetailsStore } from '../../stores/details/EntityDetailsStore';
 

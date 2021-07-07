@@ -17,13 +17,13 @@ import {
   TableRow,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import { EntityDetailsStateStore } from '../stores/details/EntityDetailsStateStore';
-import useService from '../dependency-injection/useService';
-import useObservable from '../utils/useObservable';
-import { EntityDetailsStore } from '../stores/details/EntityDetailsStore';
-import NodeTypeComponent from '../search/helper/NodeTypeComponent';
-import EdgeTypeComponent from '../search/helper/EdgeTypeComponent';
-import EntityStyleStore from '../stores/colors/EntityStyleStore';
+import { EntityDetailsStateStore } from '../../stores/details/EntityDetailsStateStore';
+import useService from '../../dependency-injection/useService';
+import useObservable from '../../utils/useObservable';
+import { EntityDetailsStore } from '../../stores/details/EntityDetailsStore';
+import NodeTypeComponent from '../../search/helper/NodeTypeComponent';
+import EdgeTypeComponent from '../../search/helper/EdgeTypeComponent';
+import EntityStyleStore from '../../stores/colors/EntityStyleStore';
 
 const useStyles = makeStyles(() =>
   createStyles({
