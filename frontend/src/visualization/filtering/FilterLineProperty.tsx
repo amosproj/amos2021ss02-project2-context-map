@@ -74,6 +74,27 @@ const FilterLineProperty = (props: {
     setSelectedValues(event.target.value as string[]);
   };
 
+  /**
+   * Returns the property as string or returns an error string.
+   * Does return the 'real' value if the property is of type string, boolean,
+   * number or array.
+   * @param property value
+   */
+  const asString = (property: unknown): string => {
+    if (Array.isArray(property)) {
+      return `[${property.map(asString).join(', ')}]`;
+    }
+
+    switch (typeof property) {
+      case 'string':
+      case 'boolean':
+      case 'number':
+        return `${property}`;
+      default:
+        return 'Error: No string';
+    }
+  };
+
   return (
     <div className="FilterSelect">
       <FormControl className={classes.select}>
@@ -87,15 +108,15 @@ const FilterLineProperty = (props: {
         >
           {filterModelEntry.values.map((name) => (
             <MenuItem
-              key={typeof name === 'string' ? name : 'Error: No string'}
-              value={typeof name === 'string' ? name : 'Error: No string'}
+              key={asString(name)}
+              value={asString(name)}
               style={getStyles(
-                typeof name === 'string' ? name : 'Error: No string',
+                asString(name),
                 filterModelEntry.values as string[],
                 theme
               )}
             >
-              {typeof name === 'string' ? name : 'Error: No string'}
+              {asString(name)}
             </MenuItem>
           ))}
         </Select>
