@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import VisGraph from 'react-graph-vis';
+import React, { useRef, useEffect } from 'react';
+import VisGraph, { EventParameters, GraphEvents } from 'react-graph-vis';
 import { uuid } from 'uuidv4';
 import { map, tap } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
@@ -15,6 +15,9 @@ import useObservable from '../../utils/useObservable';
 import { isEntitySelected } from '../../stores/colors/EntityStyleProviderImpl';
 import convertQueryResult from '../shared-ops/convertQueryResult';
 import EntityStyleStore from '../../stores/colors/EntityStyleStore';
+import GraphDetails from './GraphDetails';
+import { EntityDetailsStateStore } from '../../stores/details/EntityDetailsStateStore';
+import { EntityDetailsStore } from '../../stores/details/EntityDetailsStore';
 
 /**
  * Keys for the snackbar notifications.
@@ -36,6 +39,7 @@ function Graph(props: GraphProps): JSX.Element {
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
+  const detailsStateStore = useService(EntityDetailsStateStore);
   const queryResultStore = useService(QueryResultStore);
   const entityColorStore = useService(EntityStyleStore);
   const searchSelectionStore = useService(SearchSelectionStore);
@@ -68,6 +72,41 @@ function Graph(props: GraphProps): JSX.Element {
     { edges: [], nodes: [] }
   );
 
+  const detailsStore = useService(EntityDetailsStore);
+
+  const details = useObservable(
+    detailsStore.getState(),
+    detailsStore.getValue()
+  );
+
+  const events: GraphEvents = {
+    select: (params: EventParameters) => {
+      const { nodes, edges } = params;
+
+      if (Array.isArray(nodes) && nodes.length !== 0) {
+        let node = nodes[0];
+
+        if (typeof node === 'string') {
+          node = Number.parseFloat(node);
+        }
+
+        detailsStateStore.showNode(node);
+      } else if (Array.isArray(edges) && edges.length !== 0) {
+        let edge = edges[0];
+
+        if (typeof edge === 'string') {
+          edge = Number.parseFloat(edge);
+        }
+
+        detailsStateStore.showEdge(edge);
+      } else {
+        detailsStateStore.clear();
+      }
+    },
+  };
+
+  const graphRef = useRef<HTMLDivElement | null>(null);
+
   // When either the query result or the selected entity changes => check if
   // selection is in query result.
   useObservable(
@@ -99,7 +138,8 @@ function Graph(props: GraphProps): JSX.Element {
 
   return (
     <>
-      <div className={classes.graphContainer}>
+      <GraphDetails />
+      <div className={classes.graphContainer} ref={graphRef}>
         <VisGraph
           graph={graphData}
           options={visGraphBuildOptions(
@@ -107,7 +147,22 @@ function Graph(props: GraphProps): JSX.Element {
             containerSize.height,
             layout
           )}
+          events={events}
           key={uuid()}
+          getNetwork={(network) => {
+            network.unselectAll();
+            if (details !== null) {
+              if (details.entityType === 'node') {
+                if (graphData.nodes.some((node) => node.id === details.id)) {
+                  network.selectNodes([details.id], true);
+                }
+              } else if (
+                graphData.edges.some((edge) => edge.id === details.id)
+              ) {
+                network.selectEdges([details.id]);
+              }
+            }
+          }}
         />
       </div>
     </>

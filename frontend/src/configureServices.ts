@@ -20,6 +20,9 @@ import { ShortestPathStateStore } from './stores/shortest-path/ShortestPathState
 import ExplorationStore from './stores/exploration/ExplorationStore';
 import SearchSelectionStore from './stores/SearchSelectionStore';
 import SchemaStore from './stores/SchemaStore';
+import { EntityDetailsStateStore } from './stores/details/EntityDetailsStateStore';
+import { EntityDetailsStore } from './stores/details/EntityDetailsStore';
+import { RoutingStateStore } from './stores/routing/RoutingStateStore';
 import ChordDetailsStateStore from './stores/details/ChordDetailsStateStore';
 
 /**
@@ -78,5 +81,8 @@ export default function configureServices(container: Container): void {
   container.bind(ShortestPathStateStore).toSelf().inSingletonScope();
   container.bind(ExplorationStore).toSelf().inSingletonScope();
   container.bind(SearchSelectionStore).toSelf().inSingletonScope();
+  container.bind(EntityDetailsStateStore).toSelf().inSingletonScope();
+  container.bind(EntityDetailsStore).toSelf().inSingletonScope();
+  container.bind(RoutingStateStore).toSelf().inSingletonScope();
   container.bind(ChordDetailsStateStore).toSelf().inSingletonScope();
 }
