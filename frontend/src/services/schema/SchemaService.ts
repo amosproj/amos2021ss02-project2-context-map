@@ -8,6 +8,7 @@ import {
   NodeType,
   NodeTypeConnectionInfo,
 } from '../../shared/schema';
+import { QueryResult } from '../../shared/queries';
 
 /**
  * A service that can be used to request information about the data schema.
@@ -33,4 +34,12 @@ export default abstract class SchemaService {
   public abstract getNodeTypeConnectionInfo(): Observable<
     NodeTypeConnectionInfo[]
   >;
+
+  /**
+   * Returns a {@link QueryResult} containing the meta information about the
+   * graph, i.e. which node types are connected to which other node types.
+   *
+   * The nodes.types always have the length 1.
+   */
+  public abstract getMetaGraph(): Observable<QueryResult>;
 }
