@@ -1,16 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { combineLatest } from 'rxjs';
 import ChordDiagram from 'react-chord-diagram';
 import { map } from 'rxjs/operators';
-import { Box, Container, Grid } from '@material-ui/core';
-import { NodeTypeConnectionInfo } from '../../shared/schema';
-import { EntityStyleProvider } from '../../stores/colors';
+import { Box, Container, Grid, useTheme } from '@material-ui/core';
+import { useSnackbar } from 'notistack';
+import { uuid } from 'uuidv4';
 import useService from '../../dependency-injection/useService';
 import { SchemaService } from '../../services/schema';
-import ChordDetailsStateStore from '../../stores/details/ChordDetailsStateStore';
+import { NodeTypeConnectionInfo } from '../../shared/schema';
 import useObservable from '../../utils/useObservable';
-import ChordDetails from '../ChordDetails';
+import { EntityStyleProvider } from '../../stores/colors';
+import ChordDetails from './ChordDetails';
+import ChordDetailsStateStore from '../../stores/details/ChordDetailsStateStore';
+import SearchSelectionStore from '../../stores/SearchSelectionStore';
 import EntityStyleStore from '../../stores/colors/EntityStyleStore';
+
+/**
+ * Keys for the snackbar notifications.
+ * These keys are not readonly.
+ */
+const SNACKBAR_KEYS = {
+  SEARCH_NOT_FOUND: 'search_not_found',
+};
 
 /**
  * Generate a matrix with node connections, and a Record mapping node types to their index in the matrix and their color.
@@ -71,6 +82,11 @@ export default function ChordPage(): JSX.Element {
   const schemaService = useService(SchemaService);
   const entityStyleStore = useService(EntityStyleStore);
   const chordDetailsStore = useService(ChordDetailsStateStore);
+  const searchSelectionStore = useService(SearchSelectionStore);
+
+  const theme = useTheme();
+
+  const { closeSnackbar, enqueueSnackbar } = useSnackbar();
 
   const chordData = useObservable(
     combineLatest([
@@ -80,11 +96,57 @@ export default function ChordPage(): JSX.Element {
     { matrix: [], names: [], colors: [] }
   );
 
+  const selection = useObservable(searchSelectionStore.getState());
+
+  const [labelColors, setLabelColors] = useState<string[]>();
+
+  useEffect(() => {
+    let types: string[] | undefined;
+    closeSnackbar(SNACKBAR_KEYS.SEARCH_NOT_FOUND);
+    if (selection?.interfaceType === 'NodeDescriptor') {
+      types = selection.types;
+    } else if (selection?.interfaceType === 'NodeTypeDescriptor') {
+      types = [selection.name];
+      closeSnackbar(SNACKBAR_KEYS.SEARCH_NOT_FOUND);
+    } else if (selection !== undefined) {
+      // assign new random id to avoid strange ui glitches
+      SNACKBAR_KEYS.SEARCH_NOT_FOUND = uuid();
+      enqueueSnackbar('Only nodes and node types can be highlighted.', {
+        variant: 'warning',
+        key: SNACKBAR_KEYS.SEARCH_NOT_FOUND,
+      });
+    }
+
+    // update colors
+    const colors = chordData.names.map((name) =>
+      types?.some((type) => type === name)
+        ? theme.palette.primary.main
+        : '#000000'
+    );
+    setLabelColors(colors);
+
+    // update details page
+    if (types && types.length > 0) {
+      chordDetailsStore.showDetails(
+        chordData,
+        chordData.names.indexOf(types[0])
+      );
+    } else {
+      chordDetailsStore.clear();
+    }
+  }, [selection, chordData, theme]);
+
+  // clear selection when page left
+  useEffect(() => () => searchSelectionStore.setState(undefined), []);
+
   return (
     <Box p={3}>
       <h1>Chord Diagram</h1>
       <Container maxWidth={false}>
-        <Grid container spacing={0} justify="space-between">
+        <Grid container spacing={0}>
+          <Grid item lg={5} md={12}>
+            <ChordDetails />
+          </Grid>
           <Grid item lg={5} md={12}>
             <ChordDiagram
               blurOnHover
@@ -94,14 +156,12 @@ export default function ChordPage(): JSX.Element {
               componentId={1}
               groupColors={chordData.colors}
               groupLabels={chordData.names}
+              labelColors={labelColors}
               groupOnClick={(index: number) => {
                 chordDetailsStore.showDetails(chordData, index);
               }}
               outerRadius={260} // workaround for labels being cut off
             />
-          </Grid>
-          <Grid item lg={5} md={12}>
-            <ChordDetails />
           </Grid>
         </Grid>
       </Container>
