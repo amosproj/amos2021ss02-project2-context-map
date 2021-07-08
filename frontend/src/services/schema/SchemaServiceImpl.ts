@@ -9,6 +9,7 @@ import {
 import HttpService from '../http';
 import SchemaService from './SchemaService';
 import SingleValueCachedObservable from '../../utils/SingleValueCachedObservable';
+import { QueryResult } from '../../shared/queries';
 
 /**
  * The implementation of schema service that performs requests
@@ -33,6 +34,9 @@ export default class SchemaServiceImpl extends SchemaService {
         )
       )
     );
+  private readonly metaGraph = new SingleValueCachedObservable<QueryResult>(
+    defer(() => this.http.get<QueryResult>('/api/schema/meta-graph'))
+  );
 
   public constructor() {
     super();
@@ -48,5 +52,9 @@ export default class SchemaServiceImpl extends SchemaService {
 
   public getNodeTypeConnectionInfo(): Observable<NodeTypeConnectionInfo[]> {
     return this.nodeTypeConnectionInfoCache.get();
+  }
+
+  public getMetaGraph(): Observable<QueryResult> {
+    return this.metaGraph.get();
   }
 }

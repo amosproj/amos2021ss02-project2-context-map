@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { SchemaService } from './schema.service';
 import { NodeType, EdgeType, NodeTypeConnectionInfo } from '../shared/schema';
+import { QueryResult } from '../shared/queries';
 
 @Controller('schema')
 export class SchemaController {
@@ -29,5 +30,16 @@ export class SchemaController {
   @Get('node-type-connection-info')
   getNodeTypeConnectionInformation(): Promise<NodeTypeConnectionInfo[]> {
     return this.schemaService.getNodeTypeConnectionInformation();
+  }
+
+  /**
+   * Returns a {@link QueryResult} containing the meta information about the
+   * graph, i.e. which node types are connected to which other node types.
+   *
+   * The nodes.types always have the length 1.
+   */
+  @Get('meta-graph')
+  getMetaGraph(): Promise<QueryResult> {
+    return this.schemaService.getMetaGraph();
   }
 }

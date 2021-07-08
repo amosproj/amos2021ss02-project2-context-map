@@ -2,6 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j/dist';
 import { parseNeo4jEntityInfo } from './parseNeo4jEntityInfo';
 import { EdgeType, NodeType, NodeTypeConnectionInfo } from '../shared/schema';
+import { QueryResult } from '../shared/queries';
+import {
+  SchemaVisualisationResult,
+  schemaVisualisationToQueryResult,
+} from '../utils/schemaVisualisationToQueryResult';
 
 @Injectable()
 export class SchemaService {
@@ -65,5 +70,20 @@ export class SchemaService {
     `);
 
     return result.records.map((x) => x.toObject() as NodeTypeConnectionInfo);
+  }
+
+  /**
+   * Returns a {@link QueryResult} containing the meta information about the
+   * graph, i.e. which node types are connected to which other node types.
+   *
+   * The nodes.types always have the length 1.
+   */
+  async getMetaGraph(): Promise<QueryResult> {
+    const result = await this.neo4jService.read(
+      `CALL db.schema.visualization()`
+    );
+    return schemaVisualisationToQueryResult(
+      result.records[0].toObject() as SchemaVisualisationResult
+    );
   }
 }
