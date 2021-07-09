@@ -39,6 +39,47 @@ context('Exploration', () => {
       cy.url().should('eq', `http://localhost:3000${layoutsData.P.path}`);
     });
 
-    // TODO: add more tests when combined with questions
+    it('reorders recommendations', () => {
+      // Assert that the first recommendation is not 'Structural Layout'
+      cy.get('.Previews')
+        .find('li')
+        .first()
+        .contains('Structural Layout')
+        .should('not.exist');
+
+      // Select something
+      cy.contains('Does one of these use cases match your question?').click();
+      cy.contains(
+        'I want to analyse multivariate data from surveys and test panels'
+      ).click();
+
+      // Assert that the first recommendation is 'Structural Layout'
+      cy.get('.Previews').find('li').first().contains('Structural Layout');
+    });
+
+    it('questions can be unselected', () => {
+      // Open question
+      cy.contains('Does one of these use cases match your question?').click();
+
+      // Select answer
+      cy.contains(
+        'I want to analyse multivariate data from surveys and test panels'
+      ).click();
+      // Assert that answer is selected
+      cy.contains(
+        'I want to analyse multivariate data from surveys and test panels'
+      ).find('.Mui-checked');
+
+      // Deselect answer
+      cy.contains(
+        'I want to analyse multivariate data from surveys and test panels'
+      ).click();
+      // Assert that answer is not selected
+      cy.contains(
+        'I want to analyse multivariate data from surveys and test panels'
+      )
+        .find('.Mui-checked')
+        .should('not.exist');
+    });
   });
 });
