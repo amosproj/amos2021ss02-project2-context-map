@@ -24,6 +24,7 @@ import { EntityDetailsStateStore } from './stores/details/EntityDetailsStateStor
 import { EntityDetailsStore } from './stores/details/EntityDetailsStore';
 import { RoutingStateStore } from './stores/routing/RoutingStateStore';
 import ChordDetailsStateStore from './stores/details/ChordDetailsStateStore';
+import { GraphStateStore } from './stores/graph/GraphStateStore';
 
 /**
  * Configures all services in the frontend app.
@@ -85,4 +86,5 @@ export default function configureServices(container: Container): void {
   container.bind(EntityDetailsStore).toSelf().inSingletonScope();
   container.bind(RoutingStateStore).toSelf().inSingletonScope();
   container.bind(ChordDetailsStateStore).toSelf().inSingletonScope();
+  container.bind(GraphStateStore).toSelf().inSingletonScope();
 }
