@@ -106,19 +106,22 @@ const FilterLineProperty = (props: {
           input={<Input />}
           MenuProps={MenuProps}
         >
-          {filterModelEntry.values.map((name) => (
-            <MenuItem
-              key={asString(name)}
-              value={asString(name)}
-              style={getStyles(
-                asString(name),
-                filterModelEntry.values as string[],
-                theme
-              )}
-            >
-              {asString(name)}
-            </MenuItem>
-          ))}
+          {filterModelEntry.values
+            .map(asString)
+            .sort((a, b) => a.localeCompare(b))
+            .map((value) => (
+              <MenuItem
+                key={value}
+                value={value}
+                style={getStyles(
+                  value,
+                  filterModelEntry.values as string[],
+                  theme
+                )}
+              >
+                {value}
+              </MenuItem>
+            ))}
         </Select>
       </FormControl>
     </div>
