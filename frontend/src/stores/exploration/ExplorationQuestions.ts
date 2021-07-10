@@ -130,7 +130,7 @@ const explorationQuestions: DeepReadonly<ExplorationQuestion[]> = [
         },
       },
       {
-        text: 'I want to see how document A relates to document B',
+        text: 'I want to see how supplier A is connected to supplier B',
         weight: {
           C: 0.4,
           BC: 0.3,
