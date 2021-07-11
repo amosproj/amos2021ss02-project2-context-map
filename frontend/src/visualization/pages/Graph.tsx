@@ -95,7 +95,7 @@ function Graph(props: GraphProps): JSX.Element {
             'Selection is a virtual node, no details available.',
             {
               variant: 'warning',
-              key: SNACKBAR_KEYS.SEARCH_NOT_FOUND,
+              key: SNACKBAR_KEYS.VIRTUAL_ENTITY,
             }
           );
           return;
@@ -117,7 +117,7 @@ function Graph(props: GraphProps): JSX.Element {
             'Selection is a virtual edge, no details available.',
             {
               variant: 'warning',
-              key: SNACKBAR_KEYS.SEARCH_NOT_FOUND,
+              key: SNACKBAR_KEYS.VIRTUAL_ENTITY,
             }
           );
           return;
