@@ -92,7 +92,7 @@ function Graph(props: GraphProps): JSX.Element {
           // assign new random id to avoid strange ui glitches
           SNACKBAR_KEYS.VIRTUAL_ENTITY = uuid();
           enqueueSnackbar(
-            'Selection is a virtual entity, no details available.',
+            'Selection is a virtual node, no details available.',
             {
               variant: 'warning',
               key: SNACKBAR_KEYS.SEARCH_NOT_FOUND,
@@ -109,12 +109,12 @@ function Graph(props: GraphProps): JSX.Element {
       } else if (Array.isArray(edges) && edges.length !== 0) {
         let edge = edges[0];
 
-        // virtual node
+        // virtual edge
         if (edge < 0) {
           // assign new random id to avoid strange ui glitches
           SNACKBAR_KEYS.VIRTUAL_ENTITY = uuid();
           enqueueSnackbar(
-            'Selection is a virtual entity, no details available.',
+            'Selection is a virtual edge, no details available.',
             {
               variant: 'warning',
               key: SNACKBAR_KEYS.SEARCH_NOT_FOUND,
