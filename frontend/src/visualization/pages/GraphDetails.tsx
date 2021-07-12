@@ -40,6 +40,12 @@ const useStyles = makeStyles(() =>
       flexGrow: 1,
       overflow: 'scroll',
     },
+    propsCell: {
+      maxWidth: '500px',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+    },
     closeIcon: {
       float: 'right',
     },
@@ -109,7 +115,9 @@ export default function GraphDetails(): JSX.Element {
     return (
       <TableRow>
         <TableCell>{propKey}</TableCell>
-        <TableCell>{propValue as string}</TableCell>
+        <TableCell className={classes.propsCell}>
+          {propValue as string}
+        </TableCell>
       </TableRow>
     );
   });

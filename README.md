@@ -18,30 +18,48 @@ This project was created as a university project and is part of the set of AMOS 
 ## Current development
 Current development concentrates on creating a minimum viable product for KMAP. Core functionality will be integrating graph data bases, visualizing the graph data in a modular dashboard, and exploring the data with a no-code query builder.
 
-## How to start and deploy
+## How to build
 ### Prerequisites
 > :warning: **Make sure to clone the repository with LF line ending applied when working on windows** 
 1. Clone the repository via  
-`git clone https://github.com/amosproj/amos-ss2021-project2-context-map.git`  
+`git clone https://github.com/amosproj/amos-ss2021-project2-context-map.git`
 
-1. Install node from [https://nodejs.org/en/](https://nodejs.org/en/).   
+1. Install node from [https://nodejs.org/en/](https://nodejs.org/en/) and make sure to add your installation directory to PATH.   
 It is required to install node with version 12.x or higher.
 
-1. Install docker as described in [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/).  
-If you are working with windows, make sure that docker is running with `Linux containers`. 
+1. Install docker from [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/).
 
 1. Install `yarn` by running  
 `npm i -g yarn`
 
-### Start the project
-To start the project, navigate to the `build` directory within the repository clone and run each of the commands in the following order.
+### Run the project
+1. Make sure that docker is running.
+2. Navigate to the `/build` directory within the repository clone.
+3. Run `node start-database`. A new docker container with the name `neo4j-db` should run now. If it is only created, but does not run, run the container (you can check if the container is running with the command `docker ps` in your terminal).
+
+#### Windows and platforms with powershell installed
+
+Run each of the scripts in the following order within a separate shell instance.
 ```
-1. node start-database -d
-2. node start-backend-detached
-3. node start-frontend-detached
+4. .\start-backend-dbg.ps1 
+5. .\start-frontend-dbg.ps1
 ```
 
-### Deploy the project
+#### Linux and Mac
+
+Run each of the scripts in the following order.
+```
+4. ./start-backend-dbg.sh & 
+5. ./start-frontend-dbg.sh &
+```
+
+Once database, backend and frontend were built for one time, the backend and frontend can also be started by running 
+```
+[4.] node start-backend-detached
+[5.] node start-frontend-detached
+```
+
+### How to deploy
 To deploy the project execute the deploy script in the repository root directory after cloning.  
 When working on windows, execute the `deploy.ps1` script, on linux and MacOs, run the `deploy.sh` script.  
 The deployment artifacts are copied to the `artifacts` folder in the repository root.   

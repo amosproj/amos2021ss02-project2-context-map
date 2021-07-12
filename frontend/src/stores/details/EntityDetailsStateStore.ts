@@ -51,7 +51,7 @@ export class EntityDetailsStateStore extends SimpleStore<EntityDetailsState> {
   }
 
   private subscribeToSearchSelectionStore(): Subscription {
-    return this.searchSelectionStore.getState().subscribe({
+    return this.searchSelectionStore.getState(true).subscribe({
       next: (selectedSearchResult) => {
         if (selectedSearchResult) {
           if (selectedSearchResult.interfaceType === 'NodeDescriptor') {

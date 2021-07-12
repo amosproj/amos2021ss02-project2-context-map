@@ -129,7 +129,7 @@ context('Filter', () => {
       cy.get('.FilterSelect').first().click();
 
       // Assert
-      cy.contains('Error: No string').click();
+      cy.contains('[Trinity]').click();
     });
 
     it('applies filter', () => {
@@ -141,7 +141,7 @@ context('Filter', () => {
       cy.get('.FilterSelect').first().click();
 
       // Assert
-      cy.contains('Error: No string').click();
+      cy.contains('[Trinity]').click();
 
       cy.get('body').click(0, 0);
       cy.get('.ApplyFilter').click();
@@ -156,7 +156,7 @@ context('Filter', () => {
       cy.get('.FilterSelect').first().click();
 
       // Assert
-      cy.contains('Error: No string').click();
+      cy.contains('[Trinity]').click();
 
       cy.get('body').click(0, 0);
       cy.get('.ApplyFilter').click();

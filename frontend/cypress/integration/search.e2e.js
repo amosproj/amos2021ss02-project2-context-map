@@ -126,4 +126,28 @@ context('Searchbar', () => {
     cy.get('.SubList .MuiListItem-root').should('have.length', 8);
     cy.contains(/show more/i).should('not.exist');
   });
+
+  it('Redirects to graph page', () => {
+    // Act
+    cy.get('.SearchBar').type('keanu');
+    cy.contains('Keanu Reeves').click();
+
+    // Assert
+    cy.url().should('eq', `http://localhost:3000/visualization/graph`);
+  });
+
+  // was created since #393 happened
+  it('Redirects to graph page (multiple times)', () => {
+    cy.get('.SearchBar').type('keanu');
+    cy.contains('Keanu Reeves').click();
+    cy.url().should('eq', `http://localhost:3000/visualization/graph`);
+
+    cy.contains('Visualization').click();
+    cy.url().should('eq', `http://localhost:3000/visualization`);
+
+    // second time
+    cy.get('.SearchBar').type('keanu');
+    cy.contains('Keanu Reeves').click();
+    cy.url().should('eq', `http://localhost:3000/visualization/graph`);
+  });
 });
