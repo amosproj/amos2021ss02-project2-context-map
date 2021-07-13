@@ -63,8 +63,8 @@ export default function MaxEntitiesSlider({ entities }: Props): JSX.Element {
   const update = (val: number) => {
     const filterLimits = filterQueryStore.getValue().limits ?? {};
 
-    if (val >= max) {
-      // If selected filter >= max number of entities => delete that filter
+    if (val > max) {
+      // If selected filter > max number of entities => delete that filter
       delete filterLimits[entities];
     } else {
       // else add filter

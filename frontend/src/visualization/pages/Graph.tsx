@@ -25,6 +25,7 @@ import GraphStateStore from '../../stores/graph/GraphStateStore';
 const SNACKBAR_KEYS = {
   SHORTEST_PATH_NOT_FOUND: 'shortest-path-not-found',
   SEARCH_NOT_FOUND: 'search-not-found',
+  VIRTUAL_ENTITY: 'virtual-entity',
 };
 
 type GraphProps = {
@@ -83,6 +84,20 @@ function Graph(props: GraphProps): JSX.Element {
       if (Array.isArray(nodes) && nodes.length !== 0) {
         let node = nodes[0];
 
+        // virtual node
+        if (node < 0) {
+          // assign new random id to avoid strange ui glitches
+          SNACKBAR_KEYS.VIRTUAL_ENTITY = uuid();
+          enqueueSnackbar(
+            'Selection is a virtual node, no details available.',
+            {
+              variant: 'warning',
+              key: SNACKBAR_KEYS.VIRTUAL_ENTITY,
+            }
+          );
+          return;
+        }
+
         if (typeof node === 'string') {
           node = Number.parseFloat(node);
         }
@@ -90,6 +105,20 @@ function Graph(props: GraphProps): JSX.Element {
         detailsStateStore.showNode(node);
       } else if (Array.isArray(edges) && edges.length !== 0) {
         let edge = edges[0];
+
+        // virtual edge
+        if (edge < 0) {
+          // assign new random id to avoid strange ui glitches
+          SNACKBAR_KEYS.VIRTUAL_ENTITY = uuid();
+          enqueueSnackbar(
+            'Selection is a virtual edge, no details available.',
+            {
+              variant: 'warning',
+              key: SNACKBAR_KEYS.VIRTUAL_ENTITY,
+            }
+          );
+          return;
+        }
 
         if (typeof edge === 'string') {
           edge = Number.parseFloat(edge);
