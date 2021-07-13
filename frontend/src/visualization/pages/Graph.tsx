@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import React, { useRef, useEffect } from 'react';
 import VisGraph, { EventParameters, GraphEvents } from 'react-graph-vis';
 import { uuid } from 'uuidv4';
