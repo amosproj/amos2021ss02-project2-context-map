@@ -106,6 +106,46 @@ context('Filter', () => {
       cy.get('body').click(0, 0);
       cy.get('.ApplyFilter').click();
     });
+
+    it('should add and remove Node Types', () => {
+      let nthQuery = 0;
+      cy.get('.Filter').click();
+
+      const interceptor = cy.spy((req) => {
+        expect(req.body).to.have.property('limits');
+        if (nthQuery === 1) {
+          expect(req.body.filters.nodes.filters).to.have.length(1);
+          expect(req.body.filters.nodes.filters[0]).to.deep.equal({
+            rule: 'of-type',
+            type: 'Person',
+          });
+        } else {
+          expect(req.body.filters.nodes.filters).to.have.length(0);
+        }
+        req.continue();
+      });
+
+      cy.intercept('*query*', interceptor).as('query');
+
+      cy.contains('Person')
+        .then(() => {
+          nthQuery += 1;
+        })
+        .click();
+
+      cy.wait('@query');
+
+      cy.contains('Person')
+        .then(() => {
+          nthQuery += 1;
+        })
+        .click();
+
+      cy.wait('@query').then(() => {
+        // eslint-disable-next-line no-unused-expressions
+        expect(interceptor).to.be.calledTwice;
+      });
+    });
   });
 
   context('Edges', () => {
