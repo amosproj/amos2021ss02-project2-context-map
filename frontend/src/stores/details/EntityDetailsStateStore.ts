@@ -5,11 +5,13 @@ import SimpleStore from '../SimpleStore';
 import { EntityDetailsState } from './EntityDetailsState';
 import { RoutingStateStore } from '../routing/RoutingStateStore';
 import SearchSelectionStore from '../SearchSelectionStore';
+import QueryResultStore from '../QueryResultStore';
 
 @injectable()
 export class EntityDetailsStateStore extends SimpleStore<EntityDetailsState> {
   private routingStateStoreSubscription?: Subscription;
   private searchSelectionStoreSubscription?: Subscription;
+  private queryResultStoreSubscription?: Subscription;
 
   protected getInitialValue(): EntityDetailsState {
     return { node: null, edge: null };
@@ -20,6 +22,9 @@ export class EntityDetailsStateStore extends SimpleStore<EntityDetailsState> {
 
   @inject(SearchSelectionStore)
   private readonly searchSelectionStore!: SearchSelectionStore;
+
+  @inject(QueryResultStore)
+  private readonly queryResultStore!: QueryResultStore;
 
   public clear(): void {
     this.setState(this.getInitialValue());
@@ -42,6 +47,10 @@ export class EntityDetailsStateStore extends SimpleStore<EntityDetailsState> {
       this.searchSelectionStoreSubscription =
         this.subscribeToSearchSelectionStore();
     }
+
+    if (this.queryResultStoreSubscription == null) {
+      this.queryResultStoreSubscription = this.subscribeQueryResultStore();
+    }
   }
 
   private subscribeToRoutingStateStore(): Subscription {
@@ -63,6 +72,27 @@ export class EntityDetailsStateStore extends SimpleStore<EntityDetailsState> {
           }
         } else {
           this.clear();
+        }
+      },
+    });
+  }
+
+  private subscribeQueryResultStore(): Subscription {
+    return this.queryResultStore.getState().subscribe({
+      next: (queryResult) => {
+        const state = this.getValue();
+        // If the current selection is a node
+        if (state.node !== null) {
+          // If the node is not part of the query-result
+          if (!queryResult.nodes.some((node) => node.id === state.node)) {
+            this.clear();
+          }
+          // If the current selection is an edge
+        } else if (state.edge !== null) {
+          // If the edge is not part of the query-result
+          if (!queryResult.edges.some((edge) => edge.id === state.edge)) {
+            this.clear();
+          }
         }
       },
     });

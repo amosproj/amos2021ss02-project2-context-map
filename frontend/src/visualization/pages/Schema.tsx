@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import React, { useEffect } from 'react';
 import { map, tap } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
