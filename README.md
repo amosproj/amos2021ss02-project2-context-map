@@ -72,4 +72,4 @@ If the target machine runs with windows, make sure that docker is running with `
 On linux machines, execute the `kmap.sh` script, on windows machines the `kmap.ps1` script.
 
 ## Demo
-A public demo of the project is available at [http://5.183.20.2/](http://5.183.20.2/).
+A public demo of the project is available at [http://141.144.244.57/](http://141.144.244.57/).
